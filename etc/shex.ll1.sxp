@@ -1,0 +1,1338 @@
+(
+ (rule _empty "0" (first _eps) (seq))
+ (pass (alt (plus (range " \t\r\n")) (seq "#" (star (range "^\r\n")))))
+ (rule productionLabel "0"
+  (first "$")
+  (follow "!" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (seq "$" _productionLabel_1))
+ (rule semanticActions "0"
+  (first "%" _eps)
+  (follow ")" ";" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX"
+   "start" "|" "}" )
+  (alt _empty _semanticActions_1))
+ (rule startActions "0"
+  (first "%")
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq codeDecl _startActions_1))
+ (rule codeDecl "0"
+  (first "%")
+  (follow "%" ")" ";" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX"
+   "start" "|" "}" )
+  (seq "%" iri _codeDecl_1))
+ (rule _productionLabel_1 "0.1"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
+  (follow "!" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (alt iri blankNode))
+ (rule _codeDecl_1 "0.1"
+  (first "%" CODE)
+  (follow "%" ")" ";" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX"
+   "start" "|" "}" )
+  (alt CODE "%"))
+ (rule _startActions_1 "0.1"
+  (first "%" _eps)
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (alt _empty _startActions_2))
+ (rule _semanticActions_1 "0.1"
+  (first "%")
+  (follow ")" ";" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX"
+   "start" "|" "}" )
+  (seq codeDecl semanticActions))
+ (rule _productionLabel_2 "0.2"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
+  (follow "!" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (seq _productionLabel_1))
+ (rule _codeDecl_2 "0.2"
+  (first IRIREF PNAME_LN PNAME_NS)
+  (follow "%" ")" ";" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX"
+   "start" "|" "}" )
+  (seq iri _codeDecl_1))
+ (rule _startActions_2 "0.2"
+  (first "%")
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq codeDecl _startActions_1))
+ (rule _semanticActions_2 "0.2"
+  (first "%" _eps)
+  (follow ")" ";" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX"
+   "start" "|" "}" )
+  (seq semanticActions))
+ (rule _startActions_3 "0.3"
+  (first "%" _eps)
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq _startActions_1))
+ (rule _codeDecl_3 "0.3"
+  (first "%" CODE)
+  (follow "%" ")" ";" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX"
+   "start" "|" "}" )
+  (seq _codeDecl_1))
+ (rule _startActions_4 "0.4"
+  (first "%" _eps)
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq _startActions_1))
+ (rule shexDoc "1"
+  (start #t)
+  (first "%" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (follow _eof)
+  (seq _shexDoc_1 _shexDoc_2 _stringFacet_4))
+ (rule _shexDoc_1 "1.1"
+  (first "BASE" "PREFIX" _eps)
+  (follow "%" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "start")
+  (alt _empty _shexDoc_4))
+ (rule _shexDoc_10 "1.10"
+  (first "BASE" "PREFIX" _eps)
+  (follow "%" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "start")
+  (seq _shexDoc_1))
+ (rule _shexDoc_11 "1.11"
+  (first "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" _eps "start")
+  (seq _shexDoc_7))
+ (rule _shexDoc_12 "1.12"
+  (first "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" _eps "start")
+  (seq _shexDoc_7))
+ (rule _shexDoc_2 "1.2"
+  (first "%" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS _eps "start")
+  (alt _empty _shexDoc_5))
+ (rule _shexDoc_4 "1.4"
+  (first "BASE" "PREFIX")
+  (follow "%" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "start")
+  (seq directive _shexDoc_1))
+ (rule _shexDoc_5 "1.5"
+  (first "%" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "start")
+  (seq _shexDoc_6 _shexDoc_7))
+ (rule _shexDoc_6 "1.6"
+  (first "%" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "start")
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (alt notStartAction startActions))
+ (rule _shexDoc_7 "1.7"
+  (first "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" _eps "start")
+  (alt _empty _shexDoc_8))
+ (rule _shexDoc_8 "1.8"
+  (first "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq statement _shexDoc_7))
+ (rule _shexDoc_9 "1.9"
+  (first "%" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "start")
+  (follow _eof)
+  (seq _shexDoc_2 _stringFacet_4))
+ (rule notStartAction "2b"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "start")
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (alt start shape))
+ (rule statement "2"
+  (first "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (alt directive notStartAction))
+ (rule _shapeConjunction_1 "3d.1"
+  (first "AND" _eps)
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF "OR"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (alt _empty _shapeConjunction_3))
+ (rule directive "3"
+  (first "BASE" "PREFIX")
+  (follow "%" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (alt baseDecl prefixDecl))
+ (rule shapeExpression "3b"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN
+   PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq shapeDisjunction))
+ (rule shapeDisjunction "3c"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN
+   PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq shapeConjunction _shapeDisjunction_1))
+ (rule _shapeDisjunction_1 "3c.1"
+  (first "OR" _eps)
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN
+   PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (alt _empty _shapeDisjunction_3))
+ (rule _shapeDisjunction_3 "3c.3"
+  (first "OR")
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN
+   PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeDisjunction_2 _shapeDisjunction_1))
+ (rule _shapeDisjunction_2 "3c.2"
+  (first "OR")
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF "OR"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq "OR" shapeConjunction))
+ (rule shapeConjunction "3d"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF "OR"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq negShapeAtom _shapeConjunction_1))
+ (rule _shapeConjunction_3 "3d.3"
+  (first "AND")
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF "OR"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeConjunction_2 _shapeConjunction_1))
+ (rule _shapeConjunction_2 "3d.2"
+  (first "AND")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq "AND" negShapeAtom))
+ (rule negShapeAtom "3e"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _negShapeAtom_1 shapeAtom))
+ (rule _negShapeAtom_1 "3e.1"
+  (first "!" "NOT" _eps)
+  (follow "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA" "IRI"
+   IRIREF "LITERAL" "NONLITERAL" PNAME_LN PNAME_NS "[" "{" )
+  (alt _empty _negShapeAtom_2))
+ (rule _negShapeAtom_2 "3e.2"
+  (first "!" "NOT")
+  (follow "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA" "IRI"
+   IRIREF "LITERAL" "NONLITERAL" PNAME_LN PNAME_NS "[" "{" )
+  (alt "NOT" "!"))
+ (rule _negShapeAtom_3 "3e.3"
+  (first "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA" "IRI"
+   IRIREF "LITERAL" "NONLITERAL" PNAME_LN PNAME_NS "[" "{" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq shapeAtom))
+ (rule _shapeConjunction_6 "3d.6"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq negShapeAtom))
+ (rule _shapeConjunction_5 "3d.5"
+  (first "AND" _eps)
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF "OR"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeConjunction_1))
+ (rule _shapeConjunction_4 "3d.4"
+  (first "AND" _eps)
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF "OR"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeConjunction_1))
+ (rule _shapeDisjunction_6 "3c.6"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF "OR"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq shapeConjunction))
+ (rule _shapeDisjunction_5 "3c.5"
+  (first "OR" _eps)
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN
+   PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeDisjunction_1))
+ (rule _shapeDisjunction_4 "3c.4"
+  (first "OR" _eps)
+  (follow "%" ")" "*" "+" "//" ";" "?" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN
+   PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeDisjunction_1))
+ (terminal RDF_TYPE "3y" (seq "a"))
+ (rule start "4"
+  (first "start")
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq "start" "=" shapeExpression semanticActions))
+ (rule _start_1 "4.1"
+  (first "=")
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq "=" shapeExpression semanticActions))
+ (rule _start_2 "4.2"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq shapeExpression semanticActions))
+ (rule shape "5"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq shapeLabel _shape_1 semanticActions))
+ (rule baseDecl "5s"
+  (first "BASE")
+  (follow "%" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq "BASE" IRIREF))
+ (rule _baseDecl_1 "5s.1"
+  (first IRIREF)
+  (follow "%" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq IRIREF))
+ (rule _shape_1 "5.1"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTERNAL"
+   "EXTRA" "IRI" IRIREF "LENGTH" "LITERAL" "MAXLENGTH" "MINLENGTH" "NONLITERAL"
+   "NOT" "PATTERN" PNAME_LN PNAME_NS "[" "{" "~" )
+  (follow "%" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (alt _shape_2 "EXTERNAL"))
+ (rule _shape_2 "5.2"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LENGTH" "LITERAL" "MAXLENGTH" "MINLENGTH" "NONLITERAL" "NOT"
+   "PATTERN" PNAME_LN PNAME_NS "[" "{" "~" )
+  (follow "%" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq _shape_3 shapeExpression))
+ (rule _shape_3 "5.3"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH" "PATTERN" _eps "~")
+  (follow "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (alt _empty _shape_4))
+ (rule _shape_4 "5.4"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH" "PATTERN" "~")
+  (follow "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (seq stringFacet _shape_3))
+ (rule _shape_5 "5.5"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTERNAL"
+   "EXTRA" "IRI" IRIREF "LENGTH" "LITERAL" "MAXLENGTH" "MINLENGTH" "NONLITERAL"
+   "NOT" "PATTERN" PNAME_LN PNAME_NS "[" "{" "~" )
+  (follow "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq _shape_1 semanticActions))
+ (rule _shape_6 "5.6"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (follow "%" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq shapeExpression))
+ (rule _shape_7 "5.7"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH" "PATTERN" _eps "~")
+  (follow "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (seq _shape_3))
+ (rule prefixDecl "6s"
+  (first "PREFIX")
+  (follow "%" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq "PREFIX" PNAME_NS IRIREF))
+ (rule _prefixDecl_1 "6s.1"
+  (first PNAME_NS)
+  (follow "%" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "start")
+  (seq PNAME_NS IRIREF))
+ (rule shapeDefinition "6"
+  (first "&" "CLOSED" "EXTRA" "{")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "LENGTH" "MAXLENGTH" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX"
+   REPEAT_RANGE "start" "|" "}" "~" )
+  (seq _shapeDefinition_1 "{" _shapeDefinition_2 "}"))
+ (rule _shapeDefinition_1 "6.1"
+  (first "&" "CLOSED" "EXTRA" _eps)
+  (follow "{")
+  (alt _empty _shapeDefinition_4))
+ (rule _shapeDefinition_2 "6.2"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^" _eps)
+  (follow "}")
+  (alt _empty someOfShape))
+ (rule _shapeDefinition_3 "6.3"
+  (first "&" "CLOSED" "EXTRA")
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (alt includeSet inclPropertySet "CLOSED"))
+ (rule _shapeDefinition_4 "6.4"
+  (first "&" "CLOSED" "EXTRA")
+  (follow "{")
+  (seq _shapeDefinition_3 _shapeDefinition_1))
+ (rule _shapeDefinition_5 "6.5"
+  (first "{")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "LENGTH" "MAXLENGTH" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX"
+   REPEAT_RANGE "start" "|" "}" "~" )
+  (seq "{" _shapeDefinition_2 "}"))
+ (rule _shapeDefinition_6 "6.6"
+  (first "&" "CLOSED" "EXTRA" _eps)
+  (follow "{")
+  (seq _shapeDefinition_1))
+ (rule _shapeDefinition_7 "6.7"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^" "}")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "LENGTH" "MAXLENGTH" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX"
+   REPEAT_RANGE "start" "|" "}" "~" )
+  (seq _shapeDefinition_2 "}"))
+ (rule _shapeDefinition_8 "6.8"
+  (first "}")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "LENGTH" "MAXLENGTH" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX"
+   REPEAT_RANGE "start" "|" "}" "~" )
+  (seq "}"))
+ (rule include "7" (first "&") (follow ")" ";" "|" "}") (seq "&" shapeLabel))
+ (rule includeSet "7"
+  (first "&")
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq "&" _includeSet_1))
+ (rule _includeSet_1 "7.1"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq shapeLabel _includeSet_2))
+ (rule _include_1 "7.1"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
+  (follow ")" ";" "|" "}")
+  (seq shapeLabel))
+ (rule _includeSet_2 "7.2"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS _eps)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (alt _empty _includeSet_3))
+ (rule _includeSet_3 "7.3"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq shapeLabel _includeSet_2))
+ (rule _includeSet_4 "7.4"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq _includeSet_1))
+ (rule _includeSet_5 "7.5"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS _eps)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq _includeSet_2))
+ (rule _includeSet_6 "7.6"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS _eps)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq _includeSet_2))
+ (rule inclPropertySet "8"
+  (first "EXTRA")
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq "EXTRA" _inclPropertySet_1))
+ (rule _inclPropertySet_1 "8.1"
+  (first IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq predicate _inclPropertySet_2))
+ (rule _inclPropertySet_2 "8.2"
+  (first IRIREF PNAME_LN PNAME_NS RDF_TYPE _eps)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (alt _empty _inclPropertySet_3))
+ (rule _inclPropertySet_3 "8.3"
+  (first IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq predicate _inclPropertySet_2))
+ (rule _inclPropertySet_4 "8.4"
+  (first IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq _inclPropertySet_1))
+ (rule _inclPropertySet_5 "8.5"
+  (first IRIREF PNAME_LN PNAME_NS RDF_TYPE _eps)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq _inclPropertySet_2))
+ (rule _inclPropertySet_6 "8.6"
+  (first IRIREF PNAME_LN PNAME_NS RDF_TYPE _eps)
+  (follow "&" "CLOSED" "EXTRA" "{")
+  (seq _inclPropertySet_2))
+ (rule _multiElementSomeOf_4 "10a.4"
+  (first "|")
+  (follow ")" "}")
+  (seq _multiElementSomeOf_2 _multiElementSomeOf_3))
+ (rule _multiElementSomeOf_1 "10a.1"
+  (first "|")
+  (follow ")" "}")
+  (seq _multiElementSomeOf_2 _multiElementSomeOf_3))
+ (rule _multiElementSomeOf_8 "10a.8"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")" "|" "}")
+  (seq groupShape))
+ (rule _multiElementSomeOf_7 "10a.7"
+  (first _eps "|")
+  (follow ")" "}")
+  (seq _multiElementSomeOf_3))
+ (rule _multiElementSomeOf_6 "10a.6"
+  (first _eps "|")
+  (follow ")" "}")
+  (seq _multiElementSomeOf_3))
+ (rule _multiElementSomeOf_5 "10a.5"
+  (first "|")
+  (follow ")" "}")
+  (seq _multiElementSomeOf_1))
+ (rule multiElementSomeOf "10a"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")" "}")
+  (seq groupShape _multiElementSomeOf_1))
+ (rule someOfShape "10"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow "}")
+  (alt groupShape multiElementSomeOf))
+ (rule innerShape "10b"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")")
+  (alt multiElementGroup multiElementSomeOf))
+ (rule _multiElementSomeOf_2 "10a.2"
+  (first "|")
+  (follow ")" "|" "}")
+  (seq "|" groupShape))
+ (rule _multiElementSomeOf_3 "10a.3"
+  (first _eps "|")
+  (follow ")" "}")
+  (alt _empty _multiElementSomeOf_4))
+ (rule _multiElementGroup_3 "11a.3"
+  (first ";")
+  (follow ")" ";" "|" "}")
+  (seq ";" unaryShape))
+ (rule _multiElementGroup_9 "11a.9"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")" ";" "|" "}")
+  (seq unaryShape))
+ (rule _multiElementGroup_8 "11a.8"
+  (first ";" _eps)
+  (follow ")" ";" "|" "}")
+  (seq _multiElementGroup_4))
+ (rule _multiElementGroup_7 "11a.7"
+  (first ";" _eps)
+  (follow ")" ";" "|" "}")
+  (seq _multiElementGroup_4))
+ (rule _multiElementGroup_6 "11a.6"
+  (first ";")
+  (follow ")" "|" "}")
+  (seq _multiElementGroup_1 _multiElementGroup_2))
+ (rule _multiElementGroup_10 "11a.10"
+  (first ";" _eps)
+  (follow ")" "|" "}")
+  (seq _multiElementGroup_2))
+ (rule groupShape "11"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")" "|" "}")
+  (alt singleElementGroup multiElementGroup))
+ (rule singleElementGroup "11"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")" "|" "}")
+  (seq unaryShape _singleElementGroup_1))
+ (rule _multiElementGroup_2 "11a.2"
+  (first ";" _eps)
+  (follow ")" "|" "}")
+  (alt _empty ";"))
+ (rule multiElementGroup "11a"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")" "|" "}")
+  (seq unaryShape _multiElementGroup_1 _multiElementGroup_2))
+ (rule _multiElementGroup_1 "11a.1"
+  (first ";")
+  (follow ")" ";" "|" "}")
+  (seq _multiElementGroup_3 _multiElementGroup_4))
+ (rule _multiElementGroup_4 "11a.4"
+  (first ";" _eps)
+  (follow ")" ";" "|" "}")
+  (alt _empty _multiElementGroup_5))
+ (rule _multiElementGroup_5 "11a.5"
+  (first ";")
+  (follow ")" ";" "|" "}")
+  (seq _multiElementGroup_3 _multiElementGroup_4))
+ (rule _singleElementGroup_1 "11.1"
+  (first ";" _eps)
+  (follow ")" "|" "}")
+  (alt _empty ";"))
+ (rule _singleElementGroup_2 "11.2"
+  (first ";" _eps)
+  (follow ")" "|" "}")
+  (seq _singleElementGroup_1))
+ (rule unaryShape "12"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")" ";" "|" "}")
+  (alt _unaryShape_1 include _unaryShape_2))
+ (rule _unaryShape_1 "12.1"
+  (first "!" "$" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")" ";" "|" "}")
+  (seq _unaryShape_3 tripleConstraint))
+ (rule _unaryShape_2 "12.2"
+  (first "$" "(")
+  (follow ")" ";" "|" "}")
+  (seq _unaryShape_4 encapsulatedShape))
+ (rule _unaryShape_3 "12.3"
+  (first "$" _eps)
+  (follow "!" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (alt _empty productionLabel))
+ (rule _unaryShape_4 "12.4" (first "$" _eps) (follow "(") (alt _empty productionLabel))
+ (rule _unaryShape_5 "12.5"
+  (first "!" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")" ";" "|" "}")
+  (seq tripleConstraint))
+ (rule _unaryShape_6 "12.6" (first "(") (follow ")" ";" "|" "}") (seq encapsulatedShape))
+ (rule encapsulatedShape "13"
+  (first "(")
+  (follow ")" ";" "|" "}")
+  (seq "(" innerShape ")" _encapsulatedShape_1 _encapsulatedShape_2 semanticActions))
+ (rule literal "13t"
+  (first DECIMAL DOUBLE INTEGER STRING_LITERAL1 STRING_LITERAL2
+   STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "false" "true" )
+  (follow "%" ")" "." "//" ";" DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS
+   STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2
+   "]" "false" "true" "|" "}" )
+  (alt rdfLiteral numericLiteral booleanLiteral))
+ (rule _encapsulatedShape_1 "13.1"
+  (first "*" "+" "?" REPEAT_RANGE _eps)
+  (follow "%" ")" "//" ";" "|" "}")
+  (alt _empty cardinality))
+ (rule _encapsulatedShape_2 "13.2"
+  (first "//" _eps)
+  (follow "%" ")" ";" "|" "}")
+  (alt _empty _encapsulatedShape_3))
+ (rule _encapsulatedShape_3 "13.3"
+  (first "//")
+  (follow "%" ")" ";" "|" "}")
+  (seq annotation _encapsulatedShape_2))
+ (rule _encapsulatedShape_4 "13.4"
+  (first "!" "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")" ";" "|" "}")
+  (seq innerShape ")" _encapsulatedShape_1 _encapsulatedShape_2 semanticActions))
+ (rule _encapsulatedShape_5 "13.5"
+  (first "//" _eps)
+  (follow "%" ")" ";" "|" "}")
+  (seq _encapsulatedShape_2))
+ (rule _encapsulatedShape_6 "13.6"
+  (first ")")
+  (follow ")" ";" "|" "}")
+  (seq ")" _encapsulatedShape_1 _encapsulatedShape_2 semanticActions))
+ (rule _encapsulatedShape_7 "13.7"
+  (first "%" "*" "+" "//" "?" REPEAT_RANGE _eps)
+  (follow ")" ";" "|" "}")
+  (seq _encapsulatedShape_1 _encapsulatedShape_2 semanticActions))
+ (rule _encapsulatedShape_8 "13.8"
+  (first "%" "//" _eps)
+  (follow ")" ";" "|" "}")
+  (seq _encapsulatedShape_2 semanticActions))
+ (rule shapeLabel "14"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
+  (follow "!" "%" "&" "(" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" "EXTERNAL" "EXTRA" "IRI"
+   IRIREF "LENGTH" "LITERAL" "MAXLENGTH" "MINLENGTH" "NONLITERAL" "NOT" "OR"
+   "PATTERN" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "[" "start" "{" "|" "}"
+   "~" )
+  (alt iri blankNode))
+ (rule tripleConstraint "15"
+  (first "!" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
+  (follow ")" ";" "|" "}")
+  (seq _tripleConstraint_1 predicate shapeExpression _tripleConstraint_2
+   _tripleConstraint_3 semanticActions ))
+ (rule _tripleConstraint_1 "15.1"
+  (first "!" "^" _eps)
+  (follow IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (alt _empty senseFlags))
+ (rule _tripleConstraint_2 "15.2"
+  (first "*" "+" "?" REPEAT_RANGE _eps)
+  (follow "%" ")" "//" ";" "|" "}")
+  (alt _empty cardinality))
+ (rule _tripleConstraint_3 "15.3"
+  (first "//" _eps)
+  (follow "%" ")" ";" "|" "}")
+  (alt _empty _tripleConstraint_4))
+ (rule _tripleConstraint_4 "15.4"
+  (first "//")
+  (follow "%" ")" ";" "|" "}")
+  (seq annotation _tripleConstraint_3))
+ (rule _tripleConstraint_5 "15.5"
+  (first IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (follow ")" ";" "|" "}")
+  (seq predicate shapeExpression _tripleConstraint_2 _tripleConstraint_3
+   semanticActions ))
+ (rule _tripleConstraint_6 "15.6"
+  (first "//" _eps)
+  (follow "%" ")" ";" "|" "}")
+  (seq _tripleConstraint_3))
+ (rule _tripleConstraint_7 "15.7"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (follow ")" ";" "|" "}")
+  (seq shapeExpression _tripleConstraint_2 _tripleConstraint_3 semanticActions))
+ (rule _tripleConstraint_8 "15.8"
+  (first "%" "*" "+" "//" "?" REPEAT_RANGE _eps)
+  (follow ")" ";" "|" "}")
+  (seq _tripleConstraint_2 _tripleConstraint_3 semanticActions))
+ (rule _tripleConstraint_9 "15.9"
+  (first "%" "//" _eps)
+  (follow ")" ";" "|" "}")
+  (seq _tripleConstraint_3 semanticActions))
+ (rule senseFlags "16"
+  (first "!" "^")
+  (follow IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (alt _senseFlags_1 _senseFlags_2))
+ (rule numericLiteral "16t"
+  (first DECIMAL DOUBLE INTEGER)
+  (follow "%" ")" "*" "+" "." "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   DECIMAL DOUBLE "FRACTIONDIGITS" INTEGER IRIREF "LENGTH" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR"
+   "PATTERN" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "TOTALDIGITS" "]"
+   "false" "start" "true" "|" "}" "~" )
+  (alt INTEGER DECIMAL DOUBLE))
+ (rule _senseFlags_1 "16.1"
+  (first "!")
+  (follow IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (seq "!" _senseFlags_3))
+ (rule _senseFlags_2 "16.2"
+  (first "^")
+  (follow IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (seq "^" _senseFlags_4 _stringFacet_4))
+ (rule _senseFlags_3 "16.3"
+  (first "^" _eps)
+  (follow IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (alt _empty "^"))
+ (rule _senseFlags_4 "16.4" (first "!" _eps) (alt _empty "!"))
+ (rule _senseFlags_6 "16.6"
+  (first "^" _eps)
+  (follow IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (seq _senseFlags_3))
+ (rule _senseFlags_7 "16.7"
+  (first "!")
+  (follow IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (seq _senseFlags_4 _stringFacet_4))
+ (rule predicate "17"
+  (first IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (follow "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" DECIMAL
+   DOUBLE "EXTRA" INTEGER "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN
+   PNAME_NS RDF_TYPE STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1
+   STRING_LITERAL_LONG2 "[" "false" "true" "{" )
+  (alt iri RDF_TYPE))
+ (rule _shapeAtom_9 "18a.9"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH" "PATTERN" _eps "~")
+  (follow "%" "&" ")" "*" "+" "//" ";" "?" "@" "AND" ATPNAME_LN ATPNAME_NS
+   "BASE" BLANK_NODE_LABEL "CLOSED" "EXTRA" IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" REPEAT_RANGE "start" "{" "|" "}" )
+  (alt _empty _shapeAtom_11))
+ (rule _shapeAtom_11 "18a.11"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH" "PATTERN" "~")
+  (follow "%" "&" ")" "*" "+" "//" ";" "?" "@" "AND" ATPNAME_LN ATPNAME_NS
+   "BASE" BLANK_NODE_LABEL "CLOSED" "EXTRA" IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" REPEAT_RANGE "start" "{" "|" "}" )
+  (seq stringFacet _shapeAtom_9))
+ (rule _shapeAtom_10 "18a.10"
+  (first "&" "@" ATPNAME_LN ATPNAME_NS "CLOSED" "EXTRA" _eps "{")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (alt _empty shapeOrRef))
+ (rule nonLiteralKind "18b"
+  (first "BNODE" "IRI" "NONLITERAL")
+  (follow "%" "&" ")" "*" "+" "//" ";" "?" "@" "AND" ATPNAME_LN ATPNAME_NS
+   "BASE" BLANK_NODE_LABEL "CLOSED" "EXTRA" IRIREF "LENGTH" "MAXLENGTH"
+   "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start"
+   "{" "|" "}" "~" )
+  (alt "IRI" "BNODE" "NONLITERAL"))
+ (rule _shapeAtom_28 "18a.28"
+  (first ")")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq ")"))
+ (rule _shapeAtom_27 "18a.27"
+  (first "&" "@" ATPNAME_LN ATPNAME_NS "CLOSED" "EXTRA" _eps "{")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeAtom_10))
+ (rule shapeAtom "18a"
+  (first "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA" "IRI"
+   IRIREF "LITERAL" "NONLITERAL" PNAME_LN PNAME_NS "[" "{" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (alt _shapeAtom_1 _shapeAtom_2 _shapeAtom_3 _shapeAtom_4 valueSet
+   _shapeAtom_5 _shapeAtom_6 ))
+ (rule _shapeAtom_1 "18a.1"
+  (first "LITERAL")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq "LITERAL" _shapeAtom_7))
+ (terminal IRIREF "18t"
+  (seq "<"
+   (range
+    "^#x00-#x20<>\"{}|^`\\] | UCHAR)* '>' /*#x00=NULL #01-#x1F=control codes #x20=space */"
+   )) )
+ (rule _shapeAtom_7 "18a.7"
+  (first "FRACTIONDIGITS" "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "PATTERN" "TOTALDIGITS" _eps "~" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (alt _empty _shapeAtom_8))
+ (rule _shapeAtom_8 "18a.8"
+  (first "FRACTIONDIGITS" "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "PATTERN" "TOTALDIGITS" "~" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq xsFacet _shapeAtom_7))
+ (rule _shapeAtom_2 "18a.2"
+  (first "BNODE" "IRI" "NONLITERAL")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq nonLiteralKind _shapeAtom_9 _shapeAtom_10))
+ (rule _shapeAtom_4 "18a.4"
+  (first "&" "@" ATPNAME_LN ATPNAME_NS "CLOSED" "EXTRA" "{")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq shapeOrRef _shapeAtom_14))
+ (rule _shapeAtom_14 "18a.14"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH" "PATTERN" _eps "~")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (alt _empty _shapeAtom_15))
+ (rule _shapeAtom_15 "18a.15"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH" "PATTERN" "~")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq stringFacet _shapeAtom_14))
+ (rule _shapeAtom_5 "18a.5"
+  (first "(")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq "(" shapeExpression ")"))
+ (rule _shapeAtom_6 "18a.6"
+  (first ".")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq "." _stringFacet_4))
+ (rule _shapeAtom_3 "18a.3"
+  (first IRIREF PNAME_LN PNAME_NS)
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq datatype _shapeAtom_12))
+ (rule _shapeAtom_12 "18a.12"
+  (first "FRACTIONDIGITS" "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "PATTERN" "TOTALDIGITS" _eps "~" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (alt _empty _shapeAtom_13))
+ (rule _shapeAtom_26 "18a.26"
+  (follow "!" "%" "&" "(" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" "EXTRA" "FRACTIONDIGITS"
+   "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "NOT" "OR" "PATTERN"
+   PNAME_LN PNAME_NS "PREFIX" RDF_TYPE REPEAT_RANGE "TOTALDIGITS" "[" _eof
+   "start" "{" "|" "}" "~" )
+  (seq _stringFacet_4))
+ (rule _shapeAtom_25 "18a.25"
+  (first "!" "&" "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "IRI" IRIREF "LITERAL" "NONLITERAL" "NOT" PNAME_LN PNAME_NS "[" "{" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq shapeExpression ")"))
+ (rule _shapeAtom_24 "18a.24"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH" "PATTERN" _eps "~")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeAtom_14))
+ (rule _shapeAtom_23 "18a.23"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH" "PATTERN" _eps "~")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeAtom_14))
+ (rule _shapeAtom_22 "18a.22"
+  (first "FRACTIONDIGITS" "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "PATTERN" "TOTALDIGITS" _eps "~" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeAtom_12))
+ (rule _shapeAtom_21 "18a.21"
+  (first "FRACTIONDIGITS" "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "PATTERN" "TOTALDIGITS" _eps "~" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeAtom_12))
+ (rule _shapeAtom_20 "18a.20"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH" "PATTERN" _eps "~")
+  (follow "%" "&" ")" "*" "+" "//" ";" "?" "@" "AND" ATPNAME_LN ATPNAME_NS
+   "BASE" BLANK_NODE_LABEL "CLOSED" "EXTRA" IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" REPEAT_RANGE "start" "{" "|" "}" )
+  (seq _shapeAtom_9))
+ (rule _shapeAtom_19 "18a.19"
+  (first "&" "@" ATPNAME_LN ATPNAME_NS "CLOSED" "EXTRA" "LENGTH" "MAXLENGTH"
+   "MINLENGTH" "PATTERN" _eps "{" "~" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeAtom_9 _shapeAtom_10))
+ (rule _shapeAtom_18 "18a.18"
+  (first "FRACTIONDIGITS" "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "PATTERN" "TOTALDIGITS" _eps "~" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeAtom_7))
+ (rule _shapeAtom_17 "18a.17"
+  (first "FRACTIONDIGITS" "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "PATTERN" "TOTALDIGITS" _eps "~" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _shapeAtom_7))
+ (rule _shapeAtom_13 "18a.13"
+  (first "FRACTIONDIGITS" "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "PATTERN" "TOTALDIGITS" "~" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq xsFacet _shapeAtom_12))
+ (terminal INTEGER "19t" (seq (opt (range "+-")) (plus (range "0-9"))))
+ (terminal DECIMAL "20t" (seq (opt (range "+-")) (star (range "0-9")) "." (plus (range "0-9"))))
+ (rule shapeOrRef "20"
+  (first "&" "@" ATPNAME_LN ATPNAME_NS "CLOSED" "EXTRA" "{")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "LENGTH" "MAXLENGTH" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX"
+   REPEAT_RANGE "start" "|" "}" "~" )
+  (alt ATPNAME_LN ATPNAME_NS _shapeOrRef_1 shapeDefinition))
+ (rule _shapeOrRef_1 "20.1"
+  (first "@")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "LENGTH" "MAXLENGTH" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX"
+   REPEAT_RANGE "start" "|" "}" "~" )
+  (seq "@" shapeLabel))
+ (rule _shapeOrRef_2 "20.2"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "LENGTH" "MAXLENGTH" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX"
+   REPEAT_RANGE "start" "|" "}" "~" )
+  (seq shapeLabel))
+ (rule numericFacet "21"
+  (first "FRACTIONDIGITS" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MINEXCLUSIVE"
+   "MININCLUSIVE" "TOTALDIGITS" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   "FRACTIONDIGITS" IRIREF "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS
+   "PREFIX" REPEAT_RANGE "TOTALDIGITS" "start" "|" "}" "~" )
+  (alt _numericFacet_1 _numericFacet_2))
+ (terminal DOUBLE "21t"
+  (seq
+   (opt (range "+-"))
+   (alt
+    (seq (plus (range "0-9")) "." (star (range "0-9")) EXPONENT)
+    (seq (opt ".") (plus (range "0-9")) EXPONENT)) ))
+ (rule numericLength "21"
+  (first "FRACTIONDIGITS" "TOTALDIGITS")
+  (follow INTEGER)
+  (alt "TOTALDIGITS" "FRACTIONDIGITS"))
+ (rule numericRange "21"
+  (first "MAXEXCLUSIVE" "MAXINCLUSIVE" "MINEXCLUSIVE" "MININCLUSIVE")
+  (follow DECIMAL DOUBLE INTEGER STRING_LITERAL1 STRING_LITERAL2
+   STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 )
+  (alt "MININCLUSIVE" "MINEXCLUSIVE" "MAXINCLUSIVE" "MAXEXCLUSIVE"))
+ (rule stringLength "21"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH")
+  (follow INTEGER)
+  (alt "LENGTH" "MINLENGTH" "MAXLENGTH"))
+ (rule stringFacet "21"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH" "PATTERN" "~")
+  (follow "!" "%" "&" "(" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" "EXTRA" "FRACTIONDIGITS"
+   "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "NOT" "OR" "PATTERN"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "TOTALDIGITS" "[" "start" "{" "|"
+   "}" "~" )
+  (alt _stringFacet_1 _stringFacet_2 _stringFacet_3))
+ (rule xsFacet "21"
+  (first "FRACTIONDIGITS" "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "PATTERN" "TOTALDIGITS" "~" )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   "FRACTIONDIGITS" IRIREF "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS
+   "PREFIX" REPEAT_RANGE "TOTALDIGITS" "start" "|" "}" "~" )
+  (alt stringFacet numericFacet))
+ (rule _stringFacet_1 "21.1"
+  (first "LENGTH" "MAXLENGTH" "MINLENGTH")
+  (follow "!" "%" "&" "(" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" "EXTRA" "FRACTIONDIGITS"
+   "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "NOT" "OR" "PATTERN"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "TOTALDIGITS" "[" "start" "{" "|"
+   "}" "~" )
+  (seq stringLength INTEGER))
+ (rule _numericFacet_1 "21.1"
+  (first "MAXEXCLUSIVE" "MAXINCLUSIVE" "MINEXCLUSIVE" "MININCLUSIVE")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   "FRACTIONDIGITS" IRIREF "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS
+   "PREFIX" REPEAT_RANGE "TOTALDIGITS" "start" "|" "}" "~" )
+  (seq numericRange _numericFacet_3))
+ (rule _stringFacet_2 "21.2"
+  (first "PATTERN")
+  (follow "!" "%" "&" "(" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" "EXTRA" "FRACTIONDIGITS"
+   "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "NOT" "OR" "PATTERN"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "TOTALDIGITS" "[" "start" "{" "|"
+   "}" "~" )
+  (seq "PATTERN" string))
+ (rule _numericFacet_2 "21.2"
+  (first "FRACTIONDIGITS" "TOTALDIGITS")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   "FRACTIONDIGITS" IRIREF "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS
+   "PREFIX" REPEAT_RANGE "TOTALDIGITS" "start" "|" "}" "~" )
+  (seq numericLength INTEGER))
+ (rule _stringFacet_3 "21.3"
+  (first "~")
+  (follow "!" "%" "&" "(" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" "EXTRA" "FRACTIONDIGITS"
+   "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "NOT" "OR" "PATTERN"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "TOTALDIGITS" "[" "start" "{" "|"
+   "}" "~" )
+  (seq "~" string _stringFacet_4))
+ (rule _numericFacet_3 "21.3"
+  (first DECIMAL DOUBLE INTEGER STRING_LITERAL1 STRING_LITERAL2
+   STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   "FRACTIONDIGITS" IRIREF "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS
+   "PREFIX" REPEAT_RANGE "TOTALDIGITS" "start" "|" "}" "~" )
+  (alt numericLiteral _numericFacet_4))
+ (rule _numericFacet_4 "21.4"
+  (first STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2)
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   "FRACTIONDIGITS" IRIREF "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS
+   "PREFIX" REPEAT_RANGE "TOTALDIGITS" "start" "|" "}" "~" )
+  (seq string "^^" datatype))
+ (rule _stringFacet_5 "21.5"
+  (first INTEGER)
+  (follow "!" "%" "&" "(" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" "EXTRA" "FRACTIONDIGITS"
+   "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "NOT" "OR" "PATTERN"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "TOTALDIGITS" "[" "start" "{" "|"
+   "}" "~" )
+  (seq INTEGER))
+ (rule _numericFacet_5 "21.5"
+  (first DECIMAL DOUBLE INTEGER STRING_LITERAL1 STRING_LITERAL2
+   STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   "FRACTIONDIGITS" IRIREF "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS
+   "PREFIX" REPEAT_RANGE "TOTALDIGITS" "start" "|" "}" "~" )
+  (seq _numericFacet_3))
+ (rule _numericFacet_6 "21.6"
+  (first INTEGER)
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   "FRACTIONDIGITS" IRIREF "LENGTH" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR" "PATTERN" PNAME_LN PNAME_NS
+   "PREFIX" REPEAT_RANGE "TOTALDIGITS" "start" "|" "}" "~" )
+  (seq INTEGER))
+ (rule _stringFacet_6 "21.6"
+  (first STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2)
+  (follow "!" "%" "&" "(" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" "EXTRA" "FRACTIONDIGITS"
+   "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "NOT" "OR" "PATTERN"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "TOTALDIGITS" "[" "start" "{" "|"
+   "}" "~" )
+  (seq string))
+ (rule _stringFacet_7 "21.7"
+  (first STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2)
+  (follow "!" "%" "&" "(" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" "EXTRA" "FRACTIONDIGITS"
+   "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
+   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "NOT" "OR" "PATTERN"
+   PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "TOTALDIGITS" "[" "start" "{" "|"
+   "}" "~" )
+  (seq string _stringFacet_4))
+ (rule datatype "22"
+  (first IRIREF PNAME_LN PNAME_NS)
+  (follow "%" ")" "*" "+" "." "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   DECIMAL DOUBLE "FRACTIONDIGITS" INTEGER IRIREF "LENGTH" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR"
+   "PATTERN" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "TOTALDIGITS" "]"
+   "false" "start" "true" "|" "}" "~" )
+  (seq iri))
+ (rule annotation "23"
+  (first "//")
+  (follow "%" ")" "//" ";" "|" "}")
+  (seq "//" predicate _annotation_1))
+ (rule _annotation_1 "23.1"
+  (first DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "false" "true" )
+  (follow "%" ")" "//" ";" "|" "}")
+  (alt iri literal))
+ (rule _annotation_2 "23.2"
+  (first IRIREF PNAME_LN PNAME_NS RDF_TYPE)
+  (follow "%" ")" "//" ";" "|" "}")
+  (seq predicate _annotation_1))
+ (rule _annotation_3 "23.3"
+  (first DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "false" "true" )
+  (follow "%" ")" "//" ";" "|" "}")
+  (seq _annotation_1))
+ (rule cardinality "24"
+  (first "*" "+" "?" REPEAT_RANGE)
+  (follow "%" ")" "//" ";" "|" "}")
+  (alt "*" "+" "?" REPEAT_RANGE))
+ (rule valueSet "25"
+  (first "[")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq "[" _valueSet_1 "]"))
+ (rule _valueSet_1 "25.1"
+  (first "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 _eps "false"
+   "true" )
+  (follow "]")
+  (alt _empty _valueSet_2))
+ (rule _valueSet_2 "25.2"
+  (first "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "false" "true" )
+  (follow "]")
+  (seq value _valueSet_1))
+ (rule _valueSet_3 "25.3"
+  (first "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq _valueSet_1 "]"))
+ (rule _valueSet_4 "25.4"
+  (first "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 _eps "false"
+   "true" )
+  (follow "]")
+  (seq _valueSet_1))
+ (rule _valueSet_5 "25.5"
+  (first "]")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL IRIREF
+   "OR" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "start" "|" "}" )
+  (seq "]"))
+ (rule value "26"
+  (first "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "false" "true" )
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (alt iriRange literal))
+ (terminal UCHAR "26t"
+  (alt (seq "\\u" HEX HEX HEX HEX) (seq "\\U" HEX HEX HEX HEX HEX HEX HEX HEX)))
+ (rule iriRange "27"
+  (first "." IRIREF PNAME_LN PNAME_NS)
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (alt _iriRange_1 _iriRange_2))
+ (rule _iriRange_10 "27.10"
+  (first _eps "~")
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq _iriRange_3))
+ (rule _iriRange_1 "27.1"
+  (first IRIREF PNAME_LN PNAME_NS)
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq iri _iriRange_3))
+ (rule _iriRange_11 "27.11"
+  (first "-" _eps)
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq _iriRange_5))
+ (rule _iriRange_12 "27.12"
+  (first "-" _eps)
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq _iriRange_5))
+ (rule _iriRange_13 "27.13"
+  (first "-")
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq _iriRange_7))
+ (rule _iriRange_14 "27.14"
+  (first "-" _eps)
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq _iriRange_8))
+ (rule _iriRange_15 "27.15"
+  (first "-" _eps)
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq _iriRange_8))
+ (rule _iriRange_2 "27.2"
+  (first ".")
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq "." _iriRange_7))
+ (rule _iriRange_3 "27.3"
+  (first _eps "~")
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (alt _empty _iriRange_4))
+ (rule _iriRange_4 "27.4"
+  (first "~")
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq "~" _iriRange_5))
+ (rule _iriRange_5 "27.5"
+  (first "-" _eps)
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (alt _empty _iriRange_6))
+ (rule _iriRange_6 "27.6"
+  (first "-")
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq exclusion _iriRange_5))
+ (rule _iriRange_7 "27.7"
+  (first "-")
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq exclusion _iriRange_8))
+ (rule _iriRange_8 "27.8"
+  (first "-" _eps)
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (alt _empty _iriRange_9))
+ (rule _iriRange_9 "27.9"
+  (first "-")
+  (follow "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" "false" "true"
+  )
+  (seq exclusion _iriRange_8))
+ (rule exclusion "28"
+  (first "-")
+  (follow "-" "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS
+   STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2
+   "]" "false" "true" )
+  (seq "-" iri _exclusion_1))
+ (rule _exclusion_1 "28.1"
+  (first _eps "~")
+  (follow "-" "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS
+   STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2
+   "]" "false" "true" )
+  (alt _empty "~"))
+ (rule _exclusion_2 "28.2"
+  (first IRIREF PNAME_LN PNAME_NS)
+  (follow "-" "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS
+   STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2
+   "]" "false" "true" )
+  (seq iri _exclusion_1))
+ (rule _exclusion_3 "28.3"
+  (first _eps "~")
+  (follow "-" "." DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS
+   STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2
+   "]" "false" "true" )
+  (seq _exclusion_1))
+ (terminal CODE "29" (seq "{" (range "^%\\] | '\\' [%\\] | UCHAR)* '%' '}'")))
+ (terminal REPEAT_RANGE "30" (seq "{" INTEGER (opt (seq "," (opt (alt INTEGER "*")))) "}"))
+ (rule _rdfLiteral_2 "129s.2"
+  (first LANGTAG "^^")
+  (follow "%" ")" "." "//" ";" DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS
+   STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2
+   "]" "false" "true" "|" "}" )
+  (alt LANGTAG _rdfLiteral_3))
+ (rule rdfLiteral "129s"
+  (first STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2)
+  (follow "%" ")" "." "//" ";" DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS
+   STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2
+   "]" "false" "true" "|" "}" )
+  (seq string _rdfLiteral_1))
+ (rule _rdfLiteral_5 "129s.5"
+  (first IRIREF PNAME_LN PNAME_NS)
+  (follow "%" ")" "*" "+" "." "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   DECIMAL DOUBLE "FRACTIONDIGITS" INTEGER IRIREF "LENGTH" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR"
+   "PATTERN" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "TOTALDIGITS" "]"
+   "false" "start" "true" "|" "}" "~" )
+  (seq datatype))
+ (rule _rdfLiteral_4 "129s.4"
+  (first LANGTAG "^^" _eps)
+  (follow "%" ")" "." "//" ";" DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS
+   STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2
+   "]" "false" "true" "|" "}" )
+  (seq _rdfLiteral_1))
+ (rule _rdfLiteral_3 "129s.3"
+  (first "^^")
+  (follow "%" ")" "*" "+" "." "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL
+   DECIMAL DOUBLE "FRACTIONDIGITS" INTEGER IRIREF "LENGTH" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "OR"
+   "PATTERN" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "TOTALDIGITS" "]"
+   "false" "start" "true" "|" "}" "~" )
+  (seq "^^" datatype))
+ (rule _rdfLiteral_1 "129s.1"
+  (first LANGTAG "^^" _eps)
+  (follow "%" ")" "." "//" ";" DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS
+   STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2
+   "]" "false" "true" "|" "}" )
+  (alt _empty _rdfLiteral_2))
+ (rule booleanLiteral "134s"
+  (first "false" "true")
+  (follow "%" ")" "." "//" ";" DECIMAL DOUBLE INTEGER IRIREF PNAME_LN PNAME_NS
+   STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2
+   "]" "false" "true" "|" "}" )
+  (alt "true" "false"))
+ (rule string "135s"
+  (first STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2)
+  (follow "!" "%" "&" "(" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" DECIMAL DOUBLE "EXTRA"
+   "FRACTIONDIGITS" INTEGER "IRI" IRIREF LANGTAG "LENGTH" "LITERAL"
+   "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE"
+   "MINLENGTH" "NONLITERAL" "NOT" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX"
+   REPEAT_RANGE STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1
+   STRING_LITERAL_LONG2 "TOTALDIGITS" "[" "]" "^^" "false" "start" "true" "{"
+   "|" "}" "~" )
+  (alt STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2))
+ (rule iri "136s"
+  (first IRIREF PNAME_LN PNAME_NS)
+  (follow "!" "%" "&" "(" ")" "*" "+" "-" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" CODE DECIMAL DOUBLE
+   "EXTERNAL" "EXTRA" "FRACTIONDIGITS" INTEGER "IRI" IRIREF "LENGTH" "LITERAL"
+   "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE"
+   "MINLENGTH" "NONLITERAL" "NOT" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX"
+   RDF_TYPE REPEAT_RANGE STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1
+   STRING_LITERAL_LONG2 "TOTALDIGITS" "[" "]" "^" "false" "start" "true" "{"
+   "|" "}" "~" )
+  (alt IRIREF prefixedName))
+ (rule prefixedName "137s"
+  (first PNAME_LN PNAME_NS)
+  (follow "!" "%" "&" "(" ")" "*" "+" "-" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" CODE DECIMAL DOUBLE
+   "EXTERNAL" "EXTRA" "FRACTIONDIGITS" INTEGER "IRI" IRIREF "LENGTH" "LITERAL"
+   "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE"
+   "MINLENGTH" "NONLITERAL" "NOT" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX"
+   RDF_TYPE REPEAT_RANGE STRING_LITERAL1 STRING_LITERAL2 STRING_LITERAL_LONG1
+   STRING_LITERAL_LONG2 "TOTALDIGITS" "[" "]" "^" "false" "start" "true" "{"
+   "|" "}" "~" )
+  (alt PNAME_LN PNAME_NS))
+ (rule blankNode "138s"
+  (first BLANK_NODE_LABEL)
+  (follow "!" "%" "&" "(" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN
+   ATPNAME_NS "BASE" BLANK_NODE_LABEL "BNODE" "CLOSED" "EXTERNAL" "EXTRA" "IRI"
+   IRIREF "LENGTH" "LITERAL" "MAXLENGTH" "MINLENGTH" "NONLITERAL" "NOT" "OR"
+   "PATTERN" PNAME_LN PNAME_NS "PREFIX" RDF_TYPE REPEAT_RANGE "[" "^" "start"
+   "{" "|" "}" "~" )
+  (seq BLANK_NODE_LABEL))
+ (terminal PNAME_NS "140s" (seq (opt PN_PREFIX) ":"))
+ (terminal ATPNAME_NS "140x" (seq "@" (opt PN_PREFIX) ":"))
+ (terminal ATPNAME_LN "141x" (seq "@" PNAME_NS PN_LOCAL))
+ (terminal PNAME_LN "141s" (seq PNAME_NS PN_LOCAL))
+ (terminal BLANK_NODE_LABEL "142s"
+  (seq "_:" (alt PN_CHARS_U (range "0-9")) (opt (seq (star (alt PN_CHARS ".")) PN_CHARS))))
+ (terminal LANGTAG "145s"
+  (seq "@" (plus (range "a-zA-Z")) (star (seq "-" (plus (range "a-zA-Z0-9"))))))
+ (terminal EXPONENT "155s" (seq (range "eE") (opt (range "+-")) (plus (range "0-9"))))
+ (terminal STRING_LITERAL1 "156s"
+  (seq "'" (star (alt (range "^#x27#x5C#xA#xD") ECHAR UCHAR)) "'"))
+ (terminal STRING_LITERAL2 "157s"
+  (seq "\"" (star (alt (range "^#x22#x5C#xA#xD") ECHAR UCHAR)) "\""))
+ (terminal STRING_LITERAL_LONG1 "158s"
+  (seq "'''" (seq (opt (alt "'" "''")) (range "^'\\] | ECHAR | UCHAR))* \"'''\""))))
+ (terminal STRING_LITERAL_LONG2 "159s"
+  (seq "\"\"\"" (seq (opt (alt "\"" "\"\"")) (range "^\"\\] | ECHAR | UCHAR))* '\"\"\"'"))))
+ (terminal ECHAR "160s" (seq "\\" (range "tbnrf\\\"'")))
+ (terminal WS "162s" (alt (hex "#x20") (hex "#x9") (hex "#xD") (hex "#xA")))
+ (terminal ANON "163s" (seq "[" (star WS) "]"))
+ (terminal PN_CHARS_BASE "164s"
+  (alt
+   (range "A-Z")
+   (range "a-z")
+   (range "#x00C0-#x00D6")
+   (range "#x00D8-#x00F6")
+   (range "#x00F8-#x02FF")
+   (range "#x0370-#x037D")
+   (range "#x037F-#x1FFF")
+   (range "#x200C-#x200D")
+   (range "#x2070-#x218F")
+   (range "#x2C00-#x2FEF")
+   (range "#x3001-#xD7FF")
+   (range "#xF900-#xFDCF")
+   (range "#xFDF0-#xFFFD")
+   (range "#x10000-#xEFFFF")) )
+ (terminal PN_CHARS_U "165s" (alt PN_CHARS_BASE "_"))
+ (terminal PN_CHARS "167s"
+  (alt PN_CHARS_U "-"
+   (range "0-9")
+   (range "#x00B7")
+   (range "#x0300-#x036F")
+   (range "#x203F-#x2040")) )
+ (terminal PN_PREFIX "168s"
+  (seq PN_CHARS_BASE (opt (seq (star (alt PN_CHARS ".")) PN_CHARS))))
+ (terminal PN_LOCAL "169s"
+  (seq
+   (alt PN_CHARS_U ":" (range "0-9") PLX)
+   (opt (seq (star (alt PN_CHARS "." ":" PLX)) (alt PN_CHARS ":" PLX)))) )
+ (terminal PLX "170s" (alt PERCENT PN_LOCAL_ESC))
+ (terminal PERCENT "171s" (seq "%" HEX HEX))
+ (terminal HEX "172s" (alt (range "0-9") (range "A-F") (range "a-f")))
+ (terminal PN_LOCAL_ESC "173s"
+  (seq "\\"
+   (alt "_" "~" "." "-" "!" "$" "&" "'" "(" ")" "*" "+" "," ";" "=" "/" "?" "#"
+    "@" "%" )) ))

@@ -1,0 +1,16 @@
+language: ruby
+bundler_args: --without debug
+script: "bundle exec rspec spec"
+env:
+  - CI=true
+rvm:
+  - 2.2.5
+  - 2.3.1
+  - jruby
+  - rbx
+cache: bundler
+sudo: false
+matrix:
+  allow_failures:
+    - rvm: jruby
+    - rvm: rbx
