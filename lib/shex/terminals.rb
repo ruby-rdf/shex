@@ -1,6 +1,6 @@
 require 'ebnf/ll1/lexer'
 
-module RDF::Turtle
+module ShEx
   module Terminals
     # Definitions of token regular expressions used for lexical analysis
   
