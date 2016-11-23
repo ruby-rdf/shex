@@ -39,11 +39,9 @@ module ShEx
     EXPONENT             = /[eE][+-]?[0-9]+/
     # 160s
     ECHAR                = /\\[tbnrf\\"']/
+    # 79
+    WS                   = /(?:\s|(?:#[^\n\r]*))+/m.freeze
 
-    # 29
-    CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*%#{WS}*\}/.freeze
-    # 30
-    REPEAT_RANGE         = /\{#{WS}*#{INTEGER}(?:,#{WS}*(?:#{INTEGER}|\*)?)?#{WS}*\}/.freeze
     # 18t
     IRIREF               = /<(?:#{IRI_RANGE}|#{UCHAR})*>/.freeze
     # 140s
@@ -51,9 +49,9 @@ module ShEx
     # 141s
     PNAME_LN             = /@#{PNAME_NS}#{PN_LOCAL}/.freeze
     # 140x
-    PNAME_NS             = /@#{PN_PREFIX}?:/.freeze
+    ATPNAME_NS           = /@#{PN_PREFIX}?:/.freeze
     # 141x
-    PNAME_LN             = /#{PNAME_NS}#{PN_LOCAL}/.freeze
+    ATPNAME_LN           = /#{PNAME_NS}#{PN_LOCAL}/.freeze
     # 142s
     BLANK_NODE_LABEL     = /_:(?:[0-9]|#{PN_CHARS_U})(?:(?:#{PN_CHARS}|\.)*#{PN_CHARS})?/.freeze
     # 145s
@@ -72,14 +70,16 @@ module ShEx
     STRING_LITERAL_LONG1 = /'''(?:(?:'|'')?(?:[^'\\]|#{ECHAR}|#{UCHAR}))*'''/m.freeze
     # 159s
     STRING_LITERAL_LONG2 = /"""(?:(?:"|"")?(?:[^"\\]|#{ECHAR}|#{UCHAR}))*"""/m.freeze
-
-    # 79
-    WS                   = /(?:\s|(?:#[^\n\r]*))+/m.freeze
     # 163s
     ANON                 = /\[#{WS}*\]/m.freeze
 
+    # 29
+    CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*%#{WS}*\}/.freeze
+    # 30
+    REPEAT_RANGE         = /\{#{WS}*#{INTEGER}(?:,#{WS}*(?:#{INTEGER}|\*)?)?#{WS}*\}/.freeze
+
     # String terminals, case sensitive
-    MC_EXPR = %r(true|false
+    STR_EXPR = %r(true|false
                  |\^\^|\/\/
                  |[\(\),.;\{\}\=\-\~!\|\&\@\$^\/a]
               )x.freeze

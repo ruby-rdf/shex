@@ -1,0 +1,146 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require "bundler/setup"
+$:.unshift(File.expand_path("../../lib", __FILE__))
+$:.unshift(File.expand_path("../../spec", __FILE__))
+require 'rdf'
+require 'rdf/isomorphic'
+require 'rspec'
+require 'shex'
+require 'suite_helper'
+require 'getoptlong'
+
+ASSERTOR = "http://greggkellogg.net/foaf#me"
+RUN_TIME = Time.now
+
+def earl_preamble(options)
+  options[:output].write File.read(File.expand_path("../../etc/doap.ttl", __FILE__))
+  options[:output].puts %(
+<> foaf:primaryTopic <http://rubygems.org/gems/shex> ;
+  dc:issued "#{RUN_TIME.xmlschema}"^^xsd:dateTime ;
+  foaf:maker <#{ASSERTOR}> .
+
+<#{ASSERTOR}> a foaf:Person, earl:Assertor;
+  foaf:name "Gregg Kellogg";
+  foaf:title "Implementor";
+  foaf:homepage <http://greggkellogg.net/> .
+)
+end
+
+def run_tc(t, options)
+  STDERR.write "run #{t.name}"
+  result = "untested"
+
+  begin
+    operator = ShEx.parse(t.input,
+      base_uri: t.base,
+      validate: true,
+      errors: []
+    )
+    if t.positive_test?
+      if t.evaluate?
+        ug = operator.execute(t.target_graph)
+        result = t.target_graph.isomorphic_with?(t.expected_graph) ? "passed" : "failed"
+      else
+        result = operator.is_a?(SPARQL::Algebra::Operator) ? "passed" : "failed"
+      end
+    else
+      operator.execute(t.target_graph) if t.evaluate?
+      if %w(turtle-syntax-bad-struct-09 turtle-syntax-bad-struct-10).include?(t.name)
+        STDERR.puts "Multiple '.' allowed in this grammar" unless options[:quiet]
+        result = "inapplicable"
+      else
+        result = "failed"
+      end
+    end
+  rescue LD::Patch::ParseError => e
+    if %w(turtle-eval-bad-01 turtle-eval-bad-02 turtle-eval-bad-03).include?(t.name)
+      result = "passed"
+    elsif t.syntax? && t.negative_test?
+      result = "passed"
+    else
+      result = "failed"
+    end
+  rescue LD::Patch::Error => e
+    if t.evaluate? && t.negative_test?
+      result = e.code == t.statusCode.to_i ? "passed" : "failed"
+    else
+      result = "failed"
+    end
+  end
+
+  if options[:earl]
+    test = t.id.sub("ldp:", Fixtures::SuiteTest::BASE + "manifest.ttl#")
+    options[:output].puts %{
+[ a earl:Assertion;
+  earl:assertedBy <#{ASSERTOR}>;
+  earl:subject <http://rubygems.org/gems/ld-patch>;
+  earl:test <#{test}>;
+  earl:result [
+    a earl:TestResult;
+    earl:outcome earl:#{result};
+    dc:date "#{RUN_TIME.xmlschema}"^^xsd:dateTime];
+  earl:mode earl:automatic ] .
+}
+  end
+
+  options[:result_count][result] ||= 0
+  options[:result_count][result] += 1
+
+  STDERR.puts "#{"test result:" unless options[:quiet]} #{result}"
+end
+
+options = {
+  output:       STDOUT,
+  validate:     true,
+  verbose:      false,
+}
+suite = "rdfxml"
+opts = GetoptLong.new(
+  ["--debug", GetoptLong::NO_ARGUMENT],
+  ["--earl", GetoptLong::NO_ARGUMENT],
+  ["--help", "-?", GetoptLong::NO_ARGUMENT],
+  ["--output", "-o", GetoptLong::REQUIRED_ARGUMENT],
+  ["--quiet", "-q", GetoptLong::NO_ARGUMENT],
+  ["--verbose", "-v", GetoptLong::NO_ARGUMENT],
+)
+
+def help(options)
+  puts "Usage: #{$0} [options] [test-number ...]"
+  puts "Options:"
+  puts "      --debug:              Display detailed debug output"
+  puts "      --earl:               Generate EARL report"
+  puts "      --quiet:              Minimal output"
+  puts "      --output:             Output to specified file"
+  puts "      --verbose:            Verbose processing"
+  puts "      --help,-?:            This message"
+  exit(0)
+end
+
+opts.each do |opt, arg|
+  case opt
+  when '--earl'         then options[:quiet] = options[:earl] = true
+  when '--debug'        then options[:debug] = true
+  when '--output'       then options[:output] = File.open(arg, "w")
+  when '--quiet'        then options[:quiet] = true
+  when '--verbose'      then options[:verbose] = true
+  end
+end
+
+earl_preamble(options) if options[:earl]
+result_count = {}
+
+%w(manifest.ttl manifest-syntax.ttl turtle/manifest-ldpatch.ttl).each do |variant|
+  manifest = Fixtures::SuiteTest::BASE + variant
+
+  Fixtures::SuiteTest::Manifest.open(manifest) do |m|
+    m.entries.each do |tc|
+      next unless ARGV.empty? || ARGV.any? {|n| tc.name.match(/#{n}/)}
+      run_tc(tc, options.merge(result_count: result_count))
+    end
+  end
+end
+
+result_count.each do |result, count|
+  puts "#{result}: #{count}"
+end

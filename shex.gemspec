@@ -27,6 +27,8 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'rdf',         '~> 2.0'
   gem.add_runtime_dependency     'ebnf',        '~> 1.0', '>= 1.0.1'
   gem.add_runtime_dependency     'sxp',         '~> 1.0'
+  gem.add_runtime_dependency     'sparql',      '~> 2.0'
+
   gem.add_development_dependency 'rdf-spec',    '~> 2.0'
   gem.add_development_dependency 'rdf-turtle',  '~> 2.0'
   gem.add_development_dependency 'rdf-xsd',     '~> 2.0'
