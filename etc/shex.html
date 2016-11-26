@@ -6,8 +6,7 @@
       <td>::=</td>
       <td>
         <a href="#grammar-production-directive">directive</a><code>*</code> 
-        (<code>(</code> <a href="#grammar-production-notStartAction">notStartAction</a> <code>|</code> <a href="#grammar-production-startActions">startActions</a><code>)</code>  <a href="#grammar-production-statement">statement</a><code>*</code> )<code>?</code> 
-        <code class="grammar-char-escape"></code>
+        (<code>(</code> <a href="#grammar-production-notStartAction">notStartAction</a> <code>|</code> <a href="#grammar-production-startActions">startActions</a><code>)</code>  <a href="#grammar-production-statement">statement</a><code>*</code> )<code>?</code>
       </td>
     </tr>
     <tr id='grammar-production-statement'>
@@ -147,25 +146,7 @@
       <td>::=</td>
       <td>
         <a href="#grammar-production-groupShape">groupShape</a>
-        <code>|</code> <a href="#grammar-production-multiElementSomeOf">multiElementSomeOf</a>
-      </td>
-    </tr>
-    <tr id='grammar-production-multiElementSomeOf'>
-      <td>[10a]</td>
-      <td><code>multiElementSomeOf</code></td>
-      <td>::=</td>
-      <td>
-        <a href="#grammar-production-groupShape">groupShape</a>
-        ("<code class="grammar-literal">|</code>" <a href="#grammar-production-groupShape">groupShape</a>)<code>+</code>
-      </td>
-    </tr>
-    <tr id='grammar-production-innerShape'>
-      <td>[10b]</td>
-      <td><code>innerShape</code></td>
-      <td>::=</td>
-      <td>
-        <a href="#grammar-production-multiElementGroup">multiElementGroup</a>
-        <code>|</code> <a href="#grammar-production-multiElementSomeOf">multiElementSomeOf</a>
+        ("<code class="grammar-literal">|</code>" <a href="#grammar-production-groupShape">groupShape</a>)<code>*</code>
       </td>
     </tr>
     <tr id='grammar-production-groupShape'>
@@ -173,27 +154,8 @@
       <td><code>groupShape</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-singleElementGroup">singleElementGroup</a>
-        <code>|</code> <a href="#grammar-production-multiElementGroup">multiElementGroup</a>
-      </td>
-    </tr>
-    <tr id='grammar-production-singleElementGroup'>
-      <td>[11]</td>
-      <td><code>singleElementGroup</code></td>
-      <td>::=</td>
-      <td>
         <a href="#grammar-production-unaryShape">unaryShape</a>
-        "<code class="grammar-literal">;</code>"<code>?</code>
-      </td>
-    </tr>
-    <tr id='grammar-production-multiElementGroup'>
-      <td>[11a]</td>
-      <td><code>multiElementGroup</code></td>
-      <td>::=</td>
-      <td>
-        <a href="#grammar-production-unaryShape">unaryShape</a>
-        ("<code class="grammar-literal">;</code>" <a href="#grammar-production-unaryShape">unaryShape</a>)<code>+</code> 
-        "<code class="grammar-literal">;</code>"<code>?</code>
+        ("<code class="grammar-literal">;</code>" <a href="#grammar-production-unaryShape">unaryShape</a><code>?</code> )<code>*</code>
       </td>
     </tr>
     <tr id='grammar-production-unaryShape'>
@@ -201,9 +163,8 @@
       <td><code>unaryShape</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-productionLabel">productionLabel</a><code>?</code>  <a href="#grammar-production-tripleConstraint">tripleConstraint</a>
+        <a href="#grammar-production-productionLabel">productionLabel</a><code>?</code>  <code>(</code> <a href="#grammar-production-tripleConstraint">tripleConstraint</a> <code>|</code> <a href="#grammar-production-encapsulatedShape">encapsulatedShape</a><code>)</code> 
         <code>|</code> <a href="#grammar-production-include">include</a>
-        <code>|</code> <a href="#grammar-production-productionLabel">productionLabel</a><code>?</code>  <a href="#grammar-production-encapsulatedShape">encapsulatedShape</a>
       </td>
     </tr>
     <tr id='grammar-production-encapsulatedShape'>
@@ -212,7 +173,7 @@
       <td>::=</td>
       <td>
         "<code class="grammar-literal">(</code>"
-        <a href="#grammar-production-innerShape">innerShape</a>
+        <a href="#grammar-production-groupShape">groupShape</a>
         "<code class="grammar-literal">)</code>"
         <a href="#grammar-production-cardinality">cardinality</a><code>?</code> 
         <a href="#grammar-production-annotation">annotation</a><code>*</code> 
@@ -256,7 +217,7 @@
       <td>::=</td>
       <td>
         <code class="grammar-char-escape">#x21</code> "<code class="grammar-literal">^</code>"<code>?</code> 
-        <code>|</code> "<code class="grammar-literal">^</code>" <code class="grammar-char-escape">#x21</code><code>?</code>  <code class="grammar-char-escape"></code>
+        <code>|</code> "<code class="grammar-literal">^</code>" <code class="grammar-char-escape">#x21</code><code>?</code>
       </td>
     </tr>
     <tr id='grammar-production-predicate'>
@@ -279,7 +240,7 @@
         <code>|</code> <a href="#grammar-production-shapeOrRef">shapeOrRef</a> <a href="#grammar-production-stringFacet">stringFacet</a><code>*</code> 
         <code>|</code> <a href="#grammar-production-valueSet">valueSet</a>
         <code>|</code> "<code class="grammar-literal">(</code>" <a href="#grammar-production-shapeExpression">shapeExpression</a> "<code class="grammar-literal">)</code>"
-        <code>|</code> "<code class="grammar-literal">.</code>" <code class="grammar-char-escape"></code>
+        <code>|</code> "<code class="grammar-literal">.</code>"
       </td>
     </tr>
     <tr id='grammar-production-nonLiteralKind'>
@@ -319,7 +280,7 @@
       <td>
         <a href="#grammar-production-stringLength">stringLength</a> <a href="#grammar-production-INTEGER">INTEGER</a>
         <code>|</code> "<code class="grammar-literal">PATTERN</code>" <a href="#grammar-production-string">string</a>
-        <code>|</code> "<code class="grammar-literal">~</code>" <a href="#grammar-production-string">string</a> <code class="grammar-char-escape"></code>
+        <code>|</code> "<code class="grammar-literal">~</code>" <a href="#grammar-production-string">string</a>
       </td>
     </tr>
     <tr id='grammar-production-stringLength'>
@@ -544,7 +505,7 @@
       <td>::=</td>
       <td>
         "<code class="grammar-literal">{</code>"
-        <code>[</code> <code class="grammar-literal">^%\]</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">'\'</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">[%\]</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">UCHAR)*</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">'%'</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">'}'</code><code>]</code>
+        <code>[</code> <code class="grammar-literal">^%\]</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">'\'[%\]</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">UCHAR)*</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">'%''}'</code><code>]</code>
       </td>
     </tr>
     <tr id='grammar-production-REPEAT_RANGE'>
@@ -572,7 +533,7 @@
       <td>::=</td>
       <td>
         "<code class="grammar-literal"><</code>"
-        <code>[</code> <code class="grammar-literal">^</code><code class="grammar-char-escape">#x00</code><code class="grammar-literal">-</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal"><>"{}|^`\]</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">UCHAR)*</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">'>'</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">/*</code><code class="grammar-char-escape">#x00</code><code class="grammar-literal">=NULL</code><code class="grammar-char-escape">#x20</code><code class="grammar-char-escape">#x23</code><code class="grammar-literal">01-</code><code class="grammar-char-escape">#x1F</code><code class="grammar-literal">=control</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">codes</code><code class="grammar-char-escape">#x20</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">=space</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">*/</code><code>]</code>
+        <code>[</code> <code class="grammar-literal">^</code><code class="grammar-char-escape">#x00</code><code class="grammar-literal">-</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal"><>"{}|^`\]</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">UCHAR)*</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">'>'</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">/*</code><code class="grammar-char-escape">#x20</code><code class="grammar-char-escape">#x00</code><code class="grammar-literal">=NULL</code><code class="grammar-char-escape">#x20</code><code class="grammar-char-escape">#x23</code><code class="grammar-literal">01-</code><code class="grammar-char-escape">#x1F</code><code class="grammar-literal">=control</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">codes</code><code class="grammar-char-escape">#x20</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">=space</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">*/</code><code>]</code>
       </td>
     </tr>
     <tr id='grammar-production-PNAME_NS'>

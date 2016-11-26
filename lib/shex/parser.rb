@@ -45,11 +45,14 @@ module ShEx
     terminal(:REPEAT_RANGE,         REPEAT_RANGE) do |prod, token, input|
       input[:cardinality] = token.value
     end
+    terminal(:RDF_TYPE,             RDF_TYPE) do |prod, token, input|
+      input[:iri] = (a = RDF.type.dup; a.lexical = 'a'; a)
+    end
     terminal(:ANON,                 ANON) do |prod, token, input|
-      input[:BlankNode] = bnode
+      input[:blankNode] = bnode
     end
     terminal(:BLANK_NODE_LABEL,     BLANK_NODE_LABEL) do |prod, token, input|
-      input[:BlankNode] = bnode(token.value[2..-1])
+      input[:blankNode] = bnode(token.value[2..-1])
     end
     terminal(:IRIREF,               IRIREF, unescape: true) do |prod, token, input|
       begin
@@ -114,9 +117,10 @@ module ShEx
     terminal(nil, STR_EXPR) do |prod, token, input|
       case token.value
       when '*', '+', '?'   then input[:cardinality] = token.value
-      when '^', '|'        then (input[:senseFlags] ||= "") << token.value
+      when '!'             then input[:not] = token.value
+      when '^'             then input[:inverse] = token.value
       when 'true', 'false' then input[:literal] = RDF::Literal::Boolean.new(token.value)
-      when 'a'             then input[:predicate] = (a = RDF.type.dup; a.lexical = 'a'; a)
+      when '~'             then input[:pattern] = token.value
       else
         #add_prod_datum(:string, token.value)
       end
@@ -125,43 +129,183 @@ module ShEx
     # Mixed-case Keyword terminals
     terminal(nil, MC_EXPR, map: MC_MAP) do |prod, token, input|
       case token.value
-      when 'not'           then input[:negShapeAtom] = token.value
-      when 'external'      then add_prod_datum(:shape, token.value)
-      when 'closed'        then add_prod_datum(:shapeDefinition, token.value)
-      when 'iri', 'bnode',
-           'nonliteral'    then input[:nonLiteralKind] = token.value
-      when 'length',
-           'minlength',
-           'maxlength'    then input[:stringLength] = token.value
-      when 'mininclusive',
-           'minexclusive',
-           'maxinclusive',
-           'maxexclusive' then input[:stringLength] = token.value
-      when 'fractiondigits',
-           'totaldigits'   then input[:numericLength] = token.value
+      when 'NOT'           then input[:not] = token.value.downcase.to_sym
+      when 'EXTERNAL'      then input[:external] = token.value.downcase.to_sym
+      when 'CLOSED'        then input[:closed] = token.value.downcase.to_sym
+      when 'IRI', 'BNODE',
+           'NONLITERAL'    then input[:nonLiteralKind] = token.value.downcase.to_sym
+      when 'LENGTH',
+           'MINLENGTH',
+           'MAXLENGTH'     then input[:stringLength] = token.value.downcase.to_sym
+      when 'MININCLUSIVE',
+           'MINEXCLUSIVE',
+           'MAXINCLUSIVE',
+           'MAXEXCLUSIVE'  then input[:numericRange] = token.value.downcase.to_sym
+      when 'FRACTIONDIGITS',
+           'TOTALDIGITS'   then input[:numericLength] = token.value.downcase.to_sym
+      when 'PATTERN'       then input[:pattern] = token.value.downcase.to_sym
       else
         #add_prod_datum(:string, token.value)
       end
     end
 
     # Productions
-    # [2]  	Query	  ::=  	Prologue
-    #                     ( SelectQuery | ConstructQuery | DescribeQuery | AskQuery )
-    production(:Query) do |input, data, callback|
-      query = data[:query].first
+    # [1]     shexDoc               ::= directive* ((notStartAction | startActions) statement*)?
+    production(:shexDoc) do |input, data, callback|
+      expressions = data[:expressions]
 
       # Add prefix
-      if data[:PrefixDecl]
-        pfx = data[:PrefixDecl].shift
-        data[:PrefixDecl].each {|p| pfx.merge!(p)}
-        pfx.operands[1] = query
-        query = pfx
+      if data[:prefixDecl]
+        pfx = data[:prefixDecl].shift
+        data[:prefixDecl].each {|p| pfx.merge!(p)}
+        pfx.operands[1] = expressions
+        expressions = pfx
       end
 
       # Add base
-      query = SPARQL::Algebra::Expression[:base, data[:BaseDecl].first, query] if data[:BaseDecl]
+      if base = data[:baseDecl]
+        base.operands[1] = expressions
+        expressions = base
+      end
 
-      add_prod_datum(:query, query)
+      input[:schema] = Algebra::Schema.new(*expressions)
+    end
+
+    # [3c]    shapeDisjunction      ::= shapeConjunction ("OR" shapeConjunction)*
+    production(:shapeDisjunction) do |input, data, callback|
+      expression = if Array(data[:shapeExpression]).length > 1
+        Algebra::Or.new(*data[:shapeExpression])
+      else
+        Array(data[:shapeExpression]).first
+      end
+      input[:shapeExpression] = expression if expression
+    end
+
+    # [3d]    shapeConjunction      ::= negShapeAtom ("AND" negShapeAtom)*
+    production(:shapeConjunction) do |input, data, callback|
+      expression = if Array(data[:shapeExpression]).length > 1
+        Algebra::And.new(*data[:shapeExpression])
+      else
+        Array(data[:shapeExpression]).first
+      end
+      (input[:shapeExpression] ||= []) << expression if expression
+    end
+
+    # [3e]    negShapeAtom          ::= ("NOT"|"!")? shapeAtom
+    production(:negShapeAtom) do |input, data, callback|
+      expression = data[:shapeExpression]
+      expression = Algebra::Not.new(expression) if data[:not]
+      (input[:shapeExpression] ||= []) << expression
+    end
+
+    # [5]     shape                 ::= shapeLabel (stringFacet* shapeExpression|"EXTERNAL") semanticActions
+    production(:shape) do |input, data, callback|
+      label = data[:label]
+      facets = data[:facets]
+      expression = data[:shapeExpression]
+      actions = data[:actions]
+      shape = Algebra::Shape.new(*[label, facets, expression, actions].compact)
+
+      (input[:expressions] ||= []) << shape
+    end
+
+    # [6]     shapeDefinition       ::= (includeSet | inclPropertySet | "CLOSED")* '{' someOfShape? '}'
+    production(:shapeDefinition) do |input, data, callback|
+      shape = data[:shape]
+      attrs = [
+        data[:includeSet],
+        data[:inclPropertySet],
+        (:closed if data[:closed]),
+      ].compact
+      shape = Algebra::ShapeDefinition.new(shape, *attrs) if shape && !attrs.empty?
+
+      input[:shape] = shape if shape
+    end
+
+    # [10]    someOfShape           ::= groupShape ('|' groupShape)*
+    production(:someOfShape) do |input, data, callback|
+      expression = if Array(data[:shape]).length > 1
+        Algebra::SomeOf.new(*data[:shape])
+      else
+        Array(data[:shape]).first
+      end
+      input[:shape] = expression if expression
+    end
+
+    # [11]    groupShape            ::= unaryShape (';' unaryShape?)*
+    production(:groupShape) do |input, data, callback|
+      expression = if Array(data[:shape]).length > 1
+        Algebra::EachOf.new(*data[:shape])
+      else
+        Array(data[:shape]).first
+      end
+      (input[:shape] ||= []) << expression if expression
+    end
+
+    # [12]    unaryShape            ::= productionLabel? (tripleConstraint | encapsulatedShape) | include
+    production(:unaryShape) do |input, data, callback|
+      shape = data[:tripleConstraint] || data[:encapsulatedShape] || data[:include]
+      shape.operands << data[:iri] if shape && data[:iri]
+
+      (input[:shape] ||= []) << shape if shape
+    end
+
+    # [14]    shapeLabel            ::= iri | blankNode
+    production(:shapeLabel) do |input, data, callback|
+      input[:label] = data[:iri] || data[:blankNode]
+    end
+
+    # [15]    tripleConstraint      ::= senseFlags? predicate shapeExpression cardinality? annotation* semanticActions
+    production(:tripleConstraint) do |input, data, callback|
+      cardinality = data.fetch(:cardinality, {})
+      attrs = [
+        (:inverse if data[:inverse] || data[:not]),
+        data[:iri],  # predicate
+        data[:shapeExpression],
+        ([:min, cardinality[:min]] if cardinality[:min]),
+        ([:max, cardinality[:max]] if cardinality[:max]),
+        data[:semAct],
+        data[:annotation]
+      ].compact
+
+      input[:tripleConstraint] = Algebra::TripleConstraint.new(*attrs) unless attrs.empty?
+    end
+
+    # [18a]   shapeAtom        ::= "LITERAL" xsFacet*
+    #                            | nonLiteralKind stringFacet* shapeOrRef?
+    #                            | datatype xsFacet*
+    #                            | shapeOrRef stringFacet*
+    #                            | valueSet
+    #                            | "(" shapeExpression ")"
+    #                            | '.'  # no constraint
+    production(:shapeAtom) do |input, data, callback|
+      nonlit = Algebra::NodeConstraint.new(*[data[:nonLiteralKind], data[:stringFacet]].compact) if data[:nonLiteralKind]
+      constraint = data[:nodeConstraint]
+      shape = data[:shapeOrRef]
+
+      expression = [(constraint || nonlit), shape].compact
+      expression = case expression.length
+      when 0 then nil
+      when 1 then expression.first
+      else   Algebra::And.new(*expression)
+      end
+        
+      input[:shapeExpression] = expression if expression
+    end
+
+    # [20]    shapeOrRef            ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel | shapeDefinition
+    production(:shapeOrRef) do |input, data, callback|
+      if data[:shape] || data[:label]
+        input[:shapeOrRef] = data[:shape] || Algebra::ShapeRef.new(data[:label])
+      end
+    end
+
+    # [21]    stringFacet           ::= stringLength INTEGER
+    #                                 | "PATTERN" string
+    #                                 | '~' string  # shortcut for "PATTERN"
+    production(:stringFacet) do |input, data, callback|
+      input[:stringFacet] = [data[:stringLength], data[:literal]] if data[:stringLength]
+      input[:stringFacet] = [:pattern, data[:string]] if data[:pattern]
     end
 
     ##
@@ -203,9 +347,6 @@ module ShEx
 
       debug("base IRI") {base_uri.inspect}
       debug("validate") {validate?.inspect}
-
-      @vars = {}
-      @nd_var_gen = "0"
 
       if block_given?
         case block.arity
@@ -281,10 +422,8 @@ module ShEx
         prod_data
       when prod_data.empty?
         nil
-      when prod_data[:query]
-        Array(prod_data[:query]).length == 1 ? prod_data[:query].first : prod_data[:query]
-      when prod_data[:update]
-        prod_data[:update]
+      when prod_data[:schema]
+        prod_data[:schema]
       else
         key = prod_data.keys.first
         [key] + Array(prod_data[key])  # Creates [:key, [:triple], ...]
@@ -293,6 +432,8 @@ module ShEx
       # Validate resulting expression
       @result.validate! if @result && validate?
       @result
+    rescue EBNF::LL1::Parser::Error, EBNF::LL1::Lexer::Error =>  e
+      raise ShEx::ParseError.new(e.message, lineno: e.lineno, token: e.token)
     end
 
     private
@@ -388,16 +529,6 @@ module ShEx
       @options[:validate]
     end
 
-    # Used for generating BNode labels
-    attr_accessor :nd_var_gen
-
-    # Generate BNodes, not non-distinguished variables
-    # @param [Boolean] value
-    # @return [void]
-    def gen_bnodes(value = true)
-      @nd_var_gen = value ? false : "0"
-    end
-
     # Clear cached BNodes
     # @return [void]
     def clear_bnode_cache
@@ -413,48 +544,13 @@ module ShEx
 
     # Generate a BNode identifier
     def bnode(id = nil)
-      if @nd_var_gen
-        # Use non-distinguished variables within patterns
-        variable(id, false)
-      else
-        unless id
-          id = @options[:anon_base]
-          @options[:anon_base] = @options[:anon_base].succ
-        end
-        @bnode_cache ||= {}
-        raise Error, "Illegal attempt to reuse a BNode" if @bnode_cache[id] && @bnode_cache[id].frozen?
-        @bnode_cache[id] ||= RDF::Node.new(id)
+      unless id
+        id = @options[:anon_base]
+        @options[:anon_base] = @options[:anon_base].succ
       end
-    end
-
-    ##
-    # Return variable allocated to an ID.
-    # If no ID is provided, a new variable
-    # is allocated. Otherwise, any previous assignment will be used.
-    #
-    # The variable has a #distinguished? method applied depending on if this
-    # is a disinguished or non-distinguished variable. Non-distinguished
-    # variables are effectively the same as BNodes.
-    # @return [RDF::Query::Variable]
-    def variable(id, distinguished = true)
-      id = nil if id.to_s.empty?
-
-      if id
-        @vars[id] ||= begin
-          v = RDF::Query::Variable.new(id)
-          v.distinguished = distinguished
-          v
-        end
-      else
-        unless distinguished
-          # Allocate a non-distinguished variable identifier
-          id = @nd_var_gen
-          @nd_var_gen = id.succ
-        end
-        v = RDF::Query::Variable.new(id)
-        v.distinguished = distinguished
-        v
-      end
+      @bnode_cache ||= {}
+      raise Error, "Illegal attempt to reuse a BNode" if @bnode_cache[id] && @bnode_cache[id].frozen?
+      @bnode_cache[id] ||= RDF::Node.new(id)
     end
 
     # Create URIs
@@ -491,188 +587,6 @@ module ShEx
         "validate: #{validate?.inspect}, "
       end
       RDF::Literal.new(value, options.merge(validate: validate?))
-    end
-
-    # Take collection of objects and create RDF Collection using rdf:first, rdf:rest and rdf:nil
-    # @param [Hash] data Production Data
-    def expand_collection(data)
-      # Add any triples generated from deeper productions
-      add_prod_datum(:pattern, data[:pattern])
-
-      # Create list items for each element in data[:GraphNode]
-      first = data[:Collection]
-      list = Array(data[:GraphNode]).flatten.compact
-      last = list.pop
-
-      list.each do |r|
-        add_pattern(:Collection, subject: first, predicate: RDF["first"], object: r)
-        rest = bnode()
-        add_pattern(:Collection, subject: first, predicate: RDF["rest"], object: rest)
-        first = rest
-      end
-
-      if last
-        add_pattern(:Collection, subject: first, predicate: RDF["first"], object: last)
-      end
-      add_pattern(:Collection, subject: first, predicate: RDF["rest"], object: RDF["nil"])
-    end
-
-    # add a pattern
-    #
-    # @param [String] production Production generating pattern
-    # @param [Hash{Symbol => Object}] options
-    def add_pattern(production, options)
-      progress(production, "[:pattern, #{options[:subject]}, #{options[:predicate]}, #{options[:object]}]")
-      triple = {}
-      options.each_pair do |r, v|
-        if v.is_a?(Array) && v.flatten.length == 1
-          v = v.flatten.first
-        end
-        if validate? && !v.is_a?(RDF::Term)
-          error("add_pattern", "Expected #{r} to be a resource, but it was #{v.inspect}",
-            production: production)
-        end
-        triple[r] = v
-      end
-      add_prod_datum(:pattern, RDF::Query::Pattern.new(triple))
-    end
-
-    # Flatten a Data in form of filter: [op+ bgp?], without a query into filter and query creating exprlist, if necessary
-    # @return [Array[:expr, query]]
-    def flatten_filter(data)
-      query = data.pop if data.last.is_a?(SPARQL::Algebra::Query)
-      expr = data.length > 1 ? SPARQL::Algebra::Operator::Exprlist.new(*data) : data.first
-      [expr, query]
-    end
-
-    # Merge query modifiers, datasets, and projections
-    #
-    # This includes tranforming aggregates if also used with a GROUP BY
-    #
-    # @see http://www.w3.org/TR/sparql11-query/#convertGroupAggSelectExpressions
-    def merge_modifiers(data)
-      debug("merge modifiers") {data.inspect}
-      query = data[:query] ? data[:query].first : SPARQL::Algebra::Operator::BGP.new
-
-      vars = data[:Var] || []
-      order = data[:order] ? data[:order].first : []
-      extensions = data.fetch(:extend, [])
-      having = data.fetch(:having, [])
-      values = data.fetch(:ValuesClause, []).first
-
-      # extension variables must not appear in projected variables.
-      # Add them to the projection otherwise
-      extensions.each do |(var, expr)|
-        raise Error, "Extension variable #{var} also in SELECT" if vars.map(&:to_s).include?(var.to_s)
-        vars << var
-      end
-
-      # If any extension contains an aggregate, and there is now group, implicitly group by 1
-      if !data[:group] &&
-         extensions.any? {|(var, function)| function.aggregate?} ||
-         having.any? {|c| c.aggregate? }
-        debug {"Implicit group"}
-        data[:group] = [[]]
-      end
-
-      # Add datasets and modifiers in order
-      if data[:group]
-        group_vars = data[:group].first
-
-        # For creating temporary variables
-        agg = 0
-
-        # Find aggregated varirables in extensions
-        aggregates = []
-        aggregated_vars = extensions.map do |(var, function)|
-          var if function.aggregate?
-        end.compact
-
-        # Common function for replacing aggregates with temporary variables,
-        # as defined in http://www.w3.org/TR/2013/REC-sparql11-query-20130321/#convertGroupAggSelectExpressions
-        aggregate_expression = lambda do |expr|
-          # Replace unaggregated variables in expr
-          # - For each unaggregated variable V in X
-          expr.replace_vars! do |v|
-            aggregated_vars.include?(v) ? v : SPARQL::Algebra::Expression[:sample, v]
-          end
-
-          # Replace aggregates in expr as above
-          expr.replace_aggregate! do |function|
-            if avf = aggregates.detect {|(v, f)| f == function}
-              avf.first
-            else
-              # Allocate a temporary variable for this function, and retain the mapping for outside the group
-              av = RDF::Query::Variable.new(".#{agg}")
-              av.distinguished = false
-              agg += 1
-              aggregates << [av, function]
-              av
-            end
-          end
-        end
-
-        # If there are extensions, they are aggregated if necessary and bound
-        # to temporary variables
-        extensions.map! do |(var, expr)|
-          [var, aggregate_expression.call(expr)]
-        end
-
-        # Having clauses
-        having.map! do |expr|
-          aggregate_expression.call(expr)
-        end
-
-        query = if aggregates.empty?
-          SPARQL::Algebra::Expression[:group, group_vars, query]
-        else
-          SPARQL::Algebra::Expression[:group, group_vars, aggregates, query]
-        end
-      end
-
-      if values
-        query = query ? SPARQL::Algebra::Expression[:join, query, values] : values
-      end
-
-      query = SPARQL::Algebra::Expression[:extend, extensions, query] unless extensions.empty?
-
-      query = SPARQL::Algebra::Expression[:filter, *having, query] unless having.empty?
-
-      query = SPARQL::Algebra::Expression[:order, data[:order].first, query] unless order.empty?
-
-      query = SPARQL::Algebra::Expression[:project, vars, query] unless vars.empty?
-
-      query = SPARQL::Algebra::Expression[data[:DISTINCT_REDUCED], query] if data[:DISTINCT_REDUCED]
-
-      query = SPARQL::Algebra::Expression[:slice, data[:slice][0], data[:slice][1], query] if data[:slice]
-
-      query = SPARQL::Algebra::Expression[:dataset, data[:dataset], query] if data[:dataset]
-
-      query
-    end
-
-    # Add joined expressions in for prod1 (op prod2)* to form (op (op 1 2) 3)
-    def add_operator_expressions(production, data)
-      # Iterate through expression to create binary operations
-      lhs = data[:Expression]
-      while data[production] && !data[production].empty?
-        op, rhs = data[production].shift, data[production].shift
-        lhs = SPARQL::Algebra::Expression[op + lhs + rhs]
-      end
-      add_prod_datum(:Expression, lhs)
-    end
-
-    # Accumulate joined expressions in for prod1 (op prod2)* to form (op (op 1 2) 3)
-    def accumulate_operator_expressions(operator, production, data)
-      if data[operator]
-        # Add [op data] to stack based on "production"
-        add_prod_datum(production, [data[operator], data[:Expression]])
-        # Add previous [op data] information
-        add_prod_datum(production, data[production])
-      else
-        # No operator, forward :Expression
-        add_prod_datum(:Expression, data[:Expression])
-      end
     end
   end # class Parser
 end # module ShEx

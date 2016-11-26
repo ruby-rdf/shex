@@ -1,10 +1,14 @@
+require 'sparql/algebra'
+require 'sparql/extensions'
+
 module ShEx::Algebra
 
   ##
   # The ShEx operator.
   #
   # @abstract
-  class Operator < Sparql::Algebra::Expression
+  class Operator
+    extend SPARQL::Algebra::Expression
 
     ##
     # Returns an operator class for the given operator `name`.
@@ -13,9 +17,20 @@ module ShEx::Algebra
     # @param  [Integer] arity
     # @return [Class] an operator class, or `nil` if an operator was not found
     def self.for(name, arity = nil)
-      # TODO: refactor this to dynamically introspect loaded operator classes.
-      case (name.to_s.downcase.to_sym rescue nil)
-      end
+      {
+        and: And,
+        base: Base,
+        nodeConstraint: NodeConstraint,
+        not: Not,
+        or: Or,
+        prefix: Prefix,
+        schema: Schema,
+        shape_definition: ShapeDefinition,
+        shape_ref: ShapeRef,
+        shape: Shape,
+        tripleConstraint: TripleConstraint,
+        unaryShape: UnaryShape,
+      }.fetch(name.to_s.downcase.to_sym)
     end
 
     ##
@@ -34,36 +49,36 @@ module ShEx::Algebra
     end
 
     ARITY = -1 # variable arity
-  end
 
-  ##
-  # Initializes a new operator instance.
-  #
-  # @overload initialize(*operands)
-  #   @param  [Array<RDF::Term>] operands
-  #
-  # @overload initialize(*operands, options)
-  #   @param  [Array<RDF::Term>] operands
-  #   @param  [Hash{Symbol => Object}] options
-  #     any additional options
-  #   @option options [Boolean] :memoize (false)
-  #     whether to memoize results for particular operands
-  # @raise  [TypeError] if any operand is invalid
-  def initialize(*operands)
-    @options  = operands.last.is_a?(Hash) ? operands.pop.dup : {}
-    @operands = operands.map! do |operand|
-      case operand
-        when Array
-          operand.each {|op| op.parent = self if operand.respond_to?(:parent=)}
-          operand
-        when Operator, Variable, RDF::Term, RDF::Query, RDF::Query::Pattern, Array, Symbol
-          operand.parent = self if operand.respond_to?(:parent=)
-          operand
-        when TrueClass, FalseClass, Numeric, String, DateTime, Date, Time
-          RDF::Literal(operand)
-        when NilClass
-          nil
-        else raise TypeError, "invalid SPARQL::Algebra::Operator operand: #{operand.inspect}"
+    ##
+    # Initializes a new operator instance.
+    #
+    # @overload initialize(*operands)
+    #   @param  [Array<RDF::Term>] operands
+    #
+    # @overload initialize(*operands, options)
+    #   @param  [Array<RDF::Term>] operands
+    #   @param  [Hash{Symbol => Object}] options
+    #     any additional options
+    #   @option options [Boolean] :memoize (false)
+    #     whether to memoize results for particular operands
+    # @raise  [TypeError] if any operand is invalid
+    def initialize(*operands)
+      @options  = operands.last.is_a?(Hash) ? operands.pop.dup : {}
+      @operands = operands.map! do |operand|
+        case operand
+          when Array
+            operand.each {|op| op.parent = self if operand.respond_to?(:parent=)}
+            operand
+          when Operator, RDF::Term, RDF::Query, RDF::Query::Pattern, Array, Symbol
+            operand.parent = self if operand.respond_to?(:parent=)
+            operand
+          when TrueClass, FalseClass, Numeric, String, DateTime, Date, Time
+            RDF::Literal(operand)
+          when NilClass
+            nil
+          else raise TypeError, "invalid SPARQL::Algebra::Operator operand: #{operand.inspect}"
+        end
       end
     end
 
@@ -177,5 +192,47 @@ module ShEx::Algebra
       other.class == self.class && other.operands == self.operands
     end
     alias_method :==, :eql?
+
+    ##
+    # A unary operator.
+    #
+    # Operators of this kind take one operand.
+    #
+    # @abstract
+    class Unary < Operator
+      ARITY = 1
+
+      ##
+      # @param  [RDF::Term] arg1
+      #   the first operand
+      # @param  [RDF::Term] arg2
+      #   the second operand
+      # @param  [Hash{Symbol => Object}] options
+      #   any additional options (see {Operator#initialize})
+      def initialize(arg1, options = {})
+        super
+      end
+    end # Unary
+
+    ##
+    # A binary operator.
+    #
+    # Operators of this kind take two operands.
+    #
+    # @abstract
+    class Binary < Operator
+      ARITY = 2
+
+      ##
+      # @param  [RDF::Term] arg1
+      #   the first operand
+      # @param  [RDF::Term] arg2
+      #   the second operand
+      # @param  [Hash{Symbol => Object}] options
+      #   any additional options (see {Operator#initialize})
+      def initialize(arg1, arg2, options = {})
+        super
+      end
+    end # Binary
   end
 end

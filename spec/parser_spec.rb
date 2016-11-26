@@ -5,7 +5,7 @@ describe ShEx do
   describe ".parse" do
     specify do
       input = %(<http://a.example/S1> {})
-      expect(described_class.parse(input)).to be_a(ShEx::Algebra::Operator)
+      expect(described_class.parse(input)).to be_a(ShEx::Algebra::Schema)
     end
   end
 end
@@ -33,33 +33,8 @@ describe ShEx::Parser do
   end
 
   describe "Empty" do
-    it "renders an empty Schema" do
-      expect("").to generate("(Schema)")
-    end
-  end
-
-  describe "Add" do
-    {
-      "add-1triple" => {
-        input: %(Add { <http://example.org/s2> <http://example.org/p2> <http://example.org/o2> } .),
-        result: %((patch (add ((triple <http://example.org/s2> <http://example.org/p2> <http://example.org/o2>)))))
-      },
-      "add-abbr-1triple" => {
-        input: %(A { <http://example.org/s2> <http://example.org/p2> <http://example.org/o2> } .),
-        result: %((patch (add ((triple <http://example.org/s2> <http://example.org/p2> <http://example.org/o2>)))))
-      },
-      "addnew-1triple" => {
-        input: %(AddNew { <http://example.org/s2> <http://example.org/p2> <http://example.org/o2> } .),
-        result: %((patch (add ((triple <http://example.org/s2> <http://example.org/p2> <http://example.org/o2>)))))
-      },
-      "addnew-abbr-1triple" => {
-        input: %(AN { <http://example.org/s2> <http://example.org/p2> <http://example.org/o2> } .),
-        result: %((patch (add ((triple <http://example.org/s2> <http://example.org/p2> <http://example.org/o2>)))))
-      },
-    }.each do |name, params|
-      it name do
-        expect(params[:input]).to generate(params[:result])
-      end
+    it "renders an empty schema" do
+      expect("").to generate("(schema)")
     end
   end
 
@@ -75,14 +50,11 @@ describe ShEx::Parser do
             }
           }
         }),
-        sxp: %{(Schema
-          '(<http://a.example/S1>
-              (EmptyRule) )
-          )}
+        sxp: %{(schema (shape <http://a.example/S1>))}
       },
     }.each do |name, params|
       it name do
-        expect(params[:input]).to generate(params[:result])
+        expect(params[:shexc]).to generate(params[:sxp])
       end
     end
   end
@@ -97,7 +69,23 @@ describe ShEx::Parser do
       },
     }.each do |name, params|
       it name do
-        expect(params[:input]).to generate(params[:result])
+        expect(params[:input]).to generate(params[:result], validate: true)
+      end
+    end
+  end
+
+  context "schema to SSE" do
+    Dir.glob("spec/shexTest/schemas/*.shex").
+      map {|f| f.split('/').last.sub('.shex', '')}.
+      each do |file|
+      it file do
+        input = File.read File.expand_path("../shexTest/schemas/#{file}.shex", __FILE__)
+        
+        if sse = File.read(File.expand_path("../data/#{file}.sse", __FILE__)) rescue nil
+          expect(input).to generate(sse)
+        else
+          skip "expected result"
+        end
       end
     end
   end

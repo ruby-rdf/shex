@@ -42,6 +42,8 @@ module ShEx
     # 79
     WS                   = /(?:\s|(?:#[^\n\r]*))+/m.freeze
 
+    # 3y
+    RDF_TYPE             = /a/.freeze
     # 18t
     IRIREF               = /<(?:#{IRI_RANGE}|#{UCHAR})*>/.freeze
     # 140s
@@ -99,7 +101,7 @@ module ShEx
     # Map terminals to canonical form
     MC_MAP = %w{OR AND NOT BASE PREFIX IRI BNODE NONLITERAL PATTERN
       MINLENGTH MAXLENGTH LENGTH MININCLUSIVE MAXINCLUSIVE MINEXCLUSIVE MAXEXCLUSIVE
-      TOTALDIGITS FRACTIONDIGITS START EXTERNAL CLOSED EXTRA LITERAL A}.
+      TOTALDIGITS FRACTIONDIGITS START EXTERNAL CLOSED EXTRA LITERAL}.
     inject({}) do |memo, t|
       memo.merge(t.downcase => t)
     end

@@ -30,9 +30,26 @@
 [6]     shapeDefinition       ::= (includeSet | inclPropertySet | "CLOSED")* '{' someOfShape? '}'
 [7]     includeSet            ::= '&' shapeLabel+
 [8]     inclPropertySet       ::= "EXTRA" predicate+
+
+# These productions cause conflicts. The substituted is close enough.
+# [10]    someOfShape           ::= groupShape | multiElementSomeOf
+# [10a]   multiElementSomeOf    ::= groupShape ('|' groupShape)+
+# [10b]   innerShape            ::= multiElementGroup | multiElementSomeOf
 [10]    someOfShape           ::= groupShape ('|' groupShape)*
+
+# These productions cause conflicts. The substituted is equivalent, except for allowing
+# an arbitrary number of trailing ';'
+# [11]    groupShape            ::= singleElementGroup | multiElementGroup
+# [11]    singleElementGroup    ::= unaryShape ';'?
+# [11a]   multiElementGroup     ::= unaryShape (';' unaryShape)+ ';'?
 [11]    groupShape            ::= unaryShape (';' unaryShape?)*
+
+# The following cause conflicts. The new one is pretty much the same.
+#[12]    unaryShape            ::= productionLabel? tripleConstraint | include | productionLabel? encapsulatedShape
 [12]    unaryShape            ::= productionLabel? (tripleConstraint | encapsulatedShape) | include
+
+# The following cause conflicts. The new one is pretty much the same.
+# [13]    encapsulatedShape     ::= '(' innerShape ')' cardinality? annotation* semanticActions
 [13]    encapsulatedShape     ::= '(' groupShape ')' cardinality? annotation* semanticActions
 [7]     include               ::= '&' shapeLabel
 [14]    shapeLabel            ::= iri | blankNode
@@ -97,13 +114,13 @@
 [20t]   DECIMAL               ::= [+-]? [0-9]* '.' [0-9]+
 [21t]   DOUBLE                ::= [+-]? ([0-9]+ '.' [0-9]* EXPONENT | '.'? [0-9]+ EXPONENT)
 [155s]  EXPONENT              ::= [eE] [+-]? [0-9]+
-[156s]  STRING_LITERAL1       ::= "'" ([^#x27#x5C#xA#xD] | ECHAR | UCHAR)* "'"
-[157s]  STRING_LITERAL2       ::= '"' ([^#x22#x5C#xA#xD] | ECHAR | UCHAR)* '"'
+[156s]  STRING_LITERAL1       ::= "'" ([^#x27#x5C#xA#xD] | ECHAR | UCHAR)* "'" /* #x27=' #x5C=\ #xA=new line #xD=carriage return */
+[157s]  STRING_LITERAL2       ::= '"' ([^#x22#x5C#xA#xD] | ECHAR | UCHAR)* '"' /* #x22=" #x5C=\ #xA=new line #xD=carriage return */
 [158s]  STRING_LITERAL_LONG1  ::= "'''" (("'" | "''")? ([^\'\\] | ECHAR | UCHAR))* "'''"
 [159s]  STRING_LITERAL_LONG2  ::= '"""' (('"' | '""')? ([^\"\\] | ECHAR | UCHAR))* '"""'
 [26t]   UCHAR                 ::= '\\u' HEX HEX HEX HEX | '\\U' HEX HEX HEX HEX HEX HEX HEX HEX
 [160s]  ECHAR                 ::= '\\' [tbnrf\\\"\']
-[162s]  WS                    ::= #x20 | #x9 | #xD | #xA
+[162s]  WS                    ::= #x20 | #x9 | #xD | #xA /* #x20=space #x9=character tabulation #xD=carriage return #xA=new line */
 [163s]  ANON                  ::= '[' WS* ']'
 [164s]  PN_CHARS_BASE         ::= [A-Z] | [a-z] | [#x00C0-#x00D6] | [#x00D8-#x00F6] | [#x00F8-#x02FF] | [#x0370-#x037D] | [#x037F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
 [165s]  PN_CHARS_U            ::= PN_CHARS_BASE | '_'

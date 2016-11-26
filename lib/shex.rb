@@ -17,20 +17,30 @@ module ShEx
   # @example
   #   query = ShEx.parse("...")
   #
-  # @param  [IO, StringIO, String, #to_s]  expression
+  # @param  [IO, StringIO, String, #to_s]  expression (ShExC or ShExJ)
+  # @param  ['shexc', 'shexj', 'sse']  format ('shexc')
   # @param  [Hash{Symbol => Object}] options
   # @return [ShEx::Algebra::Operator] The executable parsed expression.
   # @raise  [Parser::Error] on invalid input
-  def self.parse(expression, options = {})
-    Parser.new(expression, options).parse
+  def self.parse(expression, format: 'shexc', **options)
+    case format
+    when 'shexc' then Parser.new(expression, options).parse
+    when 'shexj'
+    when 'sse'
+    else raise "Unknown expression format: #{format.inspect}"
+    end
   end
 
   ##
   # Parse and execute the given ShEx `expression` string against `queriable`.
-  def self.execute(expression, queryable, options = {}, &block)
-    query = self.parse(expression, options)
-    queryable = queryable || RDF::Repository.new
+  # @param  [IO, StringIO, String, #to_s]  expression (ShExC or ShExJ)
+  # @param  ['shexc', 'shexj', 'sse']  format ('shexc')
+  # @param  [Hash{Symbol => Object}] options
+  def self.execute(expression, queryable, format: 'shexc', **options, &block)
+    shex = self.parse(expression, options)
+    queryable = queryable || RDF::Graph.new
 
+    shex.execute(queryable, options)
   rescue Parser::Error => e
     raise MalformedQuery, e.message
   end
