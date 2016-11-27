@@ -1,0 +1,5 @@
+(schema
+ (shape <http://a.example/S1>
+  (someOf (inclusion <http://a.example/S2>) (tripleConstraint <http://a.example/p1>)))
+ (shape <http://a.example/S2> (tripleConstraint <http://a.example/p2>)))
+

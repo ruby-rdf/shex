@@ -1,0 +1,3 @@
+(schema
+ (prefix (("" <http://a.example/>)))
+ (shape <http://a.example/S1> (tripleConstraint <http://a.example/p1>)))

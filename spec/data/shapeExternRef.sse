@@ -1,0 +1,5 @@
+(schema
+ (shape <http://a.example/S>
+  (tripleConstraint <http://a.example/p1> (shapeRef <http://a.example/Sext>)))
+ (shapeExternal <http://a.example/Sext>))
+

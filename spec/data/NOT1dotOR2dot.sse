@@ -1,0 +1,8 @@
+(schema
+ (shape <http://a.example/S1>
+  (or
+   (not (tripleConstraint <http://a.example/p1>))
+   (eachOf
+    (tripleConstraint <http://a.example/p1>)
+    (tripleConstraint <http://a.example/p2>)) )) )
+

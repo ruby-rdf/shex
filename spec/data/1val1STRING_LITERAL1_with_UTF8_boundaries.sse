@@ -1,0 +1,8 @@
+(schema
+ (shape <http://a.example/S1>
+  (tripleConstraint <http://a.example/p1>
+   (nodeConstraint
+    (value
+     "\u{80}\u{7ff}\u{800}\u{fff}\u{1000}\u{cfff}\u{d000}\u{d7ff}\u{e000}\u{fffd}\u{10000}\u{3fffd}\u{40000}\u{ffffd}\u{100000}\u{10fffd}"
+    )) )) )
+

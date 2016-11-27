@@ -1,0 +1,6 @@
+(schema
+ (prefix (("ex" <http://a.example/>)))
+ (shape <http://a.example/S1>
+  (tripleConstraint <http://a.example/p1>
+   (nodeConstraint (value "ab"^^<http://a.example/bloodType>))) ))
+

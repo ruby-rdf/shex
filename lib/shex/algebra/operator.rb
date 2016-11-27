@@ -19,17 +19,24 @@ module ShEx::Algebra
     def self.for(name, arity = nil)
       {
         and: And,
+        annotation: Annotation,
         base: Base,
+        inclusion: Inclusion,
         nodeConstraint: NodeConstraint,
         not: Not,
         or: Or,
         prefix: Prefix,
         schema: Schema,
+        semact: SemAct,
         shape_definition: ShapeDefinition,
+        shape_external: ShapeExternal,
         shape_ref: ShapeRef,
         shape: Shape,
+        stem: Stem,
+        stemRange: StemRange,
         tripleConstraint: TripleConstraint,
         unaryShape: UnaryShape,
+        value: Value,
       }.fetch(name.to_s.downcase.to_sym)
     end
 

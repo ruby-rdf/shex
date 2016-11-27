@@ -39,11 +39,15 @@ module ShEx
     attr_accessor :result
 
     # Terminals passed to lexer. Order matters!
-    terminal(:CODE,                 CODE) do |prod, token, input|
-      input[:CODE] = token.value
+    terminal(:CODE,                 CODE, unescape: true) do |prod, token, input|
+      # { foo %}
+      # Keep surrounding whitespace for now
+      input[:code] = token.value[1..-2].sub(/%\s*$/, '')  # Drop {} and %
     end
     terminal(:REPEAT_RANGE,         REPEAT_RANGE) do |prod, token, input|
-      input[:cardinality] = token.value
+      card = token.value[1..-2].split(',').map {|v| v =~ /^\d+$/ ? v.to_i : v}
+      card[1] = token.value.include?(',') ? '*' : card[0] if card.length == 1
+      input[:cardinality] = {min: card[0], max: card[1]}
     end
     terminal(:RDF_TYPE,             RDF_TYPE) do |prod, token, input|
       input[:iri] = (a = RDF.type.dup; a.lexical = 'a'; a)
@@ -77,28 +81,29 @@ module ShEx
     terminal(:INTEGER,              INTEGER) do |prod, token, input|
       input[:literal] = literal(token.value, datatype: RDF::XSD.integer)
     end
-    terminal(:LANGTAG,              LANGTAG) do |prod, token, input|
-      add_prod_datum(:language, token.value[1..-1])
-    end
     terminal(:PNAME_LN,             PNAME_LN, unescape: true) do |prod, token, input|
       prefix, suffix = token.value.split(":", 2)
       input[:iri] = ns(prefix, suffix)
     end
     terminal(:PNAME_NS,             PNAME_NS) do |prod, token, input|
       prefix = token.value[0..-2]
-      # [68] PrefixedName ::= PNAME_LN | PNAME_NS
+
       input[:iri] = ns(prefix, nil)
       input[:prefix] = prefix && prefix.to_sym
     end
     terminal(:ATPNAME_LN,             ATPNAME_LN, unescape: true) do |prod, token, input|
-      prefix, suffix = token.value[1..-1].split(":", 2)
+      prefix, suffix = token.value.split(":", 2)
+      prefix.sub!(/^@\s*/, '')
       input[:iri] = ns(prefix, suffix)
     end
     terminal(:ATPNAME_NS,             ATPNAME_NS) do |prod, token, input|
       prefix = token.value[1..-2]
-      # [68] PrefixedName ::= PNAME_LN | PNAME_NS
+
       input[:iri] = ns(prefix, nil)
       input[:prefix] = prefix && prefix.to_sym
+    end
+    terminal(:LANGTAG,              LANGTAG) do |prod, token, input|
+      add_prod_datum(:language, token.value[1..-1])
     end
     terminal(:STRING_LITERAL_LONG1, STRING_LITERAL_LONG1, unescape: true) do |prod, token, input|
       input[:string] = token.value[3..-4]
@@ -114,26 +119,22 @@ module ShEx
     end
 
     # String terminals
-    terminal(nil, STR_EXPR) do |prod, token, input|
+    terminal(nil, STR_EXPR, map: STR_MAP) do |prod, token, input|
       case token.value
-      when '*', '+', '?'   then input[:cardinality] = token.value
+      when '*'             then input[:cardinality] = {min: 0, max: "*"}
+      when '+'             then input[:cardinality] = {min: 1, max: "*"}
+      when '?'             then input[:cardinality] = {min: 0, max: 1}
       when '!'             then input[:not] = token.value
       when '^'             then input[:inverse] = token.value
+      when '.'             then input[:dot] = token.value
       when 'true', 'false' then input[:literal] = RDF::Literal::Boolean.new(token.value)
       when '~'             then input[:pattern] = token.value
-      else
-        #add_prod_datum(:string, token.value)
-      end
-    end
-
-    # Mixed-case Keyword terminals
-    terminal(nil, MC_EXPR, map: MC_MAP) do |prod, token, input|
-      case token.value
       when 'NOT'           then input[:not] = token.value.downcase.to_sym
       when 'EXTERNAL'      then input[:external] = token.value.downcase.to_sym
       when 'CLOSED'        then input[:closed] = token.value.downcase.to_sym
       when 'IRI', 'BNODE',
            'NONLITERAL'    then input[:nonLiteralKind] = token.value.downcase.to_sym
+      when 'LITERAL'       then input[:shapeAtomLiteral] = token.value.downcase.to_sym
       when 'LENGTH',
            'MINLENGTH',
            'MAXLENGTH'     then input[:stringLength] = token.value.downcase.to_sym
@@ -145,28 +146,16 @@ module ShEx
            'TOTALDIGITS'   then input[:numericLength] = token.value.downcase.to_sym
       when 'PATTERN'       then input[:pattern] = token.value.downcase.to_sym
       else
-        #add_prod_datum(:string, token.value)
+        #raise "Unexpected MC terminal: #{token.inspect}"
       end
     end
 
     # Productions
     # [1]     shexDoc               ::= directive* ((notStartAction | startActions) statement*)?
     production(:shexDoc) do |input, data, callback|
-      expressions = data[:expressions]
-
-      # Add prefix
-      if data[:prefixDecl]
-        pfx = data[:prefixDecl].shift
-        data[:prefixDecl].each {|p| pfx.merge!(p)}
-        pfx.operands[1] = expressions
-        expressions = pfx
-      end
-
-      # Add base
-      if base = data[:baseDecl]
-        base.operands[1] = expressions
-        expressions = base
-      end
+      expressions = Array(data[:codeDecl]) + Array(data[:expressions])
+      expressions.unshift([:prefix, data[:prefixDecl]]) if data[:prefixDecl]
+      expressions.unshift([:base, data[:baseDecl]]) if data[:baseDecl]
 
       input[:schema] = Algebra::Schema.new(*expressions)
     end
@@ -198,13 +187,27 @@ module ShEx
       (input[:shapeExpression] ||= []) << expression
     end
 
+    # [5s]    baseDecl              ::= "BASE" IRIREF
+    production(:baseDecl) do |input, data, callback|
+      input[:baseDecl] = self.base_uri = iri(data[:iri])
+    end
+
     # [5]     shape                 ::= shapeLabel (stringFacet* shapeExpression|"EXTERNAL") semanticActions
     production(:shape) do |input, data, callback|
-      label = data[:label]
-      facets = data[:facets]
+      label = Array(data[:shapeLabel]).first
       expression = data[:shapeExpression]
+      if data[:stringFacet]
+        facet = Algebra::NodeConstraint.new(data[:stringFacet])
+        expression = Algebra::And.new(facet, expression)
+      end
       actions = data[:actions]
-      shape = Algebra::Shape.new(*[label, facets, expression, actions].compact)
+      attrs = [label, expression, actions]
+      attrs += Array(data[:codeDecl])
+      shape = if data[:external]
+        Algebra::ShapeExternal.new(*attrs.compact)
+      else
+        Algebra::Shape.new(*attrs.compact)
+      end
 
       (input[:expressions] ||= []) << shape
     end
@@ -213,13 +216,35 @@ module ShEx
     production(:shapeDefinition) do |input, data, callback|
       shape = data[:shape]
       attrs = [
-        data[:includeSet],
+        data[:include],
         data[:inclPropertySet],
         (:closed if data[:closed]),
       ].compact
       shape = Algebra::ShapeDefinition.new(shape, *attrs) if shape && !attrs.empty?
 
       input[:shape] = shape if shape
+    end
+
+    # [6s]    prefixDecl            ::= "PREFIX" PNAME_NS IRIREF
+    production(:prefixDecl) do |input, data, callback|
+      pfx = data[:prefix]
+      self.prefix(pfx, data[:iri])
+      (input[:prefixDecl] ||= []) << [pfx.to_s, data[:iri]]
+    end
+
+    # [7]     includeSet            ::= '&' shapeLabel+
+    production(:includeSet) do |input, data, callback|
+      input[:include] = Algebra::Inclusion.new(*data[:shapeLabel])
+    end
+
+    # [7]     include               ::= '&' shapeLabel
+    production(:include) do |input, data, callback|
+      input[:include] = Algebra::Inclusion.new(*data[:shapeLabel])
+    end
+
+    # [8]     inclPropertySet       ::= "EXTRA" predicate+
+    production(:inclPropertySet) do |input, data, callback|
+      input[:inclPropertySet] = data[:predicate].unshift(:extra)
     end
 
     # [10]    someOfShape           ::= groupShape ('|' groupShape)*
@@ -252,7 +277,7 @@ module ShEx
 
     # [14]    shapeLabel            ::= iri | blankNode
     production(:shapeLabel) do |input, data, callback|
-      input[:label] = data[:iri] || data[:blankNode]
+      (input[:shapeLabel] ||= []) << (data[:iri] || data[:blankNode])
     end
 
     # [15]    tripleConstraint      ::= senseFlags? predicate shapeExpression cardinality? annotation* semanticActions
@@ -260,15 +285,20 @@ module ShEx
       cardinality = data.fetch(:cardinality, {})
       attrs = [
         (:inverse if data[:inverse] || data[:not]),
-        data[:iri],  # predicate
+        Array(data[:predicate]).first,  # predicate
         data[:shapeExpression],
         ([:min, cardinality[:min]] if cardinality[:min]),
-        ([:max, cardinality[:max]] if cardinality[:max]),
-        data[:semAct],
-        data[:annotation]
+        ([:max, cardinality[:max]] if cardinality[:max])
       ].compact
+      attrs += Array(data[:codeDecl])
+      attrs += Array(data[:annotation])
 
       input[:tripleConstraint] = Algebra::TripleConstraint.new(*attrs) unless attrs.empty?
+    end
+
+    # [17]    predicate             ::= iri | RDF_TYPE
+    production(:predicate) do |input, data, callback|
+      (input[:predicate] ||= []) << data[:iri]
     end
 
     # [18a]   shapeAtom        ::= "LITERAL" xsFacet*
@@ -280,10 +310,12 @@ module ShEx
     #                            | '.'  # no constraint
     production(:shapeAtom) do |input, data, callback|
       nonlit = Algebra::NodeConstraint.new(*[data[:nonLiteralKind], data[:stringFacet]].compact) if data[:nonLiteralKind]
+      literal = Algebra::NodeConstraint.new(*[data[:shapeAtomLiteral], data[:xsFacet]].compact) if data[:shapeAtomLiteral]
+      datatype = Algebra::NodeConstraint.new(*[:datatype, data[:datatype], data[:xsFacet]].compact) if data[:datatype]
       constraint = data[:nodeConstraint]
       shape = data[:shapeOrRef]
 
-      expression = [(constraint || nonlit), shape].compact
+      expression = [(constraint || nonlit || literal || datatype), shape].compact
       expression = case expression.length
       when 0 then nil
       when 1 then expression.first
@@ -295,9 +327,15 @@ module ShEx
 
     # [20]    shapeOrRef            ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel | shapeDefinition
     production(:shapeOrRef) do |input, data, callback|
-      if data[:shape] || data[:label]
-        input[:shapeOrRef] = data[:shape] || Algebra::ShapeRef.new(data[:label])
+      if data[:iri] || data[:shape] || Array(data[:shapeLabel]).first
+        input[:shapeOrRef] = data[:shape] || Algebra::ShapeRef.new(data[:iri] || Array(data[:shapeLabel]).first)
       end
+    end
+
+    # [21]    xsFacet               ::= stringFacet
+    #                                 | numericFacet
+    production(:xsFacet) do |input, data, callback|
+      input[:xsFacet] = data[:stringFacet] || data[:numericFacet]
     end
 
     # [21]    stringFacet           ::= stringLength INTEGER
@@ -307,6 +345,74 @@ module ShEx
       input[:stringFacet] = [data[:stringLength], data[:literal]] if data[:stringLength]
       input[:stringFacet] = [:pattern, data[:string]] if data[:pattern]
     end
+
+    # [21]    stringLength          ::= "LENGTH" | "MINLENGTH" | "MAXLENGTH"
+
+    # [21]    numericFacet          ::= numericRange (numericLiteral | string '^^' datatype )
+    #                                 | numericLength INTEGER
+    production(:numericFacet) do |input, data, callback|
+      input[:numericFacet] = if data[:numericRange]
+        literal = data[:literal] || literal(data[:string], datatype: data[:datatype])
+        [data[:numericRange], literal]
+      elsif data[:numericLength]
+        [data[:numericLength], data[:literal]]
+      end
+    end
+
+    # [21]    numericRange          ::= "MININCLUSIVE" | "MINEXCLUSIVE" | "MAXINCLUSIVE" | "MAXEXCLUSIVE"
+
+    # [21]    numericLength         ::= "TOTALDIGITS" | "FRACTIONDIGITS"
+
+    # [22]    datatype              ::= iri
+    production(:datatype) do |input, data, callback|
+      input[:datatype] = data[:iri]
+    end
+
+    # [23]    annotation            ::= '//' predicate (iri | literal)
+    production(:annotation) do |input, data, callback|
+      annotation = Algebra::Annotation.new(data[:predicate].first, (data[:iri] || data[:literal]))
+      (input[:annotation] ||= []) << annotation
+    end
+
+    # [25]    valueSet              ::= '[' value* ']'
+    production(:valueSet) do |input, data, callback|
+      input[:nodeConstraint] = Algebra::NodeConstraint.new(*data[:value])
+    end
+
+    # [26]    value                 ::= iriRange | literal
+    production(:value) do |input, data, callback|
+      (input[:value] ||= []) << Algebra::Value.new(data[:iriRange] || data[:literal])
+    end
+
+    # [27]    iriRange              ::= iri ('~' exclusion*)? | '.' exclusion+
+    production(:iriRange) do |input, data, callback|
+      exclusions = data[:exclusion].unshift(:exclusions) if data[:exclusion]
+      input[:iriRange] = if data[:pattern]
+        Algebra::StemRange.new(data[:iri], exclusions)
+      elsif data[:dot]
+        Algebra::StemRange.new(:wildcard, exclusions)
+      else
+        data[:iri]
+      end
+    end
+
+    # [28]    exclusion             ::= '-' iri '~'?
+    production(:exclusion) do |input, data, callback|
+      (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::Stem.new([data[:iri]]) : data[:iri])
+    end
+
+    # [129s]  rdfLiteral            ::= string (LANGTAG | '^^' datatype)?
+    production(:rdfLiteral) do |input, data, callback|
+      input[:literal] = literal(data[:string], data)
+    end
+    
+    # [0]     codeDecl              ::= '%' iri (CODE | "%")
+    production(:codeDecl) do |input, data, callback|
+      (input[:codeDecl] ||= []) <<  Algebra::SemAct.new([data[:iri], data[:code]].compact)
+    end
+
+    # [0]     startActions          ::= codeDecl+
+    # [0]     semanticActions       ::= codeDecl*
 
     ##
     # Initializes a new parser instance.
@@ -558,9 +664,7 @@ module ShEx
       # If we have a base URI, use that when constructing a new URI
       value = RDF::URI(value)
       if base_uri && value.relative?
-        u = base_uri.join(value)
-        u.lexical = "<#{value}>" unless resolve_iris?
-        u
+        base_uri.join(value)
       else
         value
       end
@@ -570,10 +674,7 @@ module ShEx
       base = prefix(prefix).to_s
       suffix = suffix.to_s.sub(/^\#/, "") if base.index("#")
       debug {"ns(#{prefix.inspect}): base: '#{base}', suffix: '#{suffix}'"}
-      iri = iri(base + suffix.to_s)
-      # Cause URI to be serialized as a lexical
-      iri.lexical = "#{prefix}:#{suffix}" unless resolve_iris?
-      iri
+      iri(base + suffix.to_s)
     end
 
     # Create a literal

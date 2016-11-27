@@ -49,11 +49,11 @@ module ShEx
     # 140s
     PNAME_NS             = /#{PN_PREFIX}?:/.freeze
     # 141s
-    PNAME_LN             = /@#{PNAME_NS}#{PN_LOCAL}/.freeze
+    PNAME_LN             = /#{PNAME_NS}#{PN_LOCAL}/.freeze
     # 140x
-    ATPNAME_NS           = /@#{PN_PREFIX}?:/.freeze
+    ATPNAME_NS           = /@#{WS}*#{PN_PREFIX}?:/.freeze
     # 141x
-    ATPNAME_LN           = /#{PNAME_NS}#{PN_LOCAL}/.freeze
+    ATPNAME_LN           = /@#{WS}*#{PNAME_NS}#{PN_LOCAL}/.freeze
     # 142s
     BLANK_NODE_LABEL     = /_:(?:[0-9]|#{PN_CHARS_U})(?:(?:#{PN_CHARS}|\.)*#{PN_CHARS})?/.freeze
     # 145s
@@ -76,30 +76,28 @@ module ShEx
     ANON                 = /\[#{WS}*\]/m.freeze
 
     # 29
-    CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*%#{WS}*\}/.freeze
+    CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*#{WS}*%#{WS}*\}/.freeze
     # 30
     REPEAT_RANGE         = /\{#{WS}*#{INTEGER}(?:,#{WS}*(?:#{INTEGER}|\*)?)?#{WS}*\}/.freeze
 
-    # String terminals, case sensitive
+    # String terminals, mixed case sensitivity
     STR_EXPR = %r(true|false
                  |\^\^|\/\/
-                 |[\(\),.;\{\}\=\-\~!\|\&\@\$^\/a]
+                 |[\(\)\{\}\[\],\.;\=\-\~!\|\&\@\$\?\+\*\%\^\/a]|
+                 (?i:OR|AND|NOT
+                   |BASE|PREFIX
+                   |IRI|BNODE|NONLITERAL|PATTERN
+                   |MINLENGTH|MAXLENGTH|LENGTH
+                   |MAXINCLUSIVE|MAXEXCLUSIVE
+                   |MININCLUSIVE|MINEXCLUSIVE
+                   |TOTALDIGITS|FRACTIONDIGITS
+                   |start
+                   |EXTERNAL|CLOSED|EXTRA|LITERAL
+                 )
               )x.freeze
 
-    # String terminals, case insensitive
-    MC_EXPR = %r(OR|AND|NOT
-                 |BASE|PREFIX
-                 |IRI|BNODE|NONLITERAL|PATTERN
-                 |MINLENGTH|MAXLENGTH|LENGTH
-                 |MAXINCLUSIVE|MAXEXCLUSIVE
-                 |MININCLUSIVE|MINEXCLUSIVE
-                 |TOTALDIGITS|FRACTIONDIGITS
-                 |start
-                 |EXTERNAL|CLOSED|EXTRA|LITERAL
-              )xi.freeze
-
     # Map terminals to canonical form
-    MC_MAP = %w{OR AND NOT BASE PREFIX IRI BNODE NONLITERAL PATTERN
+    STR_MAP = %w{OR AND NOT BASE PREFIX IRI BNODE NONLITERAL PATTERN
       MINLENGTH MAXLENGTH LENGTH MININCLUSIVE MAXINCLUSIVE MINEXCLUSIVE MAXEXCLUSIVE
       TOTALDIGITS FRACTIONDIGITS START EXTERNAL CLOSED EXTRA LITERAL}.
     inject({}) do |memo, t|

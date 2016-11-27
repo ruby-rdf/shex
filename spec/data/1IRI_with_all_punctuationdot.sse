@@ -1,0 +1,6 @@
+(schema
+ (shape <http://a.example/S1>
+  (tripleConstraint
+   <scheme:!$%25&amp;'()*+,-./0123456789:/@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz~?#>
+  )) )
+

@@ -1,0 +1,4 @@
+(schema
+ (prefix (("S2" <http://a.example/S2>)))
+ (shape <http://a.example/S1> (tripleConstraint <http://a.example/p1> (shapeRef <>)))
+ (shape <http://a.example/S2> (tripleConstraint <http://a.example/p2>)))

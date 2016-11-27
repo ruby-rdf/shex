@@ -1,0 +1,14 @@
+(schema
+ (shape <http://a.example/S1>
+  (eachOf
+   (tripleConstraint <http://a.example/p1>)
+   (tripleConstraint <http://a.example/p2>
+    (shapeRef <http://a.example/S2>)
+    (min 0)
+    (max 1)) ))
+ (shape <http://a.example/S2>
+  (tripleConstraint <http://a.example/p3> (shapeRef <http://a.example/S3>)))
+ (shape <http://a.example/S3>
+  (tripleConstraint <http://a.example/p4> (shapeRef <http://a.example/S1>)))
+ (shape <http://a.example/S4> (tripleConstraint <http://a.example/p5>)))
+

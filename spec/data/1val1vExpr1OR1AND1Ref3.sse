@@ -1,0 +1,11 @@
+(schema
+ (shape <http://a.example/vc1> (nodeConstraint literal (minlength 5)))
+ (shape <http://a.example/vc2> (nodeConstraint literal (maxlength 3)))
+ (shape <http://a.example/vc3> (nodeConstraint literal (pattern "(ab)*")))
+ (shape <http://a.example/S1>
+  (tripleConstraint <http://a.example/p1>
+   (or
+    (shapeRef <http://a.example/vc1>)
+    (and (shapeRef <http://a.example/vc2>) (shapeRef <http://a.example/vc3>)))
+  )) )
+

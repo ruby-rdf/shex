@@ -1,0 +1,2 @@
+(schema
+ (shape <http://a.example/S1> (tripleConstraint inverse <http://a.example/p1>)))

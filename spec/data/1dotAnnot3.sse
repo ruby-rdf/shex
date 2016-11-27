@@ -1,0 +1,6 @@
+(schema
+ (shape <http://a.example/S1>
+  (tripleConstraint <http://a.example/p1>
+  (annotation <http://a.example/annot1> "1")
+  (annotation <http://a.example/annot2> "2")
+  (annotation <http://a.example/annot3> "3") )) )
