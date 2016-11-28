@@ -49,9 +49,6 @@ module ShEx
       card[1] = token.value.include?(',') ? '*' : card[0] if card.length == 1
       input[:cardinality] = {min: card[0], max: card[1]}
     end
-    terminal(:RDF_TYPE,             RDF_TYPE) do |prod, token, input|
-      input[:iri] = (a = RDF.type.dup; a.lexical = 'a'; a)
-    end
     terminal(:BLANK_NODE_LABEL,     BLANK_NODE_LABEL) do |prod, token, input|
       input[:blankNode] = bnode(token.value[2..-1])
     end
@@ -113,6 +110,9 @@ module ShEx
     end
     terminal(:STRING_LITERAL2,      STRING_LITERAL2, unescape: true) do |prod, token, input|
       input[:string] = token.value[1..-2]
+    end
+    terminal(:RDF_TYPE,             RDF_TYPE) do |prod, token, input|
+      input[:iri] = (a = RDF.type.dup; a.lexical = 'a'; a)
     end
 
     # String terminals
