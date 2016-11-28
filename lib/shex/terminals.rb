@@ -18,25 +18,25 @@ module ShEx
     # 26t
     UCHAR                = EBNF::LL1::Lexer::UCHAR
     # 171s
-    PERCENT              = /%[0-9A-Fa-f]{2}/.freeze
+    PERCENT              = /%\h\h/.freeze
     # 173s
     PN_LOCAL_ESC         = /\\[_~\.\-\!$\&'\(\)\*\+,;=\/\?\#@%]/.freeze
     # 170s
     PLX                  = /#{PERCENT}|#{PN_LOCAL_ESC}/.freeze.freeze
     # 164s
-    PN_CHARS_BASE        = /[A-Z]|[a-z]|#{U_CHARS1}/.freeze
+    PN_CHARS_BASE        = /[A-Za-z]|#{U_CHARS1}/.freeze
     # 165s
     PN_CHARS_U           = /_|#{PN_CHARS_BASE}/.freeze
     # 167s
-    PN_CHARS             = /-|[0-9]|#{PN_CHARS_U}|#{U_CHARS2}/.freeze
+    PN_CHARS             = /[\d-]|#{PN_CHARS_U}|#{U_CHARS2}/.freeze
     PN_LOCAL_BODY        = /(?:(?:\.|:|#{PN_CHARS}|#{PLX})*(?:#{PN_CHARS}|:|#{PLX}))?/.freeze
     PN_CHARS_BODY        = /(?:(?:\.|#{PN_CHARS})*#{PN_CHARS})?/.freeze
     # 168s
     PN_PREFIX            = /#{PN_CHARS_BASE}#{PN_CHARS_BODY}/.freeze
     # 169s
-    PN_LOCAL             = /(?:[0-9]|:|#{PN_CHARS_U}|#{PLX})#{PN_LOCAL_BODY}/.freeze
+    PN_LOCAL             = /(?:[\d|]|#{PN_CHARS_U}|#{PLX})#{PN_LOCAL_BODY}/.freeze
     # 155s
-    EXPONENT             = /[eE][+-]?[0-9]+/
+    EXPONENT             = /[eE][+-]?\d+/
     # 160s
     ECHAR                = /\\[tbnrf\\"']/
 
@@ -55,15 +55,15 @@ module ShEx
     # 62
     ATPNAME_LN           = /@#{WS}*#{PNAME_NS}#{PN_LOCAL}/m.freeze
     # 142s
-    BLANK_NODE_LABEL     = /_:(?:[0-9]|#{PN_CHARS_U})(?:(?:#{PN_CHARS}|\.)*#{PN_CHARS})?/.freeze
+    BLANK_NODE_LABEL     = /_:(?:\d|#{PN_CHARS_U})(?:(?:#{PN_CHARS}|\.)*#{PN_CHARS})?/.freeze
     # 145s
     LANGTAG              = /@[a-zA-Z]+(?:-[a-zA-Z0-9]+)*/.freeze
     # 19t
-    INTEGER              = /[+-]?[0-9]+/.freeze
+    INTEGER              = /[+-]?\d+/.freeze
     # 20t
-    DECIMAL              = /[+-]?(?:[0-9]*\.[0-9]+)/.freeze
+    DECIMAL              = /[+-]?(?:\d*\.\d+)/.freeze
     # 21t
-    DOUBLE               = /[+-]?(?:[0-9]+\.[0-9]*#{EXPONENT}|\.?[0-9]+#{EXPONENT})/.freeze
+    DOUBLE               = /[+-]?(?:\d+\.\d*#{EXPONENT}|\.?\d+#{EXPONENT})/.freeze
     # 156s
     STRING_LITERAL1      = /'(?:[^\'\\\n\r]|#{ECHAR}|#{UCHAR})*'/.freeze
     # 157s
@@ -76,7 +76,7 @@ module ShEx
     # 29
     CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*%#{WS}*\}/m.freeze
     # 30
-    REPEAT_RANGE         = /\{#{WS}*#{INTEGER}(?:,#{WS}*(?:#{INTEGER}|\*)?)?#{WS}*\}/.freeze
+    REPEAT_RANGE         = /\{\s*#{INTEGER}(?:,#{WS}*(?:#{INTEGER}|\*)?)?#{WS}*\}/.freeze
 
     # String terminals, mixed case sensitivity
     STR_EXPR = %r(true|false
