@@ -1,9 +1,7 @@
 (schema
  (shape <http://a.example/S1>
-  (shapeDefinition
-   (tripleConstraint <http://a.example/p1>
-    (nodeConstraint (value <http://a.example/o1>) (value <http://a.example/o2>))
-    (min 1)
-    (max "*"))
-   (extra <http://a.example/p1>)) ))
-
+  (tripleConstraint <http://a.example/p1>
+   (nodeConstraint (value <http://a.example/o1>) (value <http://a.example/o2>))
+   (min 1)
+   (max "*"))
+  (extra <http://a.example/p1>)) )

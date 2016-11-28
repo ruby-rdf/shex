@@ -52,9 +52,6 @@ module ShEx
     terminal(:RDF_TYPE,             RDF_TYPE) do |prod, token, input|
       input[:iri] = (a = RDF.type.dup; a.lexical = 'a'; a)
     end
-    terminal(:ANON,                 ANON) do |prod, token, input|
-      input[:blankNode] = bnode
-    end
     terminal(:BLANK_NODE_LABEL,     BLANK_NODE_LABEL) do |prod, token, input|
       input[:blankNode] = bnode(token.value[2..-1])
     end
@@ -129,11 +126,12 @@ module ShEx
       when '.'             then input[:dot] = token.value
       when 'true', 'false' then input[:literal] = RDF::Literal::Boolean.new(token.value)
       when '~'             then input[:pattern] = token.value
-      when 'NOT'           then input[:not] = token.value.downcase.to_sym
-      when 'EXTERNAL'      then input[:external] = token.value.downcase.to_sym
-      when 'CLOSED'        then input[:closed] = token.value.downcase.to_sym
-      when 'IRI', 'BNODE',
+      when 'BNODE', 'IRI',
            'NONLITERAL'    then input[:nonLiteralKind] = token.value.downcase.to_sym
+      when 'CLOSED'        then input[:closed] = token.value.downcase.to_sym
+      when 'EXTERNAL'      then input[:external] = token.value.downcase.to_sym
+      when 'FRACTIONDIGITS',
+           'TOTALDIGITS'   then input[:numericLength] = token.value.downcase.to_sym
       when 'LITERAL'       then input[:shapeAtomLiteral] = token.value.downcase.to_sym
       when 'LENGTH',
            'MINLENGTH',
@@ -142,9 +140,9 @@ module ShEx
            'MINEXCLUSIVE',
            'MAXINCLUSIVE',
            'MAXEXCLUSIVE'  then input[:numericRange] = token.value.downcase.to_sym
-      when 'FRACTIONDIGITS',
-           'TOTALDIGITS'   then input[:numericLength] = token.value.downcase.to_sym
+         when 'NOT'           then input[:not] = token.value.downcase.to_sym
       when 'PATTERN'       then input[:pattern] = token.value.downcase.to_sym
+      when 'START'         then input[:start] = token.value.downcase.to_sym
       else
         #raise "Unexpected MC terminal: #{token.inspect}"
       end
@@ -153,55 +151,48 @@ module ShEx
     # Productions
     # [1]     shexDoc               ::= directive* ((notStartAction | startActions) statement*)?
     production(:shexDoc) do |input, data, callback|
-      expressions = Array(data[:codeDecl]) + Array(data[:expressions])
-      expressions.unshift([:prefix, data[:prefixDecl]]) if data[:prefixDecl]
-      expressions.unshift([:base, data[:baseDecl]]) if data[:baseDecl]
+      data[:start][1] = Algebra::Shape.new(data[:start][1]) if data[:start] && !data[:expressions]
+
+      expressions = []
+      expressions << [:base, data[:baseDecl]] if data[:baseDecl]
+      expressions << [:prefix, data[:prefixDecl]] if data[:prefixDecl]
+      expressions += Array(data[:codeDecl])
+      expressions << data[:start] if data[:start]
+      expressions += Array(data[:expressions])
 
       input[:schema] = Algebra::Schema.new(*expressions)
     end
 
-    # [3c]    shapeDisjunction      ::= shapeConjunction ("OR" shapeConjunction)*
-    production(:shapeDisjunction) do |input, data, callback|
-      expression = if Array(data[:shapeExpression]).length > 1
-        Algebra::Or.new(*data[:shapeExpression])
-      else
-        Array(data[:shapeExpression]).first
-      end
-      input[:shapeExpression] = expression if expression
-    end
+    # [2]     directive             ::= baseDecl | prefixDecl
 
-    # [3d]    shapeConjunction      ::= negShapeAtom ("AND" negShapeAtom)*
-    production(:shapeConjunction) do |input, data, callback|
-      expression = if Array(data[:shapeExpression]).length > 1
-        Algebra::And.new(*data[:shapeExpression])
-      else
-        Array(data[:shapeExpression]).first
-      end
-      (input[:shapeExpression] ||= []) << expression if expression
-    end
-
-    # [3e]    negShapeAtom          ::= ("NOT"|"!")? shapeAtom
-    production(:negShapeAtom) do |input, data, callback|
-      expression = data[:shapeExpression]
-      expression = Algebra::Not.new(expression) if data[:not]
-      (input[:shapeExpression] ||= []) << expression
-    end
-
-    # [5s]    baseDecl              ::= "BASE" IRIREF
+    # [3]     baseDecl              ::= "BASE" IRIREF
     production(:baseDecl) do |input, data, callback|
       input[:baseDecl] = self.base_uri = iri(data[:iri])
     end
 
-    # [5]     shape                 ::= shapeLabel (stringFacet* shapeExpression|"EXTERNAL") semanticActions
-    production(:shape) do |input, data, callback|
+    # [4]     prefixDecl            ::= "PREFIX" PNAME_NS IRIREF
+    production(:prefixDecl) do |input, data, callback|
+      pfx = data[:prefix]
+      self.prefix(pfx, data[:iri])
+      (input[:prefixDecl] ||= []) << [pfx.to_s, data[:iri]]
+    end
+
+    # [5]     notStartAction        ::= start | shapeExprDecl
+    # [6]     start                 ::= "start" '=' shapeExpression
+    production(:start) do |input, data, callback|
+      input[:start] = [:start, data[:shapeExpression]]
+    end
+    # [7]     startActions          ::= codeDecl+
+
+    # [8]     statement             ::= directive | notStartAction
+
+    # [9]     shapeExprDecl         ::= shapeLabel (shapeExpression|"EXTERNAL")
+    production(:shapeExprDecl) do |input, data, callback|
       label = Array(data[:shapeLabel]).first
       expression = data[:shapeExpression]
-      if data[:stringFacet]
-        facet = Algebra::NodeConstraint.new(data[:stringFacet])
-        expression = Algebra::And.new(facet, expression)
-      end
-      actions = data[:actions]
-      attrs = [label, expression, actions]
+      attrs = [label, expression]
+      attrs << data[:extraPropertySet] if data[:extraPropertySet]
+      attrs << :closed if data[:closed]
       attrs += Array(data[:codeDecl])
       shape = if data[:external]
         Algebra::ShapeExternal.new(*attrs.compact)
@@ -212,43 +203,191 @@ module ShEx
       (input[:expressions] ||= []) << shape
     end
 
-    # [6]     shapeDefinition       ::= (includeSet | inclPropertySet | "CLOSED")* '{' someOfShape? '}'
-    production(:shapeDefinition) do |input, data, callback|
-      shape = data[:shape]
-      attrs = [
-        data[:include],
-        data[:inclPropertySet],
-        (:closed if data[:closed]),
-      ].compact
-      shape = Algebra::ShapeDefinition.new(shape, *attrs) if shape && !attrs.empty?
+    # [10]    shapeExpression       ::= shapeOr
+    # [11]    inlineShapeExpression ::= inlineShapeOr
 
-      input[:shape] = shape if shape
+    # [12]    shapeOr               ::= shapeAnd ("OR" shapeAnd)*
+    production(:shapeOr) do |input, data, callback|
+      shape_or(input, data)
+    end
+    # [13]    inlineShapeOr         ::= inlineShapeAnd ("OR" inlineShapeAnd)*
+    production(:inlineShapeOr) do |input, data, callback|
+      shape_or(input, data)
+    end
+    def shape_or(input, data)
+      input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
+      expression = if Array(data[:shapeExpression]).length > 1
+        Algebra::Or.new(*data[:shapeExpression])
+      else
+        Array(data[:shapeExpression]).first
+      end
+      input[:shapeExpression] = expression if expression
+    end
+    private :shape_or
+
+    # [14]    shapeAnd              ::= shapeNot ("AND" shapeNot)*
+    production(:shapeAnd) do |input, data, callback|
+      shape_and(input, data)
+    end
+    # [15]    inlineShapeAnd        ::= inlineShapeNot ("AND" inlineShapeNot)*
+    production(:inlineShapeAnd) do |input, data, callback|
+      shape_and(input, data)
+    end
+    def shape_and(input, data)
+      input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
+      expressions = Array(data[:shapeExpression]).inject([]) do |memo, expr|
+        memo.concat(expr.is_a?(Algebra::And) ? expr.operands : [expr])
+      end
+      expression = if expressions.length > 1
+        Algebra::And.new(*expressions)
+      else
+        expressions.first
+      end
+      (input[:shapeExpression] ||= []) << expression if expression
+    end
+    private :shape_and
+
+    # [16]    shapeNot              ::= "NOT"? shapeAtom
+    production(:shapeNot) do |input, data, callback|
+      shape_not(input, data)
+    end
+    # [17]    inlineShapeNot        ::= "NOT"? inlineShapeAtom
+    production(:inlineShapeNot) do |input, data, callback|
+      shape_not(input, data)
+    end
+    def shape_not(input, data)
+      input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
+      expression = data[:shapeExpression]
+      expression = Algebra::Not.new(expression) if data[:not]
+      (input[:shapeExpression] ||= []) << expression
+    end
+    private :shape_not
+
+    # [18]    shapeAtom             ::= nodeConstraint shapeOrRef?
+    #                                 | shapeOrRef
+    #                                 | "(" shapeExpression ")"
+    #                                 | '.'  # no constraint
+    production(:shapeAtom) do |input, data, callback|
+      shape_atom(input, data)
+    end
+    # [19]    inlineShapeAtom       ::= nodeConstraint inlineShapeOrRef?
+    #                                 | inlineShapeOrRef nodeConstraint?
+    #                                 | "(" shapeExpression ")"
+    #                                 | '.'  # no constraint
+    production(:inlineShapeAtom) do |input, data, callback|
+      shape_atom(input, data)
+    end
+    def shape_atom(input, data)
+      constraint = data[:nodeConstraint]
+      shape = data[:shapeOrRef]
+      input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
+
+      expression = [constraint, shape].compact
+      expression = case expression.length
+      when 0 then nil
+      when 1
+         expression.first
+      else   Algebra::And.new(*expression)
+      end
+
+      input[:shapeExpression] = expression if expression
+    end
+    private :shape_atom
+
+    # [20]    shapeOrRef            ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel | shapeDefinition
+    production(:shapeOrRef) do |input, data, callback|
+      shape_or_ref(input, data)
+    end
+    # [21]    inlineShapeOrRef      ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel | inlineShapeDefinition
+    production(:inlineShapeOrRef) do |input, data, callback|
+      shape_or_ref(input, data)
+    end
+    def shape_or_ref(input, data)
+      input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
+      if data[:iri] || data[:shape] || Array(data[:shapeLabel]).first
+        input[:shapeOrRef] = data[:shape] || Algebra::ShapeRef.new(data[:iri] || Array(data[:shapeLabel]).first)
+      end
+    end
+    private :shape_or_ref
+
+    # [22]    nodeConstraint        ::= "LITERAL" xsFacet*
+    #                                 | nonLiteralKind stringFacet*
+    #                                 | datatype xsFacet*
+    #                                 | valueSet xsFacet*
+    #                                 | xsFacet+
+    production(:nodeConstraint) do |input, data, callback|
+      attrs = []
+      attrs += [:datatype, data[:datatype]] if data [:datatype]
+      attrs += [data[:shapeAtomLiteral], data[:nonLiteralKind]]
+      attrs += Array(data[:valueSetValue])
+      attrs += Array(data[:xsFacet])
+      attrs += Array(data[:stringFacet])
+
+      input[:nodeConstraint] = Algebra::NodeConstraint.new(*attrs.compact)
     end
 
-    # [6s]    prefixDecl            ::= "PREFIX" PNAME_NS IRIREF
-    production(:prefixDecl) do |input, data, callback|
-      pfx = data[:prefix]
-      self.prefix(pfx, data[:iri])
-      (input[:prefixDecl] ||= []) << [pfx.to_s, data[:iri]]
+    # [23]    nonLiteralKind        ::= "IRI" | "BNODE" | "NONLITERAL"
+
+    # [24]    xsFacet               ::= stringFacet | numericFacet
+    production(:xsFacet) do |input, data, callback|
+      (input[:xsFacet] ||= []) << (Array(data[:stringFacet]).first || data[:numericFacet])
     end
 
-    # [7]     includeSet            ::= '&' shapeLabel+
-    production(:includeSet) do |input, data, callback|
-      input[:include] = Algebra::Inclusion.new(*data[:shapeLabel])
+    # [25]    stringFacet           ::= stringLength INTEGER
+    #                                 | "PATTERN" string
+    #                                 | '~' string  # shortcut for "PATTERN"
+    production(:stringFacet) do |input, data, callback|
+      input[:stringFacet] ||= []
+      input[:stringFacet] << [data[:stringLength], data[:literal]] if data[:stringLength]
+      input[:stringFacet] << [:pattern, data[:string]] if data[:pattern]
     end
 
-    # [7]     include               ::= '&' shapeLabel
-    production(:include) do |input, data, callback|
-      input[:include] = Algebra::Inclusion.new(*data[:shapeLabel])
+    # [26]    stringLength          ::= "LENGTH" | "MINLENGTH" | "MAXLENGTH"
+
+    # [27]    numericFacet          ::= numericRange (numericLiteral | string '^^' datatype )
+    #                                 | numericLength INTEGER
+    production(:numericFacet) do |input, data, callback|
+      input[:numericFacet] = if data[:numericRange]
+        literal = data[:literal] || literal(data[:string], datatype: data[:datatype])
+        [data[:numericRange], literal]
+      elsif data[:numericLength]
+        [data[:numericLength], data[:literal]]
+      end
     end
 
-    # [8]     inclPropertySet       ::= "EXTRA" predicate+
-    production(:inclPropertySet) do |input, data, callback|
-      input[:inclPropertySet] = data[:predicate].unshift(:extra)
+    # [28]    numericRange          ::= "MININCLUSIVE" | "MINEXCLUSIVE" | "MAXINCLUSIVE" | "MAXEXCLUSIVE"
+    # [29]    numericLength         ::= "TOTALDIGITS" | "FRACTIONDIGITS"
+
+    # [30]    shapeDefinition       ::= (extraPropertySet | "CLOSED")* '{' tripleExpression? '}' annotation* semanticActions
+    #production(:shapeDefinition) do |input, data, callback|
+    #  shape_definition(input, data)
+    #end
+    ## [31]    inlineShapeDefinition ::= (extraPropertySet | "CLOSED")* '{' tripleExpression? '}'
+    #production(:inlineShapeDefinition) do |input, data, callback|
+    #  shape_definition(input, data)
+    #end
+    #def shape_definition(input, data)
+    #  shape = data[:shape]
+    #  attrs = [
+    #    data[:extraPropertySet],
+    #    (:closed if data[:closed]),
+    #  ].compact
+    #  attrs += Array(data[:annotation])
+    #  attrs += Array(data[:codeDecl])
+    #  shape = Algebra::Shape.new(shape, *attrs) if shape && !attrs.empty?
+    #
+    #  input[:shape] = shape if shape
+    #end
+    #private :shape_definition
+
+    # [32]     extraPropertySet       ::= "EXTRA" predicate+
+    production(:extraPropertySet) do |input, data, callback|
+      input[:extraPropertySet] = data[:predicate].unshift(:extra)
     end
 
-    # [10]    someOfShape           ::= groupShape ('|' groupShape)*
-    production(:someOfShape) do |input, data, callback|
+    # [33]    tripleExpression      ::= someOfTripleExpr
+    # [34]    someOfTripleExpr           ::= groupTripleExpr ('|' groupTripleExpr)*
+    production(:someOfTripleExpr) do |input, data, callback|
       expression = if Array(data[:shape]).length > 1
         Algebra::SomeOf.new(*data[:shape])
       else
@@ -257,8 +396,8 @@ module ShEx
       input[:shape] = expression if expression
     end
 
-    # [11]    groupShape            ::= unaryShape (';' unaryShape?)*
-    production(:groupShape) do |input, data, callback|
+    # [37]    groupTripleExpr            ::= unaryTripleExpr (';' unaryTripleExpr?)*
+    production(:groupTripleExpr) do |input, data, callback|
       expression = if Array(data[:shape]).length > 1
         Algebra::EachOf.new(*data[:shape])
       else
@@ -267,20 +406,36 @@ module ShEx
       (input[:shape] ||= []) << expression if expression
     end
 
-    # [12]    unaryShape            ::= productionLabel? (tripleConstraint | encapsulatedShape) | include
-    production(:unaryShape) do |input, data, callback|
-      shape = data[:tripleConstraint] || data[:encapsulatedShape] || data[:include]
-      shape.operands << data[:iri] if shape && data[:iri]
+    # [40]    unaryTripleExpr            ::= productionLabel? (tripleConstraint | bracketedTripleExpr) | include
+    production(:unaryTripleExpr) do |input, data, callback|
+      shape = data[:tripleConstraint] || data[:bracketedTripleExpr] || data[:include]
+      shape.operands << data[:productionLabel] if shape && data[:productionLabel]
 
       (input[:shape] ||= []) << shape if shape
     end
 
-    # [14]    shapeLabel            ::= iri | blankNode
-    production(:shapeLabel) do |input, data, callback|
-      (input[:shapeLabel] ||= []) << (data[:iri] || data[:blankNode])
+    # [41]    bracketedTripleExpr   ::= '(' someOfTripleExpr ')' cardinality? annotation* semanticActions
+    production(:bracketedTripleExpr) do |input, data, callback|
+      # XXX cardinality? annotation* semanticActions
+      shape = data[:shape]
+      cardinality = data.fetch(:cardinality, {})
+      attrs = [
+        ([:min, cardinality[:min]] if cardinality[:min]),
+        ([:max, cardinality[:max]] if cardinality[:max])
+      ].compact
+      attrs += Array(data[:codeDecl])
+      attrs += Array(data[:annotation])
+
+      shape.operands.concat(attrs)
+      input[:bracketedTripleExpr] = shape
     end
 
-    # [15]    tripleConstraint      ::= senseFlags? predicate shapeExpression cardinality? annotation* semanticActions
+    # [42]    productionLabel       ::= '$' (iri | blankNode)
+    production(:productionLabel) do |input, data, callback|
+      input[:productionLabel] = datea[:iri] || data[:blankNode]
+    end
+
+    # [43]    tripleConstraint      ::= senseFlags? predicate shapeExpression cardinality? annotation* semanticActions
     production(:tripleConstraint) do |input, data, callback|
       cardinality = data.fetch(:cardinality, {})
       attrs = [
@@ -296,99 +451,22 @@ module ShEx
       input[:tripleConstraint] = Algebra::TripleConstraint.new(*attrs) unless attrs.empty?
     end
 
-    # [17]    predicate             ::= iri | RDF_TYPE
-    production(:predicate) do |input, data, callback|
-      (input[:predicate] ||= []) << data[:iri]
+    # [44]    cardinality            ::= '*' | '+' | '?' | REPEAT_RANGE
+    # [45]    senseFlags             ::= '^'
+    # [46]    valueSet              ::= '[' valueSetValue* ']'
+
+    # [47]    valueSetValue         ::= iriRange | literal
+    production(:valueSetValue) do |input, data, callback|
+      (input[:valueSetValue] ||= []) << Algebra::Value.new(data[:iriRange] || data[:literal])
     end
 
-    # [18a]   shapeAtom        ::= "LITERAL" xsFacet*
-    #                            | nonLiteralKind stringFacet* shapeOrRef?
-    #                            | datatype xsFacet*
-    #                            | shapeOrRef stringFacet*
-    #                            | valueSet
-    #                            | "(" shapeExpression ")"
-    #                            | '.'  # no constraint
-    production(:shapeAtom) do |input, data, callback|
-      nonlit = Algebra::NodeConstraint.new(*[data[:nonLiteralKind], data[:stringFacet]].compact) if data[:nonLiteralKind]
-      literal = Algebra::NodeConstraint.new(*[data[:shapeAtomLiteral], data[:xsFacet]].compact) if data[:shapeAtomLiteral]
-      datatype = Algebra::NodeConstraint.new(*[:datatype, data[:datatype], data[:xsFacet]].compact) if data[:datatype]
-      constraint = data[:nodeConstraint]
-      shape = data[:shapeOrRef]
-
-      expression = [(constraint || nonlit || literal || datatype), shape].compact
-      expression = case expression.length
-      when 0 then nil
-      when 1 then expression.first
-      else   Algebra::And.new(*expression)
-      end
-        
-      input[:shapeExpression] = expression if expression
-    end
-
-    # [20]    shapeOrRef            ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel | shapeDefinition
-    production(:shapeOrRef) do |input, data, callback|
-      if data[:iri] || data[:shape] || Array(data[:shapeLabel]).first
-        input[:shapeOrRef] = data[:shape] || Algebra::ShapeRef.new(data[:iri] || Array(data[:shapeLabel]).first)
-      end
-    end
-
-    # [21]    xsFacet               ::= stringFacet
-    #                                 | numericFacet
-    production(:xsFacet) do |input, data, callback|
-      input[:xsFacet] = data[:stringFacet] || data[:numericFacet]
-    end
-
-    # [21]    stringFacet           ::= stringLength INTEGER
-    #                                 | "PATTERN" string
-    #                                 | '~' string  # shortcut for "PATTERN"
-    production(:stringFacet) do |input, data, callback|
-      input[:stringFacet] = [data[:stringLength], data[:literal]] if data[:stringLength]
-      input[:stringFacet] = [:pattern, data[:string]] if data[:pattern]
-    end
-
-    # [21]    stringLength          ::= "LENGTH" | "MINLENGTH" | "MAXLENGTH"
-
-    # [21]    numericFacet          ::= numericRange (numericLiteral | string '^^' datatype )
-    #                                 | numericLength INTEGER
-    production(:numericFacet) do |input, data, callback|
-      input[:numericFacet] = if data[:numericRange]
-        literal = data[:literal] || literal(data[:string], datatype: data[:datatype])
-        [data[:numericRange], literal]
-      elsif data[:numericLength]
-        [data[:numericLength], data[:literal]]
-      end
-    end
-
-    # [21]    numericRange          ::= "MININCLUSIVE" | "MINEXCLUSIVE" | "MAXINCLUSIVE" | "MAXEXCLUSIVE"
-
-    # [21]    numericLength         ::= "TOTALDIGITS" | "FRACTIONDIGITS"
-
-    # [22]    datatype              ::= iri
-    production(:datatype) do |input, data, callback|
-      input[:datatype] = data[:iri]
-    end
-
-    # [23]    annotation            ::= '//' predicate (iri | literal)
-    production(:annotation) do |input, data, callback|
-      annotation = Algebra::Annotation.new(data[:predicate].first, (data[:iri] || data[:literal]))
-      (input[:annotation] ||= []) << annotation
-    end
-
-    # [25]    valueSet              ::= '[' value* ']'
-    production(:valueSet) do |input, data, callback|
-      input[:nodeConstraint] = Algebra::NodeConstraint.new(*data[:value])
-    end
-
-    # [26]    value                 ::= iriRange | literal
-    production(:value) do |input, data, callback|
-      (input[:value] ||= []) << Algebra::Value.new(data[:iriRange] || data[:literal])
-    end
-
-    # [27]    iriRange              ::= iri ('~' exclusion*)? | '.' exclusion+
+    # [48]    iriRange              ::= iri ('~' exclusion*)? | '.' exclusion+
     production(:iriRange) do |input, data, callback|
       exclusions = data[:exclusion].unshift(:exclusions) if data[:exclusion]
-      input[:iriRange] = if data[:pattern]
+      input[:iriRange] = if data[:pattern] && exclusions
         Algebra::StemRange.new(data[:iri], exclusions)
+      elsif data[:pattern]
+        Algebra::StemRange.new(data[:iri])
       elsif data[:dot]
         Algebra::StemRange.new(:wildcard, exclusions)
       else
@@ -396,23 +474,58 @@ module ShEx
       end
     end
 
-    # [28]    exclusion             ::= '-' iri '~'?
+    # [49]    exclusion             ::= '-' iri '~'?
     production(:exclusion) do |input, data, callback|
       (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::Stem.new([data[:iri]]) : data[:iri])
     end
 
-    # [129s]  rdfLiteral            ::= string (LANGTAG | '^^' datatype)?
-    production(:rdfLiteral) do |input, data, callback|
-      input[:literal] = literal(data[:string], data)
+    # [50]     include               ::= '&' shapeLabel
+    production(:include) do |input, data, callback|
+      input[:include] = Algebra::Inclusion.new(*data[:shapeLabel])
     end
-    
-    # [0]     codeDecl              ::= '%' iri (CODE | "%")
+
+    # [51]    annotation            ::= '//' predicate (iri | literal)
+    production(:annotation) do |input, data, callback|
+      annotation = Algebra::Annotation.new(data[:predicate].first, (data[:iri] || data[:literal]))
+      (input[:annotation] ||= []) << annotation
+    end
+
+    # [52]    semanticActions       ::= codeDecl*
+
+    # [53]    codeDecl              ::= '%' iri (CODE | "%")
     production(:codeDecl) do |input, data, callback|
       (input[:codeDecl] ||= []) <<  Algebra::SemAct.new([data[:iri], data[:code]].compact)
     end
 
-    # [0]     startActions          ::= codeDecl+
-    # [0]     semanticActions       ::= codeDecl*
+    # [13t]   literal               ::= rdfLiteral | numericLiteral | booleanLiteral
+
+    # [54]    predicate             ::= iri | RDF_TYPE
+    production(:predicate) do |input, data, callback|
+      (input[:predicate] ||= []) << data[:iri]
+    end
+
+    # [55]    datatype              ::= iri
+    production(:datatype) do |input, data, callback|
+      input[:datatype] = data[:iri]
+    end
+
+    # [56]    shapeLabel            ::= iri | blankNode
+    production(:shapeLabel) do |input, data, callback|
+      (input[:shapeLabel] ||= []) << (data[:iri] || data[:blankNode])
+    end
+
+    # [16t]   numericLiteral        ::= INTEGER | DECIMAL | DOUBLE
+    # [129s]  rdfLiteral            ::= string (LANGTAG | '^^' datatype)?
+    production(:rdfLiteral) do |input, data, callback|
+      input[:literal] = literal(data[:string], data)
+    end
+
+    # [134s]  booleanLiteral        ::= 'true' | 'false'
+    # [135s]  string                ::= STRING_LITERAL1 | STRING_LITERAL_LONG1
+    #                                 | STRING_LITERAL2 | STRING_LITERAL_LONG2
+    # [136s]  iri                   ::= IRIREF | prefixedName
+    # [137s]  prefixedName          ::= PNAME_LN | PNAME_NS
+    # [138s]  blankNode             ::= BLANK_NODE_LABEL
 
     ##
     # Initializes a new parser instance.

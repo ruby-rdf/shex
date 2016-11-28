@@ -1,0 +1,9 @@
+(schema
+ (shape <http://a.example/S1>
+  (someOf
+   (tripleConstraint <http://a.example/p1>)
+   (tripleConstraint <http://a.example/p2>)
+   (tripleConstraint <http://a.example/p3>)
+   (min 2)
+   (max 2)) ))
+

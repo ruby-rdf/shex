@@ -39,10 +39,10 @@ module ShEx
     EXPONENT             = /[eE][+-]?[0-9]+/
     # 160s
     ECHAR                = /\\[tbnrf\\"']/
-    # 79
+
     WS                   = /(?:\s|(?:#[^\n\r]*))+/m.freeze
 
-    # 3y
+    # 60
     RDF_TYPE             = /a/.freeze
     # 18t
     IRIREF               = /<(?:#{IRI_RANGE}|#{UCHAR})*>/.freeze
@@ -50,10 +50,10 @@ module ShEx
     PNAME_NS             = /#{PN_PREFIX}?:/.freeze
     # 141s
     PNAME_LN             = /#{PNAME_NS}#{PN_LOCAL}/.freeze
-    # 140x
-    ATPNAME_NS           = /@#{WS}*#{PN_PREFIX}?:/.freeze
-    # 141x
-    ATPNAME_LN           = /@#{WS}*#{PNAME_NS}#{PN_LOCAL}/.freeze
+    # 61
+    ATPNAME_NS           = /@#{WS}*#{PN_PREFIX}?:/m.freeze
+    # 62
+    ATPNAME_LN           = /@#{WS}*#{PNAME_NS}#{PN_LOCAL}/m.freeze
     # 142s
     BLANK_NODE_LABEL     = /_:(?:[0-9]|#{PN_CHARS_U})(?:(?:#{PN_CHARS}|\.)*#{PN_CHARS})?/.freeze
     # 145s
@@ -72,8 +72,6 @@ module ShEx
     STRING_LITERAL_LONG1 = /'''(?:(?:'|'')?(?:[^'\\]|#{ECHAR}|#{UCHAR}))*'''/m.freeze
     # 159s
     STRING_LITERAL_LONG2 = /"""(?:(?:"|"")?(?:[^"\\]|#{ECHAR}|#{UCHAR}))*"""/m.freeze
-    # 163s
-    ANON                 = /\[#{WS}*\]/m.freeze
 
     # 29
     CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*%#{WS}*\}/m.freeze

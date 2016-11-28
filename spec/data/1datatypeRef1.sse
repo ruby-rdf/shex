@@ -1,0 +1,7 @@
+(schema
+ (shape <http://a.example/IssueShape>
+  (tripleConstraint <http://a.example/p1>
+   (and
+    (nodeConstraint datatype <http://a.example/dt1>)
+    (shapeRef <http://a.example/IssueShape>)) )) )
+

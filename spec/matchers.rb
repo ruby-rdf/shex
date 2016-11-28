@@ -51,10 +51,10 @@ RSpec::Matchers.define :generate do |expected, options = {}|
       "Expected     : #{expected}\n"
     else
       "Expected     : #{expected.inspect}\n" +
-      "Expected(sse): #{expected.to_sxp}\n"
+      "Expected(sse): #{SXP::Generator.string(expected.to_sxp_bin)}\n"
     end +
     "Actual       : #{actual.inspect}\n" +
-    "Actual(sse)  : #{actual.to_sxp}\n" +
+    "Actual(sse)  : #{SXP::Generator.string(actual.to_sxp_bin)}\n" +
     "Processing results:\n#{@debug.is_a?(Array) ? @debug.join("\n") : ''}"
   end
 end

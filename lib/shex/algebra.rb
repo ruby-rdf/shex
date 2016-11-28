@@ -19,7 +19,6 @@ module ShEx
     autoload :Prefix, 'shex/algebra/prefix'
     autoload :Schema, 'shex/algebra/schema'
     autoload :SemAct, 'shex/algebra/semact'
-    autoload :ShapeDefinition, 'shex/algebra/shape_definition'
     autoload :ShapeExternal, 'shex/algebra/shape_external'
     autoload :ShapeRef, 'shex/algebra/shape_ref'
     autoload :Shape, 'shex/algebra/shape'

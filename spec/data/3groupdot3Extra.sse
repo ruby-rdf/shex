@@ -1,12 +1,10 @@
 (schema
  (shape <http://a.example/S1>
-  (shapeDefinition
-   (eachOf
-    (tripleConstraint <http://a.example/p1>
-     (nodeConstraint (value <http://a.example/o1>)))
-    (tripleConstraint <http://a.example/p2>
-     (nodeConstraint (value <http://a.example/o2>)))
-    (tripleConstraint <http://a.example/p3>
-     (nodeConstraint (value <http://a.example/o3>))) )
-   (extra <http://a.example/p3>)) ))
-
+  (eachOf
+   (tripleConstraint <http://a.example/p1>
+    (nodeConstraint (value <http://a.example/o1>)))
+   (tripleConstraint <http://a.example/p2>
+    (nodeConstraint (value <http://a.example/o2>)))
+   (tripleConstraint <http://a.example/p3>
+    (nodeConstraint (value <http://a.example/o3>))) )
+  (extra <http://a.example/p3>)) )

@@ -28,7 +28,6 @@ module ShEx::Algebra
         prefix: Prefix,
         schema: Schema,
         semact: SemAct,
-        shape_definition: ShapeDefinition,
         shape_external: ShapeExternal,
         shape_ref: ShapeRef,
         shape: Shape,

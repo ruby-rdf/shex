@@ -1,5 +1,4 @@
 (schema
  (shape <http://a.example/S1>
-  (shapeDefinition
-   (tripleConstraint <http://a.example/p1>)
-   (extra <http://a.example/p1>)) ))
+  (tripleConstraint <http://a.example/p1>)
+  (extra <http://a.example/p1>)) )
