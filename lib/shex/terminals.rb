@@ -76,7 +76,7 @@ module ShEx
     ANON                 = /\[#{WS}*\]/m.freeze
 
     # 29
-    CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*#{WS}*%#{WS}*\}/.freeze
+    CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*%#{WS}*\}/m.freeze
     # 30
     REPEAT_RANGE         = /\{#{WS}*#{INTEGER}(?:,#{WS}*(?:#{INTEGER}|\*)?)?#{WS}*\}/.freeze
 
@@ -91,7 +91,7 @@ module ShEx
                    |MAXINCLUSIVE|MAXEXCLUSIVE
                    |MININCLUSIVE|MINEXCLUSIVE
                    |TOTALDIGITS|FRACTIONDIGITS
-                   |start
+                   |START
                    |EXTERNAL|CLOSED|EXTRA|LITERAL
                  )
               )x.freeze
