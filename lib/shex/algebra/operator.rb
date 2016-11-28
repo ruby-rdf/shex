@@ -31,6 +31,7 @@ module ShEx::Algebra
         shape_external: ShapeExternal,
         shape_ref: ShapeRef,
         shape: Shape,
+        start: Start,
         stem: Stem,
         stemRange: StemRange,
         tripleConstraint: TripleConstraint,
@@ -82,6 +83,7 @@ module ShEx::Algebra
           when TrueClass, FalseClass, Numeric, String, DateTime, Date, Time
             RDF::Literal(operand)
           when NilClass
+            raise ShEx::OperandError, "Found nil operand for #{self.class.name}"
             nil
           else raise TypeError, "invalid SPARQL::Algebra::Operator operand: #{operand.inspect}"
         end
@@ -198,6 +200,63 @@ module ShEx::Algebra
       other.class == self.class && other.operands == self.operands
     end
     alias_method :==, :eql?
+
+    ##
+    # Enumerate via depth-first recursive descent over operands, yielding each operator
+    # @yield operator
+    # @yieldparam [Object] operator
+    # @return [Enumerator]
+    def each_descendant(&block)
+      if block_given?
+        operands.each do |operand|
+          case operand
+          when Array
+            operand.each do |op|
+              op.each_descendant(&block) if op.respond_to?(:each_descendant)
+              block.call(op)
+            end
+          else
+            operand.each_descendant(&block) if operand.respond_to?(:each_descendant)
+          end
+          block.call(operand)
+        end
+      end
+      enum_for(:each_descendant)
+    end
+    alias_method :descendants, :each_descendant
+    alias_method :each, :each_descendant
+
+    ##
+    # Parent expression, if any
+    #
+    # @return [Operator]
+    def parent; @options[:parent]; end
+
+    ##
+    # Parent operator, if any
+    #
+    # @return [Operator]
+    def parent=(operator)
+      @options[:parent]= operator
+    end
+
+    ##
+    # First ancestor operator of type `klass`
+    #
+    # @param [Class] klass
+    # @return [Operator]
+    def first_ancestor(klass)
+      parent.is_a?(klass) ? parent : parent.first_ancestor(klass) if parent
+    end
+
+    ##
+    # Validate all operands, operator specific classes should override for operator-specific validation
+    # @return [SPARQL::Algebra::Expression] `self`
+    # @raise  [ArgumentError] if the value is invalid
+    def validate!
+      operands.each {|op| op.validate! if op.respond_to?(:validate!)}
+      self
+    end
 
     ##
     # A unary operator.

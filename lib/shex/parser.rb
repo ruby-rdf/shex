@@ -78,6 +78,7 @@ module ShEx
     terminal(:PNAME_LN,             PNAME_LN, unescape: true) do |prod, token, input|
       prefix, suffix = token.value.split(":", 2)
       input[:iri] = ns(prefix, suffix)
+      error(nil, "Compact IRI missing prefix definition: #{token.value}", production: :PNAME_LN) unless input[:iri].absolute?
     end
     terminal(:PNAME_NS,             PNAME_NS) do |prod, token, input|
       prefix = token.value[0..-2]
@@ -87,15 +88,15 @@ module ShEx
     end
     terminal(:ATPNAME_LN,             ATPNAME_LN, unescape: true) do |prod, token, input|
       prefix, suffix = token.value.split(":", 2)
-      prefix.sub!(/^@\s*/, '')
-      input[:iri] = ns(prefix, suffix)
+      prefix.sub!(/^@#{WS}*/, '')
+      input[:shapeLabel] = ns(prefix, suffix)
+      error(nil, "Compact IRI missing prefix definition: #{token.value}", production: :ATPNAME_LN) unless input[:shapeLabel].absolute?
     end
     terminal(:ATPNAME_NS,             ATPNAME_NS) do |prod, token, input|
       prefix = token.value[0..-2]
       prefix.sub!(/^@\s*/, '')
 
-      input[:iri] = ns(prefix, nil)
-      input[:prefix] = prefix && prefix.to_sym
+      input[:shapeLabel] = ns(prefix, nil)
     end
     terminal(:LANGTAG,              LANGTAG) do |prod, token, input|
       input[:language] = token.value[1..-1]
@@ -152,13 +153,13 @@ module ShEx
     # Productions
     # [1]     shexDoc               ::= directive* ((notStartAction | startActions) statement*)?
     production(:shexDoc) do |input, data, callback|
-      data[:start][1] = Algebra::Shape.new(data[:start][1]) if data[:start] && !data[:expressions]
+      data[:start] = Algebra::Shape.new(data[:start]) if data[:start] && !data[:expressions]
 
       expressions = []
       expressions << [:base, data[:baseDecl]] if data[:baseDecl]
       expressions << [:prefix, data[:prefixDecl]] if data[:prefixDecl]
       expressions += Array(data[:codeDecl])
-      expressions << data[:start] if data[:start]
+      expressions << Algebra::Start.new(data[:start]) if data[:start]
       expressions += Array(data[:expressions])
 
       input[:schema] = Algebra::Schema.new(*expressions)
@@ -181,7 +182,7 @@ module ShEx
     # [5]     notStartAction        ::= start | shapeExprDecl
     # [6]     start                 ::= "start" '=' shapeExpression
     production(:start) do |input, data, callback|
-      input[:start] = [:start, data[:shapeExpression]]
+      input[:start] = data[:shapeExpression]
     end
     # [7]     startActions          ::= codeDecl+
 
@@ -223,6 +224,8 @@ module ShEx
         Array(data[:shapeExpression]).first
       end
       input[:shapeExpression] = expression if expression
+    rescue ShEx::OperandError => e
+      error(nil, "Operand Error on OR: #{e.message}")
     end
     private :shape_or
 
@@ -245,6 +248,8 @@ module ShEx
         expressions.first
       end
       (input[:shapeExpression] ||= []) << expression if expression
+    rescue ShEx::OperandError => e
+      error(nil, "Operand Error on AND: #{e.message}")
     end
     private :shape_and
 
@@ -260,7 +265,8 @@ module ShEx
       input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
       expression = data[:shapeExpression]
       expression = Algebra::Not.new(expression) if data[:not]
-      (input[:shapeExpression] ||= []) << expression
+      #error(nil, "Expected an atom for NOT") unless expression
+      (input[:shapeExpression] ||= []) << expression if expression
     end
     private :shape_not
 
@@ -280,7 +286,7 @@ module ShEx
     end
     def shape_atom(input, data)
       constraint = data[:nodeConstraint]
-      shape = data[:shapeOrRef]
+      shape = data[:shapeOrRef] || data[:shapeExpression]
       input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
 
       expression = [constraint, shape].compact
@@ -305,9 +311,11 @@ module ShEx
     end
     def shape_or_ref(input, data)
       input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
-      if data[:iri] || data[:shape] || Array(data[:shapeLabel]).first
-        input[:shapeOrRef] = data[:shape] || Algebra::ShapeRef.new(data[:iri] || Array(data[:shapeLabel]).first)
+      if data[:shape] || Array(data[:shapeLabel]).first
+        input[:shapeOrRef] = data[:shape] || Algebra::ShapeRef.new(Array(data[:shapeLabel]).first)
       end
+    rescue ShEx::ShapeError => e
+      error(nil, "Operand Error on ShapeOrRef: #{e.message}")
     end
     private :shape_or_ref
 
@@ -317,11 +325,19 @@ module ShEx
     #                                 | valueSet xsFacet*
     #                                 | xsFacet+
     production(:nodeConstraint) do |input, data, callback|
+      # Semantic validate (A Syntax error)
+      case
+      when data[:datatype] && data[:numericFacet]
+        # Can only use a numeric facet on a numeric datatype
+        l = RDF::Literal.new("1", datatype: data[:datatype])
+        error(nil, "Numeric facet used on non-numeric datatype: #{data[:datatype]}", production: :nodeConstraint) unless l.is_a?(RDF::Literal::Numeric)
+      end
+
       attrs = []
       attrs += [:datatype, data[:datatype]] if data [:datatype]
       attrs += [data[:shapeAtomLiteral], data[:nonLiteralKind]]
       attrs += Array(data[:valueSetValue])
-      attrs += Array(data[:xsFacet])
+      attrs += Array(data[:numericFacet])
       attrs += Array(data[:stringFacet])
 
       input[:nodeConstraint] = Algebra::NodeConstraint.new(*attrs.compact)
@@ -330,17 +346,19 @@ module ShEx
     # [23]    nonLiteralKind        ::= "IRI" | "BNODE" | "NONLITERAL"
 
     # [24]    xsFacet               ::= stringFacet | numericFacet
-    production(:xsFacet) do |input, data, callback|
-      (input[:xsFacet] ||= []) << (Array(data[:stringFacet]).first || data[:numericFacet])
-    end
-
     # [25]    stringFacet           ::= stringLength INTEGER
     #                                 | "PATTERN" string
     #                                 | '~' string  # shortcut for "PATTERN"
     production(:stringFacet) do |input, data, callback|
       input[:stringFacet] ||= []
-      input[:stringFacet] << [data[:stringLength], data[:literal]] if data[:stringLength]
-      input[:stringFacet] << [:pattern, data[:string]] if data[:pattern]
+      input[:stringFacet] << if data[:stringLength]
+        if input[:stringFacet].flatten.include?(data[:stringLength])
+          error(nil, "#{data[:stringLength]} constraint may only be used once in a Node Constraint", production: :stringFacet)
+        end
+        [data[:stringLength], data[:literal]]
+      elsif data[:pattern]
+        [:pattern, data[:string]]
+      end
     end
 
     # [26]    stringLength          ::= "LENGTH" | "MINLENGTH" | "MAXLENGTH"
@@ -348,8 +366,10 @@ module ShEx
     # [27]    numericFacet          ::= numericRange (numericLiteral | string '^^' datatype )
     #                                 | numericLength INTEGER
     production(:numericFacet) do |input, data, callback|
-      input[:numericFacet] = if data[:numericRange]
+      input[:numericFacet] ||= []
+      input[:numericFacet] << if data[:numericRange]
         literal = data[:literal] || literal(data[:string], datatype: data[:datatype])
+        error(nil, "numericRange must use a numeric datatype: #{data[:datatype]}", production: :numericFacet) unless literal.is_a?(RDF::Literal::Numeric)
         [data[:numericRange], literal]
       elsif data[:numericLength]
         [data[:numericLength], data[:literal]]
@@ -418,7 +438,11 @@ module ShEx
     # [41]    bracketedTripleExpr   ::= '(' someOfTripleExpr ')' cardinality? annotation* semanticActions
     production(:bracketedTripleExpr) do |input, data, callback|
       # XXX cardinality? annotation* semanticActions
-      shape = data[:shape]
+      case shape = data[:shape]
+      when Algebra::SomeOf, Algebra::EachOf
+      else
+        error(nil, "Bracketed Expression requires multiple contained expressions", production: :bracketedTripleExpr)
+      end
       cardinality = data.fetch(:cardinality, {})
       attrs = [
         ([:min, cardinality[:min]] if cardinality[:min]),

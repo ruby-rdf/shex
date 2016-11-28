@@ -75,16 +75,52 @@ describe ShEx::Parser do
   end
 
   context "schema to SSE" do
-    Dir.glob("spec/shexTest/schemas/*.shex").
-      map {|f| f.split('/').last.sub('.shex', '')}.
-      each do |file|
-      it file do
-        input = File.read File.expand_path("../shexTest/schemas/#{file}.shex", __FILE__)
+    context "Positive Syntax Tests" do
+      Dir.glob("spec/shexTest/schemas/*.shex").
+        map {|f| f.split('/').last.sub('.shex', '')}.
+        each do |file|
+        it file do
+          input = File.read File.expand_path("../shexTest/schemas/#{file}.shex", __FILE__)
+
+          case file
+          when '_all'
+            pending("All has a self-including shape, which is invalid")
+          end
         
-        if sse = File.read(File.expand_path("../data/#{file}.sse", __FILE__)) rescue nil
-          expect(input).to generate(sse)
-        else
-          skip "expected result"
+          sse = File.read(File.expand_path("../data/#{file}.sse", __FILE__))
+          expect(input).to generate(sse, validate: true)
+        end
+      end
+    end
+
+    context "Negative Syntax Tests" do
+      Dir.glob("spec/shexTest/negativeSyntax/*.shex").
+        map {|f| f.split('/').last.sub('.shex', '')}.
+        each do |file|
+        it file do
+          input = File.read File.expand_path("../shexTest/negativeSyntax/#{file}.shex", __FILE__)
+
+          case file
+          when 'openopen1dotOr1dotclose'
+            pending("Missing production multiElementSomeOf")
+          end
+          expect(input).to generate(ShEx::ParseError, validate: true)
+        end
+      end
+    end
+
+    context "Negative Structure Tests" do
+      Dir.glob("spec/shexTest/negativeStructure/*.shex").
+        map {|f| f.split('/').last.sub('.shex', '')}.
+        each do |file|
+        it file do
+          input = File.read File.expand_path("../shexTest/negativeStructure/#{file}.shex", __FILE__)
+
+          case file
+          when '1focusRefANDSelfdot'
+            pending("It is self referning (OK?) and includes an empty shape (OK?)")
+          end
+          expect(input).to generate(ShEx::ParseError, validate: true)
         end
       end
     end

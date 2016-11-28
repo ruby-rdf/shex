@@ -95,7 +95,7 @@
      (min 0)
      (max "*"))
     (tripleConstraint <http://ex.example/#says>
-     (shapeRef <http://ex.example/EmployeeShape>)
+     (shapeRef <http://ex.example/#EmployeeShape>)
      (min 0)
      (max "*")) )) )
  (shape <http://ex.example/#FooID>

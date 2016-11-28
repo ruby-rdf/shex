@@ -23,6 +23,7 @@ module ShEx
     autoload :ShapeRef, 'shex/algebra/shape_ref'
     autoload :Shape, 'shex/algebra/shape'
     autoload :SomeOf, 'shex/algebra/some_of'
+    autoload :Start, 'shex/algebra/start'
     autoload :Stem, 'shex/algebra/stem'
     autoload :StemRange, 'shex/algebra/stem_range'
     autoload :TripleConstraint, 'shex/algebra/triple_constraint'

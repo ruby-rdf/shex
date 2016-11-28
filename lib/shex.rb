@@ -61,6 +61,9 @@ module ShEx
     end
   end
 
+  # An error found on an operand
+  class OperandError < Error; end
+
   # Indicates bad syntax found in LD Patch document
   class ParseError < Error
     ##
