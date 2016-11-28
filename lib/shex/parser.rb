@@ -91,7 +91,8 @@ module ShEx
       input[:iri] = ns(prefix, suffix)
     end
     terminal(:ATPNAME_NS,             ATPNAME_NS) do |prod, token, input|
-      prefix = token.value[1..-2]
+      prefix = token.value[0..-2]
+      prefix.sub!(/^@\s*/, '')
 
       input[:iri] = ns(prefix, nil)
       input[:prefix] = prefix && prefix.to_sym
