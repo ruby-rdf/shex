@@ -100,7 +100,7 @@ module ShEx
       input[:prefix] = prefix && prefix.to_sym
     end
     terminal(:LANGTAG,              LANGTAG) do |prod, token, input|
-      add_prod_datum(:language, token.value[1..-1])
+      input[:language] = token.value[1..-1]
     end
     terminal(:STRING_LITERAL_LONG1, STRING_LITERAL_LONG1, unescape: true) do |prod, token, input|
       input[:string] = token.value[3..-4]
