@@ -3,5 +3,5 @@
   (
    (<http://a.example/S1>
     (shape
-     (tripleConstraint <http://a.example/p1> (tripleConstraint <http://a.example/p2>))) )) ))
-
+     (tripleConstraint <http://a.example/p1>
+      (shape (tripleConstraint <http://a.example/p2>))) )) )) )

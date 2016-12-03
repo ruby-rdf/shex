@@ -17,6 +17,7 @@ module ShEx
     autoload :Operator, 'shex/algebra/operator'
     autoload :Or, 'shex/algebra/or'
     autoload :Prefix, 'shex/algebra/prefix'
+    autoload :Satisfiable, 'shex/algebra/satisfiable'
     autoload :Schema, 'shex/algebra/schema'
     autoload :SemAct, 'shex/algebra/semact'
     autoload :ShapeExternal, 'shex/algebra/shape_external'
@@ -27,6 +28,7 @@ module ShEx
     autoload :Stem, 'shex/algebra/stem'
     autoload :StemRange, 'shex/algebra/stem_range'
     autoload :TripleConstraint, 'shex/algebra/triple_constraint'
+    autoload :TripleExpression, 'shex/algebra/triple_expression'
     autoload :UnaryShape, 'shex/algebra/unary_shape'
     autoload :Value, 'shex/algebra/value'
   end

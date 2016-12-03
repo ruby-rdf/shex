@@ -9,6 +9,11 @@ describe ShEx::Algebra, skip: "Not ready yet" do
     {
       "Node Kind Example" => {
         shex: %(ex:IssueShape {ex:state IRI}),
+        ttl: %(
+          <issue1> ex:state ex:HunkyDory .
+          <issue2> ex:taste ex:GoodEnough .
+          <issue2> ex:taste ex:GoodEnough .
+        )
         expected: [
           {ttl: %(<issue1> ex:state ex:HunkyDory .), result: true},
           {ttl: %(<issue2> ex:taste ex:GoodEnough .), result: false},

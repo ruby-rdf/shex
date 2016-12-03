@@ -2,5 +2,4 @@
  (shapes
   (
    (<http://a.example/S1>
-    (and (nodeConstraint bnode (length 19)) (tripleConstraint <http://a.example/p1>))) )) )
-
+    (and (nodeConstraint bnode (length 19)) (shape (tripleConstraint <http://a.example/p1>)))) )) )

@@ -1,5 +1,5 @@
 (schema
  (semact (<http://shex.io/extensions/Test/> " fail(\"startAct\") "))
- (start (shape (shapeRef <http://a.example/S1>)))
+ (start (shapeRef <http://a.example/S1>))
  (shapes ((<http://a.example/S1> (shape (tripleConstraint <http://a.example/p1>))))))
 

@@ -1,11 +1,18 @@
 module ShEx::Algebra
   ##
   class ShapeRef < Operator::Unary
+    include Satisfiable
     NAME = :shapeRef
 
     def initialize(arg, **options)
       raise ShEx::OperandError, "Shape reference must be an IRI or BNode: #{arg}" unless arg.is_a?(RDF::Resource)
       super
+    end
+
+    #
+    # S is a ShapeRef and the Schema's shapes maps reference to a shape expression se2 and satisfies(n, se2, G, m).
+    def satisfies(n, g, m)
+      referenced_shape.satisfies(n, g, m)
     end
 
     ##

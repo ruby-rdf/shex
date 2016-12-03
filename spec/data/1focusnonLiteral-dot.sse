@@ -2,5 +2,4 @@
  (shapes
   (
    (<http://a.example/S1>
-    (and (nodeConstraint nonliteral) (tripleConstraint <http://a.example/p1>))) )) )
-
+    (and (nodeConstraint nonliteral) (shape (tripleConstraint <http://a.example/p1>)))) )) )

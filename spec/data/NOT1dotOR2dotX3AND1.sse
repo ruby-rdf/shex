@@ -4,22 +4,24 @@
    (<http://a.example/S1>
     (and
      (or
-      (not (tripleConstraint <http://a.example/p1>))
-      (eachOf
-       (tripleConstraint <http://a.example/p1>)
-       (tripleConstraint <http://a.example/p2>)) )
+      (not (shape (tripleConstraint <http://a.example/p1>)))
+      (shape
+       (eachOf
+        (tripleConstraint <http://a.example/p1>)
+        (tripleConstraint <http://a.example/p2>)) ))
      (or
-      (not (tripleConstraint <http://a.example/p3>))
-      (eachOf
-       (tripleConstraint <http://a.example/p3>)
-       (tripleConstraint <http://a.example/p4>)) )
+      (not (shape (tripleConstraint <http://a.example/p3>)))
+      (shape
+       (eachOf
+        (tripleConstraint <http://a.example/p3>)
+        (tripleConstraint <http://a.example/p4>)) ))
      (or
-      (not (tripleConstraint <http://a.example/p5>))
-      (eachOf
-       (tripleConstraint <http://a.example/p5>)
-       (tripleConstraint <http://a.example/p6>)) )
+      (not (shape (tripleConstraint <http://a.example/p5>)))
+      (shape
+       (eachOf
+        (tripleConstraint <http://a.example/p5>)
+        (tripleConstraint <http://a.example/p6>)) ))
      (or
-      (tripleConstraint <http://a.example/p1>)
-      (tripleConstraint <http://a.example/p3>)
-      (tripleConstraint <http://a.example/p5>)) )) )) )
-
+      (shape (tripleConstraint <http://a.example/p1>))
+      (shape (tripleConstraint <http://a.example/p3>))
+      (shape (tripleConstraint <http://a.example/p5>))) )) )) )

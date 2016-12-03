@@ -110,6 +110,13 @@ module ShEx::Algebra
     end
 
     ##
+    # Is this shape closed?
+    # @return [Boolean]
+    def closed?
+      operands.include?(:closed)
+    end
+
+    ##
     # Set Base URI associated with SPARQL document, typically done
     # when reading SPARQL from a URI
     #
@@ -145,6 +152,13 @@ module ShEx::Algebra
     # @return [Hash{Symbol => RDF::URI}]
     def self.prefixes=(hash)
       @prefixes = hash
+    end
+
+    ##
+    # Semantic Actions
+    # @return [Array<SemAct>]
+    def semantic_actions
+      operands.select {|o| o.is_a?(SemAct)}
     end
 
     ##

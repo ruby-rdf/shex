@@ -153,7 +153,7 @@ module ShEx
     # Productions
     # [1]     shexDoc               ::= directive* ((notStartAction | startActions) statement*)?
     production(:shexDoc) do |input, data, callback|
-      data[:start] = Algebra::Shape.new(data[:start]) if data[:start] && !data[:expressions]
+      data[:start] = data[:start] if data[:start]
 
       expressions = []
       expressions << [:base, data[:baseDecl]] if data[:baseDecl]
@@ -198,18 +198,10 @@ module ShEx
     production(:shapeExprDecl) do |input, data, callback|
       label = Array(data[:shapeLabel]).first
       expression = case data[:shapeExpression]
-      when Algebra::NodeConstraint, Algebra::Or, Algebra::And, Algebra::Not, Algebra::ShapeRef
+      when Algebra::NodeConstraint, Algebra::Or, Algebra::And, Algebra::Not, Algebra::ShapeRef, Algebra::Shape
         data[:shapeExpression]
       else
-        attrs = [data[:shapeExpression]]
-        attrs << data[:extraPropertySet] if data[:extraPropertySet]
-        attrs << :closed if data[:closed]
-        attrs += Array(data[:codeDecl])
-        shape = if data[:external]
-          Algebra::ShapeExternal.new(*attrs.compact)
-        else
-          Algebra::Shape.new(*attrs.compact)
-        end
+        data[:external] ? Algebra::ShapeExternal.new() : Algebra::Shape.new()
       end
 
       (input[:shapes] ||= {})[label] = expression
@@ -324,7 +316,7 @@ module ShEx
       if data[:shape] || Array(data[:shapeLabel]).first
         input[:shapeOrRef] = data[:shape] || Algebra::ShapeRef.new(Array(data[:shapeLabel]).first)
       end
-    rescue ShEx::ShapeError => e
+    rescue ShEx::OperandError => e
       error(nil, "Operand Error on ShapeOrRef: #{e.message}")
     end
     private :shape_or_ref
@@ -390,26 +382,27 @@ module ShEx
     # [29]    numericLength         ::= "TOTALDIGITS" | "FRACTIONDIGITS"
 
     # [30]    shapeDefinition       ::= (extraPropertySet | "CLOSED")* '{' tripleExpression? '}' annotation* semanticActions
-    #production(:shapeDefinition) do |input, data, callback|
-    #  shape_definition(input, data)
-    #end
-    ## [31]    inlineShapeDefinition ::= (extraPropertySet | "CLOSED")* '{' tripleExpression? '}'
-    #production(:inlineShapeDefinition) do |input, data, callback|
-    #  shape_definition(input, data)
-    #end
-    #def shape_definition(input, data)
-    #  shape = data[:shape]
-    #  attrs = [
-    #    data[:extraPropertySet],
-    #    (:closed if data[:closed]),
-    #  ].compact
-    #  attrs += Array(data[:annotation])
-    #  attrs += Array(data[:codeDecl])
-    #  shape = Algebra::Shape.new(shape, *attrs) if shape && !attrs.empty?
+    production(:shapeDefinition) do |input, data, callback|
+      shape_definition(input, data)
+    end
+    # [31]    inlineShapeDefinition ::= (extraPropertySet | "CLOSED")* '{' tripleExpression? '}'
+    production(:inlineShapeDefinition) do |input, data, callback|
+      shape_definition(input, data)
+    end
+    def shape_definition(input, data)
+      expression = data[:tripleExpression]
+      attrs = [
+        data[:extraPropertySet],
+        (:closed if data[:closed]),
+      ].compact
+      attrs += Array(data[:annotation])
+      attrs += Array(data[:codeDecl])
+
+      input[:shape] = Algebra::Shape.new(expression, *attrs) if expression
     #
     #  input[:shape] = shape if shape
-    #end
-    #private :shape_definition
+    end
+    private :shape_definition
 
     # [32]     extraPropertySet       ::= "EXTRA" predicate+
     production(:extraPropertySet) do |input, data, callback|
@@ -419,36 +412,36 @@ module ShEx
     # [33]    tripleExpression      ::= someOfTripleExpr
     # [34]    someOfTripleExpr           ::= groupTripleExpr ('|' groupTripleExpr)*
     production(:someOfTripleExpr) do |input, data, callback|
-      expression = if Array(data[:shape]).length > 1
-        Algebra::SomeOf.new(*data[:shape])
+      expression = if Array(data[:tripleExpression]).length > 1
+        Algebra::SomeOf.new(*data[:tripleExpression])
       else
-        Array(data[:shape]).first
+        Array(data[:tripleExpression]).first
       end
-      input[:shape] = expression if expression
+      input[:tripleExpression] = expression if expression
     end
 
     # [37]    groupTripleExpr            ::= unaryTripleExpr (';' unaryTripleExpr?)*
     production(:groupTripleExpr) do |input, data, callback|
-      expression = if Array(data[:shape]).length > 1
-        Algebra::EachOf.new(*data[:shape])
+      expression = if Array(data[:tripleExpression]).length > 1
+        Algebra::EachOf.new(*data[:tripleExpression])
       else
-        Array(data[:shape]).first
+        Array(data[:tripleExpression]).first
       end
-      (input[:shape] ||= []) << expression if expression
+      (input[:tripleExpression] ||= []) << expression if expression
     end
 
     # [40]    unaryTripleExpr            ::= productionLabel? (tripleConstraint | bracketedTripleExpr) | include
     production(:unaryTripleExpr) do |input, data, callback|
-      shape = data[:tripleConstraint] || data[:bracketedTripleExpr] || data[:include]
-      shape.operands << data[:productionLabel] if shape && data[:productionLabel]
+      expression = data[:tripleExpression]
+      expression.operands << data[:productionLabel] if expression && data[:productionLabel]
 
-      (input[:shape] ||= []) << shape if shape
+      (input[:tripleExpression] ||= []) << expression if expression
     end
 
     # [41]    bracketedTripleExpr   ::= '(' someOfTripleExpr ')' cardinality? annotation* semanticActions
     production(:bracketedTripleExpr) do |input, data, callback|
       # XXX cardinality? annotation* semanticActions
-      case shape = data[:shape]
+      case expression = data[:tripleExpression]
       when Algebra::SomeOf, Algebra::EachOf
       else
         error(nil, "Bracketed Expression requires multiple contained expressions", production: :bracketedTripleExpr)
@@ -461,8 +454,8 @@ module ShEx
       attrs += Array(data[:codeDecl])
       attrs += Array(data[:annotation])
 
-      shape.operands.concat(attrs)
-      input[:bracketedTripleExpr] = shape
+      expression.operands.concat(attrs)
+      input[:tripleExpression] = expression
     end
 
     # [42]    productionLabel       ::= '$' (iri | blankNode)
@@ -483,7 +476,7 @@ module ShEx
       attrs += Array(data[:codeDecl])
       attrs += Array(data[:annotation])
 
-      input[:tripleConstraint] = Algebra::TripleConstraint.new(*attrs) unless attrs.empty?
+      input[:tripleExpression] = Algebra::TripleConstraint.new(*attrs) unless attrs.empty?
     end
 
     # [44]    cardinality            ::= '*' | '+' | '?' | REPEAT_RANGE
@@ -516,7 +509,7 @@ module ShEx
 
     # [50]     include               ::= '&' shapeLabel
     production(:include) do |input, data, callback|
-      input[:include] = Algebra::Inclusion.new(*data[:shapeLabel])
+      input[:tripleExpression] = Algebra::Inclusion.new(*data[:shapeLabel])
     end
 
     # [51]    annotation            ::= '//' predicate (iri | literal)

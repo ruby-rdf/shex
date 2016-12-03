@@ -3,7 +3,7 @@
   (
    (<http://a.example/S1>
     (and
-     (tripleConstraint <http://a.example/p1> (nodeConstraint literal (minlength 4)))
-     (tripleConstraint <http://a.example/p1> (nodeConstraint literal (maxlength 5)))
-     (tripleConstraint <http://a.example/p1> (nodeConstraint literal (pattern "(ab)+")))) )) ))
-
+     (shape (tripleConstraint <http://a.example/p1> (nodeConstraint literal (minlength 4))))
+     (shape (tripleConstraint <http://a.example/p1> (nodeConstraint literal (maxlength 5))))
+     (shape
+      (tripleConstraint <http://a.example/p1> (nodeConstraint literal (pattern "(ab)+")))) )) )) )

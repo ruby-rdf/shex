@@ -3,8 +3,8 @@
   (
    (<http://a.example/S1>
     (or
-     (not (tripleConstraint <http://a.example/p1>))
-     (eachOf
-      (tripleConstraint <http://a.example/p1>)
-      (tripleConstraint <http://a.example/p2>)) )) )) )
-
+     (not (shape (tripleConstraint <http://a.example/p1>)))
+     (shape
+      (eachOf
+       (tripleConstraint <http://a.example/p1>)
+       (tripleConstraint <http://a.example/p2>)) )) )) ))

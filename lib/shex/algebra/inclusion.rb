@@ -1,6 +1,7 @@
 module ShEx::Algebra
   ##
   class Inclusion < Operator
+    include TripleExpression
     NAME = :inclusion
 
     def initialize(arg, **options)
