@@ -1,10 +1,14 @@
 (schema
- (shape <http://a.example/S1>
-  (tripleConstraint <http://a.example/p1>
-   (or
-    (shapeRef <http://a.example/S2>)
-    (shapeRef <http://a.example/S3>)
-    (shapeRef <http://a.example/S4>)) ))
- (shape <http://a.example/S2> (tripleConstraint <http://a.example/p2>))
- (shape <http://a.example/S3> (tripleConstraint <http://a.example/p3>))
- (shape <http://a.example/S4> (tripleConstraint <http://a.example/p4>)))
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (tripleConstraint <http://a.example/p1>
+      (or
+       (shapeRef <http://a.example/S2>)
+       (shapeRef <http://a.example/S3>)
+       (shapeRef <http://a.example/S4>)) )) )
+   (<http://a.example/S2> (shape (tripleConstraint <http://a.example/p2>)))
+   (<http://a.example/S3> (shape (tripleConstraint <http://a.example/p3>)))
+   (<http://a.example/S4> (shape (tripleConstraint <http://a.example/p4>)))) ))
+

@@ -1,8 +1,11 @@
 (schema
- (shape <http://a.example/S1>
-  (eachOf
-   (tripleConstraint <http://a.example/p1>)
-   (tripleConstraint <http://a.example/p2>)
-   (tripleConstraint <http://a.example/p3>)
-   (semact (<http://shex.io/extensions/Test/> " print(\"group semAct\") "))) ))
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (eachOf
+      (tripleConstraint <http://a.example/p1>)
+      (tripleConstraint <http://a.example/p2>)
+      (tripleConstraint <http://a.example/p3>)
+      (semact (<http://shex.io/extensions/Test/> " print(\"group semAct\") "))) )) )) )
 

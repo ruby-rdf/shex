@@ -1,5 +1,7 @@
 (schema
- (shape <http://a.example/S>
-  (tripleConstraint <http://a.example/p1> (shapeRef <http://a.example/Sext>)))
- (shapeExternal <http://a.example/Sext>))
+ (shapes
+  (
+   (<http://a.example/S>
+    (shape (tripleConstraint <http://a.example/p1> (shapeRef <http://a.example/Sext>))))
+   (<http://a.example/Sext> (shapeExternal))) ))
 

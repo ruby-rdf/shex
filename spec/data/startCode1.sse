@@ -1,4 +1,4 @@
 (schema
  (semact (<http://shex.io/extensions/Test/> " print(\"startAct\") "))
- (shape <http://a.example/S1> (tripleConstraint <http://a.example/p1>)))
+ (shapes ((<http://a.example/S1> (shape (tripleConstraint <http://a.example/p1>))))))
 

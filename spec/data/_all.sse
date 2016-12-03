@@ -23,126 +23,131 @@
    ("" <http://all.example/>)) )
  (semact (<http://all.example/act1> " START1 "))
  (semact (<http://all.example/act2> " START2 "))
- (start (shapeRef <http://all.example/S3>))
- (shape <http://all.example/S1>
-  (eachOf
-   (tripleConstraint <http://all.example/p1>)
-   (tripleConstraint <http://all.example/p2>)
-   (tripleConstraint <http://all.example/p3>))
-  (extra <http://all.example/p1> <http://all.example/p2> <http://all.example/p3>))
- (shape <http://all.example/S2>
-  (eachOf
-   (tripleConstraint <http://all.example/p1->)
-   (tripleConstraint <http://all.example/p2>)
-   (tripleConstraint <http://all.example/p3>))
-  (extra <http://all.example/p1> <http://all.example/p2> <http://all.example/p3>))
- (shape <http://all.example/IRI> (nodeConstraint iri))
- (shape <http://all.example/vs1>
-  (and
-   (nodeConstraint
-    (value <http://a.example/a1>)
-    (value
-     (stemRange <http://all.example/>
-      (exclusions (stem (<http://all.example/a>)) <http://all.example/b>)) ))
-   (nodeConstraint datatype <http://all.example/IRI>)) )
- (shape <http://all.example/S3>
-  (eachOf
-   (inclusion <http://all.example/S1>)
-   (tripleConstraint <http://all.example/a>)
-   (tripleConstraint <http://all.example/prefix>
-    (nodeConstraint datatype <http://all.example/dt> (length 2))
-    (min 0)
-    (max 1))
-   (someOf
-    (eachOf
-     (tripleConstraint <http://all.example/base> (nodeConstraint iri) (min 0) (max "*"))
-     (tripleConstraint <http://all.example/PREFIX>
-      (nodeConstraint iri (pattern "^http://") (length 5))
-      (min 1)
-      (max "*"))
-     (tripleConstraint <http://all.example/BaSe>
-      (shapeRef <http://all.example/S5>)
-      (min 2)
-      (max 2)) )
-    (tripleConstraint <http://all.example/virtual>
-     (and (nodeConstraint nonliteral) (shapeRef <http://all.example/S5>))
-     (min 2)
-     (max "*"))
-    (tripleConstraint <http://all.example/closed>
-     (or
-      (and (nodeConstraint bnode) (shapeRef <http://all.example/S5>))
-      (and (nodeConstraint (minlength 2) (maxlength 4)) (shapeRef <http://all.example/S5>)))
-     (min 2)
-     (max "*"))
-    (eachOf
-     (someOf
-      (eachOf
-       (tripleConstraint inverse <http://all.example/extra>
-        (tripleConstraint <http://all.example/p1>
-         (nodeConstraint
-          (value "STRING_LITERAL2")
-          (value "STRING_LITERAL2"@en-uk)
-          (value <http://all.example/>)
-          (value <http://all.example/val1>)
-          (value <http://all.example/>)
-          (value
-           <scheme:!$%25&amp;'()*+,-./0123456789:/@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz~?#>
-          )
-          (value <http://a.example/p1>)
-          (value 0.0)
-          (value 0e0)
-          (value 0E0)
-          (value false)
-          (value 0)
-          (value "ab"^^<http://all.example/bloodType>)
-          (value "o+"^^<http://all.example/bloodType>)
-          (value " !\"\#$%&():;<=>?@[]^_`{|}~")
-          (value "\t\v\f\x0E&([]\x7F")
-          (value
-           "\u{80}\u{7ff}\u{800}\u{fff}\u{1000}\u{cfff}\u{d000}\u{d7ff}\u{e000}\u{fffd}\u{10000}\u{3fffd}\u{40000}\u{ffffd}\u{100000}\u{10fffd}"
-          )
-          (value "\"\\")
-          (value
-           "\u{1d7d8}\u{1d7d9}\u{1d7da}\u{1d7db}\u{1d7dc}\u{1d7dd}\u{1d7de}\u{1d7df}\u{1d7e0}\u{1d7e1}"
-          )
-          (value "STRING_LITERAL_LONG2"@en-uk)) )
+ (start (shape (shapeRef <http://all.example/S3>)))
+ (shapes
+  (
+   (<http://all.example/S1>
+    (shape
+     (eachOf
+      (tripleConstraint <http://all.example/p1>)
+      (tripleConstraint <http://all.example/p2>)
+      (tripleConstraint <http://all.example/p3>))
+     (extra <http://all.example/p1> <http://all.example/p2> <http://all.example/p3>)) )
+   (<http://all.example/S2>
+    (shape
+     (eachOf
+      (tripleConstraint <http://all.example/p1->)
+      (tripleConstraint <http://all.example/p2>)
+      (tripleConstraint <http://all.example/p3>))
+     (extra <http://all.example/p1> <http://all.example/p2> <http://all.example/p3>)) )
+   (<http://all.example/IRI> (nodeConstraint iri))
+   (<http://all.example/vs1>
+    (and
+     (nodeConstraint
+      (value <http://a.example/a1>)
+      (value
+       (stemRange <http://all.example/>
+        (exclusions (stem (<http://all.example/a>)) <http://all.example/b>)) ))
+     (nodeConstraint datatype <http://all.example/IRI>)) )
+   (<http://all.example/S3>
+    (shape
+     (eachOf
+      (inclusion <http://all.example/S1>)
+      (tripleConstraint <http://all.example/a>)
+      (tripleConstraint <http://all.example/prefix>
+       (nodeConstraint datatype <http://all.example/dt> (length 2))
+       (min 0)
+       (max 1))
+      (someOf
+       (eachOf
+        (tripleConstraint <http://all.example/base> (nodeConstraint iri) (min 0) (max "*"))
+        (tripleConstraint <http://all.example/PREFIX>
+         (nodeConstraint iri (pattern "^http://") (length 5))
+         (min 1)
+         (max "*"))
+        (tripleConstraint <http://all.example/BaSe>
+         (shapeRef <http://all.example/S5>)
+         (min 2)
+         (max 2)) )
+       (tripleConstraint <http://all.example/virtual>
+        (and (nodeConstraint nonliteral) (shapeRef <http://all.example/S5>))
         (min 2)
-        (max 3)
-        (semact (<http://all.example/act1> " code1 ")))
-       (tripleConstraint <http://all.example/iri>
-        (nodeConstraint literal)
-        (min 1)
-        (max "*")
-        (semact (<http://all.example/act1> " %{printf(\"品川\\n\");%} "))
-        (annotation <http://a.example/annot1> <http://a.example/IRIREF>)
-        (annotation <http://a.example/annot2> "STRING_LITERAL2")
-        (annotation <http://a.example/annot3> 3)) )
-      (eachOf
-       (tripleConstraint inverse <http://all.example/bnode>
-        (min 1)
-        (max "*")
-        (semact (<http://all.example/act1> " code1 ")))
-       (tripleConstraint inverse <http://all.example/literal>
-        (min 1)
-        (max "*")
-        (semact (<http://all.example/act1> " code1 "))) ))
-     (tripleConstraint <http://all.example/nonliteral>
-      (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#integer>
-       (mininclusive 5)
-       (maxinclusive 5)
-       (totaldigits 1)
-       (fractiondigits 1)) )) )
-   (tripleConstraint <http://all.example/or> (shapeRef <http://all.example/vs1>))
-   (tripleConstraint <http://all.example/pattern>
-    (nodeConstraint
-     (value
-      (stemRange wildcard (exclusions (stem (<http://all.example/a>)) <http://all.example/b>))) )
-    (semact (<http://all.example/act1> " code1 "))
-    (semact (<http://all.example/act2> " code2 "))) )
-  (extra <http://all.example/a> <http://all.example/prefix>
-   <http://all.example/base> ))
- (shape <http://all.example/S5> (nodeConstraint iri))
- (shape _:a·̀ͯ‿.⁀
-  (eachOf (inclusion _:a·̀ͯ‿.⁀) (inclusion <http://all.example/S2>)) closed )
- (shape _:AZazÀÖØöø˿ͰͽͿ῿‌‍⁰↏Ⰰ⿯、퟿豈﷏ﷰ�𐀀󯿽 (inclusion _:a·̀ͯ‿.⁀)))
+        (max "*"))
+       (tripleConstraint <http://all.example/closed>
+        (or
+         (and (nodeConstraint bnode) (shapeRef <http://all.example/S5>))
+         (and (nodeConstraint (minlength 2) (maxlength 4)) (shapeRef <http://all.example/S5>)))
+        (min 2)
+        (max "*"))
+       (eachOf
+        (someOf
+         (eachOf
+          (tripleConstraint inverse <http://all.example/extra>
+           (tripleConstraint <http://all.example/p1>
+            (nodeConstraint
+             (value "STRING_LITERAL2")
+             (value "STRING_LITERAL2"@en-uk)
+             (value <http://all.example/>)
+             (value <http://all.example/val1>)
+             (value <http://all.example/>)
+             (value
+              <scheme:!$%25&amp;'()*+,-./0123456789:/@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz~?#>
+             )
+             (value <http://a.example/p1>)
+             (value 0.0)
+             (value 0e0)
+             (value 0E0)
+             (value false)
+             (value 0)
+             (value "ab"^^<http://all.example/bloodType>)
+             (value "o+"^^<http://all.example/bloodType>)
+             (value " !\"\#$%&():;<=>?@[]^_`{|}~")
+             (value "\t\v\f\x0E&([]\x7F")
+             (value
+              "\u{80}\u{7ff}\u{800}\u{fff}\u{1000}\u{cfff}\u{d000}\u{d7ff}\u{e000}\u{fffd}\u{10000}\u{3fffd}\u{40000}\u{ffffd}\u{100000}\u{10fffd}"
+             )
+             (value "\"\\")
+             (value
+              "\u{1d7d8}\u{1d7d9}\u{1d7da}\u{1d7db}\u{1d7dc}\u{1d7dd}\u{1d7de}\u{1d7df}\u{1d7e0}\u{1d7e1}"
+             )
+             (value "STRING_LITERAL_LONG2"@en-uk)) )
+           (min 2)
+           (max 3)
+           (semact (<http://all.example/act1> " code1 ")))
+          (tripleConstraint <http://all.example/iri>
+           (nodeConstraint literal)
+           (min 1)
+           (max "*")
+           (semact (<http://all.example/act1> " %{printf(\"品川\\n\");%} "))
+           (annotation <http://a.example/annot1> <http://a.example/IRIREF>)
+           (annotation <http://a.example/annot2> "STRING_LITERAL2")
+           (annotation <http://a.example/annot3> 3)) )
+         (eachOf
+          (tripleConstraint inverse <http://all.example/bnode>
+           (min 1)
+           (max "*")
+           (semact (<http://all.example/act1> " code1 ")))
+          (tripleConstraint inverse <http://all.example/literal>
+           (min 1)
+           (max "*")
+           (semact (<http://all.example/act1> " code1 "))) ))
+        (tripleConstraint <http://all.example/nonliteral>
+         (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#integer>
+          (mininclusive 5)
+          (maxinclusive 5)
+          (totaldigits 1)
+          (fractiondigits 1)) )) )
+      (tripleConstraint <http://all.example/or> (shapeRef <http://all.example/vs1>))
+      (tripleConstraint <http://all.example/pattern>
+       (nodeConstraint
+        (value
+         (stemRange wildcard (exclusions (stem (<http://all.example/a>)) <http://all.example/b>))) )
+       (semact (<http://all.example/act1> " code1 "))
+       (semact (<http://all.example/act2> " code2 "))) )
+     (extra <http://all.example/a> <http://all.example/prefix>
+      <http://all.example/base> )) )
+   (<http://all.example/S5> (nodeConstraint iri))
+   (_:a·̀ͯ‿.⁀
+    (shape (eachOf (inclusion _:a·̀ͯ‿.⁀) (inclusion <http://all.example/S2>)) closed))
+   (_:AZazÀÖØöø˿ͰͽͿ῿‌‍⁰↏Ⰰ⿯、퟿豈﷏ﷰ�𐀀󯿽 (shape (inclusion _:a·̀ͯ‿.⁀)))) ))
 

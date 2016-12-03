@@ -1,5 +1,8 @@
 (schema
- (shape <http://a.example/S1>
-  (tripleConstraint <http://a.example/p1>
-   (nodeConstraint (value (stemRange <http://a.example/v>)))) ))
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (tripleConstraint <http://a.example/p1>
+      (nodeConstraint (value (stemRange <http://a.example/v>)))) )) )) )
 

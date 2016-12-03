@@ -9,20 +9,11 @@ module ShEx::Algebra
     end
 
     ##
-    def evaluate(bindings, options = {})
-    end
-
-    ##
     # Returns the referenced shape
     #
     # @return [Shape]
     def referenced_shape
-      @shape ||= begin
-        schema = first_ancestor(Schema)
-        schema.operands.detect do |op|
-          (op.is_a?(Shape) || op.is_a?(ShapeExternal)) && op.operands.first == operands.first
-        end
-      end
+      schema.shapes[operands.first]
     end
 
     ##

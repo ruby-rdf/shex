@@ -1,8 +1,11 @@
 (schema
- (shape <http://a.example/S1>
-  (tripleConstraint <http://a.example/p1>
-   (or
-    (and (nodeConstraint bnode) (shapeRef <http://a.example/S1>))
-    (and (nodeConstraint (minlength 5)) (shapeRef <http://a.example/S1>))) ))
-)
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (tripleConstraint <http://a.example/p1>
+      (or
+       (and (nodeConstraint bnode) (shapeRef <http://a.example/S1>))
+       (and (nodeConstraint (minlength 5)) (shapeRef <http://a.example/S1>)))
+     )) )) ))
 

@@ -1,2 +1,4 @@
 (schema
- (shape <http://a.example/S1> (tripleConstraint <http://a.example/p1> (min 0) (max "*"))))
+ (shapes
+  ((<http://a.example/S1> (shape (tripleConstraint <http://a.example/p1> (min 0) (max "*")))))) )
+

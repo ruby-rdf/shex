@@ -1,4 +1,0 @@
-(schema
- (shape <http://a.example/S1>
-  (tripleConstraint <http://a.example/p1>
-   (semact (<http://shex.io/extensions/Test/> " print(\"%{\\\\%}\") "))) ))

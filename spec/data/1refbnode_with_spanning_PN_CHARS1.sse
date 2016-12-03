@@ -1,5 +1,7 @@
 (schema
- (shape <http://a.example/S1>
-  (tripleConstraint <http://a.example/p1> (shapeRef _:a·̀ͯ‿.⁀)))
- (shape _:a·̀ͯ‿.⁀ (tripleConstraint <http://a.example/p2>)))
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape (tripleConstraint <http://a.example/p1> (shapeRef _:a·̀ͯ‿.⁀))))
+   (_:a·̀ͯ‿.⁀ (shape (tripleConstraint <http://a.example/p2>)))) ))
 

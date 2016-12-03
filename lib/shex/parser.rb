@@ -160,9 +160,15 @@ module ShEx
       expressions << [:prefix, data[:prefixDecl]] if data[:prefixDecl]
       expressions += Array(data[:codeDecl])
       expressions << Algebra::Start.new(data[:start]) if data[:start]
-      expressions += Array(data[:expressions])
+      expressions << [:shapes, data[:shapes]] if data[:shapes]
 
       input[:schema] = Algebra::Schema.new(*expressions)
+
+      # Set schema accessor for all included expressions
+      input[:schema].each_descendant do |op|
+        op.schema = input[:schema] if op.respond_to?(:schema=)
+      end
+      self
     end
 
     # [2]     directive             ::= baseDecl | prefixDecl
@@ -191,18 +197,22 @@ module ShEx
     # [9]     shapeExprDecl         ::= shapeLabel (shapeExpression|"EXTERNAL")
     production(:shapeExprDecl) do |input, data, callback|
       label = Array(data[:shapeLabel]).first
-      expression = data[:shapeExpression]
-      attrs = [label, expression]
-      attrs << data[:extraPropertySet] if data[:extraPropertySet]
-      attrs << :closed if data[:closed]
-      attrs += Array(data[:codeDecl])
-      shape = if data[:external]
-        Algebra::ShapeExternal.new(*attrs.compact)
+      expression = case data[:shapeExpression]
+      when Algebra::NodeConstraint, Algebra::Or, Algebra::And, Algebra::Not, Algebra::ShapeRef
+        data[:shapeExpression]
       else
-        Algebra::Shape.new(*attrs.compact)
+        attrs = [data[:shapeExpression]]
+        attrs << data[:extraPropertySet] if data[:extraPropertySet]
+        attrs << :closed if data[:closed]
+        attrs += Array(data[:codeDecl])
+        shape = if data[:external]
+          Algebra::ShapeExternal.new(*attrs.compact)
+        else
+          Algebra::Shape.new(*attrs.compact)
+        end
       end
 
-      (input[:expressions] ||= []) << shape
+      (input[:shapes] ||= {})[label] = expression
     end
 
     # [10]    shapeExpression       ::= shapeOr

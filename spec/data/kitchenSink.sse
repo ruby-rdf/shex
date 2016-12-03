@@ -11,94 +11,102 @@
    ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
    ("rdfs" <http://www.w3.org/2000/01/rdf-schem#>)) )
  (semact (<http://ex.example/#foo> " initializer for ignored extension "))
- (start (shapeRef <http://ex.example/S1>))
- (shape <http://ex.example/S1>
-  (eachOf
-   (tripleConstraint a (nodeConstraint (value <http://ex.example/#Issue>)) (min 0) (max 1))
-   (tripleConstraint <http://ex.example/#state>
-    (nodeConstraint
-     (value
-      (stemRange <http://ex.example/#state>
-       (exclusions <http://ex.example/#state_resolved>)) ))
-    (annotation <http://www.w3.org/2000/01/rdf-schem#label> "State")
-    (annotation <http://www.w3.org/2000/01/rdf-schem#description> "the sit"))
-   (tripleConstraint <http://ex.example/#reportedBy>
-    (and (nodeConstraint iri) (shapeRef <http://ex.example/#UserShape>)))
-   (tripleConstraint <http://ex.example/#reportedOn>
-    (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
-   (eachOf
-    (tripleConstraint <http://ex.example/#reproducedBy>
-     (and (nodeConstraint nonliteral) (shapeRef <http://ex.example/#EmployeeShape>)))
-    (tripleConstraint <http://ex.example/#reproducedOn>
-     (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
-    (min 0)
-    (max 1)
-    (semact (<http://ex.example/#foo> " asdfasdf ")))
-   (tripleConstraint <http://ex.example/#related>
-    (shapeRef <http://ex.example/S1>)
-    (min 0)
-    (max "*")) ))
- (shape <http://ex.example/#UserShape>
-  (eachOf
-   (someOf
-    (tripleConstraint <http://xmlns.com/foaf/name>
-     (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
-    (eachOf
-     (tripleConstraint <http://xmlns.com/foaf/givenName>
-      (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>)
-      (min 1)
-      (max "*"))
-     (tripleConstraint <http://xmlns.com/foaf/familyName>
-      (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>)) ))
-   (tripleConstraint <http://xmlns.com/foaf/mbox>
-    (nodeConstraint iri (pattern "^mailto:")))
-   (tripleConstraint <http://ex.example/#id>
-    (and (nodeConstraint bnode) (shapeRef _:IDshape))) ))
- (shape <http://ex.example/#EmployeeShape>
-  (eachOf
-   (tripleConstraint <http://xmlns.com/foaf/givenName>
-    (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>)
-    (min 1)
-    (max "*"))
-   (tripleConstraint <http://xmlns.com/foaf/familyName>
-    (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
-   (tripleConstraint <http://xmlns.com/foaf/phone> (nodeConstraint iri) (min 0) (max "*"))
-   (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri) (min 0) (max 1))) )
- (shape _:IDshape
-  (someOf
-   (eachOf
-    (tripleConstraint <http://ex.example/#code> (nodeConstraint literal))
-    (tripleConstraint <http://ex.example/#system> (nodeConstraint iri))
-    (tripleConstraint <http://ex.example/#literal>
-     (nodeConstraint
-      (value "a")
-      (value "b"^^<http://ex.example/#c>)
-      (value "c"@en)
-      (value "d"@en-fr))
-     (min 2)
-     (max 3))
-    (tripleConstraint <http://ex.example/#misc>
-     (nodeConstraint bnode)
-     (semact (<http://ex.example/#foo> " ignored "))
-     (semact (<http://ex.example/#bar> " also ignored "))) )
-   (eachOf
-    (eachOf
-     (tripleConstraint inverse <http://ex.example/#ref>
-      (nodeConstraint (value true) (value false)))
-     (tripleConstraint inverse <http://ex.example/#miscRef>))
-    (tripleConstraint <http://ex.example/#issues>
-     (shapeRef <http://ex.example/S1>)
-     (min 0)
-     (max "*"))
-    (tripleConstraint <http://ex.example/#seeAlso>
-     (shapeRef <http://ex.example/S1>)
-     (min 0)
-     (max "*"))
-    (tripleConstraint <http://ex.example/#says>
-     (shapeRef <http://ex.example/#EmployeeShape>)
-     (min 0)
-     (max "*")) )) )
- (shape <http://ex.example/#FooID>
-  (inclusion _:IDshape)
-  (extra <http://ex.example/#code> <http://ex.example/#system>) closed ))
+ (start (shape (shapeRef <http://ex.example/S1>)))
+ (shapes
+  (
+   (<http://ex.example/S1>
+    (shape
+     (eachOf
+      (tripleConstraint a (nodeConstraint (value <http://ex.example/#Issue>)) (min 0) (max 1))
+      (tripleConstraint <http://ex.example/#state>
+       (nodeConstraint
+        (value
+         (stemRange <http://ex.example/#state>
+          (exclusions <http://ex.example/#state_resolved>)) ))
+       (annotation <http://www.w3.org/2000/01/rdf-schem#label> "State")
+       (annotation <http://www.w3.org/2000/01/rdf-schem#description> "the sit"))
+      (tripleConstraint <http://ex.example/#reportedBy>
+       (and (nodeConstraint iri) (shapeRef <http://ex.example/#UserShape>)))
+      (tripleConstraint <http://ex.example/#reportedOn>
+       (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
+      (eachOf
+       (tripleConstraint <http://ex.example/#reproducedBy>
+        (and (nodeConstraint nonliteral) (shapeRef <http://ex.example/#EmployeeShape>)))
+       (tripleConstraint <http://ex.example/#reproducedOn>
+        (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
+       (min 0)
+       (max 1)
+       (semact (<http://ex.example/#foo> " asdfasdf ")))
+      (tripleConstraint <http://ex.example/#related>
+       (shapeRef <http://ex.example/S1>)
+       (min 0)
+       (max "*")) )) )
+   (<http://ex.example/#UserShape>
+    (shape
+     (eachOf
+      (someOf
+       (tripleConstraint <http://xmlns.com/foaf/name>
+        (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
+       (eachOf
+        (tripleConstraint <http://xmlns.com/foaf/givenName>
+         (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>)
+         (min 1)
+         (max "*"))
+        (tripleConstraint <http://xmlns.com/foaf/familyName>
+         (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
+       ))
+      (tripleConstraint <http://xmlns.com/foaf/mbox>
+       (nodeConstraint iri (pattern "^mailto:")))
+      (tripleConstraint <http://ex.example/#id>
+       (and (nodeConstraint bnode) (shapeRef _:IDshape))) )) )
+   (<http://ex.example/#EmployeeShape>
+    (shape
+     (eachOf
+      (tripleConstraint <http://xmlns.com/foaf/givenName>
+       (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>)
+       (min 1)
+       (max "*"))
+      (tripleConstraint <http://xmlns.com/foaf/familyName>
+       (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
+      (tripleConstraint <http://xmlns.com/foaf/phone> (nodeConstraint iri) (min 0) (max "*"))
+      (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri) (min 0) (max 1))) ))
+   (_:IDshape
+    (shape
+     (someOf
+      (eachOf
+       (tripleConstraint <http://ex.example/#code> (nodeConstraint literal))
+       (tripleConstraint <http://ex.example/#system> (nodeConstraint iri))
+       (tripleConstraint <http://ex.example/#literal>
+        (nodeConstraint
+         (value "a")
+         (value "b"^^<http://ex.example/#c>)
+         (value "c"@en)
+         (value "d"@en-fr))
+        (min 2)
+        (max 3))
+       (tripleConstraint <http://ex.example/#misc>
+        (nodeConstraint bnode)
+        (semact (<http://ex.example/#foo> " ignored "))
+        (semact (<http://ex.example/#bar> " also ignored "))) )
+      (eachOf
+       (eachOf
+        (tripleConstraint inverse <http://ex.example/#ref>
+         (nodeConstraint (value true) (value false)))
+        (tripleConstraint inverse <http://ex.example/#miscRef>))
+       (tripleConstraint <http://ex.example/#issues>
+        (shapeRef <http://ex.example/S1>)
+        (min 0)
+        (max "*"))
+       (tripleConstraint <http://ex.example/#seeAlso>
+        (shapeRef <http://ex.example/S1>)
+        (min 0)
+        (max "*"))
+       (tripleConstraint <http://ex.example/#says>
+        (shapeRef <http://ex.example/#EmployeeShape>)
+        (min 0)
+        (max "*")) )) ))
+   (<http://ex.example/#FooID>
+    (shape
+     (inclusion _:IDshape)
+     (extra <http://ex.example/#code> <http://ex.example/#system>) closed )) )) )
 

@@ -1,6 +1,9 @@
 (schema
- (shape <http://a.example/S1>
-  (tripleConstraint <http://a.example/p1>
-   (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#integer>
-    (maxinclusive 5.0e0)) )) )
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (tripleConstraint <http://a.example/p1>
+      (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#integer>
+       (maxinclusive 5.0e0)) )) )) ))
 

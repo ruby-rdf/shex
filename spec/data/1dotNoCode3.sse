@@ -1,6 +1,10 @@
 (schema
- (shape <http://a.example/S1>
-  (tripleConstraint <http://a.example/p1>
-   (semact (<http://shex.io/extensions/Test/#a>))
-   (semact (<http://shex.io/extensions/Test/#b>))
-   (semact (<http://shex.io/extensions/Test/#c>))) ))
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (tripleConstraint <http://a.example/p1>
+      (semact (<http://shex.io/extensions/Test/#a>))
+      (semact (<http://shex.io/extensions/Test/#b>))
+      (semact (<http://shex.io/extensions/Test/#c>))) )) )) )
+

@@ -10,10 +10,5 @@ module ShEx::Algebra
       end
       super
     end
-
-    ##
-    # Returns a logical `OR` of all operands
-    def evaluate(bindings, options = {})
-    end
   end
 end

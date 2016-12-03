@@ -1,8 +1,11 @@
 (schema
- (shape <http://a.example/S1>
-  (someOf
-   (eachOf
-    (tripleConstraint <http://a.example/p1>)
-    (tripleConstraint <http://a.example/p2>))
-   (tripleConstraint <http://a.example/p3>)) ))
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (someOf
+      (eachOf
+       (tripleConstraint <http://a.example/p1>)
+       (tripleConstraint <http://a.example/p2>))
+      (tripleConstraint <http://a.example/p3>)) )) )) )
 

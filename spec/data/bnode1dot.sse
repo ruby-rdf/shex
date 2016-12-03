@@ -1,2 +1,2 @@
-(schema (shape _:S1 (tripleConstraint <http://a.example/p1>)))
+(schema (shapes ((_:S1 (shape (tripleConstraint <http://a.example/p1>))))))
 

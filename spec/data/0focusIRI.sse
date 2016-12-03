@@ -1,2 +1,2 @@
-(schema (shape <http://a.example/S1> (nodeConstraint iri)))
+(schema (shapes ((<http://a.example/S1> (nodeConstraint iri)))))
 

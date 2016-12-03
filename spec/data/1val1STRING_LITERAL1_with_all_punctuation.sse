@@ -1,5 +1,8 @@
 (schema
- (shape <http://a.example/S1>
-  (tripleConstraint <http://a.example/p1>
-   (nodeConstraint (value " !\"\#$%&():;<=>?@[]^_`{|}~"))) ))
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (tripleConstraint <http://a.example/p1>
+      (nodeConstraint (value " !\"\#$%&():;<=>?@[]^_`{|}~"))) )) )) )
 

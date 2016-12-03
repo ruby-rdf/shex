@@ -1,19 +1,22 @@
 (schema
- (shape <http://a.example/S1>
-  (and
-   (nodeConstraint iri (pattern "^https?://"))
-   (eachOf
-    (tripleConstraint <http://a.example/p1>
-     (nodeConstraint datatype <http://a.example/dt>))
-    (tripleConstraint <http://a.example/p2>
+ (shapes
+  (
+   (<http://a.example/S1>
     (and
-     (nodeConstraint bnode)
+     (nodeConstraint iri (pattern "^https?://"))
      (eachOf
-      (tripleConstraint <http://a.example/p3> (nodeConstraint literal))
-      (tripleConstraint <http://a.example/p4>
-       (and (nodeConstraint iri (pattern "^https://")) (shapeRef <http://a.example/S1>))
-       (min 0)
-       (max 1)) )
-     (eachOf
-      (tripleConstraint <http://a.example/p3>)
-      (tripleConstraint <http://a.example/p4>)) )) )) ))
+      (tripleConstraint <http://a.example/p1>
+       (nodeConstraint datatype <http://a.example/dt>))
+      (tripleConstraint <http://a.example/p2>
+       (and
+        (nodeConstraint bnode)
+        (eachOf
+         (tripleConstraint <http://a.example/p3> (nodeConstraint literal))
+         (tripleConstraint <http://a.example/p4>
+          (and (nodeConstraint iri (pattern "^https://")) (shapeRef <http://a.example/S1>))
+          (min 0)
+          (max 1)) )
+        (eachOf
+         (tripleConstraint <http://a.example/p3>)
+         (tripleConstraint <http://a.example/p4>)) )) )) )) ))
+

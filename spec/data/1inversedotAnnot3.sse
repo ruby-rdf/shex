@@ -1,7 +1,10 @@
 (schema
- (shape <http://a.example/S1>
-  (tripleConstraint inverse <http://a.example/p1>
-   (annotation <http://a.example/annot1> "1")
-   (annotation <http://a.example/annot2> "2")
-   (annotation <http://a.example/annot3> "3")) ))
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (tripleConstraint inverse <http://a.example/p1>
+      (annotation <http://a.example/annot1> "1")
+      (annotation <http://a.example/annot2> "2")
+      (annotation <http://a.example/annot3> "3")) )) )) )
 

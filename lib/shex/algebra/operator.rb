@@ -10,6 +10,9 @@ module ShEx::Algebra
   class Operator
     extend SPARQL::Algebra::Expression
 
+    # Location of schema including this operator
+    attr_accessor :schema
+
     ##
     # Returns an operator class for the given operator `name`.
     #
