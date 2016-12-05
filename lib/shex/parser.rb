@@ -399,8 +399,6 @@ module ShEx
       attrs += Array(data[:codeDecl])
 
       input[:shape] = Algebra::Shape.new(expression, *attrs) if expression
-    #
-    #  input[:shape] = shape if shape
     end
     private :shape_definition
 
@@ -494,7 +492,7 @@ module ShEx
       input[:iriRange] = if data[:pattern] && exclusions
         Algebra::StemRange.new(data[:iri], exclusions)
       elsif data[:pattern]
-        Algebra::StemRange.new(data[:iri])
+        Algebra::Stem.new(data[:iri])
       elsif data[:dot]
         Algebra::StemRange.new(:wildcard, exclusions)
       else
@@ -504,7 +502,7 @@ module ShEx
 
     # [49]    exclusion             ::= '-' iri '~'?
     production(:exclusion) do |input, data, callback|
-      (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::Stem.new([data[:iri]]) : data[:iri])
+      (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::Stem.new(data[:iri]) : data[:iri])
     end
 
     # [50]     include               ::= '&' shapeLabel

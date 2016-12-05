@@ -88,24 +88,23 @@ describe ShEx::Parser do
         shexc: %(
           PREFIX ex: <http://schema.example/>
           PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-          ex:IssueShape {ex:submittedOn rdf:langString}),
+          ex:IssueShape {ex:submittedBy MINLENGTH 10}),
         shexj: %({ "type": "Schema", "shapes": {
           "http://schema.example/IssueShape": {
             "type": "Shape", "expression": {
               "type": "TripleConstraint",
-              "predicate": "http://schema.example/submittedOn",
-              "valueExpr": {
-                "type": "NodeConstraint",
-                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
-              } } } } }),
+              "predicate": "http://schema.example/submittedBy",
+              "valueExpr": { "type": "NodeConstraint", "minlength": 10 } } } } }),
         sxp: %{(schema
          (prefix
           (
            ("ex" <http://schema.example/>)
            ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)) )
-         (shapes ((<http://schema.example/IssueShape> (shape
-          (tripleConstraint <http://schema.example/submittedOn>
-           (nodeConstraint datatype <http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>))))) ))}
+         (shapes
+          (
+           (<http://schema.example/IssueShape>
+            (shape
+             (tripleConstraint <http://schema.example/submittedBy> (nodeConstraint (minlength 10)))) )) ))}
       },
       "String Facets Example 2" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy PATTERN "genUser[0-9]+"}),
@@ -155,7 +154,7 @@ describe ShEx::Parser do
             (value <http://schema.example/Resolved>)
             (value <http://schema.example/Rejected>)))) ))) )}
       },
-      "Value Constraints Example 2" => {
+      "Values Constraint Example 2" => {
         shexc: %(
           PREFIX ex: <http://schema.example/>
           PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -183,16 +182,19 @@ describe ShEx::Parser do
                 ] } } } } }),
         sxp: %{(schema
          (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/0.1/>)))
-         (shapes ((<http://schema.example/EmployeeShape> (shape
-          (tripleConstraint <http://xmlns.com/foaf/0.1/mbox>
-           (nodeConstraint
-            (value "N/A")
-            (value (stemRange <mailto:engineering->))
-            (value
-             (stemRange <mailto:sales->
-              (exclusions (stem (<mailto:sales-contacts>)) (stem (<mailto:sales-interns>))))))) )) )) )}
+         (shapes
+          (
+           (<http://schema.example/EmployeeShape>
+            (shape
+             (tripleConstraint <http://xmlns.com/foaf/0.1/mbox>
+              (nodeConstraint
+               (value "N/A")
+               (value (stem <mailto:engineering->))
+               (value
+                (stemRange <mailto:sales->
+                 (exclusions (stem <mailto:sales-contacts>) (stem <mailto:sales-interns>))) )) )) )) ))}
       },
-      "Value Constraints Example 3" => {
+      "Values Constraint Example 3" => {
         shexc: %(
           PREFIX ex: <http://schema.example/>
           PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -218,7 +220,7 @@ describe ShEx::Parser do
           (tripleConstraint <http://xmlns.com/foaf/0.1/mbox>
            (nodeConstraint
             (value
-             (stemRange wildcard (exclusions (stem (<mailto:engineering->)) (stem (<mailto:sales->))))) ))))) ))}
+             (stemRange wildcard (exclusions (stem <mailto:engineering->) (stem <mailto:sales->)))) ))))) ))}
       },
       # Spec FIXME: added "."
       "Inclusion Example" => {
@@ -575,8 +577,8 @@ describe ShEx::Parser do
               (nodeConstraint (value <http://schema.example/ProgrammingDepartment>)))
             )) )) )}
       },
-      # Spec FIXME: RREFIX => PREFIX
-      "Value Constraint Example 2" => {
+      # Spec FIXME: RREFIX => PREFIX -- should be renamed
+      "Complex Values Constraint Example 2" => {
         shexc: %(
           PREFIX ex:   <http://ex.example/#>
           PREFIX foaf: <http://xmlns.com/foaf/>
@@ -625,7 +627,8 @@ describe ShEx::Parser do
            ("xsd" <http://www.w3.org/2001/XMLSchema#>)
            ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)) )
          (shapes
-          ((<IssueShape>
+          (
+           (<IssueShape>
             (shape
              (eachOf
               (tripleConstraint a (nodeConstraint (value <http://ex.example/#Issue>)))
@@ -652,37 +655,40 @@ describe ShEx::Parser do
            (<UserShape>
             (and
              (nodeConstraint (pattern "^http:/example.org/.*"))
-             (eachOf
-              (someOf
-               (tripleConstraint <http://xmlns.com/foaf/name>
-                (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
-               (eachOf
-                (tripleConstraint <http://xmlns.com/foaf/givenName>
-                 (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>)
-                 (min 1)
-                 (max "*"))
-                (tripleConstraint <http://xmlns.com/foaf/familyName>
+             (shape
+              (eachOf
+               (someOf
+                (tripleConstraint <http://xmlns.com/foaf/name>
                  (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
-               ))
-              (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri))) ))
+                (eachOf
+                 (tripleConstraint <http://xmlns.com/foaf/givenName>
+                  (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>)
+                  (min 1)
+                  (max "*"))
+                 (tripleConstraint <http://xmlns.com/foaf/familyName>
+                  (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
+                ))
+               (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri))) )) )
            (<EmployeeShape>
             (and
-             (eachOf
-              (tripleConstraint <http://xmlns.com/foaf/phone> (nodeConstraint iri) (min 0) (max "*"))
-              (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri)))
-             (eachOf
+             (shape
               (eachOf
-               (tripleConstraint <http://xmlns.com/foaf/phone>
-                (nodeConstraint (pattern "^tel:\\+33")))
-               (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\.fr$")))
-               (min 0)
-               (max 1))
+               (tripleConstraint <http://xmlns.com/foaf/phone> (nodeConstraint iri) (min 0) (max "*"))
+               (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri))) )
+             (shape
               (eachOf
-               (tripleConstraint <http://xmlns.com/foaf/phone>
-                (nodeConstraint (pattern "^tel:\\+44")))
-               (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\.uk$")))
-               (min 0)
-               (max 1)) )) )) ))}
+               (eachOf
+                (tripleConstraint <http://xmlns.com/foaf/phone>
+                 (nodeConstraint (pattern "^tel:\\\\+33")))
+                (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\\\.fr$")))
+                (min 0)
+                (max 1))
+               (eachOf
+                (tripleConstraint <http://xmlns.com/foaf/phone>
+                 (nodeConstraint (pattern "^tel:\\\\+44")))
+                (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\\\.uk$")))
+                (min 0)
+                (max 1)) )) )) )) )}
       },
       # Spec FIXME: UserShape needs a predicate
       "Closed shape expression" => {
@@ -831,25 +837,29 @@ describe ShEx::Parser do
         sxp: %{(schema
          (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/>)))
          (shapes
-          ((<EmployeeShape>
+          (
+           (<EmployeeShape>
             (and
              (nodeConstraint (pattern "^http:/example.org/.*"))
-             (eachOf
-              (tripleConstraint <http://xmlns.com/foaf/phone> (nodeConstraint iri) (min 0) (max "*"))
-              (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri)))
-             (eachOf
+             (shape
               (eachOf
-               (tripleConstraint <http://xmlns.com/foaf/phone>
-                (nodeConstraint (pattern "^tel:\\+33")))
-               (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\.fr$")))
-               (min 0)
-               (max 1))
+               (tripleConstraint <http://xmlns.com/foaf/phone> (nodeConstraint iri) (min 0) (max "*"))
+               (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri)))
+              closed )
+             (shape
               (eachOf
-               (tripleConstraint <http://xmlns.com/foaf/phone>
-                (nodeConstraint (pattern "^tel:\\+44")))
-               (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\.uk$")))
-               (min 0)
-               (max 1)) )) )) ))}
+               (eachOf
+                (tripleConstraint <http://xmlns.com/foaf/phone>
+                 (nodeConstraint (pattern "^tel:\\\\+33")))
+                (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\\\.fr$")))
+                (min 0)
+                (max 1))
+               (eachOf
+                (tripleConstraint <http://xmlns.com/foaf/phone>
+                 (nodeConstraint (pattern "^tel:\\\\+44")))
+                (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\\\.uk$")))
+                (min 0)
+                (max 1)) ) closed )) )) ))}
       },
       # Spec FIXME: {0;0} should be {0:,}
       "Negated triple expression" => {
@@ -884,11 +894,11 @@ describe ShEx::Parser do
       },
     }.each do |name, params|
       it name do
-        case name
-        when "Value Constraint Example 2",
-             "Complex shape definition"
-          pending "visual match, must investigate"
-        end
+        #case name
+        #when "Values Constraint Example 2",
+        #     "Complex shape definition"
+        #  pending "visual match, must investigate"
+        #end
         expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''))
       end
     end
