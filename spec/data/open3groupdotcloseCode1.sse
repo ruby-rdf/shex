@@ -7,5 +7,5 @@
       (tripleConstraint <http://a.example/p1>)
       (tripleConstraint <http://a.example/p2>)
       (tripleConstraint <http://a.example/p3>)
-      (semact (<http://shex.io/extensions/Test/> " print(\"group semAct\") "))) )) )) )
-
+      (semact <http://shex.io/extensions/Test/> " print(\"group semAct\") "))
+    )) )) )

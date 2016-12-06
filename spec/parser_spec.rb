@@ -222,7 +222,6 @@ describe ShEx::Parser do
             (value
              (stemRange wildcard (exclusions (stem <mailto:engineering->) (stem <mailto:sales->)))) ))))) ))}
       },
-      # Spec FIXME: added "."
       "Inclusion Example" => {
         shexc: %(
           PREFIX ex: <http://schema.example/>
@@ -274,11 +273,14 @@ describe ShEx::Parser do
           ((<http://schema.example/S>
             (not (or (nodeConstraint iri) (not (shapeRef <http://schema.example/S>))))) )) )}
       },
-      # Spec FIXME: added "."
       "Semantic Actions Example 1" => {
-        shexc: %(PREFIX ex: <http://schema.example/> ex:S1 {
-          ex:p1 . %Test:{ print(s) %} %Test:{ print(o) %}
-        }),
+        shexc: %(
+          PREFIX ex: <http://schema.example/>
+          PREFIX Test: <http://shex.io/extensions/Test/>
+          ex:S1 {
+            ex:p1 . %Test:{ print(s) %} %Test:{ print(o) %}
+          }
+        ),
         shexj: %({ "type": "Schema", "shapes":{
           "http://a.example/S1": {
             "type": "Shape", "expression": {
@@ -289,11 +291,14 @@ describe ShEx::Parser do
                 { "type": "SemAct", "code": " print(o) ",
                   "name": "http://shex.io/extensions/Test/" } ] } } } }),
         sxp: %{(schema
-         (prefix (("ex" <http://schema.example/>)))
-         (shapes ((<http://schema.example/S1> (shape
-          (tripleConstraint <http://schema.example/p1>
-           (semact (<> " print(s) "))
-           (semact (<> " print(o) ")))))) ))}
+         (prefix (("ex" <http://schema.example/>) ("Test" <http://shex.io/extensions/Test/>)))
+         (shapes
+          (
+           (<http://schema.example/S1>
+            (shape
+             (tripleConstraint <http://schema.example/p1>
+              (semact <http://shex.io/extensions/Test/> " print(s) ")
+              (semact <http://shex.io/extensions/Test/> " print(o) ")) )) )) )}
       },
       "Annotations Example 1" => {
         shexc: %(
@@ -577,10 +582,9 @@ describe ShEx::Parser do
               (nodeConstraint (value <http://schema.example/ProgrammingDepartment>)))
             )) )) )}
       },
-      # Spec FIXME: RREFIX => PREFIX -- should be renamed
       "Complex Values Constraint Example 2" => {
         shexc: %(
-          PREFIX ex:   <http://ex.example/#>
+          PREFIX ex:   <http://schema.example/>
           PREFIX foaf: <http://xmlns.com/foaf/>
           PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
           PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -622,7 +626,7 @@ describe ShEx::Parser do
         sxp: %{(schema
          (prefix
           (
-           ("ex" <http://ex.example/#>)
+           ("ex" <http://schema.example/>)
            ("foaf" <http://xmlns.com/foaf/>)
            ("xsd" <http://www.w3.org/2001/XMLSchema#>)
            ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)) )
@@ -631,23 +635,23 @@ describe ShEx::Parser do
            (<IssueShape>
             (shape
              (eachOf
-              (tripleConstraint a (nodeConstraint (value <http://ex.example/#Issue>)))
-              (tripleConstraint <http://ex.example/#state>
+              (tripleConstraint a (nodeConstraint (value <http://schema.example/Issue>)))
+              (tripleConstraint <http://schema.example/state>
                (nodeConstraint
-                (value <http://ex.example/#unassigned>)
-                (value <http://ex.example/#assigned>)) )
-              (tripleConstraint <http://ex.example/#reportedBy> (shapeRef <UserShape>))
-              (tripleConstraint <http://ex.example/#reportedOn>
+                (value <http://schema.example/unassigned>)
+                (value <http://schema.example/assigned>)) )
+              (tripleConstraint <http://schema.example/reportedBy> (shapeRef <UserShape>))
+              (tripleConstraint <http://schema.example/reportedOn>
                (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
               (eachOf
-               (tripleConstraint <http://ex.example/#reproducedBy> (shapeRef <EmployeeShape>))
-               (tripleConstraint <http://ex.example/#reproducedOn>
+               (tripleConstraint <http://schema.example/reproducedBy> (shapeRef <EmployeeShape>))
+               (tripleConstraint <http://schema.example/reproducedOn>
                 (or
                  (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#dateTime>)
                  (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#date>)) )
                (min 0)
                (max 1))
-              (tripleConstraint inverse <http://ex.example/#related>
+              (tripleConstraint inverse <http://schema.example/related>
                (shapeRef <IssueShape>)
                (min 0)
                (max "*")) )
@@ -690,7 +694,6 @@ describe ShEx::Parser do
                 (min 0)
                 (max 1)) )) )) )) )}
       },
-      # Spec FIXME: UserShape needs a predicate
       "Closed shape expression" => {
         shexc: %(
           PREFIX ex: <http://schema.example/>
@@ -861,7 +864,6 @@ describe ShEx::Parser do
                 (min 0)
                 (max 1)) ) closed )) )) ))}
       },
-      # Spec FIXME: {0;0} should be {0:,}
       "Negated triple expression" => {
         shexc: %(
           PREFIX ex: <http://schema.example/>

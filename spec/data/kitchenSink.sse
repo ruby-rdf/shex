@@ -10,7 +10,7 @@
    ("xsd" <http://www.w3.org/2001/XMLSchema#>)
    ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
    ("rdfs" <http://www.w3.org/2000/01/rdf-schem#>)) )
- (semact (<http://ex.example/#foo> " initializer for ignored extension "))
+ (semact <http://ex.example/#foo> " initializer for ignored extension ")
  (start (shapeRef <http://ex.example/S1>))
  (shapes
   (
@@ -36,7 +36,7 @@
         (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
        (min 0)
        (max 1)
-       (semact (<http://ex.example/#foo> " asdfasdf ")))
+       (semact <http://ex.example/#foo> " asdfasdf "))
       (tripleConstraint <http://ex.example/#related>
        (shapeRef <http://ex.example/S1>)
        (min 0)
@@ -86,8 +86,8 @@
         (max 3))
        (tripleConstraint <http://ex.example/#misc>
         (nodeConstraint bnode)
-        (semact (<http://ex.example/#foo> " ignored "))
-        (semact (<http://ex.example/#bar> " also ignored "))) )
+        (semact <http://ex.example/#foo> " ignored ")
+        (semact <http://ex.example/#bar> " also ignored ")) )
       (eachOf
        (eachOf
         (tripleConstraint inverse <http://ex.example/#ref>
@@ -109,4 +109,3 @@
     (shape
      (inclusion _:IDshape)
      (extra <http://ex.example/#code> <http://ex.example/#system>) closed )) )) )
-

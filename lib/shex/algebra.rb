@@ -1,6 +1,7 @@
 $:.unshift(File.expand_path("../..", __FILE__))
 require 'sparql/algebra'
 require 'sxp'
+require 'shex/algebra/extensions'
 
 module ShEx
   # Based on the SPARQL Algebra, operators for executing a patch
@@ -31,6 +32,10 @@ module ShEx
     autoload :TripleExpression, 'shex/algebra/triple_expression'
     autoload :UnaryShape, 'shex/algebra/unary_shape'
     autoload :Value, 'shex/algebra/value'
+
+    class NotMatched < Exception; end
+
+    class NotSatisfied < Exception; end
   end
 end
 

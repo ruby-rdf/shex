@@ -59,18 +59,40 @@ RSpec::Matchers.define :generate do |expected, options = {}|
   end
 end
 
-RSpec::Matchers.define :satisfy do |expected, options = {}|
+RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map = nil|
   match do |input|
-    decls = 'BASE <http://example.com/> PREFIX ex: <http://schema.example/> ' + 
-    graph = RDF::Graph.new {|g| RDF::Turtle::Reader.new(decls + input) {|r| g << r}}
-    @expression = parser(quiet: true).call(decls + expected)
+    focus = case focus
+    when RDF::Value then focus
+    when String
+      RDF::URI("http://example.com/").join(RDF::URI(focus))
+    else
+      RDF::Literal(focus)
+    end
+    shape = RDF::URI(shape)
 
-    @expression.execute(graph)
+    input.satisfies?(focus, graph, (map || {focus => shape}))
   end
-  
+
   failure_message do |input|
-    "Input        : #{input}\n" +
-    "Input(sse)   : #{SXP::Generator.string(@expression.to_sxp_bin)}\n" +
-    "Processing results:\n#{@debug.is_a?(Array) ? @debug.join("\n") : ''}"
+    "Input(sse)   : #{SXP::Generator.string(input.to_sxp_bin)}\n" +
+    "Data         : #{data}\n" +
+    "Shape        : #{shape}\n" +
+    "Focus        : #{focus}\n"
+  end
+
+  failure_message do |input|
+    "Shape did not match\n" +
+    "Input(sse)   : #{SXP::Generator.string(input.to_sxp_bin)}\n" +
+    "Data         : #{data}\n" +
+    "Shape        : #{shape}\n" +
+    "Focus        : #{focus}\n"
+  end
+
+  failure_message_when_negated do |input|
+    "Shape matched\n" +
+    "Input(sse)   : #{SXP::Generator.string(input.to_sxp_bin)}\n" +
+    "Data         : #{data}\n" +
+    "Shape        : #{shape}\n" +
+    "Focus        : #{focus}\n"
   end
 end

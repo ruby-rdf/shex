@@ -8,7 +8,7 @@
        (value
         (stemRange wildcard
          (exclusions
-          (stem (<http://a.example/v1>))
-          (stem (<http://a.example/v2>))
-          (stem (<http://a.example/v3>))) )) )) )) )) )
+          (stem <http://a.example/v1>)
+          (stem <http://a.example/v2>)
+          (stem <http://a.example/v3>)) )) )) )) )) )
 

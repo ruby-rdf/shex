@@ -14,8 +14,13 @@ module ShEx::Algebra
 
     #
     # S is a ShapeAnd and for every shape expression se2 in shapeExprs, satisfies(n, se2, G, m).
-    def satisfies(n, g, m)
-      operands.select {|o| o.is_a?(Satisfiable)}.all? {|op| op.satisfies(n, g, m)}
+    # @param [RDF::Resource] n
+    # @param [RDF::Queryable] g
+    # @param [Hash{RDF::Resource => RDF::Resource}] m
+    # @return [Boolean] `true` if satisfied, `false` if it does not apply
+    # @raise [NotSatisfied] if not satisfied
+    def satisfies?(n, g, m)
+      operands.select {|o| o.is_a?(Satisfiable)}.all? {|op| op.satisfies?(n, g, m)}
     end
   end
 end

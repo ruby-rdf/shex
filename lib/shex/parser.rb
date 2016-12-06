@@ -520,7 +520,7 @@ module ShEx
 
     # [53]    codeDecl              ::= '%' iri (CODE | "%")
     production(:codeDecl) do |input, data, callback|
-      (input[:codeDecl] ||= []) <<  Algebra::SemAct.new([data[:iri], data[:code]].compact)
+      (input[:codeDecl] ||= []) <<  Algebra::SemAct.new(*[data[:iri], data[:code]].compact)
     end
 
     # [13t]   literal               ::= rdfLiteral | numericLiteral | booleanLiteral

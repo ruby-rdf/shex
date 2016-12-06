@@ -4,7 +4,6 @@
    (<http://a.example/S1>
     (shape
      (tripleConstraint <http://a.example/p1>
-      (semact (<http://shex.io/extensions/Test/> " print(s) "))
-      (semact (<http://shex.io/extensions/Test/> " fail(s) "))
-      (semact (<http://shex.io/extensions/Test/> " print(o) "))) )) )) )
-
+      (semact <http://shex.io/extensions/Test/> " print(s) ")
+      (semact <http://shex.io/extensions/Test/> " fail(s) ")
+      (semact <http://shex.io/extensions/Test/> " print(o) ")) )) )) )

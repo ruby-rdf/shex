@@ -4,5 +4,5 @@
    (<http://a.example/S1>
     (shape
      (tripleConstraint <http://a.example/p1>
-      (semact (<http://shex.io/extensions/Test/> " print(\"%{\\\\%}\") "))) )) )) )
-
+      (semact <http://shex.io/extensions/Test/> " print(\"%{\\\\%}\") ")) ))
+  )) )

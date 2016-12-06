@@ -9,10 +9,16 @@ module ShEx::Algebra
       super
     end
 
-    #
-    # S is a ShapeRef and the Schema's shapes maps reference to a shape expression se2 and satisfies(n, se2, G, m).
-    def satisfies(n, g, m)
-      referenced_shape.satisfies(n, g, m)
+    ##
+    # Satisfies method
+    # @param [RDF::Resource] n
+    # @param [RDF::Queryable] g
+    # @param [Hash{RDF::Resource => RDF::Resource}] m
+    # @return [Boolean] `true` if satisfied, `false` if it does not apply
+    # @raise [NotSatisfied] if not satisfied
+    # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
+    def satisfies?(n, g, m)
+      referenced_shape.satisfies?(n, g, m)
     end
 
     ##

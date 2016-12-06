@@ -12,9 +12,19 @@ module ShEx::Algebra
     ##
     # Returns the referenced shape
     #
-    # @return [Shape]
+    # @return [Operand]
     def referenced_shape
       schema.shapes[operands.first]
+    end
+
+    ##
+    # Predicates associated with this TripleExpression
+    #
+    # FIXME: May need to search through referenced shape.
+    #
+    # @return [Array<RDF::URI>]
+    def predicates
+      []
     end
 
     ##

@@ -4,5 +4,5 @@
    (<http://a.example/S1>
     (shape
      (tripleConstraint <http://a.example/p1>
-      (nodeConstraint (value (stemRange <http://a.example/v>)))) )) )) )
+      (nodeConstraint (value (stem <http://a.example/v>)))) )) )) )
 

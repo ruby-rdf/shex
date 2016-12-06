@@ -161,6 +161,15 @@ module ShEx::Algebra
       operands.select {|o| o.is_a?(SemAct)}
     end
 
+    # Does this operator include Satisfiable?
+    def satisfiable?; false; end
+
+    # Does this operator include TripleExpression?
+    def triple_expression?; false; end
+
+    # Does this operator a SemAct?
+    def semact?; false; end
+
     ##
     # The operands to this operator.
     #
