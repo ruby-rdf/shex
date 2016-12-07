@@ -7,7 +7,7 @@ module ShEx::Algebra
     # The evaluation semActsSatisfied on a list of SemActs returns success or failure. The evaluation of an individual SemAct is implementation-dependent.
     # @param [Array<RDF::Statement>] statements
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if not satisfied
+    # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(statements)
       # FIXME: should have a registry
       case operands.first.to_s
@@ -20,7 +20,7 @@ module ShEx::Algebra
         else          statement.to_ntriples
         end.to_s
         $stdout.puts str
-        raise NotSatisfied if md[1] == 'fail'
+        raise ShEx::NotSatisfied, "fail" if md[1] == 'fail'
       else
         raise "unknown SemAct name #{operands.first}"
       end

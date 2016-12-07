@@ -34,8 +34,6 @@ module ShEx
     autoload :Value, 'shex/algebra/value'
 
     class NotMatched < Exception; end
-
-    class NotSatisfied < Exception; end
   end
 end
 

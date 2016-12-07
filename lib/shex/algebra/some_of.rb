@@ -13,14 +13,15 @@ module ShEx::Algebra
     # @return [Array<RDF::Statement]
     def matches(t, g, m)
       result = []
-      operands.select {|o| o.is_a?(TripleExpression)}.any? do |op|
-        this_result = op.matches(t, g, m)
-        if this_result.empty?
+      # FIXME Cardinality?
+      matched_something = operands.select {|o| o.is_a?(TripleExpression)}.any? do |op|
+        begin
+          result += op.matches(t, g, m)
+        rescue NotMatched
           false
-        else
-          result += this_result
         end
       end
+      raise NotMatched, "Expected some expression to match" unless matched_something
 
       # Last, evaluate semantic acts
       operands.select {|o| o.is_a?(SemAct)}.all? do |op|

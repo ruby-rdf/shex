@@ -14,6 +14,7 @@ module ShEx::Algebra
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Array<RDF::Statement>]
+    # @raise NotMatched, ShEx::NotSatisfied
     def matches(t, g, m)
       raise NotImplementedError, "#matches Not implemented in #{self.class}"
       # FIXME: cardinatlity

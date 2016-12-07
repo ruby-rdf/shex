@@ -18,9 +18,11 @@ module ShEx::Algebra
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if not satisfied
+    # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(n, g, m)
-      operands.select {|o| o.is_a?(Satisfiable)}.all? {|op| op.satisfies?(n, g, m)}
+      unless operands.select {|o| o.is_a?(Satisfiable)}.all? {|op| op.satisfies?(n, g, m)}
+        raise(ShEx::NotSatisfied, "Expected all to match")
+      end
     end
   end
 end

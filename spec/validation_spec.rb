@@ -16,8 +16,8 @@ describe ShEx::Algebra do
         ),
         expected: [
           {focus: "issue1", shape: "http://schema.example/IssueShape", result: true},
-          {focus: "issue2", shape: "http://schema.example/IssueShape", result: false},
-          {focus: "issue3", shape: "http://schema.example/IssueShape", result: false},
+          {focus: "issue2", shape: "http://schema.example/IssueShape", result: ShEx::NotSatisfied},
+          {focus: "issue3", shape: "http://schema.example/IssueShape", result: ShEx::NotSatisfied},
         ]
       },
       "Datatype Example 1" => {
@@ -32,7 +32,7 @@ describe ShEx::Algebra do
         ),
         expected: [
           {focus: "issue1", shape: "http://schema.example/IssueShape", result: true},
-          {focus: "issue2", shape: "http://schema.example/IssueShape", result: false},
+          {focus: "issue2", shape: "http://schema.example/IssueShape", result: ShEx::NotSatisfied},
         ]
       },
       "String Facets Example 1" => {
@@ -46,7 +46,7 @@ describe ShEx::Algebra do
         ),
         expected: [
           {focus: "issue1", shape: "http://schema.example/IssueShape", result: true},
-          {focus: "issue2", shape: "http://schema.example/IssueShape", result: false},
+          {focus: "issue2", shape: "http://schema.example/IssueShape", result: ShEx::NotSatisfied},
         ]
       },
       "String Facets Example 2" => {
@@ -57,7 +57,7 @@ describe ShEx::Algebra do
         ),
         expected: [
           {focus: "issue6", shape: "http://schema.example/IssueShape", result: true},
-          {focus: "issue7", shape: "http://schema.example/IssueShape", result: false},
+          {focus: "issue7", shape: "http://schema.example/IssueShape", result: ShEx::NotSatisfied},
         ]
       },
       "Numeric Facets Example 1" => {
@@ -69,8 +69,8 @@ describe ShEx::Algebra do
         ),
         expected: [
           {focus: "issue1", shape: "http://schema.example/IssueShape", result: true},
-          {focus: "issue2", shape: "http://schema.example/IssueShape", result: false},
-          {focus: "issue3", shape: "http://schema.example/IssueShape", result: false},
+          {focus: "issue2", shape: "http://schema.example/IssueShape", result: ShEx::NotSatisfied},
+          {focus: "issue3", shape: "http://schema.example/IssueShape", result: ShEx::NotSatisfied},
         ]
       },
       "Values Constraint Example 1" => {
@@ -81,7 +81,7 @@ describe ShEx::Algebra do
         ),
         expected: [
           {focus: "issue1", shape: "http://schema.example/NoActionIssueShape", result: true},
-          {focus: "issue2", shape: "http://schema.example/NoActionIssueShape", result: false},
+          {focus: "issue2", shape: "http://schema.example/NoActionIssueShape", result: ShEx::NotSatisfied},
         ]
       },
       "Values Constraint Example 2" => {
@@ -107,8 +107,8 @@ describe ShEx::Algebra do
           {focus: "issue3", shape: "http://schema.example/EmployeeShape", result: true},
           {focus: "issue4", shape: "http://schema.example/EmployeeShape", result: true},
           {focus: "issue5", shape: "http://schema.example/EmployeeShape", result: true},
-          {focus: "issue6", shape: "http://schema.example/EmployeeShape", result: false},
-          {focus: "issue7", shape: "http://schema.example/EmployeeShape", result: false},
+          {focus: "issue6", shape: "http://schema.example/EmployeeShape", result: ShEx::NotSatisfied},
+          {focus: "issue7", shape: "http://schema.example/EmployeeShape", result: ShEx::NotSatisfied},
         ]
       },
       "Values Constraint Example 3" => {
@@ -127,7 +127,7 @@ describe ShEx::Algebra do
         expected: [
           {focus: "issue8", shape: "http://schema.example/EmployeeShape", result: true},
           {focus: "issue9", shape: "http://schema.example/EmployeeShape", result: true},
-          {focus: "issue10", shape: "http://schema.example/EmployeeShape", result: false},
+          {focus: "issue10", shape: "http://schema.example/EmployeeShape", result: ShEx::NotSatisfied},
         ]
       },
       "Semantic Actions Example 1" => {
@@ -135,7 +135,7 @@ describe ShEx::Algebra do
           PREFIX ex: <http://schema.example/>
           PREFIX Test: <http://shex.io/extensions/Test/>
           ex:S1 {
-            ex:p1 . %Test:{ print(s) %} %Test:{ print(o) %}
+            ex:p1 .+ %Test:{ print(s) %} %Test:{ print(o) %}
           }
         ),
         data: %(
@@ -146,7 +146,7 @@ describe ShEx::Algebra do
         expected: [
           {focus: "http://a.example/n1", shape: "http://schema.example/S1", result: true},
           {focus: "http://a.example/n2", shape: "http://schema.example/S1", result: true},
-          {focus: "http://a.example/n3", shape: "http://schema.example/S1", result: false},
+          {focus: "http://a.example/n3", shape: "http://schema.example/S1", result: ShEx::NotSatisfied},
         ]
       },
       "Validation Example 1" => {
@@ -266,7 +266,7 @@ describe ShEx::Algebra do
           <Alice> foaf:name "Alice Malsenior Walker" .
         ),
         expected: [
-          {focus: "http://a.example/Alice", shape: "http://schema.example/UserShape", result: false},
+          {focus: "http://a.example/Alice", shape: "http://schema.example/UserShape", result: ShEx::NotSatisfied},
         ]
       },
       "Disjunction Example 4" => {
@@ -320,7 +320,7 @@ describe ShEx::Algebra do
           <Alice> foaf:name "Alice Malsenior Walker" .
         ),
         expected: [
-          {focus: "http://a.example/Alice", shape: "http://schema.example/UserShape", result: false},
+          {focus: "http://a.example/Alice", shape: "http://schema.example/UserShape", result: ShEx::NotSatisfied},
         ]
       },
       "Dependent Shape Example" => {
@@ -438,10 +438,8 @@ describe ShEx::Algebra do
           it "#{p[:focus]}" do
             if graph.empty?
               fail "No triples in graph"
-            elsif p[:result]
-              expect(schema).to satisfy(graph, params[:data], p[:focus], p[:shape], params[:map])
             else
-              expect(schema).not_to satisfy(graph, params[:data], p[:focus], p[:shape], params[:map])
+              expect(schema).to satisfy(graph, params[:data], p[:focus], p[:shape], params[:map], p[:result])
             end
           end
         end

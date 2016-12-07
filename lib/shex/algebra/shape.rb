@@ -10,20 +10,21 @@ module ShEx::Algebra
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if not satisfied
+    # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(n, g, m)
       expression = operands.detect {|op| op.is_a?(TripleExpression)}
 
       # neigh(G, n) is the neighbourhood of the node n in the graph G.
       #
       #    neigh(G, n) = arcsOut(G, n) ∪ arcsIn(G, n)
-      arcs_in = g.query(object: n).to_a
-      arcs_out = g.query(subject: n).to_a
+      arcs_in = g.query(object: n).to_a.sort_by(&:to_ntriples)
+      arcs_out = g.query(subject: n).to_a.sort_by(&:to_ntriples)
       neigh = (arcs_in + arcs_out).uniq
 
       # `matched` is the subset of statements which match `expression`.
+      # FIXME Cardinality?
       matched = expression ? expression.matches(neigh, g, m) : []
-      raise NotSatisfied if expression && matched.empty?
+      raise(ShEx::NotSatisfied, "Expected some triples to match") if expression && matched.empty?
 
       # `remainder` is the set of unmatched statements
       remainder = neigh - matched
@@ -43,11 +44,11 @@ module ShEx::Algebra
 
       # There is no triple in matchables whose predicate does not appear in extra.
       matchables.each do |statement|
-        raise NotSatisfied unless extra.include?(statement.predicate)
+        raise(ShEx::NotSatisfied, "Statement remains with predicate #{statement.predicate} not in extra") unless extra.include?(statement.predicate)
       end
 
       # closed is false or unmatchables is empty.
-      raise NotSatisfied unless !closed? || unmatchables.empty?
+      raise(ShEx::NotSatisfied, "Unmatchables remain on a closed shape") unless !closed? || unmatchables.empty?
 
       # Presumably, to be satisfied, there must be some triples in matches
 
@@ -57,6 +58,8 @@ module ShEx::Algebra
       end unless matched.empty?
 
       true
+    rescue NotMatched => e
+      raise ShEx::NotSatisfied, e.message
     end
 
     private

@@ -31,16 +31,21 @@ RSpec::Matchers.define :generate do |expected, options = {}|
   match do |input|
     case
     when expected == ShEx::ParseError
-      expect {parser(options).call(input)}.to raise_error(expected)
+      begin
+        parser(options).call(input)
+        false
+      rescue expected
+        true
+      end
     when expected.is_a?(Regexp)
       @actual = parser(options).call(input)
-      expect(normalize(@actual.to_sxp)).to match(expected)
+      expected.match(@actual.to_sxp)
     when expected.is_a?(String)
       @actual = parser(options).call(input)
-      expect(normalize(@actual.to_sxp)).to eq normalize(expected)
+      normalize(@actual.to_sxp) == normalize(expected)
     else
       @actual = parser(options).call(input)
-      expect(@actual).to eq expected
+      @actual == expected
     end
   end
   
@@ -59,7 +64,7 @@ RSpec::Matchers.define :generate do |expected, options = {}|
   end
 end
 
-RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map = nil|
+RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected|
   match do |input|
     focus = case focus
     when RDF::Value then focus
@@ -70,18 +75,27 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map = nil|
     end
     shape = RDF::URI(shape)
 
-    input.satisfies?(focus, graph, (map || {focus => shape}))
+    case
+    when expected == ShEx::NotSatisfied
+      begin
+        input.satisfies?(focus, graph, (map || {focus => shape}))
+        false
+      rescue expected
+        true
+      end
+    else
+      begin
+        input.satisfies?(focus, graph, (map || {focus => shape}))
+      rescue ShEx::NotSatisfied => e
+        @exception = e
+        false
+      end
+    end
+
   end
 
   failure_message do |input|
-    "Input(sse)   : #{SXP::Generator.string(input.to_sxp_bin)}\n" +
-    "Data         : #{data}\n" +
-    "Shape        : #{shape}\n" +
-    "Focus        : #{focus}\n"
-  end
-
-  failure_message do |input|
-    "Shape did not match\n" +
+    (expected == ShEx::NotSatisfied ? "Shape matched" : "Shape did not match: #{@exception.message}\n") +
     "Input(sse)   : #{SXP::Generator.string(input.to_sxp_bin)}\n" +
     "Data         : #{data}\n" +
     "Shape        : #{shape}\n" +

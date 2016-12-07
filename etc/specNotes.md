@@ -36,6 +36,7 @@
 * Description of `expr is a TripleConstraint`:
   * uses `givenName` and `author`, should both be `givenName`.
   * use `value` instead of `n2`?
+* What is Shape has an expression with cardinality 0; in this case, it would be an error if `matched` was not empty. But, this might not happen unless cardinality is specified on the shape itself.
 
 ## 4.7 Semantic Actions
 * Shape uses `ex:p1`, but data uses `<http://a.example/p1>`.

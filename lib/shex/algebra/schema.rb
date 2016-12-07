@@ -13,7 +13,7 @@ module ShEx::Algebra
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if not satisfied
+    # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(n, g, m)
       # Make sure they're URIs
       m = m.inject({}) {|memo, (k,v)|
@@ -35,8 +35,6 @@ module ShEx::Algebra
       raise "No shape found for #{label}" unless shape
       shape.satisfies?(n, g, m)
       true
-    rescue NotSatisfied => e
-      false
     end
 
     ##

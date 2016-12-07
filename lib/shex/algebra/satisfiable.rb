@@ -10,7 +10,7 @@ module ShEx::Algebra
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if not satisfied
+    # @raise [ShEx::NotSatisfied] if not satisfied
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
     def satisfies?(n, g, m)
       raise NotImplementedError, "#satisfies? Not implemented in #{self.class}"
@@ -23,13 +23,15 @@ module ShEx::Algebra
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Boolean] `true` if not satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if satisfied
+    # @raise [ShEx::NotSatisfied] if satisfied
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
     def not_satisfies?(n, se, g, m)
-      raise NotSatisfied if satisfies(n, se, g, m)
-      false   # doesn't apply
-    rescue NotSatisfied
-      true
+      begin
+        satisfies(n, se, g, m)
+      rescue ShEx::NotSatisfied
+        return true  # Expected it to not satisfy
+      end
+      raise ShEx::NotSatisfied, "Expression should not have matched"
     end
     alias_method :notSatisfies?, :not_satisfies?
 

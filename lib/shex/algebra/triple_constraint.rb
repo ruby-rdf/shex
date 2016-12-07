@@ -13,17 +13,20 @@ module ShEx::Algebra
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Array<RDF::Statement>]
+    # @raise NotMatched, ShEx::NotSatisfied
     def matches(t, g, m)
+      max = maximum
       results = t.select do |statement|
-        value = inverse? ? statement.subject : statement.object
+        if max > 0
+          value = inverse? ? statement.subject : statement.object
 
-        statement.predicate == predicate &&
-        (shape.nil? || begin
-          shape.satisfies?(value, g, m)
-        rescue NotSatisfied
-          false
-        end)
+          max -= 1 if statement.predicate == predicate && shape_expr_satisfies?(shape, value, g, m)
+        end
       end
+
+      # Max violations handled in Shape
+      raise(NotMatched, "Minimum Cardinality Violation: #{results.length} < #{minimum}") if
+        results.length < minimum
 
       # Last, evaluate semantic acts
       operands.select {|o| o.is_a?(SemAct)}.all? do |op|
@@ -31,6 +34,12 @@ module ShEx::Algebra
       end unless results.empty?
 
       results
+    end
+
+    def shape_expr_satisfies?(shape, value, g, m)
+      shape.nil? || shape.satisfies?(value, g, m)
+    rescue ShEx::NotSatisfied
+      false
     end
 
     def predicate

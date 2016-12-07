@@ -11,15 +11,12 @@ module ShEx::Algebra
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Array<RDF::Statement>]
+    # @raise NotMatched, ShEx::NotSatisfied
     def matches(t, g, m)
       results = []
+      # FIXME Cardinality?
       operands.select {|o| o.is_a?(TripleExpression)}.all? do |op|
-        this_result = op.matches(t, g, m)
-        if this_result.empty?
-          return []
-        else
-          results += this_result
-        end
+        results += op.matches(t, g, m)
       end
 
       # Last, evaluate semantic acts

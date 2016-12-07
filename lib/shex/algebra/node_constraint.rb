@@ -10,7 +10,7 @@ module ShEx::Algebra
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if not satisfied
+    # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(n, g, m)
       satisfies_node_kind?(n) ||
       satisfies_datatype?(n) ||
@@ -24,7 +24,7 @@ module ShEx::Algebra
     ##
     # Satisfies Node Kind Constraint
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if not satisfied
+    # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies_node_kind?(value)
       kind = case operands.first
       when :iri         then RDF::URI
@@ -34,19 +34,21 @@ module ShEx::Algebra
       else              return false
       end
 
-      raise NotSatisfied unless value.is_a?(kind)
+      raise(ShEx::NotSatisfied, "Node was #{value.inspect} expected kind #{kind}") unless
+        value.is_a?(kind)
       true
     end
 
     ##
     # Datatype Constraint
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if not satisfied
+    # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies_datatype?(value)      
       dt = operands[1] if operands.first == :datatype
       return false unless dt
 
-      raise NotSatisfied unless value.is_a?(RDF::Literal) && value.datatype == RDF::URI(dt)
+      raise(ShEx::NotSatisfied, "Node was #{value.inspect}, expected datatype #{dt}") unless
+        value.is_a?(RDF::Literal) && value.datatype == RDF::URI(dt)
       true
     end
 
@@ -54,7 +56,7 @@ module ShEx::Algebra
     # String Facet Constraint
     # Checks all length/minlength/maxlength/pattern facets against the string representation of the value.
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if not satisfied
+    # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies_string_facet?(value)
       length    = op_fetch(:length)
       minlength = op_fetch(:minlength)
@@ -64,10 +66,14 @@ module ShEx::Algebra
       return false if (length || minlength || maxlength || pattern).nil?
 
       v_s = value.to_s
-      raise NotSatisfied if length && v_s.length != length.to_i
-      raise NotSatisfied if minlength && v_s.length < minlength.to_i
-      raise NotSatisfied if maxlength && v_s.length > maxlength.to_i
-      raise NotSatisfied if pattern && !Regexp.new(pattern).match(v_s)
+      raise(ShEx::NotSatisfied, "Node #{v_s.inspect} length not #{length}") if
+        length && v_s.length != length.to_i
+      raise(ShEx::NotSatisfied, "Node #{v_s.inspect} length < #{minlength}") if
+        minlength && v_s.length < minlength.to_i
+      raise(ShEx::NotSatisfied, "Node #{v_s.inspect} length > #{maxlength}") if
+        maxlength && v_s.length > maxlength.to_i
+      raise(ShEx::NotSatisfied, "Node #{v_s.inspect} does not match #{pattern}") if
+        pattern && !Regexp.new(pattern).match(v_s)
       true
     end
 
@@ -75,7 +81,7 @@ module ShEx::Algebra
     # Numeric Facet Constraint
     # Checks all numeric facets against the value.
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if not satisfied
+    # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies_numeric_facet?(value)
       mininclusive   = op_fetch(:mininclusive)
       minexclusive   = op_fetch(:minexclusive)
@@ -86,20 +92,22 @@ module ShEx::Algebra
 
       return false if (mininclusive || minexclusive || maxinclusive || maxexclusive || totaldigits || fractiondigits).nil?
 
-      raise NotSatisfied unless value.is_a?(RDF::Literal::Numeric)
+      raise(ShEx::NotSatisfied, "Node #{value.inspect} not numeric") unless
+        value.is_a?(RDF::Literal::Numeric)
 
-      raise NotSatisfied if (totaldigits || fractiondigits) && !value.is_a?(RDF::Literal::Decimal)
+      raise(ShEx::NotSatisfied, "Node #{value.inspect} not decimal") if
+        (totaldigits || fractiondigits) && !value.is_a?(RDF::Literal::Decimal)
 
       numeric_value = value.object
       case
-      when !mininclusive.nil? && numeric_value < mininclusive.object then raise NotSatisfied
-      when !minexclusive.nil? && numeric_value <= minexclusive.object then raise NotSatisfied
-      when !maxinclusive.nil? && numeric_value > maxinclusive.object then raise NotSatisfied
-      when !maxexclusive.nil? && numeric_value >= maxexclusive.object then raise NotSatisfied
+      when !mininclusive.nil? && numeric_value < mininclusive.object then raise(ShEx::NotSatisfied, "Node #{value.inspect} < #{mininclusive.object}")
+      when !minexclusive.nil? && numeric_value <= minexclusive.object then raise(ShEx::NotSatisfied, "Node #{value.inspect} not <= #{minexclusive.object}")
+      when !maxinclusive.nil? && numeric_value > maxinclusive.object then raise(ShEx::NotSatisfied, "Node #{value.inspect} > #{maxinclusive.object}")
+      when !maxexclusive.nil? && numeric_value >= maxexclusive.object then raise(ShEx::NotSatisfied, "Node #{value.inspect} >= #{maxexclusive.object}")
       when !totaldigits.nil? && value.dup.canonicalize!.to_s.length != totaldigits.to_i
-        raise NotSatisfied
+        raise(ShEx::NotSatisfied, "Node #{value.inspect} total digits != #{totaldigits}")
       when !fractiondigits.nil? && value.dup.canonicalize!.to_s.length != fractiondigits.to_i
-        raise NotSatisfied
+        raise(ShEx::NotSatisfied, "Node #{value.inspect} fractional digits != #{fractiondigits}")
       end
       true
     end
@@ -108,12 +116,12 @@ module ShEx::Algebra
     # Value Constraint
     # Checks all numeric facets against the value.
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [NotSatisfied] if not satisfied
+    # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies_values?(value)
       values = operands.select {|op| op.is_a?(Value)}
       return false if values.empty?
       matched_value = values.detect {|v| v.match?(value)}
-      raise NotSatisfied unless matched_value
+      raise(ShEx::NotSatisfied, "Node #{value.inspect} not expected") unless matched_value
       true
     end
 
