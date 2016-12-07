@@ -24,7 +24,6 @@ module ShEx::Algebra
       # `matched` is the subset of statements which match `expression`.
       # FIXME Cardinality?
       matched = expression ? expression.matches(neigh, g, m) : []
-      raise(ShEx::NotSatisfied, "Expected some triples to match") if expression && matched.empty?
 
       # `remainder` is the set of unmatched statements
       remainder = neigh - matched
