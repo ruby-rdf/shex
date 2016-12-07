@@ -3,24 +3,16 @@ require 'json/ld'
 
 module Fixtures
   module SuiteTest
-    BASE = "shexTest/"
+    BASE = File.expand_path("../shexTest", __FILE__) + '/'
 
     class Manifest < JSON::LD::Resource
+      attr_accessor :file
+
       def self.open(file)
         #puts "open: #{file}"
-        prefixes = {}
-        g = RDF::Repository.load(file, format:  :ttl)
-        JSON::LD::API.fromRDF(g) do |expanded|
-          JSON::LD::API.frame(expanded, FRAME) do |framed|
-            yield Manifest.new(framed['@graph'].first)
-          end
-        end
-      end
-
-      # @param [Hash] json framed JSON-LD
-      # @return [Array<Manifest>]
-      def self.from_jsonld(json)
-        json['@graph'].map {|e| Manifest.new(e)}
+        @file = file
+        json = JSON.parse(File.read(@file))
+        yield Manifest.new(json['@graph'].first)
       end
 
       def entries
@@ -32,45 +24,40 @@ module Fixtures
     class Entry < JSON::LD::Resource
       attr_accessor :debug
 
-      def base
-        action.is_a?(Hash) ? action.fetch("base", action["data"]) : action
-      end
-
-      # Alias data and query
-      def input
-        url = case action
-        when Hash then action['patch']
-        else action
-        end
-        @input ||= RDF::Util::File.open_file(URI.decode(url)) {|f| f.read}
+      def schema
+        action.is_a?(Hash) && (BASE + 'validation/' + action["schema"])
       end
 
       def data
-        action.is_a?(Hash) && action["data"]
+        action.is_a?(Hash) && (BASE + 'validation/' + action["data"])
       end
 
-      def target_graph
-        @graph ||= RDF::Graph.load(URI.decode(data), base_uri: base)
+      def result
+        BASE + 'validation/' + attributes['result']
       end
 
-      def expected
-        @expected ||= RDF::Util::File.open_file(URI.decode(result)) {|f| f.read}
+      def shape
+        action.is_a?(Hash) && action["shape"]
       end
 
-      def expected_graph
-        @expected_graph ||= RDF::Graph.load(URI.decode(result), base_uri: base)
+      def focus
+        action.is_a?(Hash) && action["focus"]
       end
 
-      def evaluate?
-        Array(attributes['@type']).join(" ").match(/Eval/)
+      def turtle
+        @turtle ||= File.read(data)
       end
 
-      def syntax?
-        Array(attributes['@type']).join(" ").match(/Syntax/)
+      def graph
+        @graph ||= RDF::Graph.load(data, base_uri: base)
+      end
+
+      def schema_source
+        @schema_source ||= File.read(schema)
       end
 
       def positive_test?
-        !Array(attributes['@type']).join(" ").match(/Negative/)
+        Array(attributes['@type']).join(" ").match(/ValidationTest/)
       end
 
       def negative_test?
@@ -88,9 +75,7 @@ module Fixtures
 
       def inspect
         super.sub('>', "\n" +
-        "  syntax?: #{syntax?.inspect}\n" +
         "  positive?: #{positive_test?.inspect}\n" +
-        "  evaluate?: #{evaluate?.inspect}\n" +
         ">"
       )
       end

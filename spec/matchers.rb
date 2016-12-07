@@ -38,13 +38,13 @@ RSpec::Matchers.define :generate do |expected, options = {}|
         true
       end
     when expected.is_a?(Regexp)
-      @actual = parser(options).call(input)
+      @actual = parser(options).call(input) rescue false
       expected.match(@actual.to_sxp)
     when expected.is_a?(String)
-      @actual = parser(options).call(input)
+      @actual = parser(options).call(input) rescue false
       normalize(@actual.to_sxp) == normalize(expected)
     else
-      @actual = parser(options).call(input)
+      @actual = parser(options).call(input) rescue false
       @actual == expected
     end
   end

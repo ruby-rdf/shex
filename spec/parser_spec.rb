@@ -966,6 +966,19 @@ describe ShEx::Parser do
       end
     end
 
+    context "Positive Validation Syntax Tests", pending: "Syntax fixes" do
+      Dir.glob("spec/shexTest/validation/*.shex").
+        map {|f| f.split('/').last.sub('.shex', '')}.
+        each do |file|
+        it file do
+          input = File.read File.expand_path("../shexTest/validation/#{file}.shex", __FILE__)
+          sse = File.read(File.expand_path("../data/#{file}.sse", __FILE__)) rescue ""
+
+          expect(input).to generate(sse, validate: true)
+        end
+      end
+    end
+
     context "Negative Syntax Tests" do
       Dir.glob("spec/shexTest/negativeSyntax/*.shex").
         map {|f| f.split('/').last.sub('.shex', '')}.
