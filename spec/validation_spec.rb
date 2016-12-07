@@ -450,11 +450,12 @@ describe ShEx::Algebra do
   require 'suite_helper'
   manifest = Fixtures::SuiteTest::BASE + "/validation/manifest.jsonld"
   Fixtures::SuiteTest::Manifest.open(manifest) do |m|
-    describe m.attributes['rdfs:comment'], skip: "In progress" do
+    describe m.attributes['rdfs:comment'] do
       m.entries.each do |t|
-        specify "#{t.name}–#{t.comment}#{'( negative)' if t.negative_test?}" do
+        specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?}" do
+          expected = t.positive_test? || ShEx::NotSatisfied
           schema = ShEx.parse(t.schema_source)
-          expect(schema).to satisfy(t.graph, File.read(t.data), t.focus, t.shape, nil, t.positive_test? || ShEx::NotSatisfied)
+          expect(schema).to satisfy(t.graph, File.read(t.data), t.focus, t.shape, nil, expected)
         end
       end
     end

@@ -29,23 +29,28 @@ JSON_STATE = JSON::State.new(
 
 RSpec::Matchers.define :generate do |expected, options = {}|
   match do |input|
-    case
-    when expected == ShEx::ParseError
-      begin
-        parser(options).call(input)
-        false
-      rescue expected
-        true
+    begin
+      case
+      when expected == ShEx::ParseError
+        begin
+          parser(options).call(input)
+          false
+        rescue expected
+          true
+        end
+      when expected.is_a?(Regexp)
+        @actual = parser(options).call(input)
+        expected.match(@actual.to_sxp)
+      when expected.is_a?(String)
+        @actual = parser(options).call(input)
+        normalize(@actual.to_sxp) == normalize(expected)
+      else
+        @actual = parser(options).call(input)
+        @actual == expected
       end
-    when expected.is_a?(Regexp)
-      @actual = parser(options).call(input) rescue false
-      expected.match(@actual.to_sxp)
-    when expected.is_a?(String)
-      @actual = parser(options).call(input) rescue false
-      normalize(@actual.to_sxp) == normalize(expected)
-    else
-      @actual = parser(options).call(input) rescue false
-      @actual == expected
+    rescue
+      @actual = $!.message
+      false
     end
   end
   
@@ -76,17 +81,19 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected|
     shape = RDF::URI(shape)
 
     case
-    when expected == ShEx::NotSatisfied
+    when [ShEx::NotSatisfied, ShEx::StructureError].include?(expected)
       begin
         input.satisfies?(focus, graph, (map || {focus => shape}))
         false
       rescue expected
         true
+      rescue
+        false
       end
     else
       begin
         input.satisfies?(focus, graph, (map || {focus => shape}))
-      rescue ShEx::NotSatisfied => e
+      rescue Exception => e
         @exception = e
         false
       end
