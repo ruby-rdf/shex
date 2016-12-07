@@ -3,7 +3,7 @@
   (
    (<http://a.example/S1>
     (shape
-     (someOf
+     (oneOf
       (tripleConstraint <http://a.example/p1>)
       (tripleConstraint <http://a.example/p2>)
       (tripleConstraint <http://a.example/p3>)

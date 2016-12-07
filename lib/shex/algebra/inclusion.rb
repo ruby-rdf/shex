@@ -14,7 +14,7 @@ module ShEx::Algebra
     #
     # @return [Operand]
     def referenced_shape
-      schema.shapes[operands.first]
+      schema.shapes[operands.first.to_s]
     end
 
     ##
@@ -34,7 +34,7 @@ module ShEx::Algebra
       raise ShEx::ParseError, "Missing included shape: #{operands.first}" if referenced_shape.nil?
       raise ShEx::ParseError, "Self included shape: #{operands.first}" if referenced_shape == first_ancestor(Shape)
       case referenced_shape.operands.first
-      when TripleConstraint, Inclusion, EachOf, SomeOf
+      when TripleConstraint, Inclusion, EachOf, OneOf
       else
         raise ShEx::ParseError, "Includes non-simple shape: #{operands.first}"
       end

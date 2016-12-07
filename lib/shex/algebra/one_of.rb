@@ -1,11 +1,11 @@
 module ShEx::Algebra
   ##
-  class SomeOf < Operator
+  class OneOf < Operator
     include TripleExpression
-    NAME = :someOf
+    NAME = :oneOf
 
     ##
-    # `expr` is a SomeOf and there is some shape expression `se2` in shapeExprs such that a `matches(T, se2, m)`...
+    # `expr` is a OneOf and there is some shape expression `se2` in shapeExprs such that a `matches(T, se2, m)`...
     #
     # @param [Array<RDF::Statement>] t
     # @param [RDF::Queryable] g

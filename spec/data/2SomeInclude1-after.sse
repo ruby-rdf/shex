@@ -3,6 +3,6 @@
   (
    (<http://a.example/S1>
     (shape
-     (someOf (tripleConstraint <http://a.example/p1>) (inclusion <http://a.example/S2>))) )
+     (oneOf (tripleConstraint <http://a.example/p1>) (inclusion <http://a.example/S2>))) )
    (<http://a.example/S2> (shape (tripleConstraint <http://a.example/p2>)))) ))
 

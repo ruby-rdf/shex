@@ -58,7 +58,7 @@
        (nodeConstraint datatype <http://all.example/dt> (length 2))
        (min 0)
        (max 1))
-      (someOf
+      (oneOf
        (eachOf
         (tripleConstraint <http://all.example/base> (nodeConstraint iri) (min 0) (max "*"))
         (tripleConstraint <http://all.example/PREFIX>
@@ -80,7 +80,7 @@
         (min 2)
         (max "*"))
        (eachOf
-        (someOf
+        (oneOf
          (eachOf
           (tripleConstraint inverse <http://all.example/extra>
            (tripleConstraint <http://all.example/p1>

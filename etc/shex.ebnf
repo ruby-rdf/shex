@@ -68,6 +68,7 @@
 # ~ s/groupShape/groupTripleExpr/ (EGP 20160930)
 # ~ s/unaryShape/unaryTripleExpr/ (EGP 20160930)
 # ~ s/encapsulatedShape/bracketedTripleExpr/ (EGP 20160930)
+# ~ s/SomeOf/OneOf/g (EGP 20161201)
 
 # Notation:
 #   in-line terminals in ""s are case-insensitive
@@ -127,13 +128,13 @@
 [31]    inlineShapeDefinition ::= (extraPropertySet | "CLOSED")* '{' tripleExpression? '}'
 [32]    extraPropertySet      ::= "EXTRA" predicate+
 
-[33]    tripleExpression      ::= someOfTripleExpr
+[33]    tripleExpression      ::= oneOfTripleExpr
 
 # First/First Conflicts on "&", "$", "(", "^", :RDF_TYPE , :IRIREF, :PNAME_LN and :PNAME_NS 
-#[34]    someOfTripleExpr      ::= groupTripleExpr | multiElementSomeOf
-#[35]    multiElementSomeOf    ::= groupTripleExpr ('|' groupTripleExpr)+
-#[36]    innerTripleExpr       ::= multiElementGroup | multiElementSomeOf
-[34]    someOfTripleExpr      ::= groupTripleExpr ('|' groupTripleExpr)*
+#[34]    oneOfTripleExpr      ::= groupTripleExpr | multiElementOneOf
+#[35]    multiElementOneOf    ::= groupTripleExpr ('|' groupTripleExpr)+
+#[36]    innerTripleExpr       ::= multiElementGroup | multiElementOneOf
+[34]    oneOfTripleExpr      ::= groupTripleExpr ('|' groupTripleExpr)*
 
 # First/First Conflicts on "&", "$", "(", "^", :RDF_TYPE , :IRIREF, :PNAME_LN and :PNAME_NS 
 # First/Follow Conflict on ";"
@@ -144,9 +145,9 @@
 
 [40]    unaryTripleExpr       ::= productionLabel? (tripleConstraint | bracketedTripleExpr) | include
 
-# Use someOfTripleExpr instead of innerTripleExpr
+# Use oneOfTripleExpr instead of innerTripleExpr
 #[41]    bracketedTripleExpr   ::= '(' innerTripleExpr ')' cardinality? annotation* semanticActions
-[41]    bracketedTripleExpr   ::= '(' someOfTripleExpr ')' cardinality? annotation* semanticActions
+[41]    bracketedTripleExpr   ::= '(' oneOfTripleExpr ')' cardinality? annotation* semanticActions
 
 [42]    productionLabel       ::= '$' (iri | blankNode)
 

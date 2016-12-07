@@ -24,9 +24,11 @@ module ShEx::Algebra
         and: And,
         annotation: Annotation,
         base: Base,
+        each_of: EachOf,
         inclusion: Inclusion,
         nodeConstraint: NodeConstraint,
         not: Not,
+        one_of: OneOf,
         or: Or,
         prefix: Prefix,
         schema: Schema,
@@ -38,7 +40,6 @@ module ShEx::Algebra
         stem: Stem,
         stemRange: StemRange,
         tripleConstraint: TripleConstraint,
-        unaryShape: UnaryShape,
         value: Value,
       }.fetch(name.to_s.downcase.to_sym)
     end

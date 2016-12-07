@@ -31,7 +31,6 @@
 * Also, note that **VALUES CONSTRAINT EXAMPLE 2** appears later in **6. Parsing ShEx Compact syntax** as a totally different shape.
 
 ## 4.5 Shapes and Triple Expressions
-* There is no `OneOf` in the grammar; presumably `SomeOf`?
 * Shape looks like there is zero or one extra IRI, but grammar has `predicate+`
 * Description of `expr is a TripleConstraint`:
   * uses `givenName` and `author`, should both be `givenName`.

@@ -1014,34 +1014,34 @@
  (rule tripleExpression "33"
   (first "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
   (follow "}")
-  (seq someOfTripleExpr))
- (rule someOfTripleExpr "34"
+  (seq oneOfTripleExpr))
+ (rule oneOfTripleExpr "34"
   (first "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
   (follow ")" "}")
-  (seq groupTripleExpr _someOfTripleExpr_1))
- (rule _someOfTripleExpr_1 "34.1"
+  (seq groupTripleExpr _oneOfTripleExpr_1))
+ (rule _oneOfTripleExpr_1 "34.1"
   (first _eps "|")
   (follow ")" "}")
   (cleanup star)
-  (alt _empty _someOfTripleExpr_3))
- (rule _someOfTripleExpr_2 "34.2"
+  (alt _empty _oneOfTripleExpr_3))
+ (rule _oneOfTripleExpr_2 "34.2"
   (first "|")
   (follow ")" "|" "}")
   (seq "|" groupTripleExpr))
- (rule _someOfTripleExpr_3 "34.3"
+ (rule _oneOfTripleExpr_3 "34.3"
   (first "|")
   (follow ")" "}")
   (cleanup merge)
-  (seq _someOfTripleExpr_2 _someOfTripleExpr_1))
- (rule _someOfTripleExpr_4 "34.4"
+  (seq _oneOfTripleExpr_2 _oneOfTripleExpr_1))
+ (rule _oneOfTripleExpr_4 "34.4"
   (first _eps "|")
   (follow ")" "}")
-  (seq _someOfTripleExpr_1))
- (rule _someOfTripleExpr_5 "34.5"
+  (seq _oneOfTripleExpr_1))
+ (rule _oneOfTripleExpr_5 "34.5"
   (first _eps "|")
   (follow ")" "}")
-  (seq _someOfTripleExpr_1))
- (rule _someOfTripleExpr_6 "34.6"
+  (seq _oneOfTripleExpr_1))
+ (rule _oneOfTripleExpr_6 "34.6"
   (first "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
   (follow ")" "|" "}")
   (seq groupTripleExpr))
@@ -1104,7 +1104,7 @@
  (rule bracketedTripleExpr "41"
   (first "(")
   (follow ")" ";" "|" "}")
-  (seq "(" someOfTripleExpr ")" _bracketedTripleExpr_1 _bracketedTripleExpr_2
+  (seq "(" oneOfTripleExpr ")" _bracketedTripleExpr_1 _bracketedTripleExpr_2
    semanticActions ))
  (rule _bracketedTripleExpr_1 "41.1"
   (first "*" "+" "?" REPEAT_RANGE _eps)
@@ -1124,7 +1124,7 @@
  (rule _bracketedTripleExpr_4 "41.4"
   (first "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^")
   (follow ")" ";" "|" "}")
-  (seq someOfTripleExpr ")" _bracketedTripleExpr_1 _bracketedTripleExpr_2
+  (seq oneOfTripleExpr ")" _bracketedTripleExpr_1 _bracketedTripleExpr_2
    semanticActions ))
  (rule _bracketedTripleExpr_5 "41.5"
   (first "//" _eps)

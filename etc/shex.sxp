@@ -135,13 +135,13 @@
  (rule _extraPropertySet_1 "32.1" (cleanup plus) (seq predicate _extraPropertySet_2))
  (rule _extraPropertySet_2 "32.2" (cleanup star) (alt _empty _extraPropertySet_3))
  (rule _extraPropertySet_3 "32.3" (cleanup merge) (seq predicate _extraPropertySet_2))
- (rule tripleExpression "33" (seq someOfTripleExpr))
- (rule someOfTripleExpr "34" (seq groupTripleExpr _someOfTripleExpr_1))
- (rule _someOfTripleExpr_1 "34.1" (cleanup star) (alt _empty _someOfTripleExpr_3))
- (rule _someOfTripleExpr_2 "34.2" (seq "|" groupTripleExpr))
- (rule _someOfTripleExpr_3 "34.3"
+ (rule tripleExpression "33" (seq oneOfTripleExpr))
+ (rule oneOfTripleExpr "34" (seq groupTripleExpr _oneOfTripleExpr_1))
+ (rule _oneOfTripleExpr_1 "34.1" (cleanup star) (alt _empty _oneOfTripleExpr_3))
+ (rule _oneOfTripleExpr_2 "34.2" (seq "|" groupTripleExpr))
+ (rule _oneOfTripleExpr_3 "34.3"
   (cleanup merge)
-  (seq _someOfTripleExpr_2 _someOfTripleExpr_1))
+  (seq _oneOfTripleExpr_2 _oneOfTripleExpr_1))
  (rule groupTripleExpr "37" (seq unaryTripleExpr _groupTripleExpr_1))
  (rule _groupTripleExpr_1 "37.1" (cleanup star) (alt _empty _groupTripleExpr_3))
  (rule _groupTripleExpr_2 "37.2" (seq ";" _groupTripleExpr_4))
@@ -154,7 +154,7 @@
  (rule _unaryTripleExpr_2 "40.2" (cleanup opt) (alt _empty productionLabel))
  (rule _unaryTripleExpr_3 "40.3" (alt tripleConstraint bracketedTripleExpr))
  (rule bracketedTripleExpr "41"
-  (seq "(" someOfTripleExpr ")" _bracketedTripleExpr_1 _bracketedTripleExpr_2
+  (seq "(" oneOfTripleExpr ")" _bracketedTripleExpr_1 _bracketedTripleExpr_2
    semanticActions ))
  (rule _bracketedTripleExpr_1 "41.1" (cleanup opt) (alt _empty cardinality))
  (rule _bracketedTripleExpr_2 "41.2"

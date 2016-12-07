@@ -407,11 +407,11 @@ module ShEx
       input[:extraPropertySet] = data[:predicate].unshift(:extra)
     end
 
-    # [33]    tripleExpression      ::= someOfTripleExpr
-    # [34]    someOfTripleExpr           ::= groupTripleExpr ('|' groupTripleExpr)*
-    production(:someOfTripleExpr) do |input, data, callback|
+    # [33]    tripleExpression      ::= oneOfTripleExpr
+    # [34]    oneOfTripleExpr           ::= groupTripleExpr ('|' groupTripleExpr)*
+    production(:oneOfTripleExpr) do |input, data, callback|
       expression = if Array(data[:tripleExpression]).length > 1
-        Algebra::SomeOf.new(*data[:tripleExpression])
+        Algebra::OneOf.new(*data[:tripleExpression])
       else
         Array(data[:tripleExpression]).first
       end
@@ -436,11 +436,11 @@ module ShEx
       (input[:tripleExpression] ||= []) << expression if expression
     end
 
-    # [41]    bracketedTripleExpr   ::= '(' someOfTripleExpr ')' cardinality? annotation* semanticActions
+    # [41]    bracketedTripleExpr   ::= '(' oneOfTripleExpr ')' cardinality? annotation* semanticActions
     production(:bracketedTripleExpr) do |input, data, callback|
       # XXX cardinality? annotation* semanticActions
       case expression = data[:tripleExpression]
-      when Algebra::SomeOf, Algebra::EachOf
+      when Algebra::OneOf, Algebra::EachOf
       else
         error(nil, "Bracketed Expression requires multiple contained expressions", production: :bracketedTripleExpr)
       end

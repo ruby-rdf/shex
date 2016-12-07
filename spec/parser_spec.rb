@@ -397,7 +397,7 @@ describe ShEx::Parser do
         shexj: %({ "type": "Schema", "shapes": {
           "http://schema.example/UserShape":
           { "type": "Shape", "expression":
-             {"type": "SomeOf", "expressions": [
+             {"type": "OneOf", "expressions": [
                 { "type": "TripleConstraint",
                   "predicate": "http://xmlns.com/foaf/0.1/name",
                   "valueExpr":
@@ -417,7 +417,7 @@ describe ShEx::Parser do
         sxp: %{(schema
          (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/0.1/>)))
          (shapes ((<http://schema.example/UserShape> (shape
-          (someOf
+          (oneOf
            (tripleConstraint <http://xmlns.com/foaf/0.1/name> (nodeConstraint literal))
            (eachOf
             (tripleConstraint <http://xmlns.com/foaf/0.1/givenName>
@@ -661,7 +661,7 @@ describe ShEx::Parser do
              (nodeConstraint (pattern "^http:/example.org/.*"))
              (shape
               (eachOf
-               (someOf
+               (oneOf
                 (tripleConstraint <http://xmlns.com/foaf/name>
                  (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
                 (eachOf
@@ -773,7 +773,7 @@ describe ShEx::Parser do
             (nodeConstraint (value <http://xmlns.com/foaf/Person>)))
            (tripleConstraint <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
             (nodeConstraint (value <http://schema.example/User>)))
-           (someOf
+           (oneOf
             (tripleConstraint <http://xmlns.com/foaf/name>
              (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
             (eachOf
@@ -807,7 +807,7 @@ describe ShEx::Parser do
                (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#int>)
                (min 0)
                (max "*"))
-              (someOf
+              (oneOf
                (tripleConstraint <http://schema.example/q>
                 (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#int>))
                (tripleConstraint <http://schema.example/r> (nodeConstraint iri))
@@ -885,7 +885,7 @@ describe ShEx::Parser do
             (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#int>)
             (min 0)
             (max "*"))
-           (someOf
+           (oneOf
             (tripleConstraint <http://schema.example/q>
              (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#int>)
              (min 0)
@@ -988,7 +988,7 @@ describe ShEx::Parser do
 
           case file
           when 'openopen1dotOr1dotclose'
-            pending("Missing production multiElementSomeOf")
+            pending("Missing production multiElementOneOf")
           end
           expect(input).to generate(ShEx::ParseError, validate: true)
         end
