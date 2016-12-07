@@ -16,23 +16,11 @@ module ShEx::Algebra
     # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(n, g, m)
       # Make sure they're URIs
-      m = m.inject({}) {|memo, (k,v)|
-        k = case k
-        when RDF::Resource then k
-        when /^_:/         then RDF::Node(k)
-        else                    RDF::URI(k)
-        end
-        v = case v
-        when RDF::Resource then v
-        when /^_:/         then RDF::Node(v)
-        else                    RDF::URI(v)
-        end
-        memo.merge(k => v)
-      }
-      label = m[n]
-      raise "No shape found for #{n} in #{m}" unless label
+      m = m.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
+      label = m[n.to_s]
+      raise(ShEx::StructureError, "No shape found for #{n} in #{m}") unless label
       shape = shapes[label]
-      raise "No shape found for #{label}" unless shape
+      raise(ShEx::StructureError, "No shape found for #{label}") unless shape
       shape.satisfies?(n, g, m)
       true
     end
@@ -46,7 +34,7 @@ module ShEx::Algebra
         detect {|op| op.is_a?(Array) && op.first == :shapes}
         shapes = shapes ? shapes.last : {}
         shapes.inject({}) do |memo, (label, operand)|
-          memo.merge(label => operand)
+          memo.merge(label.to_s => operand)
         end
       end
     end

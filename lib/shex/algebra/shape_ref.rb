@@ -26,7 +26,7 @@ module ShEx::Algebra
     #
     # @return [Shape]
     def referenced_shape
-      schema.shapes[operands.first]
+      schema.shapes[operands.first.to_s]
     end
 
     ##
