@@ -5,8 +5,6 @@ module ShEx::Algebra
     NAME = :tripleConstraint
 
     ##
-    # `expr` is a SomeOf and there is some shape expression `se2` in shapeExprs such that a `matches(T, se2, m)`...
-    #
     # In this case, we accept an array of statements, and match based on cardinality.
     #
     # @param [Array<RDF::Statement>] t
@@ -43,11 +41,11 @@ module ShEx::Algebra
     end
 
     def predicate
-      operands.first
+      operands.detect {|o| o.is_a?(RDF::URI)}
     end
 
     def predicates
-      [operands.first]
+      [predicate]
     end
 
     def inverse?
