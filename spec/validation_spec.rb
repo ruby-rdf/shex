@@ -457,8 +457,8 @@ describe ShEx::Algebra do
           when '3circularRef1_pass-closed'
             skip "Circular reference"
             return
-          when '1val1INTEGER_00', '1val1DOUBLE_0_0e0', '1val1DOUBLElowercase_0_0e0'
-            pending "numeric comparison of different datatypes"
+          when '1val1DOUBLElowercase_pass', '1val1DOUBLElowercase_passUC'
+            pending "numeric mixed-case comparison"
           when '1literalPattern_fail-lit-long', '1literalPattern_pass-litEnd-match',
                '1literalPattern_pass-StartlitEnd-match', '1literalPattern_pass-Startlit-match',
                '1literalPattern_fail-Startlit-lit', '1literalPattern_fail-lit-Startlit',

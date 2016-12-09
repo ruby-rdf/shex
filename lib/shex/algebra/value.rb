@@ -13,7 +13,7 @@ module ShEx::Algebra
     def match?(value)
       status ""
       if case expr = operands.first
-        when RDF::Value then value == expr
+        when RDF::Value then value.eql?(expr)
         when Stem, StemRange then expr.match?(value)
         else false
         end
