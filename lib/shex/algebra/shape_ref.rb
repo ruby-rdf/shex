@@ -36,7 +36,8 @@ module ShEx::Algebra
     # A ShapeRef is valid if it's ancestor schema has any shape with a lable
     # the same as it's reference.
     def validate!
-      raise ShEx::ParseError, "Missing referenced shape: #{operands.first}" if referenced_shape.nil?
+      structure_error("Missing referenced shape: #{operands.first}") if referenced_shape.nil?
+      # FIXME
       #raise ShEx::ParseError, "Self referencing shape: #{operands.first}" if referenced_shape == first_ancestor(Shape)
       super
     end

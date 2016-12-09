@@ -31,6 +31,13 @@ module ShEx::Algebra
     end
     alias_method :notSatisfies?, :not_satisfies?
 
+    ##
+    # Included TripleExpressions
+    # @return [Array<TripleExpressions>]
+    def triple_expressions
+      operands.select {|o| o.is_a?(Satisfiable)}.map(&:triple_expressions).flatten.uniq
+    end
+
     # This operator includes Satisfiable
     def satisfiable?; true; end
   end

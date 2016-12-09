@@ -481,8 +481,6 @@ describe ShEx::Algebra do
             pending "oneOf cardinality"
           when 'open3groupdotclosecard23Annot3Code2-p1p2p3X3'
             pending "eachOf cardinality"
-          when '2EachInclude1_pass', '2EachInclude1-after_pass', '2SomeInclude1_pass'
-            pending "inclusion"
           when '1focusLength-dot_pass-bnode-equal',
                '1focusMinLength-dot_pass-bnode-equal', '1focusMinLength-dot_pass-bnode-long',
                '1focusMaxLength-dot_pass-bnode-short', '1focusMaxLength-dot_pass-bnode-equal',

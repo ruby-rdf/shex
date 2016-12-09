@@ -63,10 +63,10 @@ module ShEx
 
 
   # Shape expectation not satisfied
-  class StructureError < Exception; end
+  class StructureError < Error; end
 
   # Shape expectation not satisfied
-  class NotSatisfied < Exception; end
+  class NotSatisfied < Error; end
 
   # An error found on an operand
   class OperandError < Error; end

@@ -33,7 +33,7 @@ module ShEx
     autoload :UnaryShape, 'shex/algebra/unary_shape'
     autoload :Value, 'shex/algebra/value'
 
-    class NotMatched < Exception; end
+    class NotMatched < ShEx::Error; end
   end
 end
 

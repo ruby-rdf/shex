@@ -189,12 +189,19 @@ module ShEx::Algebra
 
     ##
     # Exception handling
-    def not_matched(message)
-      log_error(message, depth: options.fetch(:depth, 0), exception: NotMatched) {"expression: #{self.to_sxp}"}
+    def not_matched(message, **options)
+      expression = options.fetch(:expression, self)
+      log_error(message, depth: options.fetch(:depth, 0), exception: NotMatched) {"expression: #{expression.to_sxp}"}
     end
 
-    def not_satisfied(message)
-      log_error(message, depth: options.fetch(:depth, 0), exception: ShEx::NotSatisfied) {"expression: #{self.to_sxp}"}
+    def not_satisfied(message, **options)
+      expression = options.fetch(:expression, self)
+      log_error(message, depth: options.fetch(:depth, 0), exception: ShEx::NotSatisfied) {"expression: #{expression.to_sxp}"}
+    end
+
+    def structure_error(message, **options)
+      expression = options.fetch(:expression, self)
+      log_error(message, depth: options.fetch(:depth, 0), exception: ShEx::StructureError) {"expression: #{expression.to_sxp}"}
     end
 
     def status(message, &block)
@@ -313,7 +320,7 @@ module ShEx::Algebra
     ##
     # Validate all operands, operator specific classes should override for operator-specific validation
     # @return [SPARQL::Algebra::Expression] `self`
-    # @raise  [ArgumentError] if the value is invalid
+    # @raise  [ShEx::StructureError] if the value is invalid
     def validate!
       operands.each {|op| op.validate! if op.respond_to?(:validate!)}
       self

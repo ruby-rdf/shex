@@ -916,7 +916,7 @@ describe ShEx::Parser do
       },
       "Inclusion 1" => {
         input: %(<http://e/S1> {&<http://e/MissingShape>}),
-        result: ShEx::ParseError
+        result: ShEx::StructureError
       },
       "Negated reference 1" => {
         input: %(PREFIX ex: <http://schema.example/> ex:S NOT @ex:S),
@@ -1006,7 +1006,7 @@ describe ShEx::Parser do
           when '1focusRefANDSelfdot'
             pending("It is self referning (OK?) and includes an empty shape (OK?)")
           end
-          expect(input).to generate(ShEx::ParseError, validate: true)
+          expect(input).to generate(ShEx::StructureError, validate: true)
         end
       end
     end

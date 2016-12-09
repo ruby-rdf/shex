@@ -31,7 +31,7 @@ RSpec::Matchers.define :generate do |expected, options = {}|
   match do |input|
     begin
       case
-      when expected == ShEx::ParseError
+      when [ShEx::ParseError, ShEx::StructureError, ShEx::OperandError].include?(expected)
         begin
           parser(options).call(input)
           false

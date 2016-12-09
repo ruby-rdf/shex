@@ -76,6 +76,13 @@ module ShEx::Algebra
       not_satisfied e.message
     end
 
+    ##
+    # Included TripleExpressions
+    # @return [Array<TripleExpressions>]
+    def triple_expressions
+      operands.select {|op| op.is_a?(TripleExpression)}
+    end
+
     private
     # There may be multiple extra operands
     def extra
