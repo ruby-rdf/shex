@@ -44,6 +44,12 @@ module ShEx::Algebra
         shape = shapes[label]
         log_error("No shape found for #{label}", depth: options.fetch(:depth, 0), exception: ShEx::StructureError) unless shape
 
+        # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same label
+        if n.is_a?(RDF::Node)
+          nn = graph.enum_term.detect {|t| t.id == n.id}
+          n = nn if nn
+        end
+
         shape.satisfies?(n)
       end
       status "schema satisfied"

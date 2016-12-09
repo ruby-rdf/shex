@@ -469,7 +469,7 @@ describe ShEx::Algebra do
                '1val1vExpr1AND1AND1Ref3_failvc3', '1val1vExprRefAND3_failvc3',
                '1val1vExprAND3_failvc3', '1val1vExpr1AND1OR1Ref3_failvc1vc3',
                '1val1vExpr1AND1OR1Ref3_failvc2vc3', '1val1vExpr1AND1OR1Ref3_failvc1vc2vc3',
-               '1val1vExpr1OR1AND1Ref3_failvc1vc3'
+               '1val1vExpr1OR1AND1Ref3_failvc1vc3', '1focusPatternB-dot_fail-bnode-long'
             pending "understanding proper pattern matching"
           when 'open3Somedotclosecard2_fail-p1', 'open3Somedotclosecard2_pass-p1X2',
                'open3Somedotclosecard2_pass-p1p2', 'open3Somedotclosecard2_pass-p1p3',
@@ -481,12 +481,6 @@ describe ShEx::Algebra do
             pending "oneOf cardinality"
           when 'open3groupdotclosecard23Annot3Code2-p1p2p3X3'
             pending "eachOf cardinality"
-          when '1focusLength-dot_pass-bnode-equal',
-               '1focusMinLength-dot_pass-bnode-equal', '1focusMinLength-dot_pass-bnode-long',
-               '1focusMaxLength-dot_pass-bnode-short', '1focusMaxLength-dot_pass-bnode-equal',
-               '1focusPatternB-dot_pass-bnode-match', '1focusBNODELength_dot_pass',
-               '1focusBNODE_dot_pass'
-            pending "BNode focus"
           when 'shapeExtern_pass', 'shapeExtern_fail', 'shapeExternRef_pass',
                'shapeExternRef_fail'
             pending "Extern"
