@@ -162,7 +162,7 @@ module ShEx
       expressions << Algebra::Start.new(data[:start]) if data[:start]
       expressions << [:shapes, data[:shapes]] if data[:shapes]
 
-      input[:schema] = Algebra::Schema.new(*expressions)
+      input[:schema] = Algebra::Schema.new(*expressions, options)
 
       # Set schema accessor for all included expressions
       input[:schema].each_descendant do |op|
@@ -391,10 +391,8 @@ module ShEx
     end
     def shape_definition(input, data)
       expression = data[:tripleExpression]
-      attrs = [
-        data[:extraPropertySet],
-        (:closed if data[:closed]),
-      ].compact
+      attrs = Array(data[:extraPropertySet])
+      attrs << :closed if data[:closed]
       attrs += Array(data[:annotation])
       attrs += Array(data[:codeDecl])
 
@@ -404,7 +402,7 @@ module ShEx
 
     # [32]     extraPropertySet       ::= "EXTRA" predicate+
     production(:extraPropertySet) do |input, data, callback|
-      input[:extraPropertySet] = data[:predicate].unshift(:extra)
+      (input[:extraPropertySet] ||= []) << data[:predicate].unshift(:extra)
     end
 
     # [33]    tripleExpression      ::= oneOfTripleExpr
