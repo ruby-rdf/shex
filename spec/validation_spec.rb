@@ -459,11 +459,6 @@ describe ShEx::Algebra do
             return
           when '1val1INTEGER_00', '1val1DOUBLE_0_0e0', '1val1DOUBLElowercase_0_0e0'
             pending "numeric comparison of different datatypes"
-          when '1literalTotaldigits_pass-decimal-short', '1literalTotaldigits_pass-xsd_integer-short',
-               '1literalTotaldigits_pass-integer-equalLead', '1literalTotaldigits_fail-integer-longLead',
-               '1literalTotaldigits_pass-integer-equalLeadTrail', '1literalTotaldigits_fail-integer-longLeadTrail',
-               '1literalTotaldigits_pass-byte-short'
-            pending "understanding proper totaldigits"
           when '1literalPattern_fail-lit-long', '1literalPattern_pass-litEnd-match',
                '1literalPattern_pass-StartlitEnd-match', '1literalPattern_pass-Startlit-match',
                '1literalPattern_fail-Startlit-lit', '1literalPattern_fail-lit-Startlit',

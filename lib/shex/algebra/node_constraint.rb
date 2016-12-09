@@ -110,8 +110,9 @@ module ShEx::Algebra
       when !maxinclusive.nil? && numeric_value > maxinclusive.object then not_satisfied("Node #{value.inspect} > #{maxinclusive.object}")
       when !maxexclusive.nil? && numeric_value >= maxexclusive.object then not_satisfied("Node #{value.inspect} >= #{maxexclusive.object}")
       when !totaldigits.nil?
-        digits = value.canonicalize.to_s.gsub(/[^\d]/, '').to_s
-        if digits.length != totaldigits.to_i
+        md = value.canonicalize.to_s.match(/([1-9]\d*|0)?(?:\.(\d+)(?!0))?/)
+        digits = md ? (md[1].to_s + md[2].to_s) : ""
+        if digits.length > totaldigits.to_i
           not_satisfied "Node #{value.inspect} total digits != #{totaldigits}"
         end
       when !fractiondigits.nil?
