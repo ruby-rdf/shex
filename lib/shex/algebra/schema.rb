@@ -6,7 +6,7 @@ module ShEx::Algebra
 
     # Graph to validate
     # @return [RDF::Queryable]
-    attr_reader :graph
+    attr_accessor :graph
 
     # Map of nodes to shapes
     # @return [Hash{RDF::Resource => RDF::Resource}]
@@ -20,11 +20,14 @@ module ShEx::Algebra
     # @param [RDF::Resource] n
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m
+    # @param [Array<Schema, String>] shapeExterns ([])
+    #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
     # FIXME: set of node/shape pairs
-    def satisfies?(n, g, m)
+    def satisfies?(n, g, m, shapeExterns: [], **options)
       @graph = g
+      @external_schemas = shapeExterns
       # Make sure they're URIs
       @map = m.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
 
@@ -42,7 +45,7 @@ module ShEx::Algebra
       label = @map[n.to_s]
       if label && !label.empty?
         shape = shapes[label]
-        log_error("No shape found for #{label}", depth: options.fetch(:depth, 0), exception: ShEx::StructureError) unless shape
+        structure_error("No shape found for #{label}") unless shape
 
         # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same label
         if n.is_a?(RDF::Node)
@@ -67,6 +70,22 @@ module ShEx::Algebra
         shapes.inject({}) do |memo, (label, operand)|
           memo.merge(label.to_s => operand)
         end
+      end
+    end
+
+    ##
+    # Externally loaded schemas, lazily evaluated
+    # @return [Array<Schema>]
+    def external_schemas
+      @external_schemas = Array(@external_schemas).map do |extern|
+        schema = case extern
+        when Schema then extern
+        else
+          status "Load extern #{extern}"
+          ShEx.open(extern, logger: options[:logger])
+        end
+        schema.graph = graph
+        schema
       end
     end
 

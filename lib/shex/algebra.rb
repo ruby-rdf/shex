@@ -22,7 +22,7 @@ module ShEx
     autoload :Satisfiable, 'shex/algebra/satisfiable'
     autoload :Schema, 'shex/algebra/schema'
     autoload :SemAct, 'shex/algebra/semact'
-    autoload :ShapeExternal, 'shex/algebra/shape_external'
+    autoload :External, 'shex/algebra/external'
     autoload :ShapeRef, 'shex/algebra/shape_ref'
     autoload :Shape, 'shex/algebra/shape'
     autoload :Start, 'shex/algebra/start'

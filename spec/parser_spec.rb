@@ -1,15 +1,6 @@
 $:.unshift File.expand_path("../..", __FILE__)
 require 'spec_helper'
 
-describe ShEx do
-  describe ".parse" do
-    specify do
-      input = %(<http://a.example/S1> {})
-      expect(described_class.parse(input)).to be_a(ShEx::Algebra::Schema)
-    end
-  end
-end
-
 describe ShEx::Parser do
   before(:each) {$stderr = StringIO.new}
   after(:each) {$stderr = STDERR}

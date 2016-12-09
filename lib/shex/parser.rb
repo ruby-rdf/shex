@@ -201,7 +201,7 @@ module ShEx
       when Algebra::NodeConstraint, Algebra::Or, Algebra::And, Algebra::Not, Algebra::ShapeRef, Algebra::Shape
         data[:shapeExpression]
       else
-        data[:external] ? Algebra::ShapeExternal.new() : Algebra::Shape.new()
+        data[:external] ? Algebra::External.new() : Algebra::Shape.new()
       end
 
       (input[:shapes] ||= {})[label] = expression

@@ -37,7 +37,7 @@ module ShEx::Algebra
         prefix: Prefix,
         schema: Schema,
         semact: SemAct,
-        shape_external: ShapeExternal,
+        external: External,
         shape_ref: ShapeRef,
         shape: Shape,
         start: Start,
@@ -201,7 +201,8 @@ module ShEx::Algebra
 
     def structure_error(message, **options)
       expression = options.fetch(:expression, self)
-      log_error(message, depth: options.fetch(:depth, 0), exception: ShEx::StructureError) {"expression: #{expression.to_sxp}"}
+      exception = options.fetch(:exception, ShEx::StructureError)
+      log_error(message, depth: options.fetch(:depth, 0), exception: exception) {"expression: #{expression.to_sxp}"}
     end
 
     def status(message, &block)

@@ -32,6 +32,10 @@ module Fixtures
         action.is_a?(Hash) && (BASE + 'validation/' + action["data"])
       end
 
+      def shapeExterns
+        action.is_a?(Hash) && action["shapeExterns"] && [(BASE + 'validation/' + action["shapeExterns"])]
+      end
+
       def result
         BASE + 'validation/' + attributes['result']
       end

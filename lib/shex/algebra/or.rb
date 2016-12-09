@@ -7,7 +7,7 @@ module ShEx::Algebra
     def initialize(*args, **options)
       case
       when args.length <= 1
-        log_error("Expected at least one operand, found #{args.length}", depth: options.fetch(:depth, 0), exception: ShEx::OperandError) {"expression: #{self.to_sxp}"}
+        structure_error("Expected at least one operand, found #{args.length}", exception: ShEx::OperandError)
       end
       super
     end

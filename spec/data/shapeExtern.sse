@@ -1,2 +1,2 @@
-(schema (shapes ((<http://a.example/Sext> (shapeExternal)))))
+(schema (shapes ((<http://a.example/Sext> (external)))))
 

@@ -5,7 +5,7 @@ module ShEx::Algebra
     NAME = :shapeRef
 
     def initialize(arg, **options)
-      log_error("Shape reference must be an IRI or BNode: #{arg}", depth: options.fetch(:depth, 0), exception: ShEx::OperandError) {"expression: #{self.to_sxp}"} unless arg.is_a?(RDF::Resource)
+      structure_error("Shape reference must be an IRI or BNode: #{arg}", exception: ShEx::OperandError) unless arg.is_a?(RDF::Resource)
       super
     end
 

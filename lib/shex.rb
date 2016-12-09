@@ -20,7 +20,7 @@ module ShEx
   # @param  [IO, StringIO, String, #to_s]  expression (ShExC or ShExJ)
   # @param  ['shexc', 'shexj', 'sse']  format ('shexc')
   # @param  [Hash{Symbol => Object}] options
-  # @return [ShEx::Algebra::Operator] The executable parsed expression.
+  # @return [ShEx::Algebra::Schema] The executable parsed expression.
   # @raise  [Parser::Error] on invalid input
   def self.parse(expression, format: 'shexc', **options)
     case format
@@ -28,6 +28,23 @@ module ShEx
     when 'shexj'
     when 'sse'
     else raise "Unknown expression format: #{format.inspect}"
+    end
+  end
+
+  ##
+  # Parses input from the given file name or URL.
+  #
+  # @param  [String, #to_s] filename
+  # @param  ['shexc', 'shexj', 'sse']  format ('shexc')
+  # @param  [Hash{Symbol => Object}] options
+  #   any additional options (see `RDF::Reader#initialize` and `RDF::Format.for`)
+  # @yield  [ShEx::Algebra::Schema]
+  # @yieldparam  [RDF::Reader] reader
+  # @yieldreturn [void] ignored
+  # @raise  [RDF::FormatError] if no reader found for the specified format
+  def self.open(filename, format: 'shexc', **options, &block)
+    RDF::Util::File.open_file(filename, options) do |file|
+      self.parse(file, options)
     end
   end
 
