@@ -23,6 +23,7 @@ module ShEx::Algebra
 
       # `matched` is the subset of statements which match `expression`.
       # FIXME Cardinality?
+      status("arcsIn: #{arcs_in.count}, arcsOut: #{arcs_out.count}")
       matched = expression ? expression.matches(neigh, g, m) : []
 
       # `remainder` is the set of unmatched statements
@@ -34,6 +35,7 @@ module ShEx::Algebra
       # Let `matchables` be the triples in `outs` whose predicate appears in a `TripleConstraint` in `expression`. If `expression` is absent, `matchables = Ø` (the empty set).
       predicates = expression ? expression.predicates : []
       matchables = outs.select {|s| predicates.include?(s.predicate)}
+      # Fixme: reduce by filtering against all TripleConstraints, causes not to match
 
       # There is no triple in `matchables` which matches a `TripleConstraint` in `expression`.
       # FIXME: Really run against every TripleConstraint?
@@ -43,11 +45,11 @@ module ShEx::Algebra
 
       # There is no triple in matchables whose predicate does not appear in extra.
       matchables.each do |statement|
-        raise(ShEx::NotSatisfied, "Statement remains with predicate #{statement.predicate} not in extra") unless extra.include?(statement.predicate)
+        not_satisfied "Statement remains with predicate #{statement.predicate} not in extra" unless extra.include?(statement.predicate)
       end
 
       # closed is false or unmatchables is empty.
-      raise(ShEx::NotSatisfied, "Unmatchables remain on a closed shape") unless !closed? || unmatchables.empty?
+      not_satisfied "Unmatchables remain on a closed shape" unless !closed? || unmatchables.empty?
 
       # Presumably, to be satisfied, there must be some triples in matches
 
@@ -58,12 +60,16 @@ module ShEx::Algebra
 
       true
     rescue NotMatched => e
-      raise ShEx::NotSatisfied, e.message
+      logger.recovering = false
+      not_satisfied e.message
     end
 
     private
+    # There may be multiple extra operands
     def extra
-      Array(Array(operands.detect {|op| op.is_a?(Array) && op.first == :extra})[1..-1])
+      operands.select {|op| op.is_a?(Array) && op.first == :extra}.inject([]) do |memo, ary|
+        memo + Array(ary[1..-1])
+      end.uniq
     end
   end
 end

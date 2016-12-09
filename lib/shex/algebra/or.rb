@@ -7,7 +7,7 @@ module ShEx::Algebra
     def initialize(*args, **options)
       case
       when args.length <= 1
-        raise ShEx::OperandError, "Expected at least one operand, found #{args.length}"
+        log_error("Expected at least one operand, found #{args.length}", depth: options.fetch(:depth, 0), exception: ShEx::OperandError) {"expression: #{self.to_sxp}"}
       end
       super
     end
@@ -24,14 +24,16 @@ module ShEx::Algebra
       operands.select {|o| o.is_a?(Satisfiable)}.any? do |op|
         begin
           op.satisfies?(n, g, m)
+          status "satisfied #{n}"
           return true
         rescue ShEx::NotSatisfied => e
+          log_recover("or: ignore error: #{e.message}", depth: options.fetch(:depth, 0))
           any_not_satisfied = e
           false
         end
       end
 
-      raise ShEx::NotSatisfied, "Expected some expression to be satisfied" if any_not_satisfied
+      not_satisfied "Expected some expression to be satisfied"
       true
     end
   end

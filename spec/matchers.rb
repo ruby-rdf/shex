@@ -69,12 +69,12 @@ RSpec::Matchers.define :generate do |expected, options = {}|
   end
 end
 
-RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected|
+RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **options|
   match do |input|
     focus = case focus
     when RDF::Value then focus
     when String
-      RDF::URI("http://example.com/").join(RDF::URI(focus))
+      focus.start_with?("_:") ? RDF::Node(focus[2..-1].to_s) : RDF::URI(focus)
     else
       RDF::Literal(focus)
     end
@@ -103,17 +103,19 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected|
 
   failure_message do |input|
     (expected == ShEx::NotSatisfied ? "Shape matched" : "Shape did not match: #{@exception.message}\n") +
-    "Input(sse)   : #{SXP::Generator.string(input.to_sxp_bin)}\n" +
-    "Data         : #{data}\n" +
-    "Shape        : #{shape}\n" +
-    "Focus        : #{focus}\n"
+    "Input(sse): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
+    "Data      : #{data}\n" +
+    "Shape     : #{shape}\n" +
+    "Focus     : #{focus}\n" +
+    (options[:logger] ? "Trace     :\n#{options[:logger].to_s}" : "")
   end
 
   failure_message_when_negated do |input|
     "Shape matched\n" +
-    "Input(sse)   : #{SXP::Generator.string(input.to_sxp_bin)}\n" +
-    "Data         : #{data}\n" +
-    "Shape        : #{shape}\n" +
-    "Focus        : #{focus}\n"
+    "Input(sse): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
+    "Data      : #{data}\n" +
+    "Shape     : #{shape}\n" +
+    "Focus     : #{focus}\n" +
+    (options[:logger] ? "Trace     :\n#{options[:logger].to_s}" : "")
   end
 end

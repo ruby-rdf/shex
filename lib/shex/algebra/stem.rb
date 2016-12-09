@@ -8,7 +8,13 @@ module ShEx::Algebra
     #
     # * vsv is a Stem with stem st and nodeIn(n, st).
     def match?(value)
-      value.start_with?(operands.first)
+      if value.start_with?(operands.first)
+        status "matched #{value}"
+        true
+      else
+        status "not matched #{value}"
+        false
+      end
     end
   end
 end

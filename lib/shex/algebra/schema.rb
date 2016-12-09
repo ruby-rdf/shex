@@ -14,14 +14,30 @@ module ShEx::Algebra
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
+    # FIXME: set of node/shape pairs
     def satisfies?(n, g, m)
       # Make sure they're URIs
       m = m.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
+
+      # First, evaluate semantic acts
+      operands.select {|o| o.is_a?(SemAct)}.all? do |op|
+        op.satisfies?([])
+      end
+
+      # Next run any start expression
+      if start
+        status("start") {"expression: #{start.to_sxp}"}
+        start.satisfies?(n, g, m)
+      end
+
       label = m[n.to_s]
-      raise(ShEx::StructureError, "No shape found for #{n} in #{m}") unless label
-      shape = shapes[label]
-      raise(ShEx::StructureError, "No shape found for #{label}") unless shape
-      shape.satisfies?(n, g, m)
+      if label && !label.empty?
+        shape = shapes[label]
+        log_error("No shape found for #{label}", depth: options.fetch(:depth, 0), exception: ShEx::StructureError) unless shape
+
+        shape.satisfies?(n, g, m)
+      end
+      status "schema satisfied"
       true
     end
 
@@ -44,15 +60,25 @@ module ShEx::Algebra
     # @yield operator
     # @yieldparam [Object] operator
     # @return [Enumerator]
-    def each_descendant(&block)
+    def each_descendant(depth = 0, &block)
       if block_given?
-        super(&block)
+        super(depth + 1, &block)
         shapes.values.each do |op|
-          op.each_descendant(&block) if op.respond_to?(:each_descendant)
-          block.call(op)
+          op.each_descendant(depth + 1, &block) if op.respond_to?(:each_descendant)
+
+          case block.arity
+          when 1 then block.call(op)
+          else block.call(depth, op)
+          end
         end
       end
       enum_for(:each_descendant)
+    end
+
+    ##
+    # Start action, if any
+    def start
+      @start ||= operands.detect {|op| op.is_a?(Start)}
     end
 
     ##

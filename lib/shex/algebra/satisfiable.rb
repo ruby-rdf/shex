@@ -25,13 +25,14 @@ module ShEx::Algebra
     # @return [Boolean] `true` if not satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if satisfied
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
-    def not_satisfies?(n, se, g, m)
+    def not_satisfies?(n, g, m)
       begin
-        satisfies(n, se, g, m)
-      rescue ShEx::NotSatisfied
+        satisfies?(n, g, m)
+      rescue ShEx::NotSatisfied => e
+        log_recover(self.class.const_get(:NAME), "ignore error: #{e.message}", depth: options.fetch(:depth, 0))
         return true  # Expected it to not satisfy
       end
-      raise ShEx::NotSatisfied, "Expression should not have matched"
+      not_satisfied "Expression should not have matched"
     end
     alias_method :notSatisfies?, :not_satisfies?
 

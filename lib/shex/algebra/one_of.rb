@@ -17,17 +17,20 @@ module ShEx::Algebra
       matched_something = operands.select {|o| o.is_a?(TripleExpression)}.any? do |op|
         begin
           result += op.matches(t, g, m)
-        rescue NotMatched
+          status "matched #{t.first.to_ntriples}"
+        rescue NotMatched => e
+          log_recover("oneOf: ignore error: #{e.message}", depth: options.fetch(:depth, 0))
           false
         end
       end
-      raise NotMatched, "Expected some expression to match" unless matched_something
+      not_matched "Expected some expression to match" unless matched_something
 
       # Last, evaluate semantic acts
       operands.select {|o| o.is_a?(SemAct)}.all? do |op|
         op.satisfies?(result)
       end unless result.empty?
 
+      status "one of satisfied"
       result
     end
 

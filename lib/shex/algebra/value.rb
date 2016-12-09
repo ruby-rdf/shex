@@ -11,10 +11,17 @@ module ShEx::Algebra
     # * vsv is a StemRange with stem st and exclusions excls and nodeIn(n, st) and there is no x in excls such that nodeIn(n, excl).
     # * vsv is a Wildcard with exclusions excls and there is no x in excls such that nodeIn(n, excl).
     def match?(value)
-      case expr = operands.first
-      when RDF::Value then value == expr
-      when Stem, StemRange then expr.match?(value)
-      else false
+      status ""
+      if case expr = operands.first
+        when RDF::Value then value == expr
+        when Stem, StemRange then expr.match?(value)
+        else false
+        end
+        status "matched #{value}"
+        true
+      else
+        status "not matched #{value}"
+        false
       end
     end
   end

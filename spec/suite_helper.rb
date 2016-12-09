@@ -57,7 +57,7 @@ module Fixtures
       end
 
       def positive_test?
-        Array(attributes['@type']).join(" ").match(/ValidationTest/)
+        !!Array(attributes['@type']).join(" ").match(/ValidationTest/)
       end
 
       def negative_test?
@@ -74,10 +74,13 @@ module Fixtures
       end
 
       def inspect
-        super.sub('>', "\n" +
-        "  positive?: #{positive_test?.inspect}\n" +
-        ">"
-      )
+        "<Entry\n" + attributes.map do |k,v|
+          case k when 'action'
+            "  action: {\n" + v.map {|ak, av| "    #{ak}: #{av.inspect}"}.join(",\n") + "\n}"
+          else
+            " #{k}: #{v.inspect}"
+          end
+        end.join("  \n") + ">"
       end
     end
   end

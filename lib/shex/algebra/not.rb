@@ -11,7 +11,9 @@ module ShEx::Algebra
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Boolean]
     def satisfies?(n, g, m)
+      status ""
       operands.last.not_satisfies?(n, g, m)
+      status "not satisfied"
     end
   end
 end

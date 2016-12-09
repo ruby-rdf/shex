@@ -39,6 +39,7 @@
 
 ## 4.7 Semantic Actions
 * Shape uses `ex:p1`, but data uses `<http://a.example/p1>`.
+* What do to for Test action with no argument?
 
 ## 4.9.1 Simple Examples (Validation Examples)
 * The third example fails because `nonmatchables` includes `<Alice> ex:shoeSize 30 .`

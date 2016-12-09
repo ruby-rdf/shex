@@ -9,9 +9,13 @@ module ShEx::Algebra
   # @abstract
   class Operator
     extend SPARQL::Algebra::Expression
+    include RDF::Util::Logger
 
     # Location of schema including this operator
     attr_accessor :schema
+
+    # Initialization options
+    attr_accessor :options
 
     ##
     # Returns an operator class for the given operator `name`.
@@ -79,7 +83,9 @@ module ShEx::Algebra
       @operands = operands.map! do |operand|
         case operand
           when Array
-            operand.each {|op| op.parent = self if operand.respond_to?(:parent=)}
+            operand.each do |op|
+              op.parent = self if op.respond_to?(:parent=)
+            end
             operand
           when Operator, RDF::Term, RDF::Query, RDF::Query::Pattern, Array, Symbol
             operand.parent = self if operand.respond_to?(:parent=)
@@ -90,6 +96,16 @@ module ShEx::Algebra
             raise ShEx::OperandError, "Found nil operand for #{self.class.name}"
             nil
           else raise TypeError, "invalid SPARQL::Algebra::Operator operand: #{operand.inspect}"
+        end
+      end
+
+      if options[:logger]
+        options[:depth] = 0
+        each_descendant(1) do |depth, operand|
+          if operand.respond_to?(:options)
+            operand.options[:logger] = options[:logger]
+            operand.options[:depth] = depth
+          end
         end
       end
     end
@@ -172,6 +188,20 @@ module ShEx::Algebra
     def semact?; false; end
 
     ##
+    # Exception handling
+    def not_matched(message)
+      log_error(message, depth: options.fetch(:depth, 0), exception: NotMatched) {"expression: #{self.to_sxp}"}
+    end
+
+    def not_satisfied(message)
+      log_error(message, depth: options.fetch(:depth, 0), exception: ShEx::NotSatisfied) {"expression: #{self.to_sxp}"}
+    end
+
+    def status(message, &block)
+      log_info(self.class.const_get(:NAME), message, depth: options.fetch(:depth, 0), &block)
+    end
+
+    ##
     # The operands to this operator.
     #
     # @return [Array]
@@ -230,22 +260,26 @@ module ShEx::Algebra
 
     ##
     # Enumerate via depth-first recursive descent over operands, yielding each operator
+    # @param [Integer] depth incrementeded for each depth of operator, and provided to block if Arity is 2
     # @yield operator
     # @yieldparam [Object] operator
     # @return [Enumerator]
-    def each_descendant(&block)
+    def each_descendant(depth = 0, &block)
       if block_given?
         operands.each do |operand|
           case operand
           when Array
             operand.each do |op|
-              op.each_descendant(&block) if op.respond_to?(:each_descendant)
-              block.call(op)
+              op.each_descendant(depth + 1, &block) if op.respond_to?(:each_descendant)
             end
           else
-            operand.each_descendant(&block) if operand.respond_to?(:each_descendant)
+            operand.each_descendant(depth + 1, &block) if operand.respond_to?(:each_descendant)
           end
-          block.call(operand)
+
+          case block.arity
+          when 1 then block.call(operand)
+          else block.call(depth, operand)
+          end
         end
       end
       enum_for(:each_descendant)

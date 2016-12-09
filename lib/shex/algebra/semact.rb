@@ -12,17 +12,21 @@ module ShEx::Algebra
       # FIXME: should have a registry
       case operands.first.to_s
       when "http://shex.io/extensions/Test/"
-        md = /^ *(fail|print) *\( *(?:(\"(?:[^\\"]|\\")*\")|([spo])) *\) *$/.match(operands.last.to_s)
-        str = md[2] || case md[3]
-        when 's' then statements.first.subject
-        when 'p' then statements.first.predicate
-        when 'o' then statements.first.object
-        else          statement.to_ntriples
-        end.to_s
+        str = if md = /^ *(fail|print) *\( *(?:(\"(?:[^\\"]|\\")*\")|([spo])) *\) *$/.match(operands[1].to_s)
+          md[2] || case md[3]
+          when 's' then statements.first.subject
+          when 'p' then statements.first.predicate
+          when 'o' then statements.first.object
+          else          statements.first.to_ntriples
+          end.to_s
+        else
+          statements.empty? ? 'no statement' : statements.first.to_ntriples
+        end
         $stdout.puts str
-        raise ShEx::NotSatisfied, "fail" if md[1] == 'fail'
+        status str
+        not_satisfied "fail" if md && md[1] == 'fail'
       else
-        raise "unknown SemAct name #{operands.first}"
+        status("unknown SemAct name #{operands.first}") {"expression: #{self.to_sxp}"}
       end
       true
     end

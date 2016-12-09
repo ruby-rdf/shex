@@ -13,6 +13,7 @@ module ShEx::Algebra
     # @return [Array<RDF::Statement>]
     # @raise NotMatched, ShEx::NotSatisfied
     def matches(t, g, m)
+      status ""
       results = []
       # FIXME Cardinality?
       operands.select {|o| o.is_a?(TripleExpression)}.all? do |op|
@@ -25,6 +26,9 @@ module ShEx::Algebra
       end unless results.empty?
 
       results
+    rescue NotMatched => e
+      not_matched(e.message)
+      raise
     end
 
     ##

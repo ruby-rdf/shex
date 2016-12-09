@@ -31,12 +31,12 @@ module ShEx::Algebra
     # A Inclusion is valid if it's ancestor schema has any shape with a lable
     # the same as it's reference.
     def validate!
-      raise ShEx::ParseError, "Missing included shape: #{operands.first}" if referenced_shape.nil?
-      raise ShEx::ParseError, "Self included shape: #{operands.first}" if referenced_shape == first_ancestor(Shape)
+      log_error("Missing included shape: #{operands.first}", depth: options.fetch(:depth, 0), exception: ShEx::ParseError) {"expression: #{self.to_sxp}"} if referenced_shape.nil?
+      log_error("Self included shape: #{operands.first}", depth: options.fetch(:depth, 0), exception: ShEx::ParseError) {"expression: #{self.to_sxp}"} if referenced_shape == first_ancestor(Shape)
       case referenced_shape.operands.first
       when TripleConstraint, Inclusion, EachOf, OneOf
       else
-        raise ShEx::ParseError, "Includes non-simple shape: #{operands.first}"
+        log_error("Includes non-simple shape: #{operands.first}", depth: options.fetch(:depth, 0), exception: ShEx::ParseError) {"expression: #{self.to_sxp}"}
       end
       super
     end

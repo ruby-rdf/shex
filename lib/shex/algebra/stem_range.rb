@@ -15,16 +15,23 @@ module ShEx::Algebra
       else false
       end
 
-      return false unless initial_match
-
-      return false if exclusions.any? do |exclusion|
-        case exclusion
-        when RDF::Value then value == exclusion
-        when Stem then exclusion.match?(value)
-        else false
-        end
+      unless initial_match
+        status "#{value} does not match #{operands.first}"
+        return false
       end
 
+      if exclusions.any? do |exclusion|
+          case exclusion
+          when RDF::Value then value == exclusion
+          when Stem       then exclusion.match?(value)
+          else                 false
+          end
+        end
+        status "#{value} excluded"
+        return false
+      end
+
+      status "matched #{value}"
       true
     end
 

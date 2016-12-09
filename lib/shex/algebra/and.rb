@@ -20,9 +20,11 @@ module ShEx::Algebra
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(n, g, m)
+      status ""
       unless operands.select {|o| o.is_a?(Satisfiable)}.all? {|op| op.satisfies?(n, g, m)}
-        raise(ShEx::NotSatisfied, "Expected all to match")
+        not_satisfied "Expected all to match"
       end
+      status("satisfied")
     end
   end
 end

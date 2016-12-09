@@ -13,17 +13,26 @@ module ShEx::Algebra
     # @return [Array<RDF::Statement>]
     # @raise NotMatched, ShEx::NotSatisfied
     def matches(t, g, m)
+      status ""
       max = maximum
       results = t.select do |statement|
         if max > 0
           value = inverse? ? statement.subject : statement.object
 
-          max -= 1 if statement.predicate == predicate && shape_expr_satisfies?(shape, value, g, m)
+          if statement.predicate == predicate && shape_expr_satisfies?(shape, value, g, m)
+            status "matched #{statement.to_ntriples}"
+            max -= 1
+          else
+            status "no match #{statement.to_ntriples}"
+            false
+          end
+        else
+          false # matched enough
         end
       end
 
       # Max violations handled in Shape
-      raise(NotMatched, "Minimum Cardinality Violation: #{results.length} < #{minimum}") if
+      not_matched "Minimum Cardinality Violation: #{results.length} < #{minimum}" if
         results.length < minimum
 
       # Last, evaluate semantic acts
@@ -36,7 +45,9 @@ module ShEx::Algebra
 
     def shape_expr_satisfies?(shape, value, g, m)
       shape.nil? || shape.satisfies?(value, g, m)
-    rescue ShEx::NotSatisfied
+    rescue ShEx::NotSatisfied => e
+      status "ignore error: #{e.message}"
+      logger.recovering = false
       false
     end
 
