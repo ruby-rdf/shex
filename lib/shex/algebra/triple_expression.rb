@@ -11,11 +11,9 @@ module ShEx::Algebra
     # Behavior should be overridden in subclasses, which end by calling this through `super`.
     #
     # @param [Array<RDF::Statement>] t
-    # @param [RDF::Queryable] g
-    # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Array<RDF::Statement>]
     # @raise NotMatched, ShEx::NotSatisfied
-    def matches(t, g, m)
+    def matches(t)
       raise NotImplementedError, "#matches Not implemented in #{self.class}"
       # FIXME: cardinatlity
     end

@@ -6,7 +6,7 @@ module ShEx::Algebra
 
     #
     # S is a ShapeRef and the Schema's shapes maps reference to a shape expression se2 and satisfies(n, se2, G, m).
-    def satisfies?(n, g, m)
+    def satisfies?(n)
       raise NotImplementedError, "#satisfies? ShapeExternal not configured"
     end
   end

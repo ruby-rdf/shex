@@ -7,24 +7,22 @@ module ShEx::Algebra
     #
     # The `satisfies` semantics for a `Shape` depend on a matches function defined below. For a node `n`, shape `S`, graph `G`, and shapeMap `m`, `satisfies(n, S, G, m)`.
     # @param [RDF::Resource] n
-    # @param [RDF::Queryable] g
-    # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
-    def satisfies?(n, g, m)
+    def satisfies?(n)
       expression = operands.detect {|op| op.is_a?(TripleExpression)}
 
       # neigh(G, n) is the neighbourhood of the node n in the graph G.
       #
       #    neigh(G, n) = arcsOut(G, n) ∪ arcsIn(G, n)
-      arcs_in = g.query(object: n).to_a.sort_by(&:to_sxp)
-      arcs_out = g.query(subject: n).to_a.sort_by(&:to_sxp)
+      arcs_in = schema.graph.query(object: n).to_a.sort_by(&:to_sxp)
+      arcs_out = schema.graph.query(subject: n).to_a.sort_by(&:to_sxp)
       neigh = (arcs_in + arcs_out).uniq
 
       # `matched` is the subset of statements which match `expression`.
       # FIXME Cardinality?
       status("arcsIn: #{arcs_in.count}, arcsOut: #{arcs_out.count}")
-      matched = expression ? expression.matches(neigh, g, m) : []
+      matched = expression ? expression.matches(neigh) : []
 
       # `remainder` is the set of unmatched statements
       remainder = neigh - matched
@@ -41,7 +39,7 @@ module ShEx::Algebra
         expression.triple_constraints.each do |expr|
           begin
             status "check matchable #{statement.to_sxp} against #{expr.to_sxp}"
-            if statement.predicate == expr.predicate && expr.matches([statement], g, m)
+            if statement.predicate == expr.predicate && expr.matches([statement])
               not_satisfied "Unmatched statement: #{statement.to_sxp} matched #{expr.to_sxp}"
             end
           rescue NotMatched

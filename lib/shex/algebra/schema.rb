@@ -4,6 +4,14 @@ module ShEx::Algebra
     include Satisfiable
     NAME = :schema
 
+    # Graph to validate
+    # @return [RDF::Queryable]
+    attr_reader :graph
+
+    # Map of nodes to shapes
+    # @return [Hash{RDF::Resource => RDF::Resource}]
+    attr_reader :map
+
     ##
     # Match on schema. Finds appropriate shape for node, and matches that shape.
     #
@@ -16,8 +24,9 @@ module ShEx::Algebra
     # @raise [ShEx::NotSatisfied] if not satisfied
     # FIXME: set of node/shape pairs
     def satisfies?(n, g, m)
+      @graph = g
       # Make sure they're URIs
-      m = m.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
+      @map = m.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
 
       # First, evaluate semantic acts
       operands.select {|o| o.is_a?(SemAct)}.all? do |op|
@@ -27,15 +36,15 @@ module ShEx::Algebra
       # Next run any start expression
       if start
         status("start") {"expression: #{start.to_sxp}"}
-        start.satisfies?(n, g, m)
+        start.satisfies?(n)
       end
 
-      label = m[n.to_s]
+      label = @map[n.to_s]
       if label && !label.empty?
         shape = shapes[label]
         log_error("No shape found for #{label}", depth: options.fetch(:depth, 0), exception: ShEx::StructureError) unless shape
 
-        shape.satisfies?(n, g, m)
+        shape.satisfies?(n)
       end
       status "schema satisfied"
       true

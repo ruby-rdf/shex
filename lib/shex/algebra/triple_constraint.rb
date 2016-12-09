@@ -8,18 +8,16 @@ module ShEx::Algebra
     # In this case, we accept an array of statements, and match based on cardinality.
     #
     # @param [Array<RDF::Statement>] t
-    # @param [RDF::Queryable] g
-    # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Array<RDF::Statement>]
     # @raise NotMatched, ShEx::NotSatisfied
-    def matches(t, g, m)
+    def matches(t)
       status ""
       max = maximum
       results = t.select do |statement|
         if max > 0
           value = inverse? ? statement.subject : statement.object
 
-          if statement.predicate == predicate && shape_expr_satisfies?(shape, value, g, m)
+          if statement.predicate == predicate && shape_expr_satisfies?(shape, value)
             status "matched #{statement.to_sxp}"
             max -= 1
           else
@@ -43,8 +41,8 @@ module ShEx::Algebra
       results
     end
 
-    def shape_expr_satisfies?(shape, value, g, m)
-      shape.nil? || shape.satisfies?(value, g, m)
+    def shape_expr_satisfies?(shape, value)
+      shape.nil? || shape.satisfies?(value)
     rescue ShEx::NotSatisfied => e
       status "ignore error: #{e.message}"
       logger.recovering = false

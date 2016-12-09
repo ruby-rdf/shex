@@ -11,12 +11,12 @@ module ShEx::Algebra
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Array<RDF::Statement]
-    def matches(t, g, m)
+    def matches(t)
       result = []
       # FIXME Cardinality?
       matched_something = operands.select {|o| o.is_a?(TripleExpression)}.any? do |op|
         begin
-          result += op.matches(t, g, m)
+          result += op.matches(t)
           status "matched #{t.first.to_sxp}"
         rescue NotMatched => e
           log_recover("oneOf: ignore error: #{e.message}", depth: options.fetch(:depth, 0))

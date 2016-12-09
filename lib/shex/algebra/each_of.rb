@@ -8,16 +8,14 @@ module ShEx::Algebra
     # expr is an EachOf and there is some partition of T into T1, T2,… such that for every expression expr1, expr2,… in shapeExprs, matches(Tn, exprn, m)...
     #
     # @param [Array<RDF::Statement>] t
-    # @param [RDF::Queryable] g
-    # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Array<RDF::Statement>]
     # @raise NotMatched, ShEx::NotSatisfied
-    def matches(t, g, m)
+    def matches(t)
       status ""
       results = []
       # FIXME Cardinality?
       operands.select {|o| o.is_a?(TripleExpression)}.all? do |op|
-        results += op.matches(t, g, m)
+        results += op.matches(t)
       end
 
       # Last, evaluate semantic acts

@@ -5,13 +5,11 @@ module ShEx::Algebra
 
     #
     # @param [RDF::Resource] n
-    # @param [RDF::Queryable] g
-    # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
-    def satisfies?(n, g, m)
+    def satisfies?(n)
       status ""
-      operands.first.satisfies?(n, g, m)
+      operands.first.satisfies?(n)
       status("satisfied")
     rescue ShEx::NotSatisfied => e
       not_satisfied e.message

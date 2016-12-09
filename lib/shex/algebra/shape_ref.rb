@@ -12,14 +12,12 @@ module ShEx::Algebra
     ##
     # Satisfies method
     # @param [RDF::Resource] n
-    # @param [RDF::Queryable] g
-    # @param [Hash{RDF::Resource => RDF::Resource}] m
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
-    def satisfies?(n, g, m)
+    def satisfies?(n)
       status "ref #{operands.first.to_s}"
-      referenced_shape.satisfies?(n, g, m)
+      referenced_shape.satisfies?(n)
       status "ref satisfied"
     rescue ShEx::NotSatisfied => e
       not_satisfied e.message
