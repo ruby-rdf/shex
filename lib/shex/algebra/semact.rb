@@ -17,10 +17,10 @@ module ShEx::Algebra
           when 's' then statements.first.subject
           when 'p' then statements.first.predicate
           when 'o' then statements.first.object
-          else          statements.first.to_ntriples
+          else          statements.first.to_sxp
           end.to_s
         else
-          statements.empty? ? 'no statement' : statements.first.to_ntriples
+          statements.empty? ? 'no statement' : statements.first.to_sxp
         end
         $stdout.puts str
         status str

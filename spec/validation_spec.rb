@@ -294,7 +294,7 @@ describe ShEx::Algebra do
           <Alice> foaf:name "Alice Malsenior Walker" .
         ),
         expected: [
-          {focus: "http://a.example/Alice", shape: "http://schema.example/UserShape", result: true},
+          {focus: "http://a.example/Alice", shape: "http://schema.example/UserShape", result: ShEx::NotSatisfied},
         ]
       },
       "Disjunction Example 5" => {
@@ -502,8 +502,6 @@ describe ShEx::Algebra do
                'PstarT', 'PstarT-greedy', 'PTstar', 'PTstar-greedy-fail', 'PTstar-greedy-rewrite',
                'PstarTstar', 'P2T2'
             pending "Parse errors"
-          when '1val2IRIREFExtra1_fail-iri2', '1dotExtra1_fail-iri2'
-            pending "WtF?"
           end
           t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
           expected = t.positive_test? || ShEx::NotSatisfied

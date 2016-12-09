@@ -18,16 +18,6 @@ module ShEx::Algebra
     end
 
     ##
-    # Predicates associated with this TripleExpression
-    #
-    # FIXME: May need to search through referenced shape.
-    #
-    # @return [Array<RDF::URI>]
-    def predicates
-      []
-    end
-
-    ##
     # A Inclusion is valid if it's ancestor schema has any shape with a lable
     # the same as it's reference.
     def validate!

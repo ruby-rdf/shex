@@ -17,7 +17,7 @@ module ShEx::Algebra
       matched_something = operands.select {|o| o.is_a?(TripleExpression)}.any? do |op|
         begin
           result += op.matches(t, g, m)
-          status "matched #{t.first.to_ntriples}"
+          status "matched #{t.first.to_sxp}"
         rescue NotMatched => e
           log_recover("oneOf: ignore error: #{e.message}", depth: options.fetch(:depth, 0))
           false
@@ -32,13 +32,6 @@ module ShEx::Algebra
 
       status "one of satisfied"
       result
-    end
-
-    ##
-    # Predicates associated with this TripleExpression
-    # @return [Array<RDF::URI>]
-    def predicates
-      operands.select {|o| o.is_a?(TripleExpression)}.map(&:predicates).flatten.uniq
     end
   end
 end

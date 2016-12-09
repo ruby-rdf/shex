@@ -21,10 +21,10 @@ module ShEx::Algebra
     end
 
     ##
-    # Predicates associated with this TripleExpression
-    # @return [Array<RDF::URI>]
-    def predicates
-      raise NotImplementedError, "#predicates Not implemented in #{self.class}"
+    # Included TripleConstraints
+    # @return [Array<TripleConstraints>]
+    def triple_constraints
+      operands.select {|o| o.is_a?(TripleExpression)}.map(&:triple_constraints).flatten.uniq
     end
 
     ##

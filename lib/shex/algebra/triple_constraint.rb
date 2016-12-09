@@ -20,10 +20,10 @@ module ShEx::Algebra
           value = inverse? ? statement.subject : statement.object
 
           if statement.predicate == predicate && shape_expr_satisfies?(shape, value, g, m)
-            status "matched #{statement.to_ntriples}"
+            status "matched #{statement.to_sxp}"
             max -= 1
           else
-            status "no match #{statement.to_ntriples}"
+            status "no match #{statement.to_sxp}"
             false
           end
         else
@@ -55,8 +55,12 @@ module ShEx::Algebra
       operands.detect {|o| o.is_a?(RDF::URI)}
     end
 
-    def predicates
-      [predicate]
+
+    ##
+    # Included TripleConstraints
+    # @return [Array<TripleConstraints>]
+    def triple_constraints
+      [self]
     end
 
     def inverse?

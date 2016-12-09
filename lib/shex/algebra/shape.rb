@@ -17,8 +17,8 @@ module ShEx::Algebra
       # neigh(G, n) is the neighbourhood of the node n in the graph G.
       #
       #    neigh(G, n) = arcsOut(G, n) ∪ arcsIn(G, n)
-      arcs_in = g.query(object: n).to_a.sort_by(&:to_ntriples)
-      arcs_out = g.query(subject: n).to_a.sort_by(&:to_ntriples)
+      arcs_in = g.query(object: n).to_a.sort_by(&:to_sxp)
+      arcs_out = g.query(subject: n).to_a.sort_by(&:to_sxp)
       neigh = (arcs_in + arcs_out).uniq
 
       # `matched` is the subset of statements which match `expression`.
@@ -33,9 +33,23 @@ module ShEx::Algebra
       outs = remainder.select {|s| s.subject == n}
 
       # Let `matchables` be the triples in `outs` whose predicate appears in a `TripleConstraint` in `expression`. If `expression` is absent, `matchables = Ø` (the empty set).
-      predicates = expression ? expression.predicates : []
+      predicates = expression ? expression.triple_constraints.map(&:predicate).uniq : []
       matchables = outs.select {|s| predicates.include?(s.predicate)}
-      # Fixme: reduce by filtering against all TripleConstraints, causes not to match
+
+      # No matchable can be matched by any TripleConstraint in expression
+      matchables.each do |statement|
+        expression.triple_constraints.each do |expr|
+          begin
+            status "check matchable #{statement.to_sxp} against #{expr.to_sxp}"
+            if statement.predicate == expr.predicate && expr.matches([statement], g, m)
+              not_satisfied "Unmatched statement: #{statement.to_sxp} matched #{expr.to_sxp}"
+            end
+          rescue NotMatched
+            logger.recovering = false
+            # Expected not to match
+          end
+        end
+      end if expression
 
       # There is no triple in `matchables` which matches a `TripleConstraint` in `expression`.
       # FIXME: Really run against every TripleConstraint?

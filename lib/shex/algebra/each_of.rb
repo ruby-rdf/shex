@@ -30,12 +30,5 @@ module ShEx::Algebra
       not_matched(e.message)
       raise
     end
-
-    ##
-    # Predicates associated with this TripleExpression
-    # @return [Array<RDF::URI>]
-    def predicates
-      operands.select {|o| o.is_a?(TripleExpression)}.map(&:predicates).flatten.uniq
-    end
   end
 end
