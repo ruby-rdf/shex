@@ -11,7 +11,7 @@ module ShEx::Algebra
     # @return [Array<RDF::Statement>]
     # @raise NotMatched, ShEx::NotSatisfied
     def matches(t)
-      status ""
+      status "predicate #{predicate}"
       max = maximum
       results = t.select do |statement|
         if max > 0

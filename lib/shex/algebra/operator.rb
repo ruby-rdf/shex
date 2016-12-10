@@ -189,19 +189,21 @@ module ShEx::Algebra
 
     ##
     # Exception handling
-    def not_matched(message, **options)
-      expression = options.fetch(:expression, self)
-      log_error(message, depth: options.fetch(:depth, 0), exception: NotMatched) {"expression: #{expression.to_sxp}"}
+    def not_matched(message, **opts)
+      expression = opts.fetch(:expression, self)
+      exception = opts.fetch(:exception, NotMatched)
+      log_error(message, depth: options.fetch(:depth, 0), exception: exception) {"expression: #{expression.to_sxp}"}
     end
 
-    def not_satisfied(message, **options)
-      expression = options.fetch(:expression, self)
-      log_error(message, depth: options.fetch(:depth, 0), exception: ShEx::NotSatisfied) {"expression: #{expression.to_sxp}"}
+    def not_satisfied(message, **opts)
+      expression = opts.fetch(:expression, self)
+      exception = opts.fetch(:exception, ShEx::NotSatisfied)
+      log_error(message, depth: options.fetch(:depth, 0), exception: exception) {"expression: #{expression.to_sxp}"}
     end
 
-    def structure_error(message, **options)
-      expression = options.fetch(:expression, self)
-      exception = options.fetch(:exception, ShEx::StructureError)
+    def structure_error(message, **opts)
+      expression = opts.fetch(:expression, self)
+      exception = opts.fetch(:exception, ShEx::StructureError)
       log_error(message, depth: options.fetch(:depth, 0), exception: exception) {"expression: #{expression.to_sxp}"}
     end
 

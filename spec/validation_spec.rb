@@ -471,21 +471,8 @@ describe ShEx::Algebra do
                '1val1vExpr1AND1OR1Ref3_failvc2vc3', '1val1vExpr1AND1OR1Ref3_failvc1vc2vc3',
                '1val1vExpr1OR1AND1Ref3_failvc1vc3', '1focusPatternB-dot_fail-bnode-long'
             pending "pattern matching issues in spec"
-          when 'open3Somedotclosecard2_fail-p1', 'open3Somedotclosecard2_pass-p1X2',
-               'open3Somedotclosecard2_pass-p1p2', 'open3Somedotclosecard2_pass-p1p3',
-               'open3Somedotclosecard2_pass-p2p3', 'open3Somedotclosecard23_fail-p1',
-               'open3Somedotclosecard23_pass-p1X2', 'open3Somedotclosecard23_pass-p1X3',
-               'open3Somedotclosecard23_pass-p1p2', 'open3Somedotclosecard23_pass-p1p3',
-               'open3Somedotclosecard23_pass-p2p3', 'open3Somedotclosecard23_pass-p1p2p3',
-               'open3groupdotclosecard23_pass-p1p2p3X3'
-            pending "oneOf cardinality"
-          when 'open3groupdotclosecard23Annot3Code2-p1p2p3X3'
-            pending "eachOf cardinality"
-          when 'false-lead-excluding-value-shape', 'nPlus1', 'nPlus1-greedy_fail',
-               'nPlus1-greedy-rewrite', 'skipped', 'repeated-group', 'simple-group',
-               'PstarT', 'PstarT-greedy', 'PTstar', 'PTstar-greedy-fail', 'PTstar-greedy-rewrite',
-               'PstarTstar', 'P2T2'
-            pending "Parse errors"
+          when 'nPlus1', 'PTstar-greedy-fail'
+            pending "greedy"
           end
           t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
           expected = t.positive_test? || ShEx::NotSatisfied
