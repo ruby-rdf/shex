@@ -554,6 +554,11 @@ module ShEx
     ##
     # Initializes a new parser instance.
     #
+    # @example parsing a ShExC schema
+    #   schema = ShEx::Parser.new(%(
+    #     PREFIX ex: <http://schema.example/> ex:IssueShape {ex:state IRI}
+    #   ).parse
+    #
     # @param  [String, IO, StringIO, #to_s]          input
     # @param  [Hash{Symbol => Object}] options
     # @option options [Hash]     :prefixes     (Hash.new)
@@ -576,6 +581,9 @@ module ShEx
     # @yieldparam  [ShEx::Parser] parser
     # @yieldreturn [void] ignored
     # @return [ShEx::Parser]
+    # @raise [ShEx::NotSatisfied] if not satisfied
+    # @raise [ShEx::ParseError] when a syntax error is detected
+    # @raise [ShEx::StructureError, ShEx::OperandError] on structural problems with schema
     def initialize(input = nil, options = {}, &block)
       @input = case input
       when IO, StringIO then input.read

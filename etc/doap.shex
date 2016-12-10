@@ -1,0 +1,9 @@
+PREFIX doap:  <http://usefulinc.com/ns/doap#>
+PREFIX dc:    <http://purl.org/dc/terms/>
+<TestShape> EXTRA a {
+  a doap:Project;
+  (doap:name;doap:description|dc:title;dc:description)+;
+  doap:category*;
+  doap:developer IRI;
+  doap:implements    [<https://shexspec.github.io/spec/>]
+}

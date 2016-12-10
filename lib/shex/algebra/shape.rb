@@ -20,7 +20,6 @@ module ShEx::Algebra
       neigh = (arcs_in + arcs_out).uniq
 
       # `matched` is the subset of statements which match `expression`.
-      # FIXME Cardinality?
       status("arcsIn: #{arcs_in.count}, arcsOut: #{arcs_out.count}")
       matched = expression ? expression.matches(neigh) : []
 

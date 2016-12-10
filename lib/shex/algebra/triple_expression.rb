@@ -15,7 +15,6 @@ module ShEx::Algebra
     # @raise NotMatched, ShEx::NotSatisfied
     def matches(t)
       raise NotImplementedError, "#matches Not implemented in #{self.class}"
-      # FIXME: cardinatlity
     end
 
     ##

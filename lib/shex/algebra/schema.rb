@@ -15,8 +15,6 @@ module ShEx::Algebra
     ##
     # Match on schema. Finds appropriate shape for node, and matches that shape.
     #
-    # FIXME: startActs and start
-    #
     # @param [RDF::Resource] n
     # @param [RDF::Queryable] g
     # @param [Hash{RDF::Resource => RDF::Resource}] m

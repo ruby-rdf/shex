@@ -341,8 +341,6 @@ module ShEx::Algebra
       ##
       # @param  [RDF::Term] arg1
       #   the first operand
-      # @param  [RDF::Term] arg2
-      #   the second operand
       # @param  [Hash{Symbol => Object}] options
       #   any additional options (see {Operator#initialize})
       def initialize(arg1, options = {})
