@@ -7,7 +7,7 @@ module ShEx::Algebra
     #
     # The `satisfies` semantics for a `Shape` depend on a matches function defined below. For a node `n`, shape `S`, graph `G`, and shapeMap `m`, `satisfies(n, S, G, m)`.
     # @param [RDF::Resource] n
-    # @return [Boolean] `true` if satisfied, `false` if it does not apply
+    # @return [Boolean] `true` if satisfied
     # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(n)
       expression = operands.detect {|op| op.is_a?(TripleExpression)}
@@ -64,7 +64,7 @@ module ShEx::Algebra
 
       # Presumably, to be satisfied, there must be some triples in matches
 
-      operands.select {|o| o.is_a?(SemAct)}.all? do |op|
+      semantic_actions.all? do |op|
         # FIXME: what triples to run against satisfies?
         op.satisfies?(matched)
       end unless matched.empty?

@@ -7,7 +7,7 @@ module ShEx::Algebra
     def initialize(*args, **options)
       case
       when args.length <= 1
-        raise ShEx::OperandError, "Expected at least one operand, found #{args.length}"
+        raise ArgumentError, "wrong number of arguments (given #{args.length}, expected 1..)"
       end
       super
     end
@@ -15,14 +15,18 @@ module ShEx::Algebra
     #
     # S is a ShapeAnd and for every shape expression se2 in shapeExprs, satisfies(n, se2, G, m).
     # @param [RDF::Resource] n
-    # @return [Boolean] `true` if satisfied, `false` if it does not apply
+    # @return [Boolean] `true` when satisfied
     # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(n)
       status ""
-      unless operands.select {|o| o.is_a?(Satisfiable)}.all? {|op| op.satisfies?(n)}
-        not_satisfied "Expected all to match"
-      end
+
+      # Operand raises NotSatisfied, so no need to check here.
+      operands.select {|o| o.is_a?(Satisfiable)}.each {|op| op.satisfies?(n)}
       status("satisfied")
+      true
+    rescue ShEx::NotSatisfied => e
+      not_satisfied(e.message)
+      raise
     end
   end
 end

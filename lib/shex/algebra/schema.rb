@@ -30,7 +30,7 @@ module ShEx::Algebra
       @map = m.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
 
       # First, evaluate semantic acts
-      operands.select {|o| o.is_a?(SemAct)}.all? do |op|
+      semantic_actions.all? do |op|
         op.satisfies?([])
       end
 

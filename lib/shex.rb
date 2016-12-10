@@ -24,7 +24,7 @@ module ShEx
   # @param  [Hash{Symbol => Object}] options
   # @return [ShEx::Algebra::Schema] The executable parsed expression.
   # @raise [ShEx::ParseError] when a syntax error is detected
-  # @raise [ShEx::StructureError, ShEx::OperandError] on structural problems with schema
+  # @raise [ShEx::StructureError, ArgumentError] on structural problems with schema
   def self.parse(expression, format: 'shexc', **options)
     case format
     when 'shexc' then Parser.new(expression, options).parse
@@ -49,10 +49,10 @@ module ShEx
   # @yieldreturn [void] ignored
   # @return [ShEx::Algebra::Schema] The executable parsed expression.
   # @raise [ShEx::ParseError] when a syntax error is detected
-  # @raise [ShEx::StructureError, ShEx::OperandError] on structural problems with schema
+  # @raise [ShEx::StructureError, ArgumentError] on structural problems with schema
   def self.open(filename, format: 'shexc', **options, &block)
     RDF::Util::File.open_file(filename, options) do |file|
-      self.parse(file, options)
+      self.parse(file, options.merge(format: format))
     end
   end
 
@@ -71,9 +71,9 @@ module ShEx
   # @return [Boolean] `true` if satisfied, `false` if it does not apply
   # @raise [ShEx::NotSatisfied] if not satisfied
   # @raise [ShEx::ParseError] when a syntax error is detected
-  # @raise [ShEx::StructureError, ShEx::OperandError] on structural problems with schema
-  def self.execute(expression, queryable, focus, shape, format: 'shexc', **options, &block)
-    shex = self.parse(expression, options)
+  # @raise [ShEx::StructureError, ArgumentError] on structural problems with schema
+  def self.execute(expression, queryable, focus, shape, format: 'shexc', **options)
+    shex = self.parse(expression, options.merge(format: format))
     queryable = queryable || RDF::Graph.new
 
     shex.satisfies?(focus, queryable, {focus => shape}, options)
@@ -101,9 +101,6 @@ module ShEx
 
   # Shape expectation not satisfied
   class NotSatisfied < Error; end
-
-  # An error found on an operand
-  class OperandError < Error; end
 
   # Indicates bad syntax found in LD Patch document
   class ParseError < Error

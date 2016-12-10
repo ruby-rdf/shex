@@ -5,12 +5,13 @@ module ShEx::Algebra
 
     #
     # @param [RDF::Resource] n
-    # @return [Boolean] `true` if satisfied, `false` if it does not apply
+    # @return [Boolean] `true` if satisfied
     # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(n)
       status ""
       operands.first.satisfies?(n)
       status("satisfied")
+      true
     rescue ShEx::NotSatisfied => e
       not_satisfied e.message
       raise

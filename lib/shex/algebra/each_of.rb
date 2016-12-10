@@ -39,7 +39,7 @@ module ShEx::Algebra
         num_iters < minimum
 
       # Last, evaluate semantic acts
-      operands.select {|o| o.is_a?(SemAct)}.all? do |op|
+      semantic_actions.all? do |op|
         op.satisfies?(results)
       end unless results.empty?
 

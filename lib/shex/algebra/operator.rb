@@ -17,52 +17,6 @@ module ShEx::Algebra
     # Initialization options
     attr_accessor :options
 
-    ##
-    # Returns an operator class for the given operator `name`.
-    #
-    # @param  [Symbol, #to_s]  name
-    # @param  [Integer] arity
-    # @return [Class] an operator class, or `nil` if an operator was not found
-    def self.for(name, arity = nil)
-      {
-        and: And,
-        annotation: Annotation,
-        base: Base,
-        each_of: EachOf,
-        inclusion: Inclusion,
-        nodeConstraint: NodeConstraint,
-        not: Not,
-        one_of: OneOf,
-        or: Or,
-        prefix: Prefix,
-        schema: Schema,
-        semact: SemAct,
-        external: External,
-        shape_ref: ShapeRef,
-        shape: Shape,
-        start: Start,
-        stem: Stem,
-        stemRange: StemRange,
-        tripleConstraint: TripleConstraint,
-        value: Value,
-      }.fetch(name.to_s.downcase.to_sym)
-    end
-
-    ##
-    # Returns the arity of this operator class.
-    #
-    # @example
-    #   Operator.arity           #=> -1
-    #   Operator::Nullary.arity  #=> 0
-    #   Operator::Unary.arity    #=> 1
-    #   Operator::Binary.arity   #=> 2
-    #   Operator::Ternary.arity  #=> 3
-    #
-    # @return [Integer] an integer in the range `(-1..3)`
-    def self.arity
-      self.const_get(:ARITY)
-    end
-
     ARITY = -1 # variable arity
 
     ##
@@ -93,9 +47,8 @@ module ShEx::Algebra
           when TrueClass, FalseClass, Numeric, String, DateTime, Date, Time
             RDF::Literal(operand)
           when NilClass
-            raise ShEx::OperandError, "Found nil operand for #{self.class.name}"
-            nil
-          else raise TypeError, "invalid SPARQL::Algebra::Operator operand: #{operand.inspect}"
+            raise ArgumentError, "Found nil operand for #{self.class.name}"
+          else raise TypeError, "invalid ShEx::Algebra::Operator operand: #{operand.inspect}"
         end
       end
 
@@ -111,64 +64,10 @@ module ShEx::Algebra
     end
 
     ##
-    # Base URI used for reading data sources with relative URIs
-    #
-    # @return [RDF::URI]
-    def base_uri
-      Operator.base_uri
-    end
-
-    ##
-    # Base URI used for reading data sources with relative URIs
-    #
-    # @return [RDF::URI]
-    def self.base_uri
-      @base_uri
-    end
-
-    ##
     # Is this shape closed?
     # @return [Boolean]
     def closed?
       operands.include?(:closed)
-    end
-
-    ##
-    # Set Base URI associated with SPARQL document, typically done
-    # when reading SPARQL from a URI
-    #
-    # @param [RDF::URI] uri
-    # @return [RDF::URI]
-    def self.base_uri=(uri)
-      @base_uri = RDF::URI(uri)
-    end
-
-    ##
-    # Prefixes useful for future serialization
-    #
-    # @return [Hash{Symbol => RDF::URI}]
-    #   Prefix definitions
-    def prefixes
-      Operator.prefixes
-    end
-
-    ##
-    # Prefixes useful for future serialization
-    #
-    # @return [Hash{Symbol => RDF::URI}]
-    #   Prefix definitions
-    def self.prefixes
-      @prefixes
-    end
-
-    ##
-    # Prefixes useful for future serialization
-    #
-    # @param [Hash{Symbol => RDF::URI}] hash
-    #   Prefix definitions
-    # @return [Hash{Symbol => RDF::URI}]
-    def self.prefixes=(hash)
-      @prefixes = hash
     end
 
     ##
@@ -344,6 +243,7 @@ module ShEx::Algebra
       # @param  [Hash{Symbol => Object}] options
       #   any additional options (see {Operator#initialize})
       def initialize(arg1, options = {})
+        raise ArgumentError, "wrong number of arguments (given 2, expected 1)" unless options.is_a?(Hash)
         super
       end
     end # Unary
@@ -365,6 +265,7 @@ module ShEx::Algebra
       # @param  [Hash{Symbol => Object}] options
       #   any additional options (see {Operator#initialize})
       def initialize(arg1, arg2, options = {})
+        raise ArgumentError, "wrong number of arguments (given 3, expected 2)" unless options.is_a?(Hash)
         super
       end
     end # Binary

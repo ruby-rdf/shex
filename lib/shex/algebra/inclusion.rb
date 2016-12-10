@@ -5,7 +5,7 @@ module ShEx::Algebra
     NAME = :inclusion
 
     def initialize(arg, **options)
-      raise ShEx::OperandError, "Shape inclusion must be an IRI or BNode: #{arg}" unless arg.is_a?(RDF::Resource)
+      raise ArgumentError, "Shape inclusion must be an IRI or BNode: #{arg}" unless arg.is_a?(RDF::Resource)
       super
     end
 
@@ -24,11 +24,6 @@ module ShEx::Algebra
       # Max violations handled in Shape
       not_matched "Minimum Cardinality Violation: #{results.length} < #{minimum}" if
         results.length < minimum
-
-      # Last, evaluate semantic acts
-      operands.select {|o| o.is_a?(SemAct)}.all? do |op|
-        op.satisfies?(results)
-      end unless results.empty?
 
       results
     end

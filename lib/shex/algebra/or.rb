@@ -7,7 +7,7 @@ module ShEx::Algebra
     def initialize(*args, **options)
       case
       when args.length <= 1
-        structure_error("Expected at least one operand, found #{args.length}", exception: ShEx::OperandError)
+        raise ArgumentError, "wrong number of arguments (given #{args.length}, expected 1..)"
       end
       super
     end
@@ -32,7 +32,6 @@ module ShEx::Algebra
       end
 
       not_satisfied "Expected some expression to be satisfied"
-      true
     end
   end
 end

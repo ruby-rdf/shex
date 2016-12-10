@@ -25,10 +25,11 @@ module ShEx::Algebra
         $stdout.puts str
         status str
         not_satisfied "fail" if md && md[1] == 'fail'
+        true
       else
         status("unknown SemAct name #{operands.first}") {"expression: #{self.to_sxp}"}
+        false
       end
-      true
     end
 
     # Does This operator is SemAct

@@ -31,7 +31,7 @@ RSpec::Matchers.define :generate do |expected, options = {}|
   match do |input|
     begin
       case
-      when [ShEx::ParseError, ShEx::StructureError, ShEx::OperandError].include?(expected)
+      when [ShEx::ParseError, ShEx::StructureError, ArgumentError].include?(expected)
         begin
           parser(options).call(input)
           false
@@ -83,7 +83,7 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **
     case
     when [ShEx::NotSatisfied, ShEx::StructureError].include?(expected)
       begin
-        input.satisfies?(focus, graph, (map || {focus => shape}), options)
+        fake_stdout input.satisfies?(focus, graph, (map || {focus => shape}), options)
         false
       rescue expected
         true

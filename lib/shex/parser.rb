@@ -226,8 +226,8 @@ module ShEx
         Array(data[:shapeExpression]).first
       end
       input[:shapeExpression] = expression if expression
-    rescue ShEx::OperandError => e
-      error(nil, "Operand Error on OR: #{e.message}")
+    rescue ArgumentError => e
+      error(nil, "Argument Error on OR: #{e.message}")
     end
     private :shape_or
 
@@ -250,8 +250,8 @@ module ShEx
         expressions.first
       end
       (input[:shapeExpression] ||= []) << expression if expression
-    rescue ShEx::OperandError => e
-      error(nil, "Operand Error on AND: #{e.message}")
+    rescue ArgumentError => e
+      error(nil, "Argument Error on AND: #{e.message}")
     end
     private :shape_and
 
@@ -316,8 +316,8 @@ module ShEx
       if data[:shape] || Array(data[:shapeLabel]).first
         input[:shapeOrRef] = data[:shape] || Algebra::ShapeRef.new(Array(data[:shapeLabel]).first)
       end
-    rescue ShEx::OperandError => e
-      error(nil, "Operand Error on ShapeOrRef: #{e.message}")
+    rescue ArgumentError => e
+      error(nil, "Argument Error on ShapeOrRef: #{e.message}")
     end
     private :shape_or_ref
 
@@ -456,7 +456,7 @@ module ShEx
 
     # [42]    productionLabel       ::= '$' (iri | blankNode)
     production(:productionLabel) do |input, data, callback|
-      input[:productionLabel] = datea[:iri] || data[:blankNode]
+      input[:productionLabel] = data[:iri] || data[:blankNode]
     end
 
     # [43]    tripleConstraint      ::= senseFlags? predicate shapeExpression cardinality? annotation* semanticActions
@@ -583,7 +583,7 @@ module ShEx
     # @return [ShEx::Parser]
     # @raise [ShEx::NotSatisfied] if not satisfied
     # @raise [ShEx::ParseError] when a syntax error is detected
-    # @raise [ShEx::StructureError, ShEx::OperandError] on structural problems with schema
+    # @raise [ShEx::StructureError, ArgumentError] on structural problems with schema
     def initialize(input = nil, options = {}, &block)
       @input = case input
       when IO, StringIO then input.read
@@ -605,17 +605,6 @@ module ShEx
           else block.call(self)
         end
       end
-    end
-
-    ##
-    # Returns `true` if the input string is syntactically valid.
-    #
-    # @return [Boolean]
-    def valid?
-      parse
-      true
-    rescue Error
-      false
     end
 
     # @return [String]
@@ -763,15 +752,6 @@ module ShEx
     end
 
     ##
-    # Returns `true` if parsed statements and values should be validated.
-    #
-    # @return [Boolean] `true` or `false`
-    # @since  0.3.0
-    def resolve_iris?
-      @options[:resolve_iris]
-    end
-
-    ##
     # Returns `true` when resolving IRIs, otherwise BASE and PREFIX are retained in the output algebra.
     #
     # @return [Boolean] `true` or `false`
@@ -780,25 +760,8 @@ module ShEx
       @options[:validate]
     end
 
-    # Clear cached BNodes
-    # @return [void]
-    def clear_bnode_cache
-      @bnode_cache = {}
-    end
-
-    # Freeze BNodes, which allows us to detect if they're re-used
-    # @return [void]
-    def freeze_bnodes
-      @bnode_cache ||= {}
-      @bnode_cache.each_value(&:freeze)
-    end
-
     # Generate a BNode identifier
-    def bnode(id = nil)
-      unless id
-        id = @options[:anon_base]
-        @options[:anon_base] = @options[:anon_base].succ
-      end
+    def bnode(id)
       @bnode_cache ||= {}
       raise Error, "Illegal attempt to reuse a BNode" if @bnode_cache[id] && @bnode_cache[id].frozen?
       @bnode_cache[id] ||= RDF::Node.new(id)

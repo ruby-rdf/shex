@@ -5,20 +5,21 @@ module ShEx::Algebra
     NAME = :shapeRef
 
     def initialize(arg, **options)
-      structure_error("Shape reference must be an IRI or BNode: #{arg}", exception: ShEx::OperandError) unless arg.is_a?(RDF::Resource)
+      structure_error("Shape reference must be an IRI or BNode: #{arg}", exception: ArgumentError) unless arg.is_a?(RDF::Resource)
       super
     end
 
     ##
     # Satisfies method
     # @param [RDF::Resource] n
-    # @return [Boolean] `true` if satisfied, `false` if it does not apply
+    # @return [Boolean] `true` if satisfied
     # @raise [ShEx::NotSatisfied] if not satisfied
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
     def satisfies?(n)
       status "ref #{operands.first.to_s}"
       referenced_shape.satisfies?(n)
       status "ref satisfied"
+      true
     rescue ShEx::NotSatisfied => e
       not_satisfied e.message
       raise
