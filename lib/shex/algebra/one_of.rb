@@ -19,7 +19,6 @@ module ShEx::Algebra
       status ""
       while num_iters < max
         matched_something = operands.select {|o| o.is_a?(TripleExpression)}.any? do |op|
-          require 'byebug'; byebug
           begin
             matched = op.matches(statements)
             results += matched
