@@ -108,6 +108,7 @@ module ShEx::Algebra
 
     def status(message, &block)
       log_info(self.class.const_get(:NAME), message, depth: options.fetch(:depth, 0), &block)
+      true
     end
 
     ##

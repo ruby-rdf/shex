@@ -52,6 +52,11 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
 <http://rubydoc.info/github/ruby-rdf/shex>
 
 
+## Implementation Notes
+The ShExC parser uses the [EBNF][] gem to generate first, follow and branch tables, and uses the `Parser` and `Lexer` modules to implement the ShExC parser.
+
+The parser takes branch and follow tables generated from the [ShEx Grammar](file.shex.html) described in the [specification][ShExSpec]. Branch and Follow tables are specified in the generated {ShEx::Meta}.
+
 ## Dependencies
 
 * [Ruby](http://ruby-lang.org/) (>= 2.0)
@@ -115,4 +120,5 @@ see <http://unlicense.org/> or the accompanying {file:LICENSE} file.
 
 [ShExSpec]:     https://shexspec.github.io/spec/
 [RDF]:          http://www.w3.org/RDF/
-[RDF.rb]:           http://rubydoc.info/github/ruby-rdf/rdf
+[RDF.rb]:       http://rubydoc.info/github/ruby-rdf/rdf
+[EBNF]:         http://rubygems.org/gems/ebnf

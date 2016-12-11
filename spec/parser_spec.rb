@@ -946,13 +946,13 @@ describe ShEx::Parser do
         it file do
           input = File.read File.expand_path("../shexTest/schemas/#{file}.shex", __FILE__)
 
-          case file
-          when '_all'
-            pending("All has a self-including shape, which is invalid")
+          validate = case file
+          when '_all' then false # Has self-included shape
+          else             true
           end
         
           sse = File.read(File.expand_path("../data/#{file}.sse", __FILE__))
-          expect(input).to generate(sse, validate: true)
+          expect(input).to generate(sse, validate: validate)
         end
       end
     end
