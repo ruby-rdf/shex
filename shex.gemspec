@@ -24,17 +24,17 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version      = '>= 2.2.2'
   gem.requirements               = []
-  gem.add_runtime_dependency     'rdf',         '~> 2.0'
-  gem.add_runtime_dependency     'ebnf',        '~> 1.0', '>= 1.0.1'
+  gem.add_runtime_dependency     'rdf',         '~> 2.1', '>= 2.1.1'
+  gem.add_runtime_dependency     'ebnf',        '~> 1.1'
   gem.add_runtime_dependency     'sxp',         '~> 1.0'
   gem.add_runtime_dependency     'rdf-xsd',     '~> 2.0'
   gem.add_runtime_dependency     'sparql',      '~> 2.0'
 
   gem.add_development_dependency 'rdf-spec',    '~> 2.0'
   gem.add_development_dependency 'rdf-turtle',  '~> 2.0'
-  gem.add_development_dependency 'rspec',       '~> 3.0'
-  gem.add_development_dependency 'rspec-its',   '~> 1.0'
-  gem.add_development_dependency 'yard',        '~> 0.8'
+  gem.add_development_dependency 'rspec',       '~> 3.5'
+  gem.add_development_dependency 'rspec-its',   '~> 1.2'
+  gem.add_development_dependency 'yard',        '~> 0.9'
 
   gem.post_install_message       = nil
 end
