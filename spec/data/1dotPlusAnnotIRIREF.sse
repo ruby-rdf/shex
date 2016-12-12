@@ -1,0 +1,11 @@
+(schema
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (tripleConstraint <http://a.example/p1>
+      (min 1)
+      (max "*")
+      (annotation <http://a.example/annot> <http://a.example/IRIREF>)) )) ))
+)
+

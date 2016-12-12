@@ -1,0 +1,23 @@
+(schema
+ (shapes
+  (
+   (<http://a.example/S1>
+    (and
+     (or
+      (not (shape (tripleConstraint <http://a.example/p1>)))
+      (shape
+       (eachOf
+        (tripleConstraint <http://a.example/p1>)
+        (tripleConstraint <http://a.example/p2>)) ))
+     (or
+      (not (shape (tripleConstraint <http://a.example/p3>)))
+      (shape
+       (eachOf
+        (tripleConstraint <http://a.example/p3>)
+        (tripleConstraint <http://a.example/p4>)) ))
+     (or
+      (not (shape (tripleConstraint <http://a.example/p5>)))
+      (shape
+       (eachOf
+        (tripleConstraint <http://a.example/p5>)
+        (tripleConstraint <http://a.example/p6>)) )) )) )) )

@@ -1,0 +1,16 @@
+(schema
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (eachOf
+      (tripleConstraint <http://a.example/p1>)
+      (tripleConstraint <http://a.example/p2>)
+      (tripleConstraint <http://a.example/p3>)
+      (min 2)
+      (max 3)
+      (semact <http://shex.io/extensions/Test/> " print(\"group semAct 1\") ")
+      (semact <http://shex.io/extensions/Test/> " print(\"group semAct 2\") ")
+      (annotation <http://a.example/annot1> "1")
+      (annotation <http://a.example/annot2> "2")
+      (annotation <http://a.example/annot3> "3")) )) )) )

@@ -1,8 +1,8 @@
 # ShEx: Shape Expression language for Ruby
 
-This is a pure-Ruby library for working with the [Shape Expressions Language][ShEx] to validate the shape of [RDF][] graphs.
+This is a pure-Ruby library for working with the [Shape Expressions Language][ShExSpec] to validate the shape of [RDF][] graphs.
 
-* <http://ruby-rdf.github.com/shex>
+<http://ruby-rdf.github.com/shex>
 
 [![Gem Version](https://badge.fury.io/rb/shex.png)](http://badge.fury.io/rb/shex)
 [![Build Status](https://travis-ci.org/ruby-rdf/shex.png?branch=master)](http://travis-ci.org/ruby-rdf/shex)
@@ -12,13 +12,50 @@ This is a pure-Ruby library for working with the [Shape Expressions Language][Sh
 ## Features
 
 * 100% pure Ruby with minimal dependencies and no bloat.
-* Fully compatible with [RDF 1.1][] specifications.
+* Fully compatible with [ShEx][ShExSpec] specifications.
 * 100% free and unencumbered [public domain](http://unlicense.org/) software.
+
+## Description
+
+The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
+
+* `ShEx::Parser` parses ShExC formatted documents generating executable operators which can be serialized as [S-Expressions](http://en.wikipedia.org/wiki/S-expression).
+* `ShEx::Algebra` executes operators against Any `RDF::Graph`, including compliant [RDF.rb][].
+
+## Example
+
+    require 'rubygems'
+    require 'rdf/turtle'
+    require 'shex'
+
+    shexc: %(
+      PREFIX doap:  <http://usefulinc.com/ns/doap#>
+      PREFIX dc:    <http://purl.org/dc/terms/>
+      <TestShape> EXTRA a {
+        a doap:Project;
+        (doap:name;doap:description|dc:title;dc:description)+;
+        doap:category*;
+        doap:developer IRI;
+        doap:implements    [<https://shexspec.github.io/spec/>]
+      }
+    )
+    graph = RDF::Graph.load("etc/doap.ttl")
+    schema = ShEx.parse(shexc)
+    map = {
+      "http://rubygems.org/gems/shex" => "TestShape"
+    }
+    schema.satisfies?("http://rubygems.org/gems/shex", graph, map)
+    # => true
 
 ## Documentation
 
 <http://rubydoc.info/github/ruby-rdf/shex>
 
+
+## Implementation Notes
+The ShExC parser uses the [EBNF][] gem to generate first, follow and branch tables, and uses the `Parser` and `Lexer` modules to implement the ShExC parser.
+
+The parser takes branch and follow tables generated from the [ShEx Grammar](file.shex.html) described in the [specification][ShExSpec]. Branch and Follow tables are specified in the generated {ShEx::Meta}.
 
 ## Dependencies
 
@@ -30,7 +67,7 @@ This is a pure-Ruby library for working with the [Shape Expressions Language][Sh
 The recommended installation method is via [RubyGems](http://rubygems.org/).
 To install the latest official release of RDF.rb, do:
 
-    % [sudo] gem install shex             # Ruby 2+
+    % [sudo] gem install shex
 
 ## Download
 
@@ -81,5 +118,7 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
 This is free and unencumbered public domain software. For more information,
 see <http://unlicense.org/> or the accompanying {file:LICENSE} file.
 
-[ShEx]:             https://shexspec.github.io/spec/
-[RDF]:              http://www.w3.org/RDF/
+[ShExSpec]:     https://shexspec.github.io/spec/
+[RDF]:          http://www.w3.org/RDF/
+[RDF.rb]:       http://rubydoc.info/github/ruby-rdf/rdf
+[EBNF]:         http://rubygems.org/gems/ebnf

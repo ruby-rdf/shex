@@ -1,0 +1,9 @@
+(schema
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (tripleConstraint <http://a.example/p1>
+      (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#decimal>
+       (minexclusive 4.5e0)) )) )) ))
+

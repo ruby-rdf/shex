@@ -1,0 +1,10 @@
+(schema
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (tripleConstraint <http://a.example/p1>
+      (and (nodeConstraint iri (length 19)) (shapeRef <http://a.example/S2>)))
+    ))
+   (<http://a.example/S2> (shape (tripleConstraint <http://a.example/p2>)))) ))
+

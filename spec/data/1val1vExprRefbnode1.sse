@@ -1,0 +1,7 @@
+(schema
+ (shapes
+  (
+   (_:vc1 (nodeConstraint literal (minlength 5)))
+   (<http://a.example/S1>
+    (shape (tripleConstraint <http://a.example/p1> (shapeRef _:vc1)))) )) )
+

@@ -1,0 +1,11 @@
+(schema
+ (shapes
+  (
+   (<http://a.example/S1>
+    (shape
+     (tripleConstraint <http://a.example/p1>
+      (or
+       (nodeConstraint literal (pattern "ab.*"))
+       (nodeConstraint literal (pattern ".*cd.*"))
+       (nodeConstraint literal (pattern ".*ef"))) )) )) ))
+

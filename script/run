@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+$:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", 'lib')))
+require 'shex'
+begin
+  require 'linkeddata'
+rescue LoadError
+  require 'rdf/ntriples'
+  require 'rdf/turtle'
+end
+require 'getoptlong'
+
+def run(graph, options = {})
+  if options[:debug]
+    STDERR.puts "target graph:\n#{graph.dump(:ttl, standard_prefixes: true)}\n"
+    STDERR.puts "shex:\n#{options[:shex]}\n"
+  end
+
+  if options[:verbose]
+    STDERR.puts ("\nshex:\n" + options[:shex]) 
+  end
+
+  shex =  ShEx.parse(options[:shex], options)
+
+  STDERR.puts ("\nSSE:\n" + shex.to_sse) if options[:debug]
+
+  if options[:to_sse]
+    puts (shex.to_sse)
+  else
+    res = shex.execute(graph, options)
+    puts res.dump
+  end
+rescue
+  STDERR.puts $!
+  STDERR.puts $!.backtrace
+end
+
+opts = GetoptLong.new(
+  ["--debug", GetoptLong::NO_ARGUMENT],
+  ["--execute", "-e", GetoptLong::REQUIRED_ARGUMENT],
+  ["--shex", GetoptLong::REQUIRED_ARGUMENT],
+  ["--progress", GetoptLong::NO_ARGUMENT],
+  ["--to-sse", GetoptLong::NO_ARGUMENT],
+  ["--validate", GetoptLong::NO_ARGUMENT],
+  ["--verbose", GetoptLong::NO_ARGUMENT],
+  ["--help", "-?", GetoptLong::NO_ARGUMENT]
+)
+
+options = {}
+
+opts.each do |opt, arg|
+  case opt
+  when '--base'         then options[:base_uri] = arg
+  when '--debug'        then options[:debug] = true
+  when '--execute'      then options[:shex] = arg
+  when '--shex'         then options[:shex] = RDF::Util::File.open_file(arg).read
+  when '--progress'     then options[:debug] ||= 2
+  when '--to-sse'       then options[:to_sse] = true
+  when '--validate'     then options[:validate] = true
+  when '--verbose'      then options[:verbose] = true
+  when "--help"
+    puts "Usage: #{$0} [options] target graph file-or-uri ..."
+    puts "Options:"
+    puts "      --base:       Base URI of target graph, if different from graph location"
+    puts "      --debug:      Display detailed debug output"
+    puts "      --execute,-e: Use option argument as the patch input"
+    puts "      --shex:       Location of ShEx document"
+    puts "      --progress    Display parse tree"
+    puts "      --to-sse:     Generate SSE for patch instead of running query"
+    puts "      --validate:   Validate patch document"
+    puts "      --verbose:    Display details of processing"
+    puts "      --help,-?:    This message"
+    exit(0)
+  end
+end
+
+raise "No expression defined" unless options[:shex]
+if ARGV.empty?
+  run(RDF::Graph.new, options)
+else
+  ARGV.each do |test_file|
+    puts "shex #{test_file}"
+    run(RDF::Graph.load(test_file), options.merge(base_uri: RDF::URI(test_file)))
+  end
+end
+puts

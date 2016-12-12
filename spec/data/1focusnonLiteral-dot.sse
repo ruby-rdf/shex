@@ -1,0 +1,5 @@
+(schema
+ (shapes
+  (
+   (<http://a.example/S1>
+    (and (nodeConstraint nonliteral) (shape (tripleConstraint <http://a.example/p1>)))) )) )

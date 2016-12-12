@@ -1,0 +1,11 @@
+(schema
+ (shapes
+  (
+   (<http://a.example/vs1>
+    (and
+     (nodeConstraint
+      (value <http://a.example/v1>)
+      (value <http://a.example/v2>)
+      (value <http://a.example/v3>))
+     (nodeConstraint datatype <http://a.example/dt1>)) )) ))
+
