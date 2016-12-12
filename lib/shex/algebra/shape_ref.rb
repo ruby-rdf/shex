@@ -11,13 +11,13 @@ module ShEx::Algebra
 
     ##
     # Satisfies method
-    # @param [RDF::Resource] n
+    # @param [RDF::Resource] focus
     # @return [Boolean] `true` if satisfied
     # @raise [ShEx::NotSatisfied] if not satisfied
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
-    def satisfies?(n)
+    def satisfies?(focus)
       status "ref #{operands.first.to_s}"
-      referenced_shape.satisfies?(n)
+      referenced_shape.satisfies?(focus)
       status "ref satisfied"
       true
     rescue ShEx::NotSatisfied => e

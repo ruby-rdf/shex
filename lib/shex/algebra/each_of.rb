@@ -7,13 +7,12 @@ module ShEx::Algebra
     ##
     # expr is an EachOf and there is some partition of T into T1, T2,… such that for every expression expr1, expr2,… in shapeExprs, matches(Tn, exprn, m)...
     #
-    # @param [Array<RDF::Statement>] t
+    # @param [Array<RDF::Statement>] statements
     # @return [Array<RDF::Statement>]
     # @raise NotMatched, ShEx::NotSatisfied
-    def matches(t)
+    def matches(statements)
       status ""
       results = []
-      statements = t.dup
       num_iters = 0
       max = maximum
 

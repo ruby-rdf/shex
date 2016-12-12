@@ -4,12 +4,12 @@ module ShEx::Algebra
     NAME = :start
 
     #
-    # @param [RDF::Resource] n
+    # @param [RDF::Resource] focus
     # @return [Boolean] `true` if satisfied
     # @raise [ShEx::NotSatisfied] if not satisfied
-    def satisfies?(n)
+    def satisfies?(focus)
       status ""
-      operands.first.satisfies?(n)
+      operands.first.satisfies?(focus)
       status("satisfied")
       true
     rescue ShEx::NotSatisfied => e

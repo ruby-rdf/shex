@@ -1,7 +1,6 @@
 module ShEx::Algebra
   ##
   class Schema < Operator
-    include Satisfiable
     NAME = :schema
 
     # Graph to validate
@@ -15,19 +14,19 @@ module ShEx::Algebra
     ##
     # Match on schema. Finds appropriate shape for node, and matches that shape.
     #
-    # @param [RDF::Resource] n
-    # @param [RDF::Queryable] g
-    # @param [Hash{RDF::Resource => RDF::Resource}] m
+    # @param [RDF::Resource] focus
+    # @param [RDF::Queryable] graph
+    # @param [Hash{RDF::Resource => RDF::Resource}] map
     # @param [Array<Schema, String>] shapeExterns ([])
     #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
-    # @return [Boolean] `true` if satisfied, `false` if it does not apply
+    # @return [ResultSet] positive or negative results, depending on if the graph satisfies the shape.
     # @raise [ShEx::NotSatisfied] if not satisfied
     # FIXME: set of node/shape pairs
-    def satisfies?(n, g, m, shapeExterns: [], **options)
-      @graph = g
+    def execute(focus, graph, map, shapeExterns: [], **options)
+      @graph = graph
       @external_schemas = shapeExterns
       # Make sure they're URIs
-      @map = m.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
+      @map = map.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
 
       # First, evaluate semantic acts
       semantic_actions.all? do |op|
@@ -37,24 +36,39 @@ module ShEx::Algebra
       # Next run any start expression
       if start
         status("start") {"expression: #{start.to_sxp}"}
-        start.satisfies?(n)
+        start.satisfies?(focus)
       end
 
-      label = @map[n.to_s]
+      label = @map[focus.to_s]
       if label && !label.empty?
         shape = shapes[label]
         structure_error("No shape found for #{label}") unless shape
 
         # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same label
-        if n.is_a?(RDF::Node)
-          nn = graph.enum_term.detect {|t| t.id == n.id}
-          n = nn if nn
+        if focus.is_a?(RDF::Node)
+          n = graph.enum_term.detect {|t| t.id == focus.id}
+          focus = n if n
         end
 
-        shape.satisfies?(n)
+        shape.satisfies?(focus)
       end
       status "schema satisfied"
       true
+    end
+
+    ##
+    # Match on schema. Finds appropriate shape for node, and matches that shape.
+    #
+    # @param [RDF::Resource] focus
+    # @param [RDF::Queryable] graph
+    # @param [Hash{RDF::Resource => RDF::Resource}] map
+    # @param [Array<Schema, String>] shapeExterns ([])
+    #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
+    # @return [Boolean] `true` if `focus` is satisfied by this schema in `graph`
+    # @raise [ShEx::NotSatisfied] if not satisfied
+    # FIXME: set of node/shape pairs
+    def satisfies?(focus, graph, map, shapeExterns: [], **options)
+      !!execute(focus, graph, map, options.merge(shapeExterns: shapeExterns))
     end
 
     ##

@@ -6,17 +6,17 @@ module ShEx::Algebra
 
     #
     # The `satisfies` semantics for a `Shape` depend on a matches function defined below. For a node `n`, shape `S`, graph `G`, and shapeMap `m`, `satisfies(n, S, G, m)`.
-    # @param [RDF::Resource] n
+    # @param [RDF::Resource] focus
     # @return [Boolean] `true` if satisfied
     # @raise [ShEx::NotSatisfied] if not satisfied
-    def satisfies?(n)
+    def satisfies?(focus)
       expression = operands.detect {|op| op.is_a?(TripleExpression)}
 
       # neigh(G, n) is the neighbourhood of the node n in the graph G.
       #
       #    neigh(G, n) = arcsOut(G, n) ∪ arcsIn(G, n)
-      arcs_in = schema.graph.query(object: n).to_a.sort_by(&:to_sxp)
-      arcs_out = schema.graph.query(subject: n).to_a.sort_by(&:to_sxp)
+      arcs_in = schema.graph.query(object: focus).to_a.sort_by(&:to_sxp)
+      arcs_out = schema.graph.query(subject: focus).to_a.sort_by(&:to_sxp)
       neigh = (arcs_in + arcs_out).uniq
 
       # `matched` is the subset of statements which match `expression`.
@@ -27,7 +27,7 @@ module ShEx::Algebra
       remainder = neigh - matched
 
       # Let `outs` be the `arcsOut` in `remainder`: `outs = remainder ∩ arcsOut(G, n)`.
-      outs = remainder.select {|s| s.subject == n}
+      outs = remainder.select {|s| s.subject == focus}
 
       # Let `matchables` be the triples in `outs` whose predicate appears in a `TripleConstraint` in `expression`. If `expression` is absent, `matchables = Ø` (the empty set).
       predicates = expression ? expression.triple_constraints.map(&:predicate).uniq : []

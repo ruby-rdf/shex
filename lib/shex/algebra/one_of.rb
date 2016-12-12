@@ -7,11 +7,10 @@ module ShEx::Algebra
     ##
     # `expr` is a OneOf and there is some shape expression `se2` in shapeExprs such that a `matches(T, se2, m)`...
     #
-    # @param [Array<RDF::Statement>] t
+    # @param [Array<RDF::Statement>] statements
     # @return [Array<RDF::Statement]
-    def matches(t)
+    def matches(statements)
       results = []
-      statements = t.dup
       num_iters = 0
       max = maximum
 
@@ -23,7 +22,7 @@ module ShEx::Algebra
             matched = op.matches(statements)
             results += matched
             statements -= matched
-            status "matched #{t.first.to_sxp}"
+            status "matched #{matched.first.to_sxp}"
           rescue NotMatched => e
             log_recover("oneOf: ignore error: #{e.message}", depth: options.fetch(:depth, 0))
             false

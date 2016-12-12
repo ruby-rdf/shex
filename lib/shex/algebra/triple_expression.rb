@@ -10,10 +10,10 @@ module ShEx::Algebra
     #
     # Behavior should be overridden in subclasses, which end by calling this through `super`.
     #
-    # @param [Array<RDF::Statement>] t
+    # @param [Array<RDF::Statement>] statements
     # @return [Array<RDF::Statement>]
     # @raise NotMatched, ShEx::NotSatisfied
-    def matches(t)
+    def matches(statements)
       raise NotImplementedError, "#matches Not implemented in #{self.class}"
     end
 

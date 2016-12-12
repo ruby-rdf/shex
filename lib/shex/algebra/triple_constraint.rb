@@ -7,13 +7,13 @@ module ShEx::Algebra
     ##
     # In this case, we accept an array of statements, and match based on cardinality.
     #
-    # @param [Array<RDF::Statement>] t
+    # @param [Array<RDF::Statement>] statements
     # @return [Array<RDF::Statement>]
     # @raise NotMatched, ShEx::NotSatisfied
-    def matches(t)
+    def matches(statements)
       status "predicate #{predicate}"
       max = maximum
-      results = t.select do |statement|
+      results = statements.select do |statement|
         if max > 0
           value = inverse? ? statement.subject : statement.object
 

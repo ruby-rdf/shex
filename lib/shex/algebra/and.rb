@@ -17,11 +17,11 @@ module ShEx::Algebra
     # @param [RDF::Resource] n
     # @return [Boolean] `true` when satisfied
     # @raise [ShEx::NotSatisfied] if not satisfied
-    def satisfies?(n)
+    def satisfies?(focus)
       status ""
 
       # Operand raises NotSatisfied, so no need to check here.
-      operands.select {|o| o.is_a?(Satisfiable)}.each {|op| op.satisfies?(n)}
+      operands.select {|o| o.is_a?(Satisfiable)}.each {|op| op.satisfies?(focus)}
       status("satisfied")
       true
     rescue ShEx::NotSatisfied => e

@@ -12,14 +12,14 @@ module ShEx::Algebra
     ##
     # In this case, we accept an array of statements, and match based on cardinality.
     #
-    # @param [Array<RDF::Statement>] t
+    # @param [Array<RDF::Statement>] statements
     # @return [Array<RDF::Statement>]
     # @raise NotMatched, ShEx::NotSatisfied
-    def matches(t)
+    def matches(statements)
       status "referenced_shape: #{operands.first}"
       expression = referenced_shape.triple_expressions.first
       max = maximum
-      results = expression.matches(t)
+      results = expression.matches(statements)
 
       # Max violations handled in Shape
       not_matched "Minimum Cardinality Violation: #{results.length} < #{minimum}" if
