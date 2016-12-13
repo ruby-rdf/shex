@@ -457,20 +457,6 @@ describe ShEx::Algebra do
           when '3circularRef1_pass-closed'
             skip "Circular reference"
             return
-          when '1val1DOUBLElowercase_pass', '1val1DOUBLElowercase_passUC'
-            pending "numeric mixed-case comparison"
-          when '1literalPattern_fail-lit-long', '1literalPattern_pass-litEnd-match',
-               '1literalPattern_pass-StartlitEnd-match', '1literalPattern_pass-Startlit-match',
-               '1literalPattern_fail-Startlit-lit', '1literalPattern_fail-lit-Startlit',
-               '1literalPattern_fail-litEnd-lit', '1literalPattern_fail-lit-litEnd',
-               '1literalPattern_fail-StartlitEnd-lit', '1literalPattern_fail-lit-StartlitEnd',
-               '1iriPattern_fail-iri-long', '1bnodePattern_fail-bnode-long',
-               '1nonliteralPattern_fail-iri-long', '1nonliteralPattern_fail-bnode-long',
-               '1val1vExpr1AND1AND1Ref3_failvc3', '1val1vExprRefAND3_failvc3',
-               '1val1vExprAND3_failvc3', '1val1vExpr1AND1OR1Ref3_failvc1vc3',
-               '1val1vExpr1AND1OR1Ref3_failvc2vc3', '1val1vExpr1AND1OR1Ref3_failvc1vc2vc3',
-               '1val1vExpr1OR1AND1Ref3_failvc1vc3', '1focusPatternB-dot_fail-bnode-long'
-            pending "pattern matching issues in spec"
           when 'nPlus1', 'PTstar-greedy-fail'
             pending "greedy"
           end
