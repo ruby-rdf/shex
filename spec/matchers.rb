@@ -50,7 +50,8 @@ RSpec::Matchers.define :generate do |expected, options = {}|
       end
     rescue
       @actual = $!.message
-      false
+      #false
+      raise
     end
   end
   
@@ -83,19 +84,20 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **
     case
     when [ShEx::NotSatisfied, ShEx::StructureError].include?(expected)
       begin
-        fake_stdout input.satisfies?(focus, graph, (map || {focus => shape}), options)
+        input.satisfies?(focus, graph, (map || {focus => shape}), options)
         false
       rescue expected
         true
-      rescue
-        false
+      #rescue
+      #  false
       end
     else
       begin
         input.satisfies?(focus, graph, (map || {focus => shape}), options)
       rescue Exception => e
         @exception = e
-        false
+        #false
+        raise
       end
     end
 

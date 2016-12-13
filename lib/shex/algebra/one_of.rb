@@ -10,9 +10,8 @@ module ShEx::Algebra
     # @param [Array<RDF::Statement>] statements
     # @return [Array<RDF::Statement]
     def matches(statements)
-      results = []
-      num_iters = 0
-      max = maximum
+      results, satisfied, unsatisfied = [], [], []
+      num_iters, max = 0, maximum
 
       # OneOf is greedy, and consumes triples from every sub-expression, although only one is requred it succeed. Cardinality is somewhat complicated, as if two expressions match, this works for either a cardinality of one or two. Or two passes with just one match on each pass.
       status ""
@@ -20,11 +19,17 @@ module ShEx::Algebra
         matched_something = operands.select {|o| o.is_a?(TripleExpression)}.any? do |op|
           begin
             matched = op.matches(statements)
+            op = op.dup
+            op.matched = matched
+            satisfied << op
             results += matched
             statements -= matched
             status "matched #{matched.first.to_sxp}"
-          rescue NotMatched => e
-            log_recover("oneOf: ignore error: #{e.message}", depth: options.fetch(:depth, 0))
+          rescue ShEx::NotMatched => e
+            status "not matched: #{e.message}"
+            op = op.dup
+            op.unmatched = statements - results
+            unsatisfied << op
             false
           end
         end
@@ -34,8 +39,9 @@ module ShEx::Algebra
       end
 
       # Max violations handled in Shape
-      not_matched "Minimum Cardinality Violation: #{num_iters} < #{minimum}" if
-        num_iters < minimum
+      if num_iters < minimum
+        raise ShEx::NotMatched, "Minimum Cardinality Violation: #{results.length} < #{minimum}"
+      end
 
       # Last, evaluate semantic acts
       semantic_actions.all? do |op|
@@ -44,6 +50,10 @@ module ShEx::Algebra
 
       status "one of satisfied"
       results
+    rescue ShEx::NotMatched, ShEx::NotSatisfied => e
+      not_matched e.message,
+                  matched:   results,   unmatched:   (statements - results),
+                  satisfied: satisfied, unsatisfied: unsatisfied
     end
   end
 end

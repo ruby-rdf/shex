@@ -14,18 +14,19 @@ module ShEx::Algebra
     #
     # @param [Array<RDF::Statement>] statements
     # @return [Array<RDF::Statement>]
-    # @raise NotMatched, ShEx::NotSatisfied
+    # @raise [ShEx::NotMatched]
     def matches(statements)
       status "referenced_shape: #{operands.first}"
       expression = referenced_shape.triple_expressions.first
       max = maximum
       results = expression.matches(statements)
-
-      # Max violations handled in Shape
-      not_matched "Minimum Cardinality Violation: #{results.length} < #{minimum}" if
-        results.length < minimum
-
+      status "inclusion satisfied"
       results
+    rescue ShEx::NotMatched => e
+      not_matched e.message,
+                  matched: e.expression.matched,
+                  unmatched: e.expression.unmatched,
+                  unsatisfied: expression
     end
 
     ##

@@ -18,20 +18,31 @@ module ShEx::Algebra
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(focus)
-      any_not_satisfied = false
-      operands.select {|o| o.is_a?(Satisfiable)}.any? do |op|
+      status ""
+      expressions = operands.select {|o| o.is_a?(Satisfiable)}
+      unsatisfied = []
+      expressions.any? do |op|
         begin
           op.satisfies?(focus)
           status "satisfied #{focus}"
           return true
         rescue ShEx::NotSatisfied => e
-          log_recover("or: ignore error: #{e.message}", depth: options.fetch(:depth, 0))
-          any_not_satisfied = e
+          status "unsatisfied #{focus}"
+          op = op.dup
+          op.matched = e.expression.matched
+          op.unmatched = e.expression.unmatched
+          op.satisfied = e.expression.satisfied
+          op.unsatisfied = e.expression.unsatisfied
+          unsatisfied << op
+          status("unsatisfied: #{e.message}")
           false
         end
       end
 
-      not_satisfied "Expected some expression to be satisfied"
+      not_satisfied "Expected some expression to be satisfied",
+                    matched:     unsatisfied.map(&:matched).flatten,
+                    unmatched:   unsatisfied.map(&:unmatched).flatten,
+                    unsatisfied: unsatisfied
     end
   end
 end

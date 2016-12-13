@@ -14,6 +14,10 @@ module ShEx::Algebra
       operands.last.not_satisfies?(focus)
       status "not satisfied"
       true
+    rescue ShEx::NotSatisfied => e
+      not_satisfied e.message,
+                    matched: e.expression.matched, unmatched: e.expression.unmatched,
+                    unsatisfied: operands.last
     end
   end
 end

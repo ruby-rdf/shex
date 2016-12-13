@@ -9,29 +9,40 @@ module ShEx::Algebra
     #
     # @param [Array<RDF::Statement>] statements
     # @return [Array<RDF::Statement>]
-    # @raise NotMatched, ShEx::NotSatisfied
+    # @raise [ShEx::NotMatched]
     def matches(statements)
       status "predicate #{predicate}"
-      max = maximum
-      results = statements.select do |statement|
-        if max > 0
-          value = inverse? ? statement.subject : statement.object
+      results, satisfied, unsatisfied = [], [], []
+      num_iters, max = 0, maximum
 
-          if statement.predicate == predicate && shape_expr_satisfies?(shape, value)
-            status "matched #{statement.to_sxp}"
-            max -= 1
-          else
-            status "no match #{statement.to_sxp}"
-            false
+      statements.select {|st| st.predicate == predicate}.each do |statement|
+        break if num_iters == max # matched enough
+
+        value = inverse? ? statement.subject : statement.object
+
+        begin
+          shape && shape.satisfies?(value)
+          status "matched #{statement.to_sxp}"
+          if shape
+            sh, statement = shape.dup, statement.dup
+            statement.referenced = sh
+            sh.matched = [statement]
+            satisfied << sh
           end
-        else
-          false # matched enough
+          results << statement
+          num_iters += 1
+        rescue ShEx::NotSatisfied => e
+          status "not satisfied: #{e.message}"
+          sh, statement = shape.dup, statement.dup
+          statement.referenced = sh
+          sh.unmatched = [statement]
         end
       end
 
       # Max violations handled in Shape
-      not_matched "Minimum Cardinality Violation: #{results.length} < #{minimum}" if
-        results.length < minimum
+      if results.length < minimum
+        raise ShEx::NotMatched, "Minimum Cardinality Violation: #{results.length} < #{minimum}"
+      end
 
       # Last, evaluate semantic acts
       semantic_actions.all? do |op|
@@ -39,14 +50,10 @@ module ShEx::Algebra
       end unless results.empty?
 
       results
-    end
-
-    def shape_expr_satisfies?(shape, value)
-      shape.nil? || shape.satisfies?(value)
-    rescue ShEx::NotSatisfied => e
-      status "ignore error: #{e.message}"
-      logger.recovering = false
-      false
+    rescue ShEx::NotMatched, ShEx::NotSatisfied => e
+      not_matched e.message,
+                  matched:   results,   unmatched:   (statements - results),
+                  satisfied: satisfied, unsatisfied: unsatisfied
     end
 
     def predicate

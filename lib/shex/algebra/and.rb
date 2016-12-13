@@ -19,14 +19,23 @@ module ShEx::Algebra
     # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies?(focus)
       status ""
+      expressions = operands.select {|o| o.is_a?(Satisfiable)}
+      satisfied = []
 
       # Operand raises NotSatisfied, so no need to check here.
-      operands.select {|o| o.is_a?(Satisfiable)}.each {|op| op.satisfies?(focus)}
+      operands.select {|o| o.is_a?(Satisfiable)}.each do |op|
+        op.satisfies?(focus)
+        satisfied << op
+      end
       status("satisfied")
       true
     rescue ShEx::NotSatisfied => e
-      not_satisfied(e.message)
-      raise
+      unsatisfied = (expressions - satisfied)
+      not_satisfied e.message,
+                    matched:     satisfied.map(&:matched).flatten,
+                    unmatched:   satisfied.map(&:unmatched).flatten,
+                    satisfied:   satisfied,
+                    unsatisfied: (expressions - satisfied)
     end
   end
 end

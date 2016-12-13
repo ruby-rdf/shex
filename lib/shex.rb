@@ -1,4 +1,5 @@
 require 'sparql/extensions'
+require 'shex/extensions'
 
 ##
 # A ShEx runtime for RDF.rb.
@@ -100,7 +101,48 @@ module ShEx
   class StructureError < Error; end
 
   # Shape expectation not satisfied
-  class NotSatisfied < Error; end
+  class NotSatisfied < Error
+    ##
+    # The expression which was not satified
+    # @return [ShEx::Satisfiable]
+    attr_reader :expression
+
+    ##
+    # Initializes a new parser error instance.
+    #
+    # @param  [String, #to_s]          message
+    # @param  [Satisfiable]            expression (self)
+    def initialize(message, expression: self)
+      @expression = expression
+      super(message.to_s)
+    end
+
+    def inspect
+      super + (expression ? SXP::Generator.string(expression.to_sxp_bin) : '')
+    end
+  end
+
+  # TripleExpression did not match
+  class NotMatched < ShEx::Error
+    ##
+    # The expression which was not satified
+    # @return [ShEx::Algebra::TripleExpression]
+    attr_reader :expression
+
+    ##
+    # Initializes a new parser error instance.
+    #
+    # @param  [String, #to_s]          message
+    # @param  [Satisfiable]            expression (self)
+    def initialize(message, expression: self)
+      @expression = expression
+      super(message.to_s)
+    end
+
+    def inspect
+      super + (expression ? SXP::Generator.string(expression.to_sxp_bin) : '')
+    end
+  end
 
   # Indicates bad syntax found in LD Patch document
   class ParseError < Error
@@ -117,17 +159,16 @@ module ShEx
     attr_reader :lineno
 
     ##
-    # Initializes a new parser error instance.
+    # ParseError includes `token` and `lineno` associated with the expression.
     #
     # @param  [String, #to_s]          message
     # @param  [Hash{Symbol => Object}] options
     # @option options [String]         :token  (nil)
     # @option options [Integer]        :lineno (nil)
-    # @option options [Integer]        :code (400)
-    def initialize(message, options = {})
-      @token      = options[:token]
-      @lineno     = options[:lineno] || (@token.lineno if @token.respond_to?(:lineno))
-      super(message.to_s, code: options.fetch(:code, 400))
+    def initialize(message, token: nil, lineno: nil)
+      @token      = token
+      @lineno     = lineno || (@token.lineno if @token.respond_to?(:lineno))
+      super(message.to_s)
     end
   end
 end

@@ -1,6 +1,7 @@
 module ShEx::Algebra
   ##
   class Start < Operator::Unary
+    include Satisfiable
     NAME = :start
 
     #
