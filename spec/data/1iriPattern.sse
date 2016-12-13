@@ -4,5 +4,5 @@
    (<http://a.example/S1>
     (shape
      (tripleConstraint <http://a.example/p1>
-      (nodeConstraint iri (pattern "http://a.example/o1"))) )) )) )
+      (nodeConstraint iri (pattern "http://a.example/o1$"))) )) )) )
 

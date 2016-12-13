@@ -3,5 +3,5 @@
   (
    (<http://a.example/S1>
     (shape
-     (tripleConstraint <http://a.example/p1> (nodeConstraint literal (pattern "^ab")))) )) ))
+     (tripleConstraint <http://a.example/p1> (nodeConstraint literal (pattern "^bc")))) )) ))
 
