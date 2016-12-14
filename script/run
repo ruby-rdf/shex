@@ -37,6 +37,7 @@ end
 
 opts = GetoptLong.new(
   ["--debug", GetoptLong::NO_ARGUMENT],
+  ["--base", GetoptLong::REQUIRED_ARGUMENT],
   ["--execute", "-e", GetoptLong::REQUIRED_ARGUMENT],
   ["--shex", GetoptLong::REQUIRED_ARGUMENT],
   ["--progress", GetoptLong::NO_ARGUMENT],

@@ -66,41 +66,30 @@ RSpec::Matchers.define :generate do |expected, options = {}|
     end +
     "Actual       : #{actual.inspect}\n" +
     "Actual(sse)  : #{SXP::Generator.string(actual.to_sxp_bin)}\n" +
-    "Processing results:\n#{@debug.is_a?(Array) ? @debug.join("\n") : ''}"
+    (options[:logger] ? "Trace     :\n#{options[:logger].to_s}" : "")
   end
 end
 
 RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **options|
   match do |input|
-    focus = case focus
-    when RDF::Value then focus
-    when String
-      focus.start_with?("_:") ? RDF::Node(focus[2..-1].to_s) : RDF::URI(focus)
-    else
-      RDF::Literal(focus)
-    end
-    shape = RDF::URI(shape)
+    map ||= {focus => shape} if shape
 
     case
     when [ShEx::NotSatisfied, ShEx::StructureError].include?(expected)
       begin
-        input.satisfies?(focus, graph, (map || {focus => shape}), options)
+        input.satisfies?(focus, graph, map, options)
         false
       rescue expected
         true
-      #rescue
-      #  false
       end
     else
       begin
-        input.satisfies?(focus, graph, (map || {focus => shape}), options)
-      rescue Exception => e
+        input.satisfies?(focus, graph, map, options)
+      rescue ShEx::NotSatisfied => e
         @exception = e
-        #false
-        raise
+        false
       end
     end
-
   end
 
   failure_message do |input|

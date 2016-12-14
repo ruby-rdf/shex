@@ -448,7 +448,7 @@ describe ShEx::Algebra do
   end
 
   require 'suite_helper'
-  manifest = Fixtures::SuiteTest::BASE + "/validation/manifest.jsonld"
+  manifest = Fixtures::SuiteTest::BASE + "validation/manifest.jsonld"
   Fixtures::SuiteTest::Manifest.open(manifest) do |m|
     describe m.attributes['rdfs:comment'] do
       m.entries.each do |t|
@@ -462,8 +462,8 @@ describe ShEx::Algebra do
           end
           t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
           expected = t.positive_test? || ShEx::NotSatisfied
-          schema = ShEx.parse(t.schema_source, logger: t.logger)
-          expect(schema).to satisfy(t.graph, File.read(t.data), t.focus, t.shape, nil, expected, logger: t.logger, shapeExterns: t.shapeExterns)
+          schema = ShEx.parse(t.schema_source, validate: true, logger: t.logger, base_uri: t.base)
+          expect(schema).to satisfy(t.graph, RDF::Util::File.open_file(t.data, &:read), t.focus, t.shape, nil, expected, logger: t.logger, shapeExterns: t.shapeExterns)
         end
       end
     end

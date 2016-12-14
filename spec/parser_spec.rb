@@ -887,12 +887,7 @@ describe ShEx::Parser do
       },
     }.each do |name, params|
       it name do
-        #case name
-        #when "Values Constraint Example 2",
-        #     "Complex shape definition"
-        #  pending "visual match, must investigate"
-        #end
-        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''))
+        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), logger: RDF::Spec.logger)
       end
     end
   end
@@ -933,72 +928,53 @@ describe ShEx::Parser do
       it name do
         pending("Self Reference validation") if name.include?('self-reference')
         pending("A schema MUST NOT contain any shape expression S with negated references, either directly or transitively, to S") if name.include?('Negated reference')
-        expect(params[:input]).to generate(params[:result], validate: true)
+        expect(params[:input]).to generate(params[:result], validate: true, logger: RDF::Spec.logger)
       end
     end
   end
 
-  context "schema to SSE" do
-    context "Positive Syntax Tests" do
-      Dir.glob("spec/shexTest/schemas/*.shex").
-        map {|f| f.split('/').last.sub('.shex', '')}.
-        each do |file|
-        it file do
-          input = File.read File.expand_path("../shexTest/schemas/#{file}.shex", __FILE__)
+  require 'suite_helper'
 
-          validate = case file
-          when '_all' then false # Has self-included shape
-          else             true
+  %w(schemas negativeSyntax negativeStructure).each do |dir|
+    manifest = Fixtures::SuiteTest::BASE + "/#{dir}/manifest.jsonld"
+    Fixtures::SuiteTest::Manifest.open(manifest) do |m|
+      describe m.attributes['rdfs:comment'] do
+        m.entries.each do |t|
+          specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?}" do
+            validate = true
+            case t.name
+            when '_all'
+              validate = false # Has self-included shape
+            when 'openopen1dotOr1dotclose'
+              pending("Missing production multiElementOneOf")
+            when '1focusRefANDSelfdot'
+              pending("It is self referning (OK?) and includes an empty shape (OK?)")
+            end
+
+            t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
+
+            if t.positive_test?
+              sse = File.read(File.expand_path("../data/#{t.name}.sse", __FILE__))
+              expect(t.schema_source).to generate(sse, validate: validate, logger: RDF::Spec.logger)
+            else
+              exp = t.structure_test? ? ShEx::StructureError : ShEx::ParseError
+              expect(t.schema_source).to generate(exp, validate: validate, logger: RDF::Spec.logger)
+            end
           end
-        
-          sse = File.read(File.expand_path("../data/#{file}.sse", __FILE__))
-          expect(input).to generate(sse, validate: validate)
         end
       end
     end
+  end
 
-    context "Positive Validation Syntax Tests", pending: "Syntax fixes" do
-      Dir.glob("spec/shexTest/validation/*.shex").
-        map {|f| f.split('/').last.sub('.shex', '')}.
-        each do |file|
-        it file do
-          input = File.read File.expand_path("../shexTest/validation/#{file}.shex", __FILE__)
-          sse = File.read(File.expand_path("../data/#{file}.sse", __FILE__)) rescue ""
+  context "Positive Validation Syntax Tests", pending: "Syntax fixes" do
+    Dir.glob("spec/shexTest/validation/*.shex").
+      map {|f| f.split('/').last.sub('.shex', '')}.
+      each do |file|
+      it file do
+        input = File.read File.expand_path("../shexTest/validation/#{file}.shex", __FILE__)
+        sse = File.read(File.expand_path("../data/#{file}.sse", __FILE__)) rescue ""
 
-          expect(input).to generate(sse, validate: true)
-        end
-      end
-    end
-
-    context "Negative Syntax Tests" do
-      Dir.glob("spec/shexTest/negativeSyntax/*.shex").
-        map {|f| f.split('/').last.sub('.shex', '')}.
-        each do |file|
-        it file do
-          input = File.read File.expand_path("../shexTest/negativeSyntax/#{file}.shex", __FILE__)
-
-          case file
-          when 'openopen1dotOr1dotclose'
-            pending("Missing production multiElementOneOf")
-          end
-          expect(input).to generate(ShEx::ParseError, validate: true)
-        end
-      end
-    end
-
-    context "Negative Structure Tests" do
-      Dir.glob("spec/shexTest/negativeStructure/*.shex").
-        map {|f| f.split('/').last.sub('.shex', '')}.
-        each do |file|
-        it file do
-          input = File.read File.expand_path("../shexTest/negativeStructure/#{file}.shex", __FILE__)
-
-          case file
-          when '1focusRefANDSelfdot'
-            pending("It is self referning (OK?) and includes an empty shape (OK?)")
-          end
-          expect(input).to generate(ShEx::StructureError, validate: true)
-        end
+        expect(input).to generate(sse, validate: true, logger: RDF::Spec.logger)
       end
     end
   end

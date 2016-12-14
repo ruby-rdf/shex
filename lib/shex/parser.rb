@@ -12,6 +12,7 @@ module ShEx
     include ShEx::Meta
     include ShEx::Terminals
     include EBNF::LL1::Parser
+    include RDF::Util::Logger
 
     ##
     # Any additional options for the parser.
@@ -591,10 +592,6 @@ module ShEx
       end
       @input.encode!(Encoding::UTF_8) if @input.respond_to?(:encode!)
       @options = {anon_base: "b0", validate: false}.merge(options)
-      @options[:debug] ||= case
-      when options[:progress] then 2
-      when options[:validate] then 1
-      end
 
       debug("base IRI") {base_uri.inspect}
       debug("validate") {validate?.inspect}
@@ -641,17 +638,18 @@ module ShEx
       ) do |context, *data|
         case context
         when :trace
-          level, lineno, depth, *args = data
-          message = args.to_sse
-          d_str = depth > 100 ? ' ' * 100 + '+' : ' ' * depth
-          str = "[#{lineno}](#{level})#{d_str}#{message}".chop
-          case @options[:debug]
-          when Array
-            @options[:debug] << str unless level > 2
-          when TrueClass
-            $stderr.puts str
-          when Integer
-            $stderr.puts(str) if level <= @options[:debug]
+          if options[:logger]
+            level, lineno, depth, *args = data
+            case level
+            when 0
+              log_error(*args, depth: depth, lineno: lineno)
+            when 1
+              log_warning(*args, depth: depth, lineno: lineno)
+            when 2
+              log_info(*args, depth: depth, lineno: lineno)
+            else
+              log_debug(*args, depth: depth, lineno: lineno)
+            end
           end
         end
       end
@@ -735,7 +733,7 @@ module ShEx
     #
     # @return [HRDF::URI]
     def base_uri
-      RDF::URI(@options[:base_uri])
+      RDF::URI(@options[:base_uri]) if @options[:base_uri]
     end
 
     ##
