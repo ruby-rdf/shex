@@ -23,9 +23,9 @@ module ShEx
   # @param  [IO, StringIO, String, #to_s]  expression (ShExC or ShExJ)
   # @param  ['shexc', 'shexj', 'sse']  format ('shexc')
   # @param  [Hash{Symbol => Object}] options
-  # @return [ShEx::Algebra::Schema] The executable parsed expression.
-  # @raise [ShEx::ParseError] when a syntax error is detected
-  # @raise [ShEx::StructureError, ArgumentError] on structural problems with schema
+  # @option (see ShEx::Parser#initialize)
+  # @return (see ShEx::Parser#parse)
+  # @raise  (see ShEx::Parser#parse)
   def self.parse(expression, format: 'shexc', **options)
     case format
     when 'shexc' then Parser.new(expression, options).parse
@@ -42,15 +42,10 @@ module ShEx
   #   schema = ShEx.parse('foo.shex').parse
   #
   # @param  [String, #to_s] filename
-  # @param  ['shexc', 'shexj', 'sse']  format ('shexc')
-  # @param  [Hash{Symbol => Object}] options
-  #   any additional options (see `RDF::Reader#initialize` and `RDF::Format.for`)
-  # @yield  [ShEx::Algebra::Schema]
-  # @yieldparam  [RDF::Reader] reader
-  # @yieldreturn [void] ignored
-  # @return [ShEx::Algebra::Schema] The executable parsed expression.
-  # @raise [ShEx::ParseError] when a syntax error is detected
-  # @raise [ShEx::StructureError, ArgumentError] on structural problems with schema
+  # @param  (see parse)
+  # @option (see ShEx::Parser#initialize)
+  # @return (see ShEx::Parser#parse)
+  # @raise  (see ShEx::Parser#parse)
   def self.open(filename, format: 'shexc', **options, &block)
     RDF::Util::File.open_file(filename, options) do |file|
       self.parse(file, options.merge(format: format))
@@ -65,15 +60,28 @@ module ShEx
   #   ShEx.execute('etc/doap.shex', graph, "http://rubygems.org/gems/shex", "")
   #
   # @param [IO, StringIO, String, #to_s]  expression (ShExC or ShExJ)
-  # @param [RDF::Resource] focus
-  # @param [RDF::Resource] shape
-  # @param ['shexc', 'shexj', 'sse']  format ('shexc')
-  # @param [Hash{Symbol => Object}] options
-  # @return [Boolean] `true` if satisfied, `false` if it does not apply
-  # @raise [ShEx::NotSatisfied] if not satisfied
-  # @raise [ShEx::ParseError] when a syntax error is detected
-  # @raise [ShEx::StructureError, ArgumentError] on structural problems with schema
+  # @param (see ShEx::Algebra::Schema#execute)
+  # @return (see ShEx::Algebra::Schema#execute)
+  # @raise (see ShEx::Algebra::Schema#execute)
   def self.execute(expression, queryable, focus, shape, format: 'shexc', **options)
+    shex = self.parse(expression, options.merge(format: format))
+    queryable = queryable || RDF::Graph.new
+
+    shex.execute(focus, queryable, {focus => shape}, options)
+  end
+
+  ##
+  # Parse and validate the given ShEx `expression` string against `queriable`.
+  #
+  # @example executing a ShExC schema
+  #   graph = RDF::Graph.load("etc/doap.ttl")
+  #   ShEx.execute('etc/doap.shex', graph, "http://rubygems.org/gems/shex", "")
+  #
+  # @param [IO, StringIO, String, #to_s]  expression (ShExC or ShExJ)
+  # @param (see ShEx::Algebra::Schema#satisfies?)
+  # @return (see ShEx::Algebra::Schema#satisfies?)
+  # @raise (see ShEx::Algebra::Schema#satisfies?)
+  def self.satisfies?(expression, queryable, focus, shape, format: 'shexc', **options)
     shex = self.parse(expression, options.merge(format: format))
     queryable = queryable || RDF::Graph.new
 
@@ -163,8 +171,8 @@ module ShEx
     #
     # @param  [String, #to_s]          message
     # @param  [Hash{Symbol => Object}] options
-    # @option options [String]         :token  (nil)
-    # @option options [Integer]        :lineno (nil)
+    # @param [String]                  token  (nil)
+    # @param [Integer]                 lineno (nil)
     def initialize(message, token: nil, lineno: nil)
       @token      = token
       @lineno     = lineno || (@token.lineno if @token.respond_to?(:lineno))

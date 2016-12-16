@@ -627,7 +627,9 @@ module ShEx
     #
     # @param [Symbol, #to_s] prod The starting production for the parser.
     #   It may be a URI from the grammar, or a symbol representing the local_name portion of the grammar URI.
-    # @return [Array]
+    # @return [ShEx::Algebra::Schema] The executable parsed expression.
+    # @raise [ShEx::ParseError] when a syntax error is detected
+    # @raise [ShEx::StructureError, ArgumentError] on structural problems with schema
     # @see http://www.w3.org/TR/sparql11-query/#sparqlAlgebra
     # @see http://axel.deri.ie/sparqltutorial/ESWC2007_SPARQL_Tutorial_unit2b.pdf
     def parse(prod = START)

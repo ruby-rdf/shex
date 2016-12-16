@@ -19,29 +19,9 @@ module ShEx::Algebra
     # @param [Hash{RDF::Resource => RDF::Resource}] map
     # @param [Array<Schema, String>] shapeExterns ([])
     #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
-    # @return [true, Operand] returns operand containing matched/unmatched and satisfied/unsatisfied for operands if not satisfied, `true` otherwise.
-    # @raise [ShEx::NotSatisfied] if not satisfied
-    # FIXME: set of node/shape pairs
+    # @return [Operand] Returns operand graph annotated with satisfied and unsatisfied operations.
+    # @raise [ShEx::NotSatisfied] along with operand graph described for return
     def execute(focus, graph, map, shapeExterns: [], **options)
-      satisfies?(focus, graph, map, options.merge(shapeExterns: shapeExterns))
-    rescue ShEx::NotSatisfied => e
-      e.expression
-    end
-
-    ##
-    # Match on schema. Finds appropriate shape for node, and matches that shape.
-    #
-    # @param [RDF::Resource] focus
-    # @param [RDF::Queryable] graph
-    # @param [Hash{RDF::Resource => RDF::Resource}] map
-    # @param [Array<Schema, String>] shapeExterns ([])
-    #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
-    # @param [Hash{Symbol => Object}] options
-    # @option options [String] :base_uri
-    # @return [Boolean] `true` if `focus` is satisfied by this schema in `graph`
-    # @raise [ShEx::NotSatisfied] if not satisfied
-    # FIXME: set of node/shape pairs
-    def satisfies?(focus, graph, map, shapeExterns: [], **options)
       @graph = graph
       @external_schemas = shapeExterns
       focus = iri(focus)
@@ -74,6 +54,23 @@ module ShEx::Algebra
       end
       status "schema satisfied"
       true
+    end
+
+    ##
+    # Match on schema. Finds appropriate shape for node, and matches that shape.
+    #
+    # @param [RDF::Resource] focus
+    # @param [RDF::Queryable] graph
+    # @param [Hash{RDF::Resource => RDF::Resource}] map
+    # @param [Array<Schema, String>] shapeExterns ([])
+    #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
+    # @param [Hash{Symbol => Object}] options
+    # @option options [String] :base_uri
+    # @return [Boolean]
+    def satisfies?(focus, graph, map, shapeExterns: [], **options)
+      execute(focus, graph, map, options.merge(shapeExterns: shapeExterns))
+    rescue ShEx::NotSatisfied
+      false
     end
 
     ##

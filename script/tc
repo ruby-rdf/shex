@@ -45,30 +45,30 @@ def run_tc(t, options)
 
     if t.positive_test?
       if t.validation_test?
-        r = schema.satisfies?(t.focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
-        puts "result: " + r.inspect if options[:verbose]
+        r = schema.execute(t.focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
+        puts "\nresult: " + r.inspect if options[:verbose]
         result = "passed"
       else
         result = schema.is_a?(ShEx::Algebra::Schema) ? "passed" : "failed"
       end
     else
       if t.validation_test?
-        r = schema.satisfies?(t.focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
-        puts "result: " + r.inspect if options[:verbose]
+        r = schema.execute(t.focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
+        puts "\nresult: " + r.inspect if options[:verbose]
         result = "failed"
       else
         result = "failed"
       end
     end
   rescue ShEx::ParseError, ShEx::StructureError, ArgumentError => e
-    puts "exception: " + e.inspect if options[:verbose]
+    puts "\nexception: " + e.inspect if options[:verbose]
     result = if t.negative_test? && (t.syntax_test? || t.structure_test?)
       "passed"
     else
       "failed"
     end
   rescue ShEx::NotSatisfied => e
-    puts "exception: " + e.inspect if options[:verbose]
+    puts "\nexception: " + e.inspect if options[:verbose]
     result = if t.negative_test? && t.validation_test?
       "passed"
     else
@@ -78,6 +78,10 @@ def run_tc(t, options)
     exit(1)
   rescue Exception => e
     result = "failed"
+  end
+
+  if options[:debug]
+    puts "\ndebug: " + t.logger.to_s
   end
 
   if options[:earl]

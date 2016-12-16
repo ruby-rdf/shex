@@ -77,14 +77,14 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **
     case
     when [ShEx::NotSatisfied, ShEx::StructureError].include?(expected)
       begin
-        input.satisfies?(focus, graph, map, options)
+        input.execute(focus, graph, map, options)
         false
       rescue expected
         true
       end
     else
       begin
-        input.satisfies?(focus, graph, map, options)
+        input.execute(focus, graph, map, options)
       rescue ShEx::NotSatisfied => e
         @exception = e
         false
