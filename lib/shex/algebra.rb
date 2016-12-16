@@ -31,8 +31,6 @@ module ShEx
     autoload :TripleExpression, 'shex/algebra/triple_expression'
     autoload :UnaryShape, 'shex/algebra/unary_shape'
     autoload :Value, 'shex/algebra/value'
-
-    class NotMatched < ShEx::Error; end
   end
 end
 

@@ -14,19 +14,23 @@ module ShEx::Algebra
 
     #
     # S is a ShapeAnd and for every shape expression se2 in shapeExprs, satisfies(n, se2, G, m).
-    # @param [RDF::Resource] n
-    # @return [Boolean] `true` when satisfied
-    # @raise [ShEx::NotSatisfied] if not satisfied
-    def satisfies?(n)
+    # @param  (see Satisfiable#satisfies?)
+    # @return (see Satisfiable#satisfies?)
+    # @raise  (see Satisfiable#satisfies?)
+    def satisfies?(focus)
       status ""
+      expressions = operands.select {|o| o.is_a?(Satisfiable)}
+      satisfied = []
 
       # Operand raises NotSatisfied, so no need to check here.
-      operands.select {|o| o.is_a?(Satisfiable)}.each {|op| op.satisfies?(n)}
-      status("satisfied")
-      true
+      expressions.each do |op|
+        satisfied << op.satisfies?(focus)
+      end
+      satisfy satisfied: satisfied
     rescue ShEx::NotSatisfied => e
-      not_satisfied(e.message)
-      raise
+      not_satisfied e.message,
+                    satisfied:   satisfied,
+                    unsatisfied: (expressions - satisfied)
     end
   end
 end

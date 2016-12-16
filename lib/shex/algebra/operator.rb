@@ -1,5 +1,4 @@
 require 'sparql/algebra'
-require 'sparql/extensions'
 
 module ShEx::Algebra
 
@@ -87,17 +86,85 @@ module ShEx::Algebra
     def semact?; false; end
 
     ##
-    # Exception handling
-    def not_matched(message, **opts)
-      expression = opts.fetch(:expression, self)
-      exception = opts.fetch(:exception, NotMatched)
-      log_error(message, depth: options.fetch(:depth, 0), exception: exception) {"expression: #{expression.to_sxp}"}
+    # On a result instance, the statements that matched this expression.
+    # @return [Array<Statement>]
+    def matched
+      Array((operands.detect {|op| op.is_a?(Array) && op[0] == :matched} || [:matched])[1..-1])
+    end
+    def matched=(statements)
+      operands.delete_if {|op| op.is_a?(Array) && op[0] == :matched}
+      operands << statements.unshift(:matched) unless (statements || []).empty?
     end
 
-    def not_satisfied(message, **opts)
-      expression = opts.fetch(:expression, self)
+    ##
+    # On a result instance, the statements that did not match this expression (failure only).
+    # @return [Array<Statement>]
+    def unmatched
+      Array((operands.detect {|op| op.is_a?(Array) && op[0] == :unmatched} || [:unmatched])[1..-1])
+    end
+    def unmatched=(statements)
+      operands.delete_if {|op| op.is_a?(Array) && op[0] == :unmatched}
+      operands << statements.unshift(:unmatched) unless (statements || []).empty?
+    end
+
+    ##
+    # On a result instance, the sub-expressions which were matched.
+    # @return [Array<Operator>]
+    def satisfied
+      Array((operands.detect {|op| op.is_a?(Array) && op[0] == :satisfied} || [:satisfied])[1..-1])
+    end
+    def satisfied=(ops)
+      operands.delete_if {|op| op.is_a?(Array) && op[0] == :satisfied}
+      operands << ops.unshift(:satisfied) unless (ops || []).empty?
+    end
+
+    ##
+    # On a result instance, the sub-satisfieables which were not satisfied. (failure only).
+    # @return [Array<Operator>]
+    def unsatisfied
+      Array((operands.detect {|op| op.is_a?(Array) && op[0] == :unsatisfied} || [:unsatisfied])[1..-1])
+    end
+    def unsatisfied=(ops)
+      operands.delete_if {|op| op.is_a?(Array) && op[0] == :unsatisfied}
+      operands << ops.unshift(:unsatisfied) unless (ops || []).empty?
+    end
+
+    ##
+    # Duplication this operand, and add `matched`, `unmatched`, `satisfied`, and `unsatisfied` operands for accessing downstream.
+    #
+    # @return [Operand]
+    def satisfy(matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil)
+      log_debug(self.class.const_get(:NAME), "satisfied", depth: options.fetch(:depth, 0))
+      expression = self.dup
+      expression.matched = Array(matched) if matched
+      expression.unmatched = Array(unmatched) if unmatched
+      expression.satisfied = Array(satisfied) if satisfied
+      expression.unsatisfied = Array(unsatisfied) if unsatisfied
+      expression
+    end
+
+    ##
+    # Exception handling
+    def not_matched(message, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, **opts, &block)
+      expression = opts.fetch(:expression, self).satisfy(
+        matched:     matched,
+        unmatched:   unmatched,
+        satisfied:   satisfied,
+        unsatisfied: unsatisfied)
+      exception = opts.fetch(:exception, ShEx::NotMatched)
+      status(message) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
+      raise exception.new(message, expression: expression)
+    end
+
+    def not_satisfied(message, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, **opts)
+      expression = opts.fetch(:expression, self).satisfy(
+        matched:     matched,
+        unmatched:   unmatched,
+        satisfied:   satisfied,
+        unsatisfied: unsatisfied)
       exception = opts.fetch(:exception, ShEx::NotSatisfied)
-      log_error(message, depth: options.fetch(:depth, 0), exception: exception) {"expression: #{expression.to_sxp}"}
+      status(message) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
+      raise exception.new(message, expression: expression)
     end
 
     def structure_error(message, **opts)
@@ -107,7 +174,7 @@ module ShEx::Algebra
     end
 
     def status(message, &block)
-      log_info(self.class.const_get(:NAME), message, depth: options.fetch(:depth, 0), &block)
+      log_debug(self.class.const_get(:NAME), message, depth: options.fetch(:depth, 0), &block)
       true
     end
 
@@ -128,10 +195,10 @@ module ShEx::Algebra
     end
 
     ##
-    # Returns the SPARQL S-Expression (SSE) representation of this operator.
+    # Returns the binary S-Expression (SXP) representation of this operator.
     #
     # @return [Array]
-    # @see    http://openjena.org/wiki/SSE
+    # @see    https://en.wikipedia.org/wiki/S-expression
     def to_sxp_bin
       operator = [self.class.const_get(:NAME)].flatten.first
       [operator, *(operands || []).map(&:to_sxp_bin)]

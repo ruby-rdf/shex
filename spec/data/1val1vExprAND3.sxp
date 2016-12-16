@@ -7,5 +7,5 @@
       (and
        (nodeConstraint literal (minlength 4))
        (nodeConstraint literal (maxlength 5))
-       (nodeConstraint literal (pattern "(ab)+"))) )) )) ))
+       (nodeConstraint literal (pattern "^(ab)+$"))) )) )) ))
 

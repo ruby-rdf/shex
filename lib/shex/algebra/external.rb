@@ -6,7 +6,7 @@ module ShEx::Algebra
 
     #
     # S is a ShapeRef and the Schema's shapes maps reference to a shape expression se2 and satisfies(n, se2, G, m).
-    def satisfies?(n)
+    def satisfies?(focus)
       extern_shape = nil
 
       # Find the label for this external
@@ -18,7 +18,7 @@ module ShEx::Algebra
       end
 
       not_satisfied("External not configured for this shape") unless extern_shape
-      extern_shape.satisfies?(n)
+      extern_shape.satisfies?(focus)
     end
   end
 end

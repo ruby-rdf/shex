@@ -28,53 +28,68 @@ def earl_preamble(options)
 end
 
 def run_tc(t, options)
-  STDERR.write "run #{t.name}"
+  STDERR.write "run #{t.name}" unless options[:quiet]
   result = "untested"
 
   begin
-    operator = ShEx.parse(t.input,
+    puts t.inspect if options[:verbose]
+
+    schema = ShEx.parse(t.schema_source,
       base_uri: t.base,
       validate: true,
-      errors: []
-    )
+      logger: t.logger)
+
+    puts "\nsxp: " + SXP::Generator.string(schema.to_sxp_bin) if options[:verbose]
+
+    map = {t.focus => t.shape} if t.shape
+
     if t.positive_test?
-      if t.evaluate?
-        ug = operator.execute(t.target_graph)
-        result = t.target_graph.isomorphic_with?(t.expected_graph) ? "passed" : "failed"
+      if t.validation_test?
+        r = schema.execute(t.focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
+        puts "\nresult: " + SXP::Generator.string(r.to_sxp_bin) if options[:verbose]
+        result = "passed"
       else
-        result = operator.is_a?(SPARQL::Algebra::Operator) ? "passed" : "failed"
+        result = schema.is_a?(ShEx::Algebra::Schema) ? "passed" : "failed"
       end
     else
-      operator.execute(t.target_graph) if t.evaluate?
-      if %w(turtle-syntax-bad-struct-09 turtle-syntax-bad-struct-10).include?(t.name)
-        STDERR.puts "Multiple '.' allowed in this grammar" unless options[:quiet]
-        result = "inapplicable"
+      if t.validation_test?
+        r = schema.execute(t.focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
+        puts "\nresult: " + SXP::Generator.string(r.to_sxp_bin) if options[:verbose]
+        result = "failed"
       else
         result = "failed"
       end
     end
-  rescue LD::Patch::ParseError => e
-    if %w(turtle-eval-bad-01 turtle-eval-bad-02 turtle-eval-bad-03).include?(t.name)
-      result = "passed"
-    elsif t.syntax? && t.negative_test?
-      result = "passed"
+  rescue ShEx::ParseError, ShEx::StructureError, ArgumentError => e
+    puts "\nexception: " + e.inspect if options[:verbose]
+    result = if t.negative_test? && (t.syntax_test? || t.structure_test?)
+      "passed"
     else
-      result = "failed"
+      "failed"
     end
-  rescue LD::Patch::Error => e
-    if t.evaluate? && t.negative_test?
-      result = e.code == t.statusCode.to_i ? "passed" : "failed"
+  rescue ShEx::NotSatisfied => e
+    puts "\nexception: " + e.inspect if options[:verbose]
+    result = if t.negative_test? && t.validation_test?
+      "passed"
     else
-      result = "failed"
+      "failed"
     end
+  rescue Interrupt
+    exit(1)
+  rescue Exception => e
+    result = "failed"
+  end
+
+  if options[:debug]
+    puts "\ndebug: " + t.logger.to_s
   end
 
   if options[:earl]
-    test = t.id.sub("ldp:", Fixtures::SuiteTest::BASE + "manifest.ttl#")
+    test = 'http://shexspec.github.io/shexTest/' + t.base.join(t.id).to_s.sub('.jsonld', '').split('/')[-2..-1].join("/")
     options[:output].puts %{
 [ a earl:Assertion;
   earl:assertedBy <#{ASSERTOR}>;
-  earl:subject <http://rubygems.org/gems/ld-patch>;
+  earl:subject <http://rubygems.org/gems/shex>;
   earl:test <#{test}>;
   earl:result [
     a earl:TestResult;
@@ -87,7 +102,11 @@ def run_tc(t, options)
   options[:result_count][result] ||= 0
   options[:result_count][result] += 1
 
-  STDERR.puts "#{"test result:" unless options[:quiet]} #{result}"
+  if options[:quiet]
+    STDERR.write(result == "passed" ? '.' : 'F')
+  else
+    STDERR.puts " #{result}"
+  end
 end
 
 options = {
@@ -130,7 +149,7 @@ end
 earl_preamble(options) if options[:earl]
 result_count = {}
 
-%w(manifest.ttl manifest-syntax.ttl turtle/manifest-ldpatch.ttl).each do |variant|
+%w(schemas/manifest.jsonld negativeSyntax/manifest.jsonld negativeStructure/manifest.jsonld validation/manifest.jsonld).each do |variant|
   manifest = Fixtures::SuiteTest::BASE + variant
 
   Fixtures::SuiteTest::Manifest.open(manifest) do |m|
@@ -140,6 +159,8 @@ result_count = {}
     end
   end
 end
+
+STDERR.puts "" if options[:quiet]
 
 result_count.each do |result, count|
   puts "#{result}: #{count}"

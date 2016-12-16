@@ -1,3 +1,4 @@
+require 'rdf/spec'
 require 'rdf/turtle'
 require 'json/ld'
 
@@ -11,33 +12,71 @@ module Fixtures
       def self.open(file)
         #puts "open: #{file}"
         @file = file
-        json = JSON.parse(File.read(@file))
-        yield Manifest.new(json['@graph'].first)
+
+        # Create a manifest, if `file` doesn't exist
+        json = if File.exist?(file)
+          JSON.parse(File.read(file))
+        else
+          generate_manifest(file,
+                            structure: file.downcase.include?('structure'),
+                            negative: file.include?('negative'))
+        end
+        yield Manifest.new(json['@graph'].first, context: {base: "file:/#{file}"})
       end
 
       def entries
         # Map entries to resources
-        attributes['entries'].map {|e| Entry.new(e, base: file)}
+        ents = attributes['entries'].map {|e| Entry.new(e, context: context)}
+        ents
+      end
+
+      def self.generate_manifest(file, structure:, negative:)
+        dir = file.split('/')[0..-2].join('/')
+        man = JSON.parse(%({
+          "@context": "https://raw.githubusercontent.com/shexSpec/test-suite/gh-pages/tests/manifest-context.jsonld",
+          "@graph": [{
+            "@id": "http://shexspec.github.io/test-suite/#{dir.split('/').join}/manifest.jsonld",
+            "@type": "mf:Manifest",
+            "rdfs:comment": "ShEx#{negative ? " negative" : ""} #{structure ? "structure" : "syntax"} tests",
+            "entries": []
+          }]
+        }))
+        entries = man['@graph'][0]['entries']
+        Dir.glob("#{dir}/*.shex").each do |f|
+          f = f.split('/').last
+          name = f.sub(/\.shex$/, '')
+          entries << {
+            "@id" => "##{name}",
+            "@type" => "sht:#{negative ? "Negative" : ""}#{structure ? "Structure" : "Syntax"}Test",
+            "name" => name,
+            "action" => f
+          }
+        end
+        man
       end
     end
 
     class Entry < JSON::LD::Resource
       attr_accessor :debug
 
+      def base
+        RDF::URI(context[:base])
+      end
+
       def schema
-        action.is_a?(Hash) && (BASE + 'validation/' + action["schema"])
+        base.join(action.is_a?(Hash) ? action["schema"] : action)
       end
 
       def data
-        action.is_a?(Hash) && (BASE + 'validation/' + action["data"])
+        action.is_a?(Hash) && base.join(action["data"])
       end
 
       def shapeExterns
-        action.is_a?(Hash) && action["shapeExterns"] && [(BASE + 'validation/' + action["shapeExterns"])]
+        action.is_a?(Hash) && action["shapeExterns"] && [base.join(action["shapeExterns"])]
       end
 
       def result
-        BASE + 'validation/' + attributes['result']
+        base.join(attributes['result'])
       end
 
       def shape
@@ -57,30 +96,42 @@ module Fixtures
       end
 
       def schema_source
-        @schema_source ||= File.read(schema)
+        @schema_source ||= RDF::Util::File.open_file(schema, &:read)
+      end
+
+      def structure_test?
+        !!Array(attributes['@type']).join(" ").match(/Structure/)
+      end
+
+      def syntax_test?
+        !!Array(attributes['@type']).join(" ").match(/Syntax/)
+      end
+
+      def validation_test?
+        !!Array(attributes['@type']).join(" ").match(/Validation/)
       end
 
       def positive_test?
-        !!Array(attributes['@type']).join(" ").match(/ValidationTest/)
+        !negative_test?
       end
 
       def negative_test?
-        !positive_test?
+        !!Array(attributes['@type']).join(" ").match(/Negative|Failure/)
       end
 
       # Create a logger initialized with the content of `debug`
       def logger
         @logger ||= begin
           l = RDF::Spec.logger
-          debug.each {|d| l.debug(d)}
+          (debug || []).each {|d| l.debug(d)}
           l
         end
       end
 
       def inspect
         "<Entry\n" + attributes.map do |k,v|
-          case k when 'action'
-            "  action: {\n" + v.map {|ak, av| "    #{ak}: #{av.inspect}"}.join(",\n") + "\n}"
+          case v when Hash
+            "  #{k}: {\n" + v.map {|ak, av| "    #{ak}: #{av.inspect}"}.join(",\n") + "\n  }"
           else
             " #{k}: #{v.inspect}"
           end

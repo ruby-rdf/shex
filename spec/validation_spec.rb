@@ -448,7 +448,7 @@ describe ShEx::Algebra do
   end
 
   require 'suite_helper'
-  manifest = Fixtures::SuiteTest::BASE + "/validation/manifest.jsonld"
+  manifest = Fixtures::SuiteTest::BASE + "validation/manifest.jsonld"
   Fixtures::SuiteTest::Manifest.open(manifest) do |m|
     describe m.attributes['rdfs:comment'] do
       m.entries.each do |t|
@@ -457,27 +457,13 @@ describe ShEx::Algebra do
           when '3circularRef1_pass-closed'
             skip "Circular reference"
             return
-          when '1val1DOUBLElowercase_pass', '1val1DOUBLElowercase_passUC'
-            pending "numeric mixed-case comparison"
-          when '1literalPattern_fail-lit-long', '1literalPattern_pass-litEnd-match',
-               '1literalPattern_pass-StartlitEnd-match', '1literalPattern_pass-Startlit-match',
-               '1literalPattern_fail-Startlit-lit', '1literalPattern_fail-lit-Startlit',
-               '1literalPattern_fail-litEnd-lit', '1literalPattern_fail-lit-litEnd',
-               '1literalPattern_fail-StartlitEnd-lit', '1literalPattern_fail-lit-StartlitEnd',
-               '1iriPattern_fail-iri-long', '1bnodePattern_fail-bnode-long',
-               '1nonliteralPattern_fail-iri-long', '1nonliteralPattern_fail-bnode-long',
-               '1val1vExpr1AND1AND1Ref3_failvc3', '1val1vExprRefAND3_failvc3',
-               '1val1vExprAND3_failvc3', '1val1vExpr1AND1OR1Ref3_failvc1vc3',
-               '1val1vExpr1AND1OR1Ref3_failvc2vc3', '1val1vExpr1AND1OR1Ref3_failvc1vc2vc3',
-               '1val1vExpr1OR1AND1Ref3_failvc1vc3', '1focusPatternB-dot_fail-bnode-long'
-            pending "pattern matching issues in spec"
           when 'nPlus1', 'PTstar-greedy-fail'
             pending "greedy"
           end
           t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
           expected = t.positive_test? || ShEx::NotSatisfied
-          schema = ShEx.parse(t.schema_source, logger: t.logger)
-          expect(schema).to satisfy(t.graph, File.read(t.data), t.focus, t.shape, nil, expected, logger: t.logger, shapeExterns: t.shapeExterns)
+          schema = ShEx.parse(t.schema_source, validate: true, logger: t.logger, base_uri: t.base)
+          expect(schema).to satisfy(t.graph, RDF::Util::File.open_file(t.data, &:read), t.focus, t.shape, nil, expected, logger: t.logger, shapeExterns: t.shapeExterns)
         end
       end
     end

@@ -12,6 +12,7 @@ module ShEx
     include ShEx::Meta
     include ShEx::Terminals
     include EBNF::LL1::Parser
+    include RDF::Util::Logger
 
     ##
     # Any additional options for the parser.
@@ -568,7 +569,7 @@ module ShEx
     # @option options [#to_s]    :anon_base     ("b0")
     #   Basis for generating anonymous Nodes
     # @option options [Boolean] :resolve_iris (false)
-    #   Resolve prefix and relative IRIs, otherwise, when serializing the parsed SSE
+    #   Resolve prefix and relative IRIs, otherwise, when serializing the parsed SXP
     #   as S-Expressions, use the original prefixed and relative URIs along with `base` and `prefix`
     #   definitions.
     # @option options [Boolean]  :validate     (false)
@@ -591,10 +592,6 @@ module ShEx
       end
       @input.encode!(Encoding::UTF_8) if @input.respond_to?(:encode!)
       @options = {anon_base: "b0", validate: false}.merge(options)
-      @options[:debug] ||= case
-      when options[:progress] then 2
-      when options[:validate] then 1
-      end
 
       debug("base IRI") {base_uri.inspect}
       debug("validate") {validate?.inspect}
@@ -630,7 +627,9 @@ module ShEx
     #
     # @param [Symbol, #to_s] prod The starting production for the parser.
     #   It may be a URI from the grammar, or a symbol representing the local_name portion of the grammar URI.
-    # @return [Array]
+    # @return [ShEx::Algebra::Schema] The executable parsed expression.
+    # @raise [ShEx::ParseError] when a syntax error is detected
+    # @raise [ShEx::StructureError, ArgumentError] on structural problems with schema
     # @see http://www.w3.org/TR/sparql11-query/#sparqlAlgebra
     # @see http://axel.deri.ie/sparqltutorial/ESWC2007_SPARQL_Tutorial_unit2b.pdf
     def parse(prod = START)
@@ -641,17 +640,18 @@ module ShEx
       ) do |context, *data|
         case context
         when :trace
-          level, lineno, depth, *args = data
-          message = args.to_sse
-          d_str = depth > 100 ? ' ' * 100 + '+' : ' ' * depth
-          str = "[#{lineno}](#{level})#{d_str}#{message}".chop
-          case @options[:debug]
-          when Array
-            @options[:debug] << str unless level > 2
-          when TrueClass
-            $stderr.puts str
-          when Integer
-            $stderr.puts(str) if level <= @options[:debug]
+          if options[:logger]
+            level, lineno, depth, *args = data
+            case level
+            when 0
+              log_error(*args, depth: depth, lineno: lineno)
+            when 1
+              log_warning(*args, depth: depth, lineno: lineno)
+            when 2
+              log_info(*args, depth: depth, lineno: lineno)
+            else
+              log_debug(*args, depth: depth, lineno: lineno)
+            end
           end
         end
       end
@@ -735,7 +735,7 @@ module ShEx
     #
     # @return [HRDF::URI]
     def base_uri
-      RDF::URI(@options[:base_uri])
+      RDF::URI(@options[:base_uri]) if @options[:base_uri]
     end
 
     ##

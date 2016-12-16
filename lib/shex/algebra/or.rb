@@ -14,24 +14,30 @@ module ShEx::Algebra
 
     #
     # S is a ShapeOr and there is some shape expression se2 in shapeExprs such that satisfies(n, se2, G, m).
-    # @param [RDF::Resource] n
-    # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [ShEx::NotSatisfied] if not satisfied
-    def satisfies?(n)
-      any_not_satisfied = false
-      operands.select {|o| o.is_a?(Satisfiable)}.any? do |op|
+    # @param  (see Satisfiable#satisfies?)
+    # @return (see Satisfiable#satisfies?)
+    # @raise  (see Satisfiable#satisfies?)
+    def satisfies?(focus)
+      status ""
+      expressions = operands.select {|o| o.is_a?(Satisfiable)}
+      unsatisfied = []
+      expressions.any? do |op|
         begin
-          op.satisfies?(n)
-          status "satisfied #{n}"
-          return true
+          matched_op = op.satisfies?(focus)
+          return satisfy satisfied: matched_op, unsatisfied: unsatisfied
         rescue ShEx::NotSatisfied => e
-          log_recover("or: ignore error: #{e.message}", depth: options.fetch(:depth, 0))
-          any_not_satisfied = e
+          status "unsatisfied #{focus}"
+          op = op.dup
+          op.satisfied = e.expression.satisfied
+          op.unsatisfied = e.expression.unsatisfied
+          unsatisfied << op
+          status("unsatisfied: #{e.message}")
           false
         end
       end
 
-      not_satisfied "Expected some expression to be satisfied"
+      not_satisfied "Expected some expression to be satisfied",
+                    unsatisfied: unsatisfied
     end
   end
 end

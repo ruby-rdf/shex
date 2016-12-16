@@ -1,19 +1,17 @@
 require 'sparql/algebra'
-require 'sparql/extensions'
 
 module ShEx::Algebra
   # Implements `neigh`, `arcs_out`, `args_in` and `matches`
   module TripleExpression
-
     ##
     # `matches`: asserts that a triple expression is matched by a set of triples that come from the neighbourhood of a node in an RDF graph. The expression `matches(T, expr, m)` indicates that a set of triples `T` can satisfy these rules...
     #
     # Behavior should be overridden in subclasses, which end by calling this through `super`.
     #
-    # @param [Array<RDF::Statement>] t
-    # @return [Array<RDF::Statement>]
-    # @raise NotMatched, ShEx::NotSatisfied
-    def matches(t)
+    # @param [Array<RDF::Statement>] statements
+    # @return [TripleExpression] with `matched` accessor for matched triples
+    # @raise [ShEx::NotMatched] with `expression` accessor to access `matched` and `unmatched` statements along with `satisfied` and `unsatisfied` operations.
+    def matches(statements)
       raise NotImplementedError, "#matches Not implemented in #{self.class}"
     end
 
@@ -21,26 +19,44 @@ module ShEx::Algebra
     # Included TripleConstraints
     # @return [Array<TripleConstraints>]
     def triple_constraints
-      operands.select {|o| o.is_a?(TripleExpression)}.map(&:triple_constraints).flatten.uniq
+      @triple_contraints ||= operands.select do |o|
+        o.is_a?(TripleExpression)
+      end.
+      map(&:triple_constraints).
+      flatten.
+      uniq
     end
 
     ##
     # Minimum constraint (defaults to 1)
     # @return [Integer]
     def minimum
-      op = operands.detect {|o| o.is_a?(Array) && o.first == :min} || [:min, 1]
-      op[1]
+      @minimum ||= begin
+        op = operands.detect {|o| o.is_a?(Array) && o.first == :min} || [:min, 1]
+        op[1]
+      end
     end
 
     ##
     # Maximum constraint (defaults to 1)
     # @return [Integer, Float::INFINITY]
     def maximum
-      op = operands.detect {|o| o.is_a?(Array) && o.first == :max} || [:max, 1]
-      op[1] == '*' ? Float::INFINITY : op[1]
+      @maximum ||= begin
+        op = operands.detect {|o| o.is_a?(Array) && o.first == :max} || [:max, 1]
+        op[1] == '*' ? Float::INFINITY : op[1]
+      end
     end
 
     # This operator includes TripleExpression
     def triple_expression?; true; end
+  end
+
+  module ReferencedStatement
+    # @return [ShEx::Algebra::Satisfiable] referenced operand which satisfied some of this statement
+    attr_accessor :referenced
+
+    def to_sxp_bin
+      referenced ? super + [referenced.to_sxp_bin] : super
+    end
   end
 end

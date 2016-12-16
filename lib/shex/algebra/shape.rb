@@ -4,59 +4,77 @@ module ShEx::Algebra
     include Satisfiable
     NAME = :shape
 
-    #
+    ##
+    # Let `outs` be the `arcsOut` in `remainder`: `outs = remainder ∩ arcsOut(G, n)`.
+    # @return [Array<RDF::Statement>]
+    attr_accessor :outs
+
+    ##
+    # Let `matchables` be the triples in `outs` whose predicate appears in a {TripleConstraint} in `expression`. If `expression` is absent, `matchables = Ø` (the empty set).
+    # @return [Array<RDF::Statement>]
+    attr_accessor :matchables
+
+    ##
+    # Let `unmatchables` be the triples in `outs` which are not in `matchables`. `matchables ∪ unmatchables = outs.`
+    # @return [Array<RDF::Statement>]
+    attr_accessor :unmatchables
+
     # The `satisfies` semantics for a `Shape` depend on a matches function defined below. For a node `n`, shape `S`, graph `G`, and shapeMap `m`, `satisfies(n, S, G, m)`.
-    # @param [RDF::Resource] n
-    # @return [Boolean] `true` if satisfied
-    # @raise [ShEx::NotSatisfied] if not satisfied
-    def satisfies?(n)
+    # @param  (see Satisfiable#satisfies?)
+    # @return (see Satisfiable#satisfies?)
+    # @raise  (see Satisfiable#satisfies?)
+    def satisfies?(focus)
       expression = operands.detect {|op| op.is_a?(TripleExpression)}
 
       # neigh(G, n) is the neighbourhood of the node n in the graph G.
       #
       #    neigh(G, n) = arcsOut(G, n) ∪ arcsIn(G, n)
-      arcs_in = schema.graph.query(object: n).to_a.sort_by(&:to_sxp)
-      arcs_out = schema.graph.query(subject: n).to_a.sort_by(&:to_sxp)
+      arcs_in = schema.graph.query(object: focus).to_a.sort_by(&:to_sxp)
+      arcs_out = schema.graph.query(subject: focus).to_a.sort_by(&:to_sxp)
       neigh = (arcs_in + arcs_out).uniq
 
       # `matched` is the subset of statements which match `expression`.
       status("arcsIn: #{arcs_in.count}, arcsOut: #{arcs_out.count}")
-      matched = expression ? expression.matches(neigh) : []
+      matched_expression = expression.matches(neigh) if expression
+      matched = Array(matched_expression && matched_expression.matched)
 
       # `remainder` is the set of unmatched statements
       remainder = neigh - matched
 
       # Let `outs` be the `arcsOut` in `remainder`: `outs = remainder ∩ arcsOut(G, n)`.
-      outs = remainder.select {|s| s.subject == n}
+      @outs = remainder.select {|s| s.subject == focus}
 
       # Let `matchables` be the triples in `outs` whose predicate appears in a `TripleConstraint` in `expression`. If `expression` is absent, `matchables = Ø` (the empty set).
       predicates = expression ? expression.triple_constraints.map(&:predicate).uniq : []
-      matchables = outs.select {|s| predicates.include?(s.predicate)}
-
-      # No matchable can be matched by any TripleConstraint in expression
-      matchables.each do |statement|
-        expression.triple_constraints.each do |expr|
-          begin
-            status "check matchable #{statement.to_sxp} against #{expr.to_sxp}"
-            if statement.predicate == expr.predicate && expr.matches([statement])
-              not_satisfied "Unmatched statement: #{statement.to_sxp} matched #{expr.to_sxp}"
-            end
-          rescue NotMatched
-            logger.recovering = false
-            # Expected not to match
-          end
-        end
-      end if expression
-
-      # There is no triple in `matchables` which matches a `TripleConstraint` in `expression`.
-      # FIXME: Really run against every TripleConstraint?
+      @matchables = outs.select {|s| predicates.include?(s.predicate)}
 
       # Let `unmatchables` be the triples in `outs` which are not in `matchables`.
-      unmatchables = outs - matchables
+      @unmatchables = outs - matchables
+
+      # No matchable can be matched by any TripleConstraint in expression
+      unmatched = matchables.select do |statement|
+        expression.triple_constraints.any? do |expr|
+          begin
+            statement.predicate == expr.predicate && expr.matches([statement])
+          rescue ShEx::NotMatched
+            false # Expected not to match
+          end
+        end if expression
+      end
+      unless unmatched.empty?
+        not_satisfied "Statements remain matching TripleConstraints",
+                      matched: matched,
+                      unmatched: unmatched,
+                      satisfied: expression
+      end
 
       # There is no triple in matchables whose predicate does not appear in extra.
-      matchables.each do |statement|
-        not_satisfied "Statement remains with predicate #{statement.predicate} not in extra" unless extra.include?(statement.predicate)
+      unmatched = matchables.reject {|st| extra.include?(st.predicate)}
+      unless unmatched.empty?
+        not_satisfied "Statements remains with predicate #{unmatched.map(&:predicate).compact.join(',')} not in extra",
+                      matched: matched,
+                      unmatched: unmatched,
+                      satisfied: expression
       end
 
       # closed is false or unmatchables is empty.
@@ -69,10 +87,10 @@ module ShEx::Algebra
         op.satisfies?(matched)
       end unless matched.empty?
 
-      true
-    rescue NotMatched => e
-      logger.recovering = false
-      not_satisfied e.message
+      # FIXME: also record matchables, outs and others?
+      satisfy matched: matched
+    rescue ShEx::NotMatched => e
+      not_satisfied e.message, unsatisfied: e.expression
     end
 
     ##
