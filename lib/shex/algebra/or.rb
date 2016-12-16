@@ -29,8 +29,6 @@ module ShEx::Algebra
         rescue ShEx::NotSatisfied => e
           status "unsatisfied #{focus}"
           op = op.dup
-          op.matched = e.expression.matched
-          op.unmatched = e.expression.unmatched
           op.satisfied = e.expression.satisfied
           op.unsatisfied = e.expression.unsatisfied
           unsatisfied << op
@@ -40,8 +38,6 @@ module ShEx::Algebra
       end
 
       not_satisfied "Expected some expression to be satisfied",
-                    matched:     unsatisfied.map(&:matched).flatten,
-                    unmatched:   unsatisfied.map(&:unmatched).flatten,
                     unsatisfied: unsatisfied
     end
   end

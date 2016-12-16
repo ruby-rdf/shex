@@ -32,8 +32,6 @@ module ShEx::Algebra
     rescue ShEx::NotSatisfied => e
       unsatisfied = (expressions - satisfied)
       not_satisfied e.message,
-                    matched:     satisfied.map(&:matched).flatten,
-                    unmatched:   satisfied.map(&:unmatched).flatten,
                     satisfied:   satisfied,
                     unsatisfied: (expressions - satisfied)
     end

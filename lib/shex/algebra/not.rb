@@ -15,9 +15,7 @@ module ShEx::Algebra
       status "not satisfied"
       true
     rescue ShEx::NotSatisfied => e
-      not_satisfied e.message,
-                    matched: e.expression.matched, unmatched: e.expression.unmatched,
-                    unsatisfied: operands.last
+      not_satisfied e.message, unsatisfied: operands.last
     end
   end
 end
