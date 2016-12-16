@@ -62,10 +62,10 @@ RSpec::Matchers.define :generate do |expected, options = {}|
       "Expected     : #{expected}\n"
     else
       "Expected     : #{expected.inspect}\n" +
-      "Expected(sse): #{SXP::Generator.string(expected.to_sxp_bin)}\n"
+      "Expected(sxp): #{SXP::Generator.string(expected.to_sxp_bin)}\n"
     end +
     "Actual       : #{actual.inspect}\n" +
-    "Actual(sse)  : #{SXP::Generator.string(actual.to_sxp_bin)}\n" +
+    "Actual(sxp)  : #{SXP::Generator.string(actual.to_sxp_bin)}\n" +
     (options[:logger] ? "Trace     :\n#{options[:logger].to_s}" : "")
   end
 end
@@ -94,7 +94,7 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **
 
   failure_message do |input|
     (expected == ShEx::NotSatisfied ? "Shape matched" : "Shape did not match: #{@exception.message}\n") +
-    "Input(sse): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
+    "Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
     "Data      : #{data}\n" +
     "Shape     : #{shape}\n" +
     "Focus     : #{focus}\n" +
@@ -103,7 +103,7 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **
 
   failure_message_when_negated do |input|
     "Shape matched\n" +
-    "Input(sse): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
+    "Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
     "Data      : #{data}\n" +
     "Shape     : #{shape}\n" +
     "Focus     : #{focus}\n" +

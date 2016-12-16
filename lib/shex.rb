@@ -18,7 +18,7 @@ module ShEx
   #   ).parse
   #
   # @param  [IO, StringIO, String, #to_s]  expression (ShExC or ShExJ)
-  # @param  ['shexc', 'shexj', 'sse']  format ('shexc')
+  # @param  ['shexc', 'shexj', 'sxp']  format ('shexc')
   # @param  [Hash{Symbol => Object}] options
   # @option (see ShEx::Parser#initialize)
   # @return (see ShEx::Parser#parse)
@@ -27,7 +27,7 @@ module ShEx
     case format
     when 'shexc' then Parser.new(expression, options).parse
     when 'shexj'
-    when 'sse'
+    when 'sxp'
     else raise "Unknown expression format: #{format.inspect}"
     end
   end

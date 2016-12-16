@@ -195,10 +195,10 @@ module ShEx::Algebra
     end
 
     ##
-    # Returns the SPARQL S-Expression (SSE) representation of this operator.
+    # Returns the binary S-Expression (SXP) representation of this operator.
     #
     # @return [Array]
-    # @see    http://openjena.org/wiki/SSE
+    # @see    https://en.wikipedia.org/wiki/S-expression
     def to_sxp_bin
       operator = [self.class.const_get(:NAME)].flatten.first
       [operator, *(operands || []).map(&:to_sxp_bin)]

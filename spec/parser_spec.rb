@@ -954,8 +954,8 @@ describe ShEx::Parser do
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
 
             if t.positive_test?
-              sse = File.read(File.expand_path("../data/#{t.name}.sse", __FILE__))
-              expect(t.schema_source).to generate(sse, validate: validate, logger: RDF::Spec.logger)
+              sxp = File.read(File.expand_path("../data/#{t.name}.sxp", __FILE__))
+              expect(t.schema_source).to generate(sxp, validate: validate, logger: RDF::Spec.logger)
             else
               exp = t.structure_test? ? ShEx::StructureError : ShEx::ParseError
               expect(t.schema_source).to generate(exp, validate: validate, logger: RDF::Spec.logger)
@@ -972,9 +972,9 @@ describe ShEx::Parser do
       each do |file|
       it file do
         input = File.read File.expand_path("../shexTest/validation/#{file}.shex", __FILE__)
-        sse = File.read(File.expand_path("../data/#{file}.sse", __FILE__)) rescue ""
+        sxp = File.read(File.expand_path("../data/#{file}.sxp", __FILE__)) rescue ""
 
-        expect(input).to generate(sse, validate: true, logger: RDF::Spec.logger)
+        expect(input).to generate(sxp, validate: true, logger: RDF::Spec.logger)
       end
     end
   end

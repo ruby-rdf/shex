@@ -569,7 +569,7 @@ module ShEx
     # @option options [#to_s]    :anon_base     ("b0")
     #   Basis for generating anonymous Nodes
     # @option options [Boolean] :resolve_iris (false)
-    #   Resolve prefix and relative IRIs, otherwise, when serializing the parsed SSE
+    #   Resolve prefix and relative IRIs, otherwise, when serializing the parsed SXP
     #   as S-Expressions, use the original prefixed and relative URIs along with `base` and `prefix`
     #   definitions.
     # @option options [Boolean]  :validate     (false)
