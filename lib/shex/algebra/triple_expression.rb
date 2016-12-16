@@ -1,5 +1,4 @@
 require 'sparql/algebra'
-require 'sparql/extensions'
 
 module ShEx::Algebra
   # Implements `neigh`, `arcs_out`, `args_in` and `matches`
@@ -50,5 +49,14 @@ module ShEx::Algebra
 
     # This operator includes TripleExpression
     def triple_expression?; true; end
+  end
+
+  module ReferencedStatement
+    # @return [ShEx::Algebra::Satisfiable] referenced operand which satisfied some of this statement
+    attr_accessor :referenced
+
+    def to_sxp_bin
+      referenced ? super + [referenced.to_sxp_bin] : super
+    end
   end
 end

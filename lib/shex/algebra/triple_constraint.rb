@@ -25,7 +25,7 @@ module ShEx::Algebra
           status "matched #{statement.to_sxp}"
           if matched_shape
             matched_shape.matched = [statement]
-            statement = statement.dup
+            statement = statement.dup.extend(ReferencedStatement)
             statement.referenced = matched_shape
             satisfied << matched_shape
           end
@@ -33,8 +33,8 @@ module ShEx::Algebra
           num_iters += 1
         rescue ShEx::NotSatisfied => e
           status "not satisfied: #{e.message}"
-          statement = statement.dup
-          statement.referenced = shape.satisfy(unmatched: [statement])
+          statement = statement.dup.extend(ReferencedStatement)
+          unmatched << statement.referenced = shape
         end
       end
 

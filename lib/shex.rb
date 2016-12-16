@@ -1,6 +1,3 @@
-require 'sparql/extensions'
-require 'shex/extensions'
-
 ##
 # A ShEx runtime for RDF.rb.
 #

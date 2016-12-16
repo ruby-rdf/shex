@@ -1,5 +1,4 @@
 require 'sparql/algebra'
-require 'sparql/extensions'
 
 module ShEx::Algebra
 
