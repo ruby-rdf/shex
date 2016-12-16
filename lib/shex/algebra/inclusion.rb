@@ -19,14 +19,10 @@ module ShEx::Algebra
       status "referenced_shape: #{operands.first}"
       expression = referenced_shape.triple_expressions.first
       max = maximum
-      results = expression.matches(statements)
-      status "inclusion satisfied"
-      results
+      matched_expression = expression.matches(statements)
+      satisfy matched: matched_expression.matched
     rescue ShEx::NotMatched => e
-      not_matched e.message,
-                  matched: e.expression.matched,
-                  unmatched: e.expression.unmatched,
-                  unsatisfied: expression
+      not_matched e.message, unsatisfied: e.expression
     end
 
     ##

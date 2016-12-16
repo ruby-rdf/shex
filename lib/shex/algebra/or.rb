@@ -14,18 +14,17 @@ module ShEx::Algebra
 
     #
     # S is a ShapeOr and there is some shape expression se2 in shapeExprs such that satisfies(n, se2, G, m).
-    # @param [RDF::Resource] focus
-    # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [ShEx::NotSatisfied] if not satisfied
+    # @param  (see Satisfiable#satisfies?)
+    # @return (see Satisfiable#satisfies?)
+    # @raise  (see Satisfiable#satisfies?)
     def satisfies?(focus)
       status ""
       expressions = operands.select {|o| o.is_a?(Satisfiable)}
       unsatisfied = []
       expressions.any? do |op|
         begin
-          op.satisfies?(focus)
-          status "satisfied #{focus}"
-          return true
+          matched_op = op.satisfies?(focus)
+          return satisfy satisfied: matched_op, unsatisfied: unsatisfied
         rescue ShEx::NotSatisfied => e
           status "unsatisfied #{focus}"
           op = op.dup

@@ -20,9 +20,9 @@ module ShEx::Algebra
     attr_accessor :unmatchables
 
     # The `satisfies` semantics for a `Shape` depend on a matches function defined below. For a node `n`, shape `S`, graph `G`, and shapeMap `m`, `satisfies(n, S, G, m)`.
-    # @param [RDF::Resource] focus
-    # @return [Boolean] `true` if satisfied
-    # @raise [ShEx::NotSatisfied] if not satisfied
+    # @param  (see Satisfiable#satisfies?)
+    # @return (see Satisfiable#satisfies?)
+    # @raise  (see Satisfiable#satisfies?)
     def satisfies?(focus)
       expression = operands.detect {|op| op.is_a?(TripleExpression)}
 
@@ -35,7 +35,8 @@ module ShEx::Algebra
 
       # `matched` is the subset of statements which match `expression`.
       status("arcsIn: #{arcs_in.count}, arcsOut: #{arcs_out.count}")
-      matched = expression ? expression.matches(neigh) : []
+      matched_expression = expression.matches(neigh) if expression
+      matched = Array(matched_expression && matched_expression.matched)
 
       # `remainder` is the set of unmatched statements
       remainder = neigh - matched
@@ -86,11 +87,10 @@ module ShEx::Algebra
         op.satisfies?(matched)
       end unless matched.empty?
 
-      true
+      # FIXME: also record matchables, outs and others?
+      satisfy matched: matched
     rescue ShEx::NotMatched => e
-      not_satisfied e.message,
-                    matched:     e.expression.matched,
-                    unmatched:   e.expression.unmatched
+      not_satisfied e.message, unsatisfied: e.expression
     end
 
     ##

@@ -33,11 +33,17 @@ module ShEx::Algebra
         op.satisfies?([])
       end
 
+      # Keep a new Schema, specifically for recording actions
+      satisfied_schema = Schema.new
       # Next run any start expression
       if start
         status("start") {"expression: #{start.to_sxp}"}
-        start.satisfies?(focus)
+        satisfied_schema.operands << start.satisfies?(focus)
       end
+
+      # Add shape result(s)
+      satisfied_shapes = {}
+      satisfied_schema.operands << [:shapes, satisfied_shapes] unless shapes.empty?
 
       label = @map[focus.to_s]
       if label && !label.empty?
@@ -50,10 +56,10 @@ module ShEx::Algebra
           focus = n if n
         end
 
-        shape.satisfies?(focus)
+        satisfied_shapes[label] = shape.satisfies?(focus)
       end
       status "schema satisfied"
-      true
+      satisfied_schema
     end
 
     ##
@@ -78,8 +84,7 @@ module ShEx::Algebra
     # @return [Hash{RDF::Resource => Operator}]
     def shapes
       @shapes ||= begin
-        shapes = operands.
-        detect {|op| op.is_a?(Array) && op.first == :shapes}
+        shapes = operands.detect {|op| op.is_a?(Array) && op.first == :shapes}
         shapes = shapes ? shapes.last : {}
         shapes.inject({}) do |memo, (label, operand)|
           memo.merge(label.to_s => operand)

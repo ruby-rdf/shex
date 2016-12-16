@@ -5,14 +5,13 @@ module ShEx::Algebra
     NAME = :start
 
     #
-    # @param [RDF::Resource] focus
-    # @return [Boolean] `true` if satisfied
-    # @raise [ShEx::NotSatisfied] if not satisfied
+    # @param  (see Satisfiable#satisfies?)
+    # @return (see Satisfiable#satisfies?)
+    # @raise  (see Satisfiable#satisfies?)
     def satisfies?(focus)
       status ""
-      operands.first.satisfies?(focus)
-      status("satisfied")
-      true
+      matched_op = operands.first.satisfies?(focus)
+      satisfy satisfied: matched_op
     rescue ShEx::NotSatisfied => e
       not_satisfied e.message, unsatisfied: e.expression
       raise

@@ -46,7 +46,7 @@ def run_tc(t, options)
     if t.positive_test?
       if t.validation_test?
         r = schema.execute(t.focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
-        puts "\nresult: " + r.inspect if options[:verbose]
+        puts "\nresult: " + SXP::Generator.string(r.to_sxp_bin) if options[:verbose]
         result = "passed"
       else
         result = schema.is_a?(ShEx::Algebra::Schema) ? "passed" : "failed"
@@ -54,7 +54,7 @@ def run_tc(t, options)
     else
       if t.validation_test?
         r = schema.execute(t.focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
-        puts "\nresult: " + r.inspect if options[:verbose]
+        puts "\nresult: " + SXP::Generator.string(r.to_sxp_bin) if options[:verbose]
         result = "failed"
       else
         result = "failed"

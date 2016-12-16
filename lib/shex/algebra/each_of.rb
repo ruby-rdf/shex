@@ -20,11 +20,9 @@ module ShEx::Algebra
           matched_this_iter = []
           operands.select {|o| o.is_a?(TripleExpression)}.all? do |op|
             begin
-              matched = op.matches(statements - matched_this_iter)
-              op = op.dup
-              op.matched = matched
-              satisfied << op
-              matched_this_iter += matched
+              matched_op = op.matches(statements - matched_this_iter)
+              satisfied << matched_op
+              matched_this_iter += matched_op.matched
             rescue ShEx::NotMatched => e
               status "not matched: #{e.message}"
               op = op.dup
@@ -53,8 +51,7 @@ module ShEx::Algebra
         op.satisfies?(results)
       end unless results.empty?
 
-      status "each of satisfied"
-      results
+      satisfy matched: results, satisfied: satisfied
     rescue ShEx::NotMatched, ShEx::NotSatisfied => e
       not_matched e.message,
                   matched:   results,   unmatched:   (statements - results),

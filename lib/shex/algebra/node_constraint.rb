@@ -6,16 +6,17 @@ module ShEx::Algebra
 
     #
     # S is a NodeConstraint and satisfies2(focus, se) as described below in Node Constraints. Note that testing if a node satisfies a node constraint does not require a graph or shapeMap.
-    # @param [RDF::Resource] focus
-    # @return [Boolean] `true` if satisfied, `false` if it does not apply
-    # @raise [ShEx::NotSatisfied] if not satisfied
+    # @param  (see Satisfiable#satisfies?)
+    # @return (see Satisfiable#satisfies?)
+    # @raise  (see Satisfiable#satisfies?)
     def satisfies?(focus)
       status ""
       satisfies_node_kind?(focus) &&
       satisfies_datatype?(focus) &&
       satisfies_string_facet?(focus) &&
       satisfies_numeric_facet?(focus) &&
-      satisfies_values?(focus)
+      satisfies_values?(focus) &&
+      satisfy
     end
 
   private

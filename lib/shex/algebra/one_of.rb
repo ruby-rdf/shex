@@ -18,13 +18,11 @@ module ShEx::Algebra
       while num_iters < max
         matched_something = operands.select {|o| o.is_a?(TripleExpression)}.any? do |op|
           begin
-            matched = op.matches(statements)
-            op = op.dup
-            op.matched = matched
-            satisfied << op
-            results += matched
-            statements -= matched
-            status "matched #{matched.first.to_sxp}"
+            matched_op = op.matches(statements)
+            satisfied << matched_op
+            results += matched_op.matched
+            statements -= matched_op.matched
+            status "matched #{matched_op.matched.to_sxp}"
           rescue ShEx::NotMatched => e
             status "not matched: #{e.message}"
             op = op.dup
@@ -48,8 +46,7 @@ module ShEx::Algebra
         op.satisfies?(results)
       end unless results.empty?
 
-      status "one of satisfied"
-      results
+      satisfy matched: results, satisfied: satisfied, unsatisfied: unsatisfied
     rescue ShEx::NotMatched, ShEx::NotSatisfied => e
       not_matched e.message,
                   matched:   results,   unmatched:   (statements - results),

@@ -7,9 +7,9 @@ module ShEx::Algebra
     ##
     # In this case, we accept an array of statements, and match based on cardinality.
     #
-    # @param [Array<RDF::Statement>] statements
-    # @return [Array<RDF::Statement>]
-    # @raise [ShEx::NotMatched]
+    # @param  (see TripleExpression#matches)
+    # @return (see TripleExpression#matches)
+    # @raise  (see TripleExpression#matches)
     def matches(statements)
       status "predicate #{predicate}"
       results, satisfied, unsatisfied = [], [], []
@@ -21,21 +21,20 @@ module ShEx::Algebra
         value = inverse? ? statement.subject : statement.object
 
         begin
-          shape && shape.satisfies?(value)
+          shape && (matched_shape = shape.satisfies?(value))
           status "matched #{statement.to_sxp}"
-          if shape
-            sh, statement = shape.dup, statement.dup
-            statement.referenced = sh
-            sh.matched = [statement]
-            satisfied << sh
+          if matched_shape
+            matched_shape.matched = [statement]
+            statement = statement.dup
+            statement.referenced = matched_shape
+            satisfied << matched_shape
           end
           results << statement
           num_iters += 1
         rescue ShEx::NotSatisfied => e
           status "not satisfied: #{e.message}"
-          sh, statement = shape.dup, statement.dup
-          statement.referenced = sh
-          sh.unmatched = [statement]
+          statement = statement.dup
+          statement.referenced = shape.satisfy(unmatched: [statement])
         end
       end
 
@@ -49,7 +48,7 @@ module ShEx::Algebra
         op.satisfies?(results)
       end unless results.empty?
 
-      results
+      satisfy matched: results, satisfied: satisfied, unsatisfied: unsatisfied
     rescue ShEx::NotMatched, ShEx::NotSatisfied => e
       not_matched e.message,
                   matched:   results,   unmatched:   (statements - results),

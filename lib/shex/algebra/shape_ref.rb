@@ -10,18 +10,17 @@ module ShEx::Algebra
     end
 
     ##
-    # Satisfies method
-    # @param [RDF::Resource] focus
-    # @return [Boolean] `true` if satisfied
-    # @raise [ShEx::NotSatisfied] if not satisfied
+    # Satisfies referenced shape.
+    # @param  (see Satisfiable#satisfies?)
+    # @return (see Satisfiable#satisfies?)
+    # @raise  (see Satisfiable#satisfies?)
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
     def satisfies?(focus)
       status "ref #{operands.first.to_s}"
-      referenced_shape.satisfies?(focus)
-      status "ref satisfied"
-      true
+      matched_shape = referenced_shape.satisfies?(focus)
+      satisfy satisfied: matched_shape
     rescue ShEx::NotSatisfied => e
-      not_satisfied e.message
+      not_satisfied e.message, unsatisfied: e.expression
       raise
     end
 

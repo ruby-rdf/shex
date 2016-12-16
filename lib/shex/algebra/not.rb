@@ -6,16 +6,18 @@ module ShEx::Algebra
 
     #
     # S is a ShapeNot and for the shape expression se2 at shapeExpr, notSatisfies(n, se2, G, m).
-    # @param [RDF::Resource] focus
-    # @return [Boolean] `true` when satisfied, meaning that the operand was not satisfied
-    # @raise [ShEx::NotSatisfied] if not satisfied, meaning that the operand was satisfied
+    # @param  (see Satisfiable#satisfies?)
+    # @return (see Satisfiable#satisfies?)
+    # @raise  (see Satisfiable#satisfies?)
+    # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
     def satisfies?(focus)
       status ""
-      operands.last.not_satisfies?(focus)
-      status "not satisfied"
-      true
-    rescue ShEx::NotSatisfied => e
-      not_satisfied e.message, unsatisfied: operands.last
+      satisfied_op = begin
+        operands.first.satisfies?(focus)
+      rescue ShEx::NotSatisfied => e
+        return satisfy satisfied: e.expression.unsatisfied
+      end
+      not_satisfied "Expression should not have matched", unsatisfied: satisfied_op
     end
   end
 end
