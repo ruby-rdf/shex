@@ -337,7 +337,7 @@ module ShEx
       end
 
       attrs = []
-      attrs += [:datatype, data[:datatype]] if data [:datatype]
+      attrs << [:datatype, data[:datatype]] if data [:datatype]
       attrs += [data[:shapeAtomLiteral], data[:nonLiteralKind]]
       attrs += Array(data[:valueSetValue])
       attrs += Array(data[:numericFacet])

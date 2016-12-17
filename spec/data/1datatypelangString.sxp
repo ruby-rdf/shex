@@ -4,5 +4,5 @@
    (<http://a.example/S1>
     (shape
      (tripleConstraint <http://a.example/p1>
-      (nodeConstraint datatype <http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>)) )) )) )
+      (nodeConstraint (datatype <http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>))) )) )) )
 

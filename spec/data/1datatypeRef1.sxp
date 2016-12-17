@@ -5,6 +5,6 @@
     (shape
      (tripleConstraint <http://a.example/p1>
       (and
-       (nodeConstraint datatype <http://a.example/dt1>)
+       (nodeConstraint (datatype <http://a.example/dt1>))
        (shapeRef <http://a.example/IssueShape>)) )) )) ))
 

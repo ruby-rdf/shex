@@ -73,7 +73,7 @@ describe ShEx::Parser do
          (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes ((<http://schema.example/IssueShape> (shape
           (tripleConstraint <http://schema.example/submittedOn>
-           (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#dateTime>))))) ))}
+           (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#dateTime>)))))) ))}
       },
       "String Facets Example 1" => {
         shexc: %(
@@ -337,7 +337,7 @@ describe ShEx::Parser do
          (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes
           ((<http://schema.example/IntConstraint>
-            (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#integer>)) ))
+            (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#integer>))) ))
         )}
       },
       "Validation Example 2" => {
@@ -633,13 +633,13 @@ describe ShEx::Parser do
                 (value <http://schema.example/assigned>)) )
               (tripleConstraint <http://schema.example/reportedBy> (shapeRef <UserShape>))
               (tripleConstraint <http://schema.example/reportedOn>
-               (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
+               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#dateTime>)))
               (eachOf
                (tripleConstraint <http://schema.example/reproducedBy> (shapeRef <EmployeeShape>))
                (tripleConstraint <http://schema.example/reproducedOn>
                 (or
-                 (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#dateTime>)
-                 (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#date>)) )
+                 (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
+                 (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#date>))) )
                (min 0)
                (max 1))
               (tripleConstraint inverse <http://schema.example/related>
@@ -654,14 +654,14 @@ describe ShEx::Parser do
               (eachOf
                (oneOf
                 (tripleConstraint <http://xmlns.com/foaf/name>
-                 (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
+                 (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>)))
                 (eachOf
                  (tripleConstraint <http://xmlns.com/foaf/givenName>
-                  (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>)
+                  (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>))
                   (min 1)
                   (max "*"))
                  (tripleConstraint <http://xmlns.com/foaf/familyName>
-                  (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
+                  (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>)))
                 ))
                (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri))) )) )
            (<EmployeeShape>
@@ -717,8 +717,8 @@ describe ShEx::Parser do
             (tripleConstraint <http://schema.example/reportedBy> (shapeRef <UserShape>))
             (tripleConstraint <http://schema.example/reportedOn>
              (or
-              (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#dateTime>)
-              (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#date>)) )
+              (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
+              (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#date>))) )
             (tripleConstraint <http://schema.example/related>
              (shapeRef <IssueShape>)
              (min 0)
@@ -766,14 +766,14 @@ describe ShEx::Parser do
             (nodeConstraint (value <http://schema.example/User>)))
            (oneOf
             (tripleConstraint <http://xmlns.com/foaf/name>
-             (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>))
+             (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>)))
             (eachOf
              (tripleConstraint <http://xmlns.com/foaf/givenName>
-              (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>)
+              (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>))
               (min 1)
               (max "*"))
              (tripleConstraint <http://xmlns.com/foaf/familyName>
-              (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#string>)) ))
+              (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>))) ))
            (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri)))
           (extra <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
            <http://xmlns.com/foaf/mbox> ) closed )))))}
@@ -795,12 +795,12 @@ describe ShEx::Parser do
             (shape
              (eachOf
               (tripleConstraint <http://schema.example/p>
-               (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#int>)
+               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#int>))
                (min 0)
                (max "*"))
               (oneOf
                (tripleConstraint <http://schema.example/q>
-                (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#int>))
+                (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#int>)))
                (tripleConstraint <http://schema.example/r> (nodeConstraint iri))
                (min 0)
                (max 1)) )) )) ))
@@ -873,12 +873,12 @@ describe ShEx::Parser do
          (shapes ((<SomeShape> (shape
           (eachOf
            (tripleConstraint <http://schema.example/p>
-            (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#int>)
+            (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#int>))
             (min 0)
             (max "*"))
            (oneOf
             (tripleConstraint <http://schema.example/q>
-             (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#int>)
+             (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#int>))
              (min 0)
              (max 0))
             (tripleConstraint <http://schema.example/r> (nodeConstraint iri))

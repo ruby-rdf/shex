@@ -46,14 +46,14 @@
       (value
        (stemRange <http://all.example/>
         (exclusions (stem <http://all.example/a>) <http://all.example/b>)) ))
-     (nodeConstraint datatype <http://all.example/IRI>)) )
+     (nodeConstraint (datatype <http://all.example/IRI>))) )
    (<http://all.example/S3>
     (shape
      (eachOf
       (inclusion <http://all.example/S1>)
       (tripleConstraint <http://all.example/a>)
       (tripleConstraint <http://all.example/prefix>
-       (nodeConstraint datatype <http://all.example/dt> (length 2))
+       (nodeConstraint (datatype <http://all.example/dt>) (length 2))
        (min 0)
        (max 1))
       (oneOf
@@ -131,7 +131,7 @@
            (max "*")
            (semact <http://all.example/act1> " code1 ")) ))
         (tripleConstraint <http://all.example/nonliteral>
-         (nodeConstraint datatype <http://www.w3.org/2001/XMLSchema#integer>
+         (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#integer>)
           (mininclusive 5)
           (maxinclusive 5)
           (totaldigits 1)
