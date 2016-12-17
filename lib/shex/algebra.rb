@@ -9,7 +9,6 @@ module ShEx
   module Algebra
     autoload :And, 'shex/algebra/and'
     autoload :Annotation, 'shex/algebra/annotation'
-    autoload :Base, 'shex/algebra/base'
     autoload :EachOf, 'shex/algebra/each_of'
     autoload :Inclusion, 'shex/algebra/inclusion'
     autoload :Not, 'shex/algebra/not'
@@ -17,7 +16,6 @@ module ShEx
     autoload :OneOf, 'shex/algebra/one_of'
     autoload :Operator, 'shex/algebra/operator'
     autoload :Or, 'shex/algebra/or'
-    autoload :Prefix, 'shex/algebra/prefix'
     autoload :Satisfiable, 'shex/algebra/satisfiable'
     autoload :Schema, 'shex/algebra/schema'
     autoload :SemAct, 'shex/algebra/semact'
@@ -29,7 +27,6 @@ module ShEx
     autoload :StemRange, 'shex/algebra/stem_range'
     autoload :TripleConstraint, 'shex/algebra/triple_constraint'
     autoload :TripleExpression, 'shex/algebra/triple_expression'
-    autoload :UnaryShape, 'shex/algebra/unary_shape'
     autoload :Value, 'shex/algebra/value'
   end
 end

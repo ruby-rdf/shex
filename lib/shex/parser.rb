@@ -183,7 +183,7 @@ module ShEx
     production(:prefixDecl) do |input, data, callback|
       pfx = data[:prefix]
       self.prefix(pfx, data[:iri])
-      (input[:prefixDecl] ||= []) << [pfx.to_s, data[:iri]]
+      (input[:prefixDecl] ||= {})[pfx.to_s] = data[:iri]
     end
 
     # [5]     notStartAction        ::= start | shapeExprDecl
