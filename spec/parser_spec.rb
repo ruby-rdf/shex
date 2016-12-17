@@ -266,7 +266,7 @@ describe ShEx::Parser do
       },
       "Semantic Actions Example 1" => {
         shexc: %(
-          PREFIX ex: <http://schema.example/>
+          PREFIX ex: <http://a.example/>
           PREFIX Test: <http://shex.io/extensions/Test/>
           ex:S1 {
             ex:p1 . %Test:{ print(s) %} %Test:{ print(o) %}
@@ -285,9 +285,9 @@ describe ShEx::Parser do
          (prefix (("ex" <http://schema.example/>) ("Test" <http://shex.io/extensions/Test/>)))
          (shapes
           (
-           (<http://schema.example/S1>
+           (<http://a.example/S1>
             (shape
-             (tripleConstraint <http://schema.example/p1>
+             (tripleConstraint <http://a.example/p1>
               (semact <http://shex.io/extensions/Test/> " print(s) ")
               (semact <http://shex.io/extensions/Test/> " print(o) ")) )) )) )}
       },
@@ -625,6 +625,7 @@ describe ShEx::Parser do
           (
            (<IssueShape>
             (shape
+             (extra <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) closed
              (eachOf
               (tripleConstraint a (nodeConstraint (value <http://schema.example/Issue>)))
               (tripleConstraint <http://schema.example/state>
@@ -646,7 +647,7 @@ describe ShEx::Parser do
                (shapeRef <IssueShape>)
                (min 0)
                (max "*")) )
-             (extra <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) closed ))
+              ))
            (<UserShape>
             (and
              (nodeConstraint (pattern "^http:/example.org/.*"))
@@ -708,7 +709,7 @@ describe ShEx::Parser do
         sxp: %{(schema
          (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes
-          ((<IssueShape> (shape
+          ((<IssueShape> (shape closed
            (eachOf
             (tripleConstraint <http://schema.example/state>
              (nodeConstraint
@@ -726,7 +727,7 @@ describe ShEx::Parser do
             (tripleConstraint inverse <http://schema.example/related>
              (shapeRef <IssueShape>)
              (min 0)
-             (max "*")) ) closed ))
+             (max "*")) ) ))
           (<UserShape> (shape
            (tripleConstraint a (nodeConstraint (pattern "http://example.org/User#.*"))))))) )}
       },
@@ -759,6 +760,9 @@ describe ShEx::Parser do
            ("xsd" <http://www.w3.org/2001/XMLSchema#>)
            ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)) )
          (shapes ((<UserShape> (shape
+          (extra <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
+                 <http://xmlns.com/foaf/mbox>)
+          closed
           (eachOf
            (tripleConstraint <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
             (nodeConstraint (value <http://xmlns.com/foaf/Person>)))
@@ -776,7 +780,7 @@ describe ShEx::Parser do
               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>))) ))
            (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri)))
           (extra <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
-           <http://xmlns.com/foaf/mbox> ) closed )))))}
+           (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri))))))))}
       },
       "Non closed shape expression" => {
         shexc: %(
@@ -835,11 +839,11 @@ describe ShEx::Parser do
            (<EmployeeShape>
             (and
              (nodeConstraint (pattern "^http:/example.org/.*"))
-             (shape
+             (shape closed
               (eachOf
                (tripleConstraint <http://xmlns.com/foaf/phone> (nodeConstraint iri) (min 0) (max "*"))
-               (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri)))
-              closed )
+               (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri))))
+             (shape closed
              (shape
               (eachOf
                (eachOf
@@ -853,7 +857,7 @@ describe ShEx::Parser do
                  (nodeConstraint (pattern "^tel:\\\\+44")))
                 (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\\\.uk$")))
                 (min 0)
-                (max 1)) ) closed )) )) ))}
+                (max 1)) ) )) )) ))}
       },
       "Negated triple expression" => {
         shexc: %(
@@ -870,7 +874,7 @@ describe ShEx::Parser do
         ),
         sxp: %{(schema
          (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
-         (shapes ((<SomeShape> (shape
+         (shapes ((<SomeShape> (shape closed
           (eachOf
            (tripleConstraint <http://schema.example/p>
             (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#int>))
@@ -883,7 +887,7 @@ describe ShEx::Parser do
              (max 0))
             (tripleConstraint <http://schema.example/r> (nodeConstraint iri))
             (min 0)
-            (max 1)) ) closed )))))}
+            (max 1)) ))))))}
       },
     }.each do |name, params|
       it name do

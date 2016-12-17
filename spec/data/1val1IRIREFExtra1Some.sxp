@@ -3,11 +3,11 @@
   (
    (<http://a.example/S1>
     (shape
+     (extra <http://a.example/p1>)
      (oneOf
       (tripleConstraint <http://a.example/p0>)
       (eachOf
        (tripleConstraint <http://a.example/p1>
         (nodeConstraint (value <http://a.example/o1>)))
-       (tripleConstraint <http://a.example/p2> (min 0) (max 1))) )
-     (extra <http://a.example/p1>)) )) ))
+       (tripleConstraint <http://a.example/p2> (min 0) (max 1))) )) )) ))
 

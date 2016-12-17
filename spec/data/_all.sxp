@@ -26,18 +26,18 @@
   (
    (<http://all.example/S1>
     (shape
+     (extra <http://all.example/p1> <http://all.example/p2> <http://all.example/p3>)
      (eachOf
       (tripleConstraint <http://all.example/p1>)
       (tripleConstraint <http://all.example/p2>)
-      (tripleConstraint <http://all.example/p3>))
-     (extra <http://all.example/p1> <http://all.example/p2> <http://all.example/p3>)) )
+      (tripleConstraint <http://all.example/p3>))) )
    (<http://all.example/S2>
     (shape
+     (extra <http://all.example/p1> <http://all.example/p2> <http://all.example/p3>)
      (eachOf
       (tripleConstraint <http://all.example/p1->)
       (tripleConstraint <http://all.example/p2>)
-      (tripleConstraint <http://all.example/p3>))
-     (extra <http://all.example/p1> <http://all.example/p2> <http://all.example/p3>)) )
+      (tripleConstraint <http://all.example/p3>))) )
    (<http://all.example/IRI> (nodeConstraint iri))
    (<http://all.example/vs1>
     (and
@@ -49,6 +49,8 @@
      (nodeConstraint (datatype <http://all.example/IRI>))) )
    (<http://all.example/S3>
     (shape
+     (extra <http://all.example/a> <http://all.example/prefix>
+      <http://all.example/base> )
      (eachOf
       (inclusion <http://all.example/S1>)
       (tripleConstraint <http://all.example/a>)
@@ -142,10 +144,8 @@
         (value
          (stemRange wildcard (exclusions (stem <http://all.example/a>) <http://all.example/b>))) )
        (semact <http://all.example/act1> " code1 ")
-       (semact <http://all.example/act2> " code2 ")) )
-     (extra <http://all.example/a> <http://all.example/prefix>
-      <http://all.example/base> )) )
+       (semact <http://all.example/act2> " code2 ")) )) )
    (<http://all.example/S5> (nodeConstraint iri))
    (_:a·̀ͯ‿.⁀
-    (shape (eachOf (inclusion _:a·̀ͯ‿.⁀) (inclusion <http://all.example/S2>)) closed))
+    (shape closed (eachOf (inclusion _:a·̀ͯ‿.⁀) (inclusion <http://all.example/S2>))))
    (_:AZazÀÖØöø˿ͰͽͿ῿‌‍⁰↏Ⰰ⿯、퟿豈﷏ﷰ�𐀀󯿽 (shape (inclusion _:a·̀ͯ‿.⁀)))) ))

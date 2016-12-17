@@ -7,7 +7,7 @@
      (shape
       (eachOf
        (tripleConstraint <http://a.example/p1>
-        (nodeConstraint datatype <http://a.example/dt>))
+        (nodeConstraint (datatype <http://a.example/dt>)))
        (tripleConstraint <http://a.example/p2>
         (and
          (nodeConstraint bnode)
@@ -18,7 +18,7 @@
             (and (nodeConstraint iri (pattern "^https://")) (shapeRef <http://a.example/S1>))
             (min 0)
             (max 1)) ))
-         (shape
+         (shape closed
           (eachOf
            (tripleConstraint <http://a.example/p3>)
-           (tripleConstraint <http://a.example/p4>)) closed )) )) )) )) ))
+           (tripleConstraint <http://a.example/p4>)) )) )) )) )) ))
