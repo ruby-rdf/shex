@@ -4,6 +4,29 @@ module ShEx::Algebra
     NAME = :stemRange
 
     ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param (see Operator#from_shexj)
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      raise ArgumentError unless operator.is_a?(Hash) && %w(StemRange Wildcard).include?(operator['type'])
+      if operator['type'] == 'Wildcard'
+        operator = {
+          'type' => 'StemRange',
+          'stem' => :wildcard,
+          'exclusions' => operator['exclusions']
+        }
+      end
+      raise ArgumentError, "missing stem in #{operator.inspect}" unless operator.has_key?('stem')
+
+      # Note that the type may be StemRange, but if there's no exclusions, it's really just a Stem
+      if operator.has_key?('exclusions')
+        super
+      else
+        Stem.from_shexj(operator.merge('type' => 'Stem'), options)
+      end
+    end
+
+    ##
     # For a node n and constraint value v, nodeSatisfies(n, v) if n matches some valueSetValue vsv in v. A term matches a valueSetValue if:
     #
     # * vsv is a StemRange with stem st and exclusions excls and nodeIn(n, st) and there is no x in excls such that nodeIn(n, excl).

@@ -10,6 +10,16 @@ module ShEx::Algebra
     end
 
     ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param (see Operator#from_shexj)
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == "ShapeRef"
+      raise ArgumentError, "missing reference in #{operator.inspect}" unless operator.has_key?('reference')
+      super
+    end
+
+    ##
     # Satisfies referenced shape.
     # @param  (see Satisfiable#satisfies?)
     # @return (see Satisfiable#satisfies?)

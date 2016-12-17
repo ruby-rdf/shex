@@ -59,4 +59,31 @@ describe ShEx::Algebra do
       expect(subject.satisfies?(RDF::URI("foo"))).to be_truthy
     end
   end
+
+  subject {described_class.new(RDF.type)}
+
+  describe ".from_shexj" do
+    {
+      "0" => {
+        shexj: %({"type": "Shape"}),
+        shexc: %{(shape)}
+      },
+      "1Adot" => {
+        shexj: %({ "type": "TripleConstraint", "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"}),
+        shexc: %{(tripleConstraint a)}
+      },
+      "1length" => {
+        shexj: %({
+          "type": "TripleConstraint",
+          "predicate": "http://a.example/p1",
+          "valueExpr": { "type": "NodeConstraint", "length": 5 }
+        }),
+        shexc: %{(tripleConstraint <http://a.example/p1> (nodeConstraint (length 5)))}
+      }
+    }.each do |name, params|
+      it name do
+        expect(params[:shexj]).to generate(params[:shexc], format: :shexj)
+      end
+    end
+  end
 end

@@ -37,9 +37,12 @@
   * use `value` instead of `n2`?
 * What is Shape has an expression with cardinality 0; in this case, it would be an error if `matched` was not empty. But, this might not happen unless cardinality is specified on the shape itself.
 
+## 4.6.1 Inclusion Requiement
+* ShExJ version of example should use `EachOf` instead of `ShapeAnd`, as it's wrapped in `Shape`.
 ## 4.7 Semantic Actions
 * Shape uses `ex:p1`, but data uses `<http://a.example/p1>`.
 * What do to for Test action with no argument?
 
 ## 4.9.1 Simple Examples (Validation Examples)
 * The third example fails because `nonmatchables` includes `<Alice> ex:shoeSize 30 .`
+* The third example also incorrectly places `extra` inside of TripleConstraint.

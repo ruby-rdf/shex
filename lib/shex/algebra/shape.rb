@@ -19,6 +19,15 @@ module ShEx::Algebra
     # @return [Array<RDF::Statement>]
     attr_accessor :unmatchables
 
+    ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param (see Operator#from_shexj)
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == "Shape"
+      super
+    end
+
     # The `satisfies` semantics for a `Shape` depend on a matches function defined below. For a node `n`, shape `S`, graph `G`, and shapeMap `m`, `satisfies(n, S, G, m)`.
     # @param  (see Satisfiable#satisfies?)
     # @return (see Satisfiable#satisfies?)

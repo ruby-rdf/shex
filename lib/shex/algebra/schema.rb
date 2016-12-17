@@ -12,6 +12,15 @@ module ShEx::Algebra
     attr_reader :map
 
     ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param (see Operator#from_shexj)
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == "Schema"
+      super
+    end
+
+    ##
     # Match on schema. Finds appropriate shape for node, and matches that shape.
     #
     # @param [RDF::Resource] focus
@@ -20,6 +29,8 @@ module ShEx::Algebra
     # @param [Array<Schema, String>] shapeExterns ([])
     #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
     # @return [Operand] Returns operand graph annotated with satisfied and unsatisfied operations.
+    # @param [Hash{Symbol => Object}] options
+    # @option options [String] :base_uri
     # @raise [ShEx::NotSatisfied] along with operand graph described for return
     def execute(focus, graph, map, shapeExterns: [], **options)
       @graph = graph
@@ -126,34 +137,6 @@ module ShEx::Algebra
         end
       end
       enum_for(:each_descendant)
-    end
-
-    ##
-    # Returns the Base URI defined for the parser,
-    # as specified or when parsing a BASE prologue element.
-    #
-    # @example
-    #   base  #=> RDF::URI('http://example.com/')
-    #
-    # @return [HRDF::URI]
-    def base_uri
-      RDF::URI(@options[:base_uri]) if @options[:base_uri]
-    end
-
-    # Create URIs
-    def iri(value)
-      # If we have a base URI, use that when constructing a new URI
-      case value
-      when RDF::Value then value
-      when /^_:/ then RDF::Node(value[2..-1].to_s)
-      else
-        value = RDF::URI(value)
-        if base_uri && value.relative?
-          base_uri.join(value)
-        else
-          value
-        end
-      end
     end
 
     ##

@@ -5,6 +5,16 @@ module ShEx::Algebra
     NAME = :tripleConstraint
 
     ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param (see Operator#from_shexj)
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == 'TripleConstraint'
+      raise ArgumentError unless operator.has_key?('predicate')
+      super
+    end
+
+    ##
     # In this case, we accept an array of statements, and match based on cardinality.
     #
     # @param  (see TripleExpression#matches)
@@ -58,7 +68,6 @@ module ShEx::Algebra
     def predicate
       operands.detect {|o| o.is_a?(RDF::URI)}
     end
-
 
     ##
     # Included TripleConstraints

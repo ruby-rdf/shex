@@ -763,9 +763,7 @@ module ShEx
 
     # Generate a BNode identifier
     def bnode(id)
-      @bnode_cache ||= {}
-      raise Error, "Illegal attempt to reuse a BNode" if @bnode_cache[id] && @bnode_cache[id].frozen?
-      @bnode_cache[id] ||= RDF::Node.new(id)
+      RDF::Node.intern(id)
     end
 
     # Create URIs

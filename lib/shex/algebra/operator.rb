@@ -220,6 +220,139 @@ module ShEx::Algebra
     end
 
     ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param [Hash] operator
+    # @param [Hash] options ({})
+    # @option options [RDF::URI] :base
+    # @option options [Hash{String => RDF::URI}] :prefixes
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      operands = []
+
+      operator.each do |k, v|
+        case k
+        when /length|pattern|clusive/          then operands << [k.to_sym, v]
+        when 'min', 'max', 'inverse', 'closed' then operands << [k.to_sym, v]
+        when 'nodeKind'                        then operands << v.to_sym
+        when 'object'                          then operands << value(v, options)
+        when 'start'                           then operands << Start.new(ShEx::Algebra.from_shexj(v, options))
+        when 'base'
+          options[:base_uri] = RDF::URI(v)
+          operands << [:base, options[:base_uri]]
+        when 'prefixes'
+          options[:prefixes] = v.inject({}) do |memo, (kk,vv)|
+            memo.merge(kk => RDF::URI(vv))
+          end
+          operands << [:prefix, options[:prefixes]]
+        when 'shapes'
+          operands << [:shapes,
+                       v.inject({}) do |memo, (kk,vv)|
+                         memo.merge(iri(kk, options) => ShEx::Algebra.from_shexj(vv, options))
+                       end]
+        when 'reference', 'include', 'stem', 'name'
+          # Value may be :wildcard for stem
+          operands << (v.is_a?(Symbol) ? v : iri(v, options))
+        when 'predicate' then operands << iri(v, options)
+        when 'extra', 'datatype'
+          v = [v] unless v.is_a?(Array)
+          operands << (v.map {|op| iri(op, options)}).unshift(k.to_sym)
+        when 'exclusions'
+          v = [v] unless v.is_a?(Array)
+          operands << v.map do |op|
+            op.is_a?(Hash) ?
+            ShEx::Algebra.from_shexj(op, options) :
+            value(op, options)
+          end.unshift(:exclusions)
+        when 'min', 'max', 'inverse', 'closed', 'valueExpr', 'semActs',
+             'shapeExpr', 'shapeExprs', 'startActs', 'expression',
+             'expressions', 'annotations'
+          v = [v] unless v.is_a?(Array)
+          operands += v.map {|op| ShEx::Algebra.from_shexj(op, options)}
+        when 'code'
+          operands << v
+        when 'values'
+          v = [v] unless v.is_a?(Array)
+          operands += v.map do |op|
+            Value.new(op.is_a?(Hash) ?
+                      ShEx::Algebra.from_shexj(op, options) :
+                      value(op, options))
+          end
+        end
+      end
+
+      new(*operands)
+    end
+
+    ##
+    # Returns the Base URI defined for the parser,
+    # as specified or when parsing a BASE prologue element.
+    #
+    # @example
+    #   base  #=> RDF::URI('http://example.com/')
+    #
+    # @return [HRDF::URI]
+    def base_uri
+      RDF::URI(@options[:base_uri]) if @options[:base_uri]
+    end
+
+    def iri(value, options = @options)
+      self.class.iri(value, options)
+    end
+
+    # Create URIs
+    # @param [RDF::Value, String] value
+    # @param [Hash{Symbol => Object}] options
+    # @option options [RDF::URI] :base_uri
+    # @option options [Hash{String => RDF::URI}] :prefixes
+    # @return [RDF::Value]
+    def self.iri(value, options)
+      # If we have a base URI, use that when constructing a new URI
+      case value
+      when RDF::URI
+        base_uri = options[:base_uri]
+        if base_uri && value.relative?
+          base_uri.join(value)
+        else
+          value
+        end
+      when RDF::Value then value
+      when /^_:/ then
+        id = value[2..-1].to_s
+        RDF::Node.intern(id)
+      when /^(\w+):(\S+)$/
+        prefixes = options.fetch(:prefixes, {})
+        if prefixes.has_key?($1)
+          prefixes[$1].join($2)
+        elsif RDF.type == value
+          a = RDF.type.dup; a.lexical = 'a'; a
+        else
+          RDF::URI(value)
+        end
+      else
+        base_uri = options[:base_uri]
+        if base_uri
+          base_uri.join(value)
+        else
+          RDF::URI(value)
+        end
+      end
+    end
+
+    # Create Values, with "clever" matching to see if it might be a value, IRI or BNode.
+    # @param [RDF::Value, String] value
+    # @param [Hash{Symbol => Object}] options
+    # @option options [RDF::URI] :base_uri
+    # @option options [Hash{String => RDF::URI}] :prefixes
+    # @return [RDF::Value]
+    def self.value(value, options)
+      # If we have a base URI, use that when constructing a new URI
+      case value
+      when RDF::Value, /^(\w+):/ then iri(value, options)
+      else RDF::Literal(value)
+      end
+    end
+
+    ##
     # Returns a developer-friendly representation of this operator.
     #
     # @return [String]

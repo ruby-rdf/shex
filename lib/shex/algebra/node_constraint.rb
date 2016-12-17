@@ -4,6 +4,15 @@ module ShEx::Algebra
     include Satisfiable
     NAME = :nodeConstraint
 
+    ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param (see Operator#from_shexj)
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == 'NodeConstraint'
+      super
+    end
+
     #
     # S is a NodeConstraint and satisfies2(focus, se) as described below in Node Constraints. Note that testing if a node satisfies a node constraint does not require a graph or shapeMap.
     # @param  (see Satisfiable#satisfies?)
@@ -45,7 +54,7 @@ module ShEx::Algebra
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies_datatype?(value)      
-      dt = operands[1] if operands.first == :datatype
+      dt = op_fetch(:datatype)
       return true unless dt
 
       not_satisfied "Node was #{value.inspect}, expected datatype #{dt}" unless

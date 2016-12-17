@@ -11,8 +11,13 @@ JSON_STATE = JSON::State.new(
  def parser(options = {})
    @debug = options[:progress] ? 2 : (options[:quiet] ? false : [])
    Proc.new do |input|
-     parser = ShEx::Parser.new(input, {debug: @debug, resolve_iris: false}.merge(options))
-     options[:production] ? parser.parse(options[:production]) : parser.parse
+     case options[:format]
+     when :shexj
+       ShEx::Algebra.from_shexj(JSON.parse input)
+     else
+       parser = ShEx::Parser.new(input, {debug: @debug, resolve_iris: false}.merge(options))
+       options[:production] ? parser.parse(options[:production]) : parser.parse
+     end
    end
  end
 
@@ -29,6 +34,7 @@ JSON_STATE = JSON::State.new(
 
 RSpec::Matchers.define :generate do |expected, options = {}|
   match do |input|
+    @input = input
     begin
       case
       when [ShEx::ParseError, ShEx::StructureError, ArgumentError].include?(expected)
@@ -56,7 +62,7 @@ RSpec::Matchers.define :generate do |expected, options = {}|
   end
   
   failure_message do |input|
-    "Input        : #{input}\n" +
+    "Input        : #{@input}\n" +
     case expected
     when String
       "Expected     : #{expected}\n"

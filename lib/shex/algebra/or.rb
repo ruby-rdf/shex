@@ -12,6 +12,16 @@ module ShEx::Algebra
       super
     end
 
+    ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param (see Operator#from_shexj)
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == 'ShapeOr'
+      raise ArgumentError, "missing shapeExprs in #{operator.inspect}" unless operator.is_a?(Hash) && operator.has_key?('shapeExprs')
+      super
+    end
+
     #
     # S is a ShapeOr and there is some shape expression se2 in shapeExprs such that satisfies(n, se2, G, m).
     # @param  (see Satisfiable#satisfies?)

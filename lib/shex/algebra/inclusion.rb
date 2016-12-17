@@ -4,6 +4,16 @@ module ShEx::Algebra
     include TripleExpression
     NAME = :inclusion
 
+    ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param (see Operator#from_shexj)
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == "Inclusion"
+      raise ArgumentError, "missing include in #{operator.inspect}" unless operator.has_key?('include')
+      super
+    end
+
     def initialize(arg, **options)
       raise ArgumentError, "Shape inclusion must be an IRI or BNode: #{arg}" unless arg.is_a?(RDF::Resource)
       super

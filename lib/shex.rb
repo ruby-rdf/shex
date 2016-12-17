@@ -26,7 +26,7 @@ module ShEx
   def self.parse(expression, format: 'shexc', **options)
     case format
     when 'shexc' then Parser.new(expression, options).parse
-    when 'shexj'
+    when 'shexj' then Algebra.from_sxp(JSON.parse expression)
     when 'sxp'
     else raise "Unknown expression format: #{format.inspect}"
     end

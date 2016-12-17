@@ -5,6 +5,16 @@ module ShEx::Algebra
     NAME = :eachOf
 
     ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param (see Operator#from_shexj)
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == 'EachOf'
+      raise ArgumentError, "missing expressions in #{operator.inspect}" unless operator.has_key?('expressions')
+      super
+    end
+
+    ##
     # expr is an EachOf and there is some partition of T into T1, T2,… such that for every expression expr1, expr2,… in shapeExprs, matches(Tn, exprn, m)...
     #
     # @param [Array<RDF::Statement>] statements

@@ -48,6 +48,7 @@ describe ShEx do
        (prefix (("doap" <http://usefulinc.com/ns/doap#>) ("dc" <http://purl.org/dc/terms/>)))
        (shapes
         ((<TestShape> (shape
+           (extra a)
            (eachOf
             (tripleConstraint a (nodeConstraint (value <http://usefulinc.com/ns/doap#Project>)))
             (oneOf
@@ -66,8 +67,7 @@ describe ShEx do
              (nodeConstraint iri)
              (min 1) (max "*"))
             (tripleConstraint <http://usefulinc.com/ns/doap#implements>
-             (nodeConstraint (value <https://shexspec.github.io/spec/>))) )
-           (extra a))))))}
+             (nodeConstraint (value <https://shexspec.github.io/spec/>))) ))))))}
       expect(File.read(doap_shex)).to generate(doap_sxp)
     end
 
