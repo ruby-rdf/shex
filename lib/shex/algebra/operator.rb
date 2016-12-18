@@ -297,7 +297,8 @@ module ShEx::Algebra
           when :base            then obj['base'] = op.last.to_s
           when :datatype,
                :pattern         then obj[op.first.to_s] = op.last.to_s
-          when :extra           then obj['extra'] = Array(op[1..-1]).map(&:to_s)
+          when :exclusions      then obj['exclusions'] = Array(op[1..-1]).map {|v| serialize_value(v)}
+          when :extra           then (obj['extra'] ||= []).concat Array(op[1..-1]).map(&:to_s)
           when :prefix          then obj['prefixes'] = op.last.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
           when :shapes          then obj['shapes'] = op.last.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_json)}
           when :minlength,
@@ -314,10 +315,10 @@ module ShEx::Algebra
           else
             raise "Expected array to start with a symbol for #{self}"
           end
-        when :wildcard  then #skip
+        when :wildcard  then obj['stem'] = {'type' => 'Wildcard'}
         when Annotation then (obj['annotations'] ||= []) << op.to_json
         when SemAct     then (obj[is_a?(Schema) ? 'startActs' : 'semActs'] ||= []) << op.to_json
-        when Start      then obj['start'] = op.to_json
+        when Start      then obj['start'] = op.operands.first.to_json
         when RDF::Value
           case self
           when TripleConstraint then obj['predicate'] = op.to_s
@@ -362,11 +363,7 @@ module ShEx::Algebra
         when Value
           obj['values'] ||= []
           Array(op).map {|o| o.operands}.flatten.each do |oo|
-            obj['values'] << case oo
-            when RDF::Literal then RDF::NTriples.serialize(oo)
-            when RDF::Resource then oo.to_s
-            else oo.to_json
-            end
+            obj['values'] << serialize_value(oo)
           end
         else
           raise "How to serialize #{op.inspect} to json for #{self}"
@@ -445,6 +442,20 @@ module ShEx::Algebra
         RDF::NTriples.unserialize(value)
       when RDF::Value, /^(\w+):/ then iri(value, options)
       else RDF::Literal(value)
+      end
+    end
+
+    ##
+    # Serialize a value, either as JSON, or as modififed N-Triples
+    #
+    # @param [RDF::Value, Operator]
+    # @return [String]
+    def serialize_value(value)
+      case value
+        when RDF::Literal
+          RDF::NTriples.serialize(value).sub(/\^\^<(.*)>/, '^^\1')
+        when RDF::Resource then value.to_s
+        else value.to_json
       end
     end
 

@@ -8,15 +8,11 @@ module ShEx::Algebra
     # @param (see Operator#from_shexj)
     # @return [Operator]
     def self.from_shexj(operator, options = {})
-      raise ArgumentError unless operator.is_a?(Hash) && %w(StemRange Wildcard).include?(operator['type'])
-      if operator['type'] == 'Wildcard'
-        operator = {
-          'type' => 'StemRange',
-          'stem' => :wildcard,
-          'exclusions' => operator['exclusions']
-        }
-      end
+      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == 'StemRange'
       raise ArgumentError, "missing stem in #{operator.inspect}" unless operator.has_key?('stem')
+
+      # Normalize wildcard representation
+      operator['stem'] = :wildcard if operator['stem'] =={'type' => 'Wildcard'}
 
       # Note that the type may be StemRange, but if there's no exclusions, it's really just a Stem
       if operator.has_key?('exclusions')
@@ -60,10 +56,6 @@ module ShEx::Algebra
 
     def exclusions
       (operands.last.is_a?(Array) && operands.last.first == :exclusions) ? operands.last[1..-1] : []
-    end
-
-    def json_type
-      operands.include?(:wildcard) ? 'Wildcard' : 'StemRange'
     end
   end
 end

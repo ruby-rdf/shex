@@ -288,7 +288,8 @@ describe ShEx::Parser do
                 "valueExpr": {
                   "type": "NodeConstraint",
                   "values": [
-                    { "type": "Wildcard",
+                    { "type": "StemRange",
+                      "stem": {"type": "Wildcard"},
                       "exclusions": [
                         { "type": "Stem", "stem": "mailto:engineering-" },
                         { "type": "Stem", "stem": "mailto:sales-" }
@@ -1151,6 +1152,11 @@ describe ShEx::Parser do
             case t.name
             when '_all'
               validate = false # Has self-included shape
+              pending("escapes in N-Triples formatted values")
+            when '1val1STRING_LITERAL1_with_all_controls',
+                 '1val1STRING_LITERAL1_with_all_punctuation',
+                 '1val1STRING_LITERAL1_with_ascii_boundaries'
+              pending("escapes in N-Triples formatted values")
             when 'openopen1dotOr1dotclose'
               pending("Missing production multiElementOneOf")
             when '1focusRefANDSelfdot'
@@ -1163,14 +1169,14 @@ describe ShEx::Parser do
               sxp = File.read(File.expand_path("../data/#{t.name}.sxp", __FILE__))
               expect(t.schema_source).to generate(sxp, validate: validate, logger: RDF::Spec.logger)
 
-              #begin
-              #  expression = ShEx.parse(t.schema_source)
-              #  json = expression.to_json
-              #  shexj = JSON.parse t.schema_json
-              #  expect(json).to produce(shexj, logger: RDF::Spec.logger)
-              #rescue IOError
-              #  # JSON file not there, ignore
-              #end
+              begin
+                expression = ShEx.parse(t.schema_source)
+                json = expression.to_json
+                shexj = JSON.parse t.schema_json
+                expect(json).to produce(shexj, logger: RDF::Spec.logger)
+              rescue IOError
+                # JSON file not there, ignore
+              end
             else
               exp = t.structure_test? ? ShEx::StructureError : ShEx::ParseError
               expect(t.schema_source).to generate(exp, validate: validate, logger: RDF::Spec.logger)

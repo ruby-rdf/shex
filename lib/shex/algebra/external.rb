@@ -20,5 +20,9 @@ module ShEx::Algebra
       not_satisfied("External not configured for this shape") unless extern_shape
       extern_shape.satisfies?(focus)
     end
+
+    def json_type
+      "ShapeExternal"
+    end
   end
 end

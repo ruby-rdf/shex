@@ -18,9 +18,7 @@ module ShEx::Algebra
       {
         'type' => json_type,
         'predicate' => operands.first.to_s,
-        'object' => (operands.last.is_a?(RDF::Literal) ?
-                       RDF::NTriples.serialize(operands.last) :
-                       operands.last.to_s)
+        'object' => serialize_value(operands.last)
       }
     end
   end
