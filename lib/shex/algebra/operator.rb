@@ -260,8 +260,8 @@ module ShEx::Algebra
           v = [v] unless v.is_a?(Array)
           operands << v.map do |op|
             op.is_a?(Hash) ?
-            ShEx::Algebra.from_shexj(op, options) :
-            value(op, options)
+              ShEx::Algebra.from_shexj(op, options) :
+              value(op, options)
           end.unshift(:exclusions)
         when 'min', 'max', 'inverse', 'closed', 'valueExpr', 'semActs',
              'shapeExpr', 'shapeExprs', 'startActs', 'expression',
@@ -274,13 +274,105 @@ module ShEx::Algebra
           v = [v] unless v.is_a?(Array)
           operands += v.map do |op|
             Value.new(op.is_a?(Hash) ?
-                      ShEx::Algebra.from_shexj(op, options) :
-                      value(op, options))
+                        ShEx::Algebra.from_shexj(op, options) :
+                        value(op, options))
           end
         end
       end
 
       new(*operands)
+    end
+
+    def json_type
+      self.class.name.split('::').last
+    end
+
+    def to_json(options = nil)
+      obj = {'type' => json_type}
+      operands.each do |op|
+        case op
+        when Array
+          # First element should be a symbol
+          case sym = op.first
+          when :base            then obj['base'] = op.last.to_s
+          when :datatype,
+               :pattern         then obj[op.first.to_s] = op.last.to_s
+          when :extra           then obj['extra'] = Array(op[1..-1]).map(&:to_s)
+          when :prefix          then obj['prefixes'] = op.last.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
+          when :shapes          then obj['shapes'] = op.last.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_json)}
+          when :minlength,
+               :maxlength,
+               :length,
+               :mininclusive,
+               :maxinclusive,
+               :minexclusive,
+               :maxexclusive,
+               :totaldigits,
+               :fractiondigits  then obj[op.first.to_s] = op.last.object
+          when :min, :max       then obj[op.first.to_s] = op.last
+          when Symbol           then obj[sym.to_s] = Array(op[1..-1]).map(&:to_json)
+          else
+            raise "Expected array to start with a symbol for #{self}"
+          end
+        when :wildcard  then #skip
+        when Annotation then (obj['annotations'] ||= []) << op.to_json
+        when SemAct     then (obj[is_a?(Schema) ? 'startActs' : 'semActs'] ||= []) << op.to_json
+        when Start      then obj['start'] = op.to_json
+        when RDF::Value
+          case self
+          when TripleConstraint then obj['predicate'] = op.to_s
+          when Stem, StemRange  then obj['stem'] = op.to_s
+          when Inclusion        then obj['include'] = op.to_s
+          when ShapeRef         then obj['reference'] = op.to_s
+          when SemAct           then obj[op.is_a?(RDF::URI) ? 'name' : 'code'] = op.to_s
+          else
+            raise "How to serialize Value #{op.inspect} to json for #{self}"
+          end
+        when Symbol
+          case self
+          when NodeConstraint   then obj['nodeKind'] = op.to_s
+          when Shape            then obj['closed'] = true
+          when TripleConstraint then obj['inverse'] = true
+          else
+            raise "How to serialize Symbol #{op.inspect} to json for #{self}"
+          end
+        when TripleConstraint, EachOf, OneOf, Inclusion
+          case self
+          when EachOf, OneOf
+            (obj['expressions'] ||= []) << op.to_json
+          else
+            obj['expression'] = op.to_json
+          end
+        when NodeConstraint
+          case self
+          when And, Or
+            (obj['shapeExprs'] ||= []) << op.to_json
+          else
+            obj['valueExpr'] = op.to_json
+          end
+        when And, Or, Shape, Not, ShapeRef
+          case self
+          when And, Or
+            (obj['shapeExprs'] ||= []) << op.to_json
+          when TripleConstraint
+            obj['valueExpr'] = op.to_json
+          else
+            obj['shapeExpr'] = op.to_json
+          end
+        when Value
+          obj['values'] ||= []
+          Array(op).map {|o| o.operands}.flatten.each do |oo|
+            obj['values'] << case oo
+            when RDF::Literal then RDF::NTriples.serialize(oo)
+            when RDF::Resource then oo.to_s
+            else oo.to_json
+            end
+          end
+        else
+          raise "How to serialize #{op.inspect} to json for #{self}"
+        end
+      end
+      obj
     end
 
     ##
@@ -347,6 +439,10 @@ module ShEx::Algebra
     def self.value(value, options)
       # If we have a base URI, use that when constructing a new URI
       case value
+      when /^"([^"])*"(?:^^(.*))?(@.*)?$/
+        # Sorta N-Triples encoded
+        value = %("#{$1}"^^<#{$2}>) if $2
+        RDF::NTriples.unserialize(value)
       when RDF::Value, /^(\w+):/ then iri(value, options)
       else RDF::Literal(value)
       end

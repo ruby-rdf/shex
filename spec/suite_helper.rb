@@ -99,6 +99,10 @@ module Fixtures
         @schema_source ||= RDF::Util::File.open_file(schema, &:read)
       end
 
+      def schema_json
+        @schema_json ||= RDF::Util::File.open_file(schema.to_s.sub('.shex', '.json'), &:read)
+      end
+
       def structure_test?
         !!Array(attributes['@type']).join(" ").match(/Structure/)
       end

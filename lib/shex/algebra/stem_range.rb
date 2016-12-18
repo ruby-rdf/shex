@@ -61,5 +61,9 @@ module ShEx::Algebra
     def exclusions
       (operands.last.is_a?(Array) && operands.last.first == :exclusions) ? operands.last[1..-1] : []
     end
+
+    def json_type
+      operands.include?(:wildcard) ? 'Wildcard' : 'StemRange'
+    end
   end
 end

@@ -49,5 +49,9 @@ module ShEx::Algebra
       not_satisfied "Expected some expression to be satisfied",
                     unsatisfied: unsatisfied
     end
+
+    def json_type
+      "ShapeOr"
+    end
   end
 end

@@ -43,6 +43,11 @@
 * Shape uses `ex:p1`, but data uses `<http://a.example/p1>`.
 * What do to for Test action with no argument?
 
+## 4.8 Annotations
+* Not clear how `object` is serialized. It seems to be N-Triples for Literals, but URIs are serialized as strings without surrounding angle brackets.
+* Example in spec is at odds with test-suite for ShExC vs ShExJ formats.
+* Using JSON-LD Value Objects will make this unambiguous.
+
 ## 4.9.1 Simple Examples (Validation Examples)
 * The third example fails because `nonmatchables` includes `<Alice> ex:shoeSize 30 .`
 * The third example also incorrectly places `extra` inside of TripleConstraint.

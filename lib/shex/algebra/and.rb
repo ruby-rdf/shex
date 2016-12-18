@@ -42,5 +42,9 @@ module ShEx::Algebra
                     satisfied:   satisfied,
                     unsatisfied: (expressions - satisfied)
     end
+
+    def json_type
+      "ShapeAnd"
+    end
   end
 end

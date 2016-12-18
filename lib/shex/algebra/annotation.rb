@@ -13,5 +13,15 @@ module ShEx::Algebra
       raise ArgumentError, "missing object in #{operator.inspect}" unless operator.has_key?('object')
       super
     end
+
+    def to_json(options = nil)
+      {
+        'type' => json_type,
+        'predicate' => operands.first.to_s,
+        'object' => (operands.last.is_a?(RDF::Literal) ?
+                       RDF::NTriples.serialize(operands.last) :
+                       operands.last.to_s)
+      }
+    end
   end
 end

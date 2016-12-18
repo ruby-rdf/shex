@@ -29,5 +29,9 @@ module ShEx::Algebra
       end
       not_satisfied "Expression should not have matched", unsatisfied: satisfied_op
     end
+
+    def json_type
+      "ShapeNot"
+    end
   end
 end

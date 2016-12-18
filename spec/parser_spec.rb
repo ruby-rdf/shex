@@ -237,7 +237,7 @@ describe ShEx::Parser do
                 "valueExpr": {
                   "type": "NodeConstraint",
                   "values": [
-                    "N/A",
+                    "\\"N/A\\"",
                     { "type": "StemRange", "stem": "mailto:engineering-" },
                     { "type": "StemRange", "stem": "mailto:sales-",
                       "exclusions": [
@@ -435,8 +435,8 @@ describe ShEx::Parser do
           PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
           ex:IssueShape {
             ex:status .
-                // rdfs:comment "\\\"Represents reported software issues.\\\""
-                // rdfs:label "\\\"softare issue\\\""
+                // rdfs:comment "Represents reported software issues."
+                // rdfs:label "softare issue"
           }
         ),
         shexj: %({
@@ -454,10 +454,10 @@ describe ShEx::Parser do
                 "annotations": [
                    { "type": "Annotation",
                      "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
-                     "object": "\\\"Represents reported software issues.\\\"" },
+                     "object": "\\"Represents reported software issues.\\"" },
                    { "type": "Annotation",
                      "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
-                     "object": "\\\"softare issue\\\"" } 
+                     "object": "\\"softare issue\\"" } 
                 ]
               }
             }
@@ -469,8 +469,8 @@ describe ShEx::Parser do
          (shapes ((<http://schema.example/IssueShape> (shape
           (tripleConstraint <http://schema.example/status>
            (annotation <http://www.w3.org/2000/01/rdf-schema#comment>
-            "\\\"Represents reported software issues.\\\"" )
-           (annotation <http://www.w3.org/2000/01/rdf-schema#label> "\\\"softare issue\\\""))))) ))}
+            "Represents reported software issues." )
+           (annotation <http://www.w3.org/2000/01/rdf-schema#label> "softare issue"))))) ))}
       },
       "Validation Example 1" => {
         shexc: %(
@@ -678,12 +678,12 @@ describe ShEx::Parser do
                   "predicate": "http://schema.example/val",
                   "valueExpr":
                   { "type": "NodeConstraint",
-                    "values": [ "a", "b", "c" ] }, "min": 1, "max": "*" },
+                    "values": [ "\\"a\\"", "\\"b\\"", "\\"c\\"" ] }, "min": 1, "max": "*" },
                 { "type": "TripleConstraint",
                   "predicate": "http://schema.example/val",
                   "valueExpr":
                   { "type": "NodeConstraint",
-                    "values": [ "b", "c", "d" ] }, "min": 1, "max": "*" }
+                    "values": [ "\\"b\\"", "\\"c\\"", "\\"d\\"" ] }, "min": 1, "max": "*" }
               ] } } } }),
         sxp: %{(schema
          (prefix (("ex" <http://schema.example/>)))
@@ -1084,9 +1084,17 @@ describe ShEx::Parser do
         expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), logger: RDF::Spec.logger)
       end
 
-      it "#{name} (shexj)" do
-        expect(params[:shexj]).to generate(params[:sxp].gsub(/^        /m, ''), logger: RDF::Spec.logger, format: :shexj)
-      end if params[:shexj]
+      if params[:shexj]
+        it "#{name} (shexj)" do
+          expect(params[:shexj]).to generate(params[:sxp].gsub(/^        /m, ''), logger: RDF::Spec.logger, format: :shexj)
+        end
+
+        it "#{name} generates shexj from shexc" do
+          expression = ShEx.parse(params[:shexc])
+          json = expression.to_json
+          expect(json).to produce(JSON.parse(params[:shexj]), logger: RDF::Spec.logger)
+        end
+      end
     end
   end
 
@@ -1154,6 +1162,15 @@ describe ShEx::Parser do
             if t.positive_test?
               sxp = File.read(File.expand_path("../data/#{t.name}.sxp", __FILE__))
               expect(t.schema_source).to generate(sxp, validate: validate, logger: RDF::Spec.logger)
+
+              #begin
+              #  expression = ShEx.parse(t.schema_source)
+              #  json = expression.to_json
+              #  shexj = JSON.parse t.schema_json
+              #  expect(json).to produce(shexj, logger: RDF::Spec.logger)
+              #rescue IOError
+              #  # JSON file not there, ignore
+              #end
             else
               exp = t.structure_test? ? ShEx::StructureError : ShEx::ParseError
               expect(t.schema_source).to generate(exp, validate: validate, logger: RDF::Spec.logger)

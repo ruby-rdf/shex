@@ -26,5 +26,10 @@ module ShEx::Algebra
         false
       end
     end
+
+    def json_type
+      # FIXME: This is funky, due to oddities in normative shexj
+      parent.is_a?(Value) ? 'StemRange' : 'Stem'
+    end
   end
 end
