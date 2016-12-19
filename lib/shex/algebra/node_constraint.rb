@@ -53,7 +53,7 @@ module ShEx::Algebra
     # Datatype Constraint
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
-    def satisfies_datatype?(value)      
+    def satisfies_datatype?(value)
       dt = op_fetch(:datatype)
       return true unless dt
 

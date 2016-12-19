@@ -35,9 +35,9 @@ module ShEx::Algebra
     def execute(focus, graph, map, shapeExterns: [], **options)
       @graph = graph
       @external_schemas = shapeExterns
-      focus = iri(focus)
+      focus = value(focus)
       # Make sure they're URIs
-      @map = (map || {}).inject({}) {|memo, (k,v)| memo.merge(iri(k).to_s => iri(v).to_s)}
+      @map = (map || {}).inject({}) {|memo, (k,v)| memo.merge(value(k) => iri(v).to_s)}
 
       # First, evaluate semantic acts
       semantic_actions.all? do |op|
@@ -56,8 +56,8 @@ module ShEx::Algebra
       satisfied_shapes = {}
       satisfied_schema.operands << [:shapes, satisfied_shapes] unless shapes.empty?
 
-      label = @map[focus.to_s]
-      if label && !label.empty?
+      label = @map[focus]
+      if label && !label.to_s.empty?
         shape = shapes[label]
         structure_error("No shape found for #{label}") unless shape
 
@@ -67,7 +67,8 @@ module ShEx::Algebra
           focus = n if n
         end
 
-        satisfied_shapes[label] = shape.satisfies?(focus)
+        # Match against all shapes associated with the label for focus
+        satisfied_shapes[label] = Array(shape).all? {|s| s.satisfies?(focus)}
       end
       status "schema satisfied"
       satisfied_schema

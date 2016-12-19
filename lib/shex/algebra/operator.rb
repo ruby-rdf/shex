@@ -384,6 +384,10 @@ module ShEx::Algebra
       RDF::URI(@options[:base_uri]) if @options[:base_uri]
     end
 
+    # Create URIs
+    # @param  (see iri)
+    # @option (see iri)
+    # @return (see iri)
     def iri(value, options = @options)
       self.class.iri(value, options)
     end
@@ -428,6 +432,14 @@ module ShEx::Algebra
     end
 
     # Create Values, with "clever" matching to see if it might be a value, IRI or BNode.
+    # @param  (see value)
+    # @option (see value)
+    # @return (see value)
+    def value(value, options = @options)
+      self.class.value(value, options)
+    end
+
+    # Create Values, with "clever" matching to see if it might be a value, IRI or BNode.
     # @param [RDF::Value, String] value
     # @param [Hash{Symbol => Object}] options
     # @option options [RDF::URI] :base_uri
@@ -436,12 +448,11 @@ module ShEx::Algebra
     def self.value(value, options)
       # If we have a base URI, use that when constructing a new URI
       case value
-      when /^"([^"])*"(?:^^(.*))?(@.*)?$/
+      when /^"([^"]*)"(?:\^\^(.*))?(@.*)?$/
         # Sorta N-Triples encoded
         value = %("#{$1}"^^<#{$2}>) if $2
         RDF::NTriples.unserialize(value)
-      when RDF::Value, /^(\w+):/ then iri(value, options)
-      else RDF::Literal(value)
+      else iri(value, options)
       end
     end
 
