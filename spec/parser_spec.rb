@@ -1166,9 +1166,6 @@ describe ShEx::Parser do
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
 
             if t.positive_test?
-              sxp = File.read(File.expand_path("../data/#{t.name}.sxp", __FILE__))
-              expect(t.schema_source).to generate(sxp, validate: validate, logger: RDF::Spec.logger)
-
               begin
                 expression = ShEx.parse(t.schema_source)
                 json = expression.to_json
@@ -1187,15 +1184,14 @@ describe ShEx::Parser do
     end
   end
 
-  context "Positive Validation Syntax Tests", pending: "Syntax fixes" do
+  context "Positive Validation Syntax Tests" do
     Dir.glob("spec/shexTest/validation/*.shex").
       map {|f| f.split('/').last.sub('.shex', '')}.
       each do |file|
       it file do
         input = File.read File.expand_path("../shexTest/validation/#{file}.shex", __FILE__)
-        sxp = File.read(File.expand_path("../data/#{file}.sxp", __FILE__)) rescue ""
 
-        expect(input).to generate(sxp, validate: true, logger: RDF::Spec.logger)
+        expect {ShEx.parse(input)}.not_to raise_error
       end
     end
   end

@@ -1,5 +1,0 @@
-(schema
- (shapes
-  (
-   (<http://a.example/S1>
-    (and (nodeConstraint iri) (shape (tripleConstraint <http://a.example/p1>)))) )) )

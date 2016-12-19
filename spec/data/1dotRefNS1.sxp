@@ -1,8 +1,0 @@
-(schema
- (prefix (("S2" <http://a.example/S2>)))
- (shapes
-  (
-   (<http://a.example/S1>
-    (shape (tripleConstraint <http://a.example/p1> (shapeRef <http://a.example/S2>))))
-   (<http://a.example/S2> (shape (tripleConstraint <http://a.example/p2>)))) ))
-
