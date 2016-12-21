@@ -321,7 +321,6 @@ describe ShEx::Parser do
             ex:employeeNumber .
           }
         ),
-        # Spec FIXME: should use EachOf instead of ShapeAnd
         shexj: %({
           "type":"Schema",
           "prefixes": {

@@ -4,20 +4,40 @@
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "shex": "http://shexspec.github.io/ns/",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "annotations": {
+      "@id": "annotation",
+      "@container": "@list",
+      "@type": "@id"
+    },
     "expressions": {
       "@id": "expression",
-      "@container": "@list"
+      "@container": "@list",
+      "@type": "@id"
     },
+    "exclusions": {
+      "@id": "exclusion",
+      "@type": "@id"
+    },
+    "id": "@id",
     "semActs": {
       "@id": "semAct",
-      "@container": "@list"
+      "@container": "@list",
+      "@type": "@id"
     },
-    "shapes": "shape",
+    "shapes": {
+      "@id": "shape",
+      "@type": "@id"
+    },
     "startActs": {
       "@id": "startAct",
-      "@container": "@list"
+      "@container": "@list",
+      "@type": "@id"
     },
-    "values": "value",
+    "type": "@type",
+    "values": {
+      "@id": "value",
+      "@type": "@id"
+    },
     "Annotation": "shex:Annotation",
     "EachOf": "shex:EachOf",
     "Inclusion": "shex:Inclusion",
@@ -25,6 +45,7 @@
     "NodeKind": "shex:NodeKind",
     "OneOf": "shex:OneOf",
     "Schema": "shex:Schema",
+    "SemAct": "shex:SemAct",
     "Shape": "shex:Shape",
     "ShapeAnd": "shex:ShapeAnd",
     "ShapeExpression": "shex:ShapeExpression",
@@ -36,6 +57,7 @@
     "StemRange": "shex:StemRange",
     "TripleConstraint": "shex:TripleConstraint",
     "TripleExpression": "shex:TripleExpression",
+    "Wildcard": "shex:Wildcard",
     "annotation": {
       "@id": "shex:annotation",
       "@type": "@id"
@@ -43,6 +65,10 @@
     "closed": {
       "@id": "shex:closed",
       "@type": "xsd:boolean"
+    },
+    "code": {
+      "@id": "shex:code",
+      "@language": null
     },
     "datatype": {
       "@id": "shex:datatype",
@@ -77,16 +103,15 @@
       "@type": "xsd:nonNegativeInteger"
     },
     "max": {
-      "@id": "shex:max",
-      "@type": "xsd:nonNegativeInteger"
+      "@id": "shex:max"
     },
     "maxexclusive": {
       "@id": "shex:maxexclusive",
-      "@type": "xsd:integer,xsd:decimal,xsd:double"
+      "@type": "xsd:integer"
     },
     "maxinclusive": {
       "@id": "shex:maxinclusive",
-      "@type": "xsd:integer,xsd:decimal,xsd:double"
+      "@type": "xsd:integer"
     },
     "maxlength": {
       "@id": "shex:maxlength",
@@ -98,15 +123,19 @@
     },
     "minexclusive": {
       "@id": "shex:minexclusive",
-      "@type": "xsd:integer,xsd:decimal,xsd:double"
+      "@type": "xsd:integer"
     },
     "mininclusive": {
       "@id": "shex:mininclusive",
-      "@type": "xsd:integer,xsd:decimal,xsd:double"
+      "@type": "xsd:integer"
     },
     "minlength": {
       "@id": "shex:minlength",
       "@type": "xsd:nonNegativeInteger"
+    },
+    "name": {
+      "@id": "shex:name",
+      "@type": "@id"
     },
     "nodeKind": {
       "@id": "shex:nodeKind",
@@ -125,6 +154,10 @@
     },
     "predicate": {
       "@id": "shex:predicate",
+      "@type": "@id"
+    },
+    "reference": {
+      "@id": "shex:reference",
       "@type": "@id"
     },
     "semAct": {
@@ -146,7 +179,7 @@
     },
     "stem": {
       "@id": "shex:stem",
-      "@type": "@id"
+      "@type": "xsd:anyUri"
     },
     "stringFacet": {
       "@id": "shex:stringFacet"
@@ -250,7 +283,7 @@
       "en": "This document describes the RDFS vocabulary description used in the Shape Expression Language (ShEx) [[shex]] along with the default JSON-LD Context."
     },
     "dc:date": "2016-12-20",
-    "owl:versionInfo": "https://github.com/shexSpec/spec/commit/uncommitted",
+    "owl:versionInfo": "https://github.com/shexSpec/spec/commit/48bcc4bf62781dc889e4eb596f95be92ad45093d",
     "rdfs:seeAlso": [
       "http://shexspec.github.io/spec"
     ],
@@ -327,6 +360,16 @@
         },
         "rdfs:comment": {
           "en": "A Schema contains the set of shapes, used for matching a focus node."
+        }
+      },
+      {
+        "@id": "shex:SemAct",
+        "@type": "rdfs:Class",
+        "rdfs:label": {
+          "en": "Semantic Action"
+        },
+        "rdfs:comment": {
+          "en": "Semantic actions serve as an extension point for Shape Expressions. They appear in lists in Schema's startActs and Shape, OneOf, EachOf and TripleConstraint's semActs."
         }
       },
       {
@@ -445,6 +488,16 @@
         "rdfs:comment": {
           "en": "The abstract class of Triple Expressions."
         }
+      },
+      {
+        "@id": "shex:Wildcard",
+        "@type": "rdfs:Class",
+        "rdfs:label": {
+          "en": "Wildcard"
+        },
+        "rdfs:comment": {
+          "en": "Indicates that a stem is a Wildcard, rather than a URI prefix."
+        }
       }
     ],
     "rdfs_properties": [
@@ -477,6 +530,18 @@
         },
         "rdfs:domain": "shex:Shape",
         "rdfs:range": "xsd:boolean"
+      },
+      {
+        "@id": "shex:code",
+        "@type": "rdf:Property",
+        "rdfs:label": {
+          "en": "code"
+        },
+        "rdfs:comment": {
+          "en": "Code executed by Semantic Action."
+        },
+        "rdfs:domain": "shex:SemAct",
+        "rdfs:range": "xsd:string"
       },
       {
         "@id": "shex:datatype",
@@ -561,7 +626,7 @@
           "en": "Reference to a shape used to find a TripleConstraint."
         },
         "rdfs:domain": "shex:Inclusion",
-        "rdfs:range": "rdfs:Resource"
+        "rdfs:range": "shex:Shape"
       },
       {
         "@id": "shex:inverse",
@@ -603,8 +668,7 @@
             "shex:OneOf",
             "shex:TripleConstraint"
           ]
-        },
-        "rdfs:range": "xsd:nonNegativeInteger"
+        }
       },
       {
         "@id": "shex:maxexclusive",
@@ -727,6 +791,18 @@
         "rdfs:range": "xsd:nonNegativeInteger"
       },
       {
+        "@id": "shex:name",
+        "@type": "rdf:Property",
+        "rdfs:label": {
+          "en": "name"
+        },
+        "rdfs:comment": {
+          "en": "Identifier of SemAct extension."
+        },
+        "rdfs:domain": "shex:SemAct",
+        "rdfs:range": "rdfs:Resource"
+      },
+      {
         "@id": "shex:nodeKind",
         "@type": "rdf:Property",
         "rdfs:label": {
@@ -790,6 +866,18 @@
           ]
         },
         "rdfs:range": "rdfs:Resource"
+      },
+      {
+        "@id": "shex:reference",
+        "@type": "rdf:Property",
+        "rdfs:label": {
+          "en": "reference"
+        },
+        "rdfs:comment": {
+          "en": "Reference to a shape."
+        },
+        "rdfs:domain": "shex:ShapeRef",
+        "rdfs:range": "shex:Shape"
       },
       {
         "@id": "shex:semAct",
@@ -860,7 +948,12 @@
             "shex:StemRange"
           ]
         },
-        "rdfs:range": "rdfs:Resource"
+        "rdfs:range": {
+          "owl:unionOf": [
+            "xsd:anyUri",
+            "shex:Wildcard"
+          ]
+        }
       },
       {
         "@id": "shex:stringFacet",

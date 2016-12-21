@@ -116,10 +116,11 @@ class Vocab
     properties.each do |id, entry|
       defn = {"@id" => namespaced(id)}
       case entry[:range]
-      when "xsd:string" then defn['@language'] = nil
-      when /xsd:/       then defn['@type'] = entry[:range]
-      when nil          then ;
-      else                   defn['@type'] = '@id'
+      when "xsd:string"  then defn['@language'] = nil
+      when /xsd:/        then defn['@type'] = entry[:range].split(',').first
+      when nil,
+          'rdfs:Literal' then ;
+      else                    defn['@type'] = '@id'
       end
 
       defn['@container'] = entry[:@container] if entry[:@container]
@@ -319,8 +320,9 @@ when :jsonld  then options[:output].puts(vocab.to_jsonld)
 when :ttl     then options[:output].puts(vocab.to_ttl)
 when :html    then options[:output].puts(vocab.to_html)
 else
-  %w(jsonld ttl html).each do |format|
-    File.open(format == 'html' ? 'index.html' : "shex.#{format}", "w") do |output|
+  [:jsonld, :ttl, :html].each do |format|
+    fn = {jsonld: "context.jsonld", ttl: "shex.ttl", html: "index.html"}[format]
+    File.open(fn, "w") do |output|
       output.puts(vocab.send("to_#{format}".to_sym))
     end
   end
