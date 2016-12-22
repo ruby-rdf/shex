@@ -33,8 +33,7 @@ module ShEx::Algebra
     # @return (see Satisfiable#satisfies?)
     # @raise  (see Satisfiable#satisfies?)
     def satisfies?(focus)
-      expression = operands.detect {|op| op.is_a?(TripleExpression)}
-
+      expression = self.expression
       # neigh(G, n) is the neighbourhood of the node n in the graph G.
       #
       #    neigh(G, n) = arcsOut(G, n) ∪ arcsIn(G, n)
@@ -102,11 +101,12 @@ module ShEx::Algebra
       not_satisfied e.message, focus: focus, unsatisfied: e.expression
     end
 
+
     ##
-    # Included TripleExpressions
-    # @return [Array<TripleExpressions>]
-    def triple_expressions
-      operands.select {|op| op.is_a?(TripleExpression)}
+    # The optional TripleExpression for this Shape.
+    # @return [TripleExpression]
+    def expression
+      operands.detect {|op| op.is_a?(TripleExpression)}
     end
 
     private

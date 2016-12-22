@@ -13,13 +13,6 @@ module ShEx::Algebra
       raise NotImplementedError, "#satisfies? Not implemented in #{self.class}"
     end
 
-    ##
-    # Included TripleExpressions
-    # @return [Array<TripleExpressions>]
-    def triple_expressions
-      operands.select {|o| o.is_a?(Satisfiable)}.map(&:triple_expressions).flatten.uniq
-    end
-
     # This operator includes Satisfiable
     def satisfiable?; true; end
   end

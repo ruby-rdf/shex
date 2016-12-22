@@ -27,7 +27,7 @@ module ShEx::Algebra
     # @raise  (see TripleExpression#matches)
     def matches(arcs_in, arcs_out)
       status "referenced_shape: #{operands.first}"
-      expression = referenced_shape.triple_expressions.first
+      expression = referenced_shape.expression
       max = maximum
       matched_expression = expression.matches(arcs_in, arcs_out)
       satisfy matched: matched_expression.matched
@@ -51,15 +51,7 @@ module ShEx::Algebra
     def validate!
       structure_error("Missing included shape: #{operands.first}") if referenced_shape.nil?
       structure_error("Self included shape: #{operands.first}") if referenced_shape == first_ancestor(Shape)
-
-      triple_expressions = referenced_shape.triple_expressions
-      case triple_expressions.length
-      when 0
-        structure_error("Includes shape with no triple expressions")
-      when 1
-      else
-        structure_error("Includes shape with multiple triple expressions")
-      end
+      structure_error("Referenced shape must be a Shape: #{operands.first}") unless referenced_shape.is_a?(Shape)
       super
     end
   end
