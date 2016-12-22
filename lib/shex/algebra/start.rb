@@ -11,9 +11,9 @@ module ShEx::Algebra
     def satisfies?(focus)
       status ""
       matched_op = operands.first.satisfies?(focus)
-      satisfy satisfied: matched_op
+      satisfy focus: focus, satisfied: matched_op
     rescue ShEx::NotSatisfied => e
-      not_satisfied e.message, unsatisfied: e.expression
+      not_satisfied e.message, focus: focus, unsatisfied: e.expression
       raise
     end
   end

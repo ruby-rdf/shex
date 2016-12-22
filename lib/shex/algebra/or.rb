@@ -34,7 +34,7 @@ module ShEx::Algebra
       expressions.any? do |op|
         begin
           matched_op = op.satisfies?(focus)
-          return satisfy satisfied: matched_op, unsatisfied: unsatisfied
+          return satisfy focus: focus, satisfied: matched_op, unsatisfied: unsatisfied
         rescue ShEx::NotSatisfied => e
           status "unsatisfied #{focus}"
           op = op.dup
@@ -47,7 +47,7 @@ module ShEx::Algebra
       end
 
       not_satisfied "Expected some expression to be satisfied",
-                    unsatisfied: unsatisfied
+                    focus: focus, unsatisfied: unsatisfied
     end
 
     def json_type

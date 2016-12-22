@@ -27,11 +27,17 @@ module ShEx::Algebra
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
     def satisfies?(focus)
       status "ref #{operands.first.to_s}"
-      matched_shape = referenced_shape.satisfies?(focus)
-      satisfy satisfied: matched_shape
+      schema.enter_shape(operands.first, focus) do |shape|
+        if shape
+          matched_shape = shape.satisfies?(focus)
+          satisfy focus: focus, satisfied: matched_shape
+        else
+          status "Satisfy as #{operands.first} was re-entered for #{focus}"
+          satisfy focus: focus, satisfied: referenced_shape
+        end
+      end
     rescue ShEx::NotSatisfied => e
-      not_satisfied e.message, unsatisfied: e.expression
-      raise
+      not_satisfied e.message, focus: focus, unsatisfied: e.expression
     end
 
     ##
@@ -50,6 +56,16 @@ module ShEx::Algebra
       # FIXME
       #raise ShEx::ParseError, "Self referencing shape: #{operands.first}" if referenced_shape == first_ancestor(Shape)
       super
+    end
+
+    ##
+    # Returns the binary S-Expression (SXP) representation of this operator.
+    #
+    # @return [Array]
+    # @see    https://en.wikipedia.org/wiki/S-expression
+    def to_sxp_bin
+      operator = [self.class.const_get(:NAME)].flatten.first
+      [:shapeRef, operands.first].to_sxp_bin
     end
   end
 end

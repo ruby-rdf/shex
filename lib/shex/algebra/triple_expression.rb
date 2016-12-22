@@ -8,10 +8,11 @@ module ShEx::Algebra
     #
     # Behavior should be overridden in subclasses, which end by calling this through `super`.
     #
-    # @param [Array<RDF::Statement>] statements
+    # @param [Array<RDF::Statement>] arcs_in
+    # @param [Array<RDF::Statement>] arcs_out
     # @return [TripleExpression] with `matched` accessor for matched triples
     # @raise [ShEx::NotMatched] with `expression` accessor to access `matched` and `unmatched` statements along with `satisfied` and `unsatisfied` operations.
-    def matches(statements)
+    def matches(arcs_in, arcs_out)
       raise NotImplementedError, "#matches Not implemented in #{self.class}"
     end
 

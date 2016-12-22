@@ -22,14 +22,14 @@ module ShEx::Algebra
     ##
     # In this case, we accept an array of statements, and match based on cardinality.
     #
-    # @param [Array<RDF::Statement>] statements
-    # @return [Array<RDF::Statement>]
-    # @raise [ShEx::NotMatched]
-    def matches(statements)
+    # @param  (see TripleExpression#matches)
+    # @return (see TripleExpression#matches)
+    # @raise  (see TripleExpression#matches)
+    def matches(arcs_in, arcs_out)
       status "referenced_shape: #{operands.first}"
       expression = referenced_shape.triple_expressions.first
       max = maximum
-      matched_expression = expression.matches(statements)
+      matched_expression = expression.matches(arcs_in, arcs_out)
       satisfy matched: matched_expression.matched
     rescue ShEx::NotMatched => e
       not_matched e.message, unsatisfied: e.expression

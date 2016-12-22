@@ -6,7 +6,7 @@ module ShEx::Algebra
     ##
     # Satisfies method
     # @param [RDF::Resource] focus
-    # @return [TripleExpression] with `matched` and `satisfied` accessors for matched triples and sub-expressions
+    # @return [Operator] with `matched` and `satisfied` accessors for matched triples and sub-expressions
     # @raise [ShEx::NotMatched] with `expression` accessor to access `matched` and `unmatched` statements along with `satisfied` and `unsatisfied` operations.
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
     def satisfies?(focus)

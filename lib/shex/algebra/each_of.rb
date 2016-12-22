@@ -17,10 +17,10 @@ module ShEx::Algebra
     ##
     # expr is an EachOf and there is some partition of T into T1, T2,… such that for every expression expr1, expr2,… in shapeExprs, matches(Tn, exprn, m)...
     #
-    # @param [Array<RDF::Statement>] statements
-    # @return [Array<RDF::Statement>]
-    # @raise [ShEx::NotMatched]
-    def matches(statements)
+    # @param  (see TripleExpression#matches)
+    # @return (see TripleExpression#matches)
+    # @raise  (see TripleExpression#matches)
+    def matches(arcs_in, arcs_out)
       status ""
       results, satisfied, unsatisfied = [], [], []
       num_iters, max = 0, maximum
@@ -30,19 +30,20 @@ module ShEx::Algebra
           matched_this_iter = []
           operands.select {|o| o.is_a?(TripleExpression)}.all? do |op|
             begin
-              matched_op = op.matches(statements - matched_this_iter)
+              matched_op = op.matches(arcs_in - matched_this_iter, arcs_out - matched_this_iter)
               satisfied << matched_op
               matched_this_iter += matched_op.matched
             rescue ShEx::NotMatched => e
               status "not matched: #{e.message}"
               op = op.dup
-              op.unmatched = statements - matched_this_iter
+              op.unmatched = (arcs_in + arcs_out).uniq - matched_this_iter
               unsatisfied << op
               raise
             end
           end
           results += matched_this_iter
-          statements -= matched_this_iter
+          arcs_in -= matched_this_iter
+          arcs_out -= matched_this_iter
           num_iters += 1
           status "matched #{results.length} statements after #{num_iters} iterations"
         rescue ShEx::NotMatched => e
@@ -64,7 +65,7 @@ module ShEx::Algebra
       satisfy matched: results, satisfied: satisfied
     rescue ShEx::NotMatched, ShEx::NotSatisfied => e
       not_matched e.message,
-                  matched:   results,   unmatched:   (statements - results),
+                  matched:   results,   unmatched:   ((arcs_in + arcs_out).uniq - results),
                   satisfied: satisfied, unsatisfied: unsatisfied
     end
   end

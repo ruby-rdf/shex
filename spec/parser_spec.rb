@@ -1159,7 +1159,7 @@ describe ShEx::Parser do
             when 'openopen1dotOr1dotclose'
               pending("Missing production multiElementOneOf")
             when '1focusRefANDSelfdot'
-              pending("It is self referning (OK?) and includes an empty shape (OK?)")
+              pending("Is self referencing (OK?) and includes an empty shape (OK?)")
             end
 
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]

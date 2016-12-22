@@ -86,6 +86,16 @@ module ShEx::Algebra
     def semact?; false; end
 
     ##
+    # On a result instance, the focus of the expression
+    def focus
+      Array(operands.detect {|op| op.is_a?(Array) && op[0] == :focus} || [:focus])[1]
+    end
+    def focus=(node)
+      operands.delete_if {|op| op.is_a?(Array) && op[0] == :focus}
+      operands << [:focus, node]
+    end
+
+    ##
     # On a result instance, the statements that matched this expression.
     # @return [Array<Statement>]
     def matched
@@ -133,9 +143,10 @@ module ShEx::Algebra
     # Duplication this operand, and add `matched`, `unmatched`, `satisfied`, and `unsatisfied` operands for accessing downstream.
     #
     # @return [Operand]
-    def satisfy(matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil)
+    def satisfy(focus: nil, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil)
       log_debug(self.class.const_get(:NAME), "satisfied", depth: options.fetch(:depth, 0))
       expression = self.dup
+      expression.focus = focus if focus
       expression.matched = Array(matched) if matched
       expression.unmatched = Array(unmatched) if unmatched
       expression.satisfied = Array(satisfied) if satisfied
@@ -156,8 +167,9 @@ module ShEx::Algebra
       raise exception.new(message, expression: expression)
     end
 
-    def not_satisfied(message, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, **opts)
+    def not_satisfied(message, focus: nil, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, **opts)
       expression = opts.fetch(:expression, self).satisfy(
+        focus:       focus,
         matched:     matched,
         unmatched:   unmatched,
         satisfied:   satisfied,

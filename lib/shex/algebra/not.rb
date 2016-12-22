@@ -25,9 +25,9 @@ module ShEx::Algebra
       satisfied_op = begin
         operands.first.satisfies?(focus)
       rescue ShEx::NotSatisfied => e
-        return satisfy satisfied: e.expression.unsatisfied
+        return satisfy focus: focus, satisfied: e.expression.unsatisfied
       end
-      not_satisfied "Expression should not have matched", unsatisfied: satisfied_op
+      not_satisfied "Expression should not have matched", focus: focus, unsatisfied: satisfied_op
     end
 
     def json_type

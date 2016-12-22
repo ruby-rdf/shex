@@ -20,11 +20,12 @@ module ShEx::Algebra
     # @param  (see TripleExpression#matches)
     # @return (see TripleExpression#matches)
     # @raise  (see TripleExpression#matches)
-    def matches(statements)
+    def matches(arcs_in, arcs_out)
       status "predicate #{predicate}"
       results, satisfied, unsatisfied = [], [], []
       num_iters, max = 0, maximum
 
+      statements = inverse? ? arcs_in : arcs_out
       statements.select {|st| st.predicate == predicate}.each do |statement|
         break if num_iters == max # matched enough
 

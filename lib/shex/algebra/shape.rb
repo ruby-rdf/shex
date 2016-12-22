@@ -44,7 +44,7 @@ module ShEx::Algebra
 
       # `matched` is the subset of statements which match `expression`.
       status("arcsIn: #{arcs_in.count}, arcsOut: #{arcs_out.count}")
-      matched_expression = expression.matches(neigh) if expression
+      matched_expression = expression.matches(arcs_in, arcs_out) if expression
       matched = Array(matched_expression && matched_expression.matched)
 
       # `remainder` is the set of unmatched statements
@@ -64,7 +64,7 @@ module ShEx::Algebra
       unmatched = matchables.select do |statement|
         expression.triple_constraints.any? do |expr|
           begin
-            statement.predicate == expr.predicate && expr.matches([statement])
+            statement.predicate == expr.predicate && expr.matches([], [statement])
           rescue ShEx::NotMatched
             false # Expected not to match
           end
@@ -97,9 +97,9 @@ module ShEx::Algebra
       end unless matched.empty?
 
       # FIXME: also record matchables, outs and others?
-      satisfy matched: matched
+      satisfy focus: focus, matched: matched
     rescue ShEx::NotMatched => e
-      not_satisfied e.message, unsatisfied: e.expression
+      not_satisfied e.message, focus: focus, unsatisfied: e.expression
     end
 
     ##

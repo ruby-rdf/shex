@@ -31,16 +31,19 @@ module ShEx::Algebra
       status ""
       expressions = operands.select {|o| o.is_a?(Satisfiable)}
       satisfied = []
+      unsatisfied = expressions.dup
 
       # Operand raises NotSatisfied, so no need to check here.
       expressions.each do |op|
         satisfied << op.satisfies?(focus)
+        unsatisfied.shift
       end
-      satisfy satisfied: satisfied
+      satisfy focus: focus, satisfied: satisfied
     rescue ShEx::NotSatisfied => e
       not_satisfied e.message,
+                    focus:       focus, 
                     satisfied:   satisfied,
-                    unsatisfied: (expressions - satisfied)
+                    unsatisfied: unsatisfied
     end
 
     def json_type
