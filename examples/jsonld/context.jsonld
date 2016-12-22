@@ -6,12 +6,6 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "annotations": {
       "@id": "annotation",
-      "@container": "@list",
-      "@type": "@id"
-    },
-    "expressions": {
-      "@id": "expression",
-      "@container": "@list",
       "@type": "@id"
     },
     "exclusions": {
@@ -19,20 +13,6 @@
       "@type": "@id"
     },
     "id": "@id",
-    "semActs": {
-      "@id": "semAct",
-      "@container": "@list",
-      "@type": "@id"
-    },
-    "shapes": {
-      "@id": "shape",
-      "@type": "@id"
-    },
-    "startActs": {
-      "@id": "startAct",
-      "@container": "@list",
-      "@type": "@id"
-    },
     "type": "@type",
     "values": {
       "@id": "value",
@@ -45,7 +25,7 @@
     "NodeKind": "shex:NodeKind",
     "OneOf": "shex:OneOf",
     "Schema": "shex:Schema",
-    "SemAct": "shex:SemAct",
+    "SemActs": "shex:SemActs",
     "Shape": "shex:Shape",
     "ShapeAnd": "shex:ShapeAnd",
     "ShapeExpression": "shex:ShapeExpression",
@@ -81,6 +61,11 @@
     "expression": {
       "@id": "shex:expression",
       "@type": "@id"
+    },
+    "expressions": {
+      "@id": "shex:expressions",
+      "@type": "@id",
+      "@container": "@list"
     },
     "extra": {
       "@id": "shex:extra",
@@ -139,7 +124,7 @@
     },
     "nodeKind": {
       "@id": "shex:nodeKind",
-      "@type": "@id"
+      "@language": null
     },
     "numericFacet": {
       "@id": "shex:numericFacet"
@@ -164,9 +149,18 @@
       "@id": "shex:semAct",
       "@type": "@id"
     },
-    "shape": {
-      "@id": "shex:shape",
+    "shapes": {
+      "@id": "shex:shapes",
       "@type": "@id"
+    },
+    "shapeExpr": {
+      "@id": "shex:shapeExpr",
+      "@type": "@id"
+    },
+    "shapeExprs": {
+      "@id": "shex:shapeExprs",
+      "@type": "@id",
+      "@container": "@list"
     },
     "start": {
       "@id": "shex:start",
@@ -282,8 +276,8 @@
     "dc:description": {
       "en": "This document describes the RDFS vocabulary description used in the Shape Expression Language (ShEx) [[shex]] along with the default JSON-LD Context."
     },
-    "dc:date": "2016-12-20",
-    "owl:versionInfo": "https://github.com/shexSpec/spec/commit/48bcc4bf62781dc889e4eb596f95be92ad45093d",
+    "dc:date": "2016-12-21",
+    "owl:versionInfo": "https://github.com/shexSpec/spec/commit/040dcf85ca59170ebd9fb2190061597ed08ab3ab",
     "rdfs:seeAlso": [
       "http://shexspec.github.io/spec"
     ],
@@ -363,13 +357,13 @@
         }
       },
       {
-        "@id": "shex:SemAct",
+        "@id": "shex:SemActs",
         "@type": "rdfs:Class",
         "rdfs:label": {
-          "en": "Semantic Action"
+          "en": "Semantic Actions"
         },
         "rdfs:comment": {
-          "en": "Semantic actions serve as an extension point for Shape Expressions. They appear in lists in Schema's startActs and Shape, OneOf, EachOf and TripleConstraint's semActs."
+          "en": "A list of Semantic Actions that serve as an extension point for Shape Expressions. They appear in lists in Schema's startActs and Shape, OneOf, EachOf and TripleConstraint's semActs."
         }
       },
       {
@@ -579,14 +573,30 @@
           "en": "expression"
         },
         "rdfs:comment": {
-          "en": "Expression(s) associated with the TripleExpression."
+          "en": "Expression associated with the TripleExpression."
         },
         "rdfs:domain": {
           "owl:unionOf": [
             "shex:Shape",
             "shex:EachOf",
-            "shex:OneOf",
-            "shex:Inclusion"
+            "shex:OneOf"
+          ]
+        },
+        "rdfs:range": "shex:TripleExpression"
+      },
+      {
+        "@id": "shex:expressions",
+        "@type": "rdf:Property",
+        "rdfs:label": {
+          "en": "expressions"
+        },
+        "rdfs:comment": {
+          "en": "List of 2 or more expressions associated with the TripleExpression."
+        },
+        "rdfs:domain": {
+          "owl:unionOf": [
+            "shex:EachOf",
+            "shex:OneOf"
           ]
         },
         "rdfs:range": "shex:TripleExpression"
@@ -809,10 +819,10 @@
           "en": "node kind"
         },
         "rdfs:comment": {
-          "en": "Restiction on the kind of node matched; restricted to the defined instances of NodeKind."
+          "en": "Restiction on the kind of node matched; restricted to the defined instances of NodeKind. One of “iri”, “bnode”, “literal”, or “nonliteral”."
         },
         "rdfs:domain": "shex:NodeConstraint",
-        "rdfs:range": "shex:NodeKind"
+        "rdfs:range": "xsd:string"
       },
       {
         "@id": "shex:numericFacet",
@@ -898,7 +908,7 @@
         "rdfs:range": "shex:SemAct"
       },
       {
-        "@id": "shex:shape",
+        "@id": "shex:shapes",
         "@type": "rdf:Property",
         "rdfs:label": {
           "en": "shapes"
@@ -907,6 +917,36 @@
           "en": "Shapes in this Schema."
         },
         "rdfs:domain": "shex:Schema",
+        "rdfs:range": "shex:ShapeExpression"
+      },
+      {
+        "@id": "shex:shapeExpr",
+        "@type": "rdf:Property",
+        "rdfs:label": {
+          "en": "shape expression"
+        },
+        "rdfs:comment": {
+          "en": "Shape Expression referenced by this shape."
+        },
+        "rdfs:domain": "shex:ShapeNot",
+        "rdfs:range": "shex:ShapeExpression"
+      },
+      {
+        "@id": "shex:shapeExprs",
+        "@type": "rdf:Property",
+        "rdfs:label": {
+          "en": "shape expressions"
+        },
+        "rdfs:comment": {
+          "en": "A list of 2 or more Shape Expressions referenced by this shape."
+        },
+        "rdfs:subPropertyOf": "shex:shapeExpr",
+        "rdfs:domain": {
+          "owl:unionOf": [
+            "shex:ShapeAnd",
+            "shex:ShapeOr"
+          ]
+        },
         "rdfs:range": "shex:ShapeExpression"
       },
       {
@@ -1019,48 +1059,6 @@
           "en": "An abstract property of string and numeric facets on a NodeConstraint."
         },
         "rdfs:domain": "shex:NodeConstraint"
-      }
-    ],
-    "rdfs_instances": [
-      {
-        "@id": "shex:bnode",
-        "@type": "NodeKind",
-        "rdfs:label": {
-          "en": "Blank Node"
-        },
-        "rdfs:comment": {
-          "en": ""
-        }
-      },
-      {
-        "@id": "shex:iri",
-        "@type": "NodeKind",
-        "rdfs:label": {
-          "en": "IRI"
-        },
-        "rdfs:comment": {
-          "en": ""
-        }
-      },
-      {
-        "@id": "shex:literal",
-        "@type": "NodeKind",
-        "rdfs:label": {
-          "en": "Literal"
-        },
-        "rdfs:comment": {
-          "en": ""
-        }
-      },
-      {
-        "@id": "shex:nonliteral",
-        "@type": "NodeKind",
-        "rdfs:label": {
-          "en": "Non-Literal"
-        },
-        "rdfs:comment": {
-          "en": ""
-        }
       }
     ]
   }

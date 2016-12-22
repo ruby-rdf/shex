@@ -7,9 +7,9 @@
 shex: a owl:Ontology;
   dc:title "Shape Expression Vocabulary Terms"@en;
   dc:description """This document describes the RDFS vocabulary description used in the Shape Expression Language (ShEx) [[shex]] along with the default JSON-LD Context."""@en;
-  dc:date "2016-12-20"^^xsd:date;
+  dc:date "2016-12-21"^^xsd:date;
   dc:imports ;
-  owl:versionInfo <https://github.com/shexSpec/spec/commit/48bcc4bf62781dc889e4eb596f95be92ad45093d>;
+  owl:versionInfo <https://github.com/shexSpec/spec/commit/040dcf85ca59170ebd9fb2190061597ed08ab3ab>;
   rdfs:seeAlso <http://shexspec.github.io/spec>;
   .
 
@@ -47,9 +47,9 @@ shex:Schema a rdfs:Class;
   rdfs:label "Schema"@en;
   rdfs:comment """A Schema contains the set of shapes, used for matching a focus node."""@en;
   rdfs:isDefinedBy shex: .
-shex:SemAct a rdfs:Class;
-  rdfs:label "Semantic Action"@en;
-  rdfs:comment """Semantic actions serve as an extension point for Shape Expressions. They appear in lists in Schema's startActs and Shape, OneOf, EachOf and TripleConstraint's semActs."""@en;
+shex:SemActs a rdfs:Class;
+  rdfs:label "Semantic Actions"@en;
+  rdfs:comment """A list of Semantic Actions that serve as an extension point for Shape Expressions. They appear in lists in Schema's startActs and Shape, OneOf, EachOf and TripleConstraint's semActs."""@en;
   rdfs:isDefinedBy shex: .
 shex:Shape a rdfs:Class;
   rdfs:label "Shape Or"@en;
@@ -140,8 +140,14 @@ shex:exclusion a rdf:Property;
   rdfs:isDefinedBy shex: .
 shex:expression a rdf:Property;
   rdfs:label "expression"@en;
-  rdfs:comment """Expression(s) associated with the TripleExpression."""@en;
-  rdfs:domain [ owl:unionOf (shex:Shape shex:EachOf shex:OneOf shex:Inclusion)];
+  rdfs:comment """Expression associated with the TripleExpression."""@en;
+  rdfs:domain [ owl:unionOf (shex:Shape shex:EachOf shex:OneOf)];
+  rdfs:range shex:TripleExpression;
+  rdfs:isDefinedBy shex: .
+shex:expressions a rdf:Property;
+  rdfs:label "expressions"@en;
+  rdfs:comment """List of 2 or more expressions associated with the TripleExpression."""@en;
+  rdfs:domain [ owl:unionOf (shex:EachOf shex:OneOf)];
   rdfs:range shex:TripleExpression;
   rdfs:isDefinedBy shex: .
 shex:extra a rdf:Property;
@@ -237,9 +243,9 @@ shex:name a rdf:Property;
   rdfs:isDefinedBy shex: .
 shex:nodeKind a rdf:Property;
   rdfs:label "node kind"@en;
-  rdfs:comment """Restiction on the kind of node matched; restricted to the defined instances of NodeKind."""@en;
+  rdfs:comment """Restiction on the kind of node matched; restricted to the defined instances of NodeKind. One of “iri”, “bnode”, “literal”, or “nonliteral”."""@en;
   rdfs:domain shex:NodeConstraint;
-  rdfs:range shex:NodeKind;
+  rdfs:range xsd:string;
   rdfs:isDefinedBy shex: .
 shex:numericFacet a rdf:Property;
   rdfs:label ""@en;
@@ -277,10 +283,23 @@ shex:semAct a rdf:Property;
   rdfs:domain [ owl:unionOf (shex:EachOf shex:OneOf shex:TripleConstraint)];
   rdfs:range shex:SemAct;
   rdfs:isDefinedBy shex: .
-shex:shape a rdf:Property;
+shex:shapes a rdf:Property;
   rdfs:label "shapes"@en;
   rdfs:comment """Shapes in this Schema."""@en;
   rdfs:domain shex:Schema;
+  rdfs:range shex:ShapeExpression;
+  rdfs:isDefinedBy shex: .
+shex:shapeExpr a rdf:Property;
+  rdfs:label "shape expression"@en;
+  rdfs:comment """Shape Expression referenced by this shape."""@en;
+  rdfs:domain shex:ShapeNot;
+  rdfs:range shex:ShapeExpression;
+  rdfs:isDefinedBy shex: .
+shex:shapeExprs a rdf:Property;
+  rdfs:label "shape expressions"@en;
+  rdfs:comment """A list of 2 or more Shape Expressions referenced by this shape."""@en;
+  rdfs:subPropertyOf shex:shapeExpr;
+  rdfs:domain [ owl:unionOf (shex:ShapeAnd shex:ShapeOr)];
   rdfs:range shex:ShapeExpression;
   rdfs:isDefinedBy shex: .
 shex:start a rdf:Property;
@@ -334,19 +353,3 @@ shex:xsFacet a rdf:Property;
 # Datatype definitions
 
 # Instance definitions
-shex:bnode a shex:NodeKind;
-  rdfs:label "Blank Node"@en;
-  rdfs:comment """"""@en;
-  rdfs:isDefinedBy shex: .
-shex:iri a shex:NodeKind;
-  rdfs:label "IRI"@en;
-  rdfs:comment """"""@en;
-  rdfs:isDefinedBy shex: .
-shex:literal a shex:NodeKind;
-  rdfs:label "Literal"@en;
-  rdfs:comment """"""@en;
-  rdfs:isDefinedBy shex: .
-shex:nonliteral a shex:NodeKind;
-  rdfs:label "Non-Literal"@en;
-  rdfs:comment """"""@en;
-  rdfs:isDefinedBy shex: .
