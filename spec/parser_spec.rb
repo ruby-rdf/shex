@@ -1109,30 +1109,50 @@ describe ShEx::Parser do
         input: %(<http://e/S1> {&<http://e/MissingShape>}),
         result: ShEx::StructureError
       },
-      "Negated reference 1" => {
-        input: %(PREFIX ex: <http://schema.example/> ex:S NOT @ex:S),
-        result: ShEx::ParseError
+      "This negated self-reference violates the negation requirement" => {
+        input: %(
+          PREFIX ex: <http://schema.example/>
+          ex:S NOT @ex:S
+        ),
+        result: ShEx::StructureError
       },
-      "Negated reference 2" => {
+      "This negated, indirect self-reference violates the negation requirement" => {
         input: %(
           PREFIX ex: <http://schema.example/>
           ex:S NOT @ex:T
           ex:T @ex:S
         ),
-        result: ShEx::ParseError
+        result: ShEx::StructureError
       },
-      "This self-reference on a predicate designated as extra violates the negation requirement:" => {
+      "This doubly-negated self-reference does not violate the negation requirement" => {
+        input: %(
+          PREFIX ex: <http://schema.example/>
+          ex:S NOT (IRI OR NOT @ex:S)
+        ),
+        result: %{(schema
+           (prefix (("ex" <http://schema.example/>)))
+           (shapes (
+             (<http://schema.example/S>
+             (not 
+               (or (nodeConstraint iri)
+                   (not (shapeRef <http://schema.example/S>))))) )) ) }
+      },
+      "This self-reference on a predicate designated as extra violates the negation requirement" => {
         input: %(PREFIX ex: <http://schema.example/> ex:S EXTRA ex:p {ex:p @ex:S}),
-        result: ShEx::ParseError
+        result: ShEx::StructureError
       },
-      "The same shape with a negated self-reference still violates the negation requirement because the reference occurs with a ShapeNot:" => {
+      "The same shape with a negated self-reference still violates the negation requirement because the reference occurs with a ShapeNot" => {
         input: %(PREFIX ex: <http://schema.example/> ex:S EXTRA ex:p {ex:p NOT @ex:S}),
-        result: ShEx::ParseError
+        result: ShEx::StructureError
       },
     }.each do |name, params|
       it name do
-        pending("Self Reference validation") if name.include?('self-reference')
-        pending("A schema MUST NOT contain any shape expression S with negated references, either directly or transitively, to S") if name.include?('Negated reference')
+        case name
+        when "This negated, indirect self-reference violates the negation requirement"
+          pending "Checking references through indirects"
+        when "The same shape with a negated self-reference still violates the negation requirement because the reference occurs with a ShapeNot"
+          pending "Negated references"
+        end
         expect(params[:input]).to generate(params[:result], validate: true, logger: RDF::Spec.logger)
       end
     end
@@ -1151,9 +1171,9 @@ describe ShEx::Parser do
             when '_all'
               validate = false # Has self-included shape
             when 'openopen1dotOr1dotclose'
-              pending("Missing production multiElementOneOf")
+              pending("Our grammar allows nested bracketedTripleExpr")
             when '1focusRefANDSelfdot'
-              pending("Is self referencing (OK?) and includes an empty shape (OK?)")
+              #pending("Is self referencing (OK?) and includes an empty shape (OK?)")
             end
 
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]

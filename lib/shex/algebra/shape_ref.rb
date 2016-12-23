@@ -51,10 +51,11 @@ module ShEx::Algebra
     ##
     # A ShapeRef is valid if it's ancestor schema has any shape with a label
     # the same as it's reference.
+    # A ref cannot reference itself (via whatever path) without going through a TripleConstraint.
+    # Even when going through TripleConstraints, there can't be a negative reference.
     def validate!
       structure_error("Missing referenced shape: #{operands.first}") if referenced_shape.nil?
-      # FIXME
-      #raise ShEx::ParseError, "Self referencing shape: #{operands.first}" if referenced_shape == first_ancestor(Shape)
+      raise ShEx::StructureError, "Self referencing shape: #{operands.first}" if referenced_shape == first_ancestor(Satisfiable)
       super
     end
 
