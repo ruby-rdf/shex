@@ -349,25 +349,24 @@ describe ShEx::Algebra do
           "http://inst.example/Testgrammer23" => "http://schema.example/ProgrammerShape"
         }
       },
-      # FIXME
-      #"Recursion Example" => {
-      #  schema: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:related @ex:IssueShape*}),
-      #  data: %(
-      #    PREFIX ex: <http://schema.example/>
-      #    PREFIX inst: <http://inst.example/>
-      #    inst:Issue1 ex:related inst:Issue2 .
-      #    inst:Issue2 ex:related inst:Issue3 .
-      #    inst:Issue3 ex:related inst:Issue1 .
-      #  ),
-      #  expected: [
-      #    {focus: "http://inst.example/Issue1", shape: "http://schema.example/IssueShape", result: true},
-      #  ],
-      #  map: {
-      #    "http://inst.example/Issue1" => "http://schema.example/IssueShape",
-      #    "http://inst.example/Issue2" => "http://schema.example/IssueShape",
-      #    "http://inst.example/Issue3" => "http://schema.example/IssueShape"
-      #  }
-      #},
+      "Recursion Example" => {
+        schema: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:related @ex:IssueShape*}),
+        data: %(
+          PREFIX ex: <http://schema.example/>
+          PREFIX inst: <http://inst.example/>
+          inst:Issue1 ex:related inst:Issue2 .
+          inst:Issue2 ex:related inst:Issue3 .
+          inst:Issue3 ex:related inst:Issue1 .
+        ),
+        expected: [
+          {focus: "http://inst.example/Issue1", shape: "http://schema.example/IssueShape", result: true},
+        ],
+        map: {
+          "http://inst.example/Issue1" => "http://schema.example/IssueShape",
+          "http://inst.example/Issue2" => "http://schema.example/IssueShape",
+          "http://inst.example/Issue3" => "http://schema.example/IssueShape"
+        }
+      },
       "Simple Repeated Property Examples" => {
         schema: %(
           PREFIX ex: <http://schema.example/>

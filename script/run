@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", 'lib')))
+require "bundler/setup"
 require 'shex'
 begin
   require 'linkeddata'
@@ -25,7 +26,7 @@ def run(graph, options = {})
   STDERR.puts ("\nSXP:\n" + shex.to_sxp) if options[:debug]
 
   if options[:to_sxp]
-    puts (shex.to_sxp)
+    SXP::Generator.print(shex.to_sxp_bin)
   else
     res = shex.execute(graph, options)
     puts res.dump

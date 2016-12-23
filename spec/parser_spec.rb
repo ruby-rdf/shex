@@ -522,7 +522,6 @@ describe ShEx::Parser do
           PREFIX ex: <http://schema.example/>
           ex:UserShape EXTRA a {a [ex:Teacher]}
         ),
-        # Spec FIXME: incorrectly puts extra in TripleConstraint
         shexj: %({ "type": "Schema",
           "prefixes": {"ex": "http://schema.example/"},
           "shapes": {
@@ -1151,11 +1150,6 @@ describe ShEx::Parser do
             case t.name
             when '_all'
               validate = false # Has self-included shape
-              pending("escapes in N-Triples formatted values")
-            when '1val1STRING_LITERAL1_with_all_controls',
-                 '1val1STRING_LITERAL1_with_all_punctuation',
-                 '1val1STRING_LITERAL1_with_ascii_boundaries'
-              pending("escapes in N-Triples formatted values")
             when 'openopen1dotOr1dotclose'
               pending("Missing production multiElementOneOf")
             when '1focusRefANDSelfdot'

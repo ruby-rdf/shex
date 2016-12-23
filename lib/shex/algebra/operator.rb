@@ -476,7 +476,9 @@ module ShEx::Algebra
     def serialize_value(value)
       case value
         when RDF::Literal
-          RDF::NTriples.serialize(value).sub(/\^\^<(.*)>/, '^^\1')
+          %("#{value}") +
+          (value.has_datatype? ? "^^#{value.datatype}" : "") +
+          (value.has_language? ? "@#{value.language}" : "")
         when RDF::Resource then value.to_s
         else value.to_json
       end
