@@ -300,6 +300,13 @@ module ShEx::Algebra
     end
 
     def to_json(options = nil)
+      self.to_h.to_json(options)
+    end
+
+    ##
+    # Create a hash version of the operator, suitable for turning into JSON.
+    # @return [Hash]
+    def to_h
       obj = {'type' => json_type}
       operands.each do |op|
         case op
@@ -312,7 +319,7 @@ module ShEx::Algebra
           when :exclusions      then obj['exclusions'] = Array(op[1..-1]).map {|v| serialize_value(v)}
           when :extra           then (obj['extra'] ||= []).concat Array(op[1..-1]).map(&:to_s)
           when :prefix          then obj['prefixes'] = op.last.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
-          when :shapes          then obj['shapes'] = op.last.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_json)}
+          when :shapes          then obj['shapes'] = op.last.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_h)}
           when :minlength,
                :maxlength,
                :length,
@@ -323,14 +330,14 @@ module ShEx::Algebra
                :totaldigits,
                :fractiondigits  then obj[op.first.to_s] = op.last.object
           when :min, :max       then obj[op.first.to_s] = op.last
-          when Symbol           then obj[sym.to_s] = Array(op[1..-1]).map(&:to_json)
+          when Symbol           then obj[sym.to_s] = Array(op[1..-1]).map(&:to_h)
           else
             raise "Expected array to start with a symbol for #{self}"
           end
         when :wildcard  then obj['stem'] = {'type' => 'Wildcard'}
-        when Annotation then (obj['annotations'] ||= []) << op.to_json
-        when SemAct     then (obj[is_a?(Schema) ? 'startActs' : 'semActs'] ||= []) << op.to_json
-        when Start      then obj['start'] = op.operands.first.to_json
+        when Annotation then (obj['annotations'] ||= []) << op.to_h
+        when SemAct     then (obj[is_a?(Schema) ? 'startActs' : 'semActs'] ||= []) << op.to_h
+        when Start      then obj['start'] = op.operands.first.to_h
         when RDF::Value
           case self
           when TripleConstraint then obj['predicate'] = op.to_s
@@ -352,25 +359,25 @@ module ShEx::Algebra
         when TripleConstraint, EachOf, OneOf, Inclusion
           case self
           when EachOf, OneOf
-            (obj['expressions'] ||= []) << op.to_json
+            (obj['expressions'] ||= []) << op.to_h
           else
-            obj['expression'] = op.to_json
+            obj['expression'] = op.to_h
           end
         when NodeConstraint
           case self
           when And, Or
-            (obj['shapeExprs'] ||= []) << op.to_json
+            (obj['shapeExprs'] ||= []) << op.to_h
           else
-            obj['valueExpr'] = op.to_json
+            obj['valueExpr'] = op.to_h
           end
         when And, Or, Shape, Not, ShapeRef
           case self
           when And, Or
-            (obj['shapeExprs'] ||= []) << op.to_json
+            (obj['shapeExprs'] ||= []) << op.to_h
           when TripleConstraint
-            obj['valueExpr'] = op.to_json
+            obj['valueExpr'] = op.to_h
           else
-            obj['shapeExpr'] = op.to_json
+            obj['shapeExpr'] = op.to_h
           end
         when Value
           obj['values'] ||= []
@@ -480,7 +487,7 @@ module ShEx::Algebra
           (value.has_datatype? ? "^^#{value.datatype}" : "") +
           (value.has_language? ? "@#{value.language}" : "")
         when RDF::Resource then value.to_s
-        else value.to_json
+        else value.to_h
       end
     end
 
@@ -559,6 +566,13 @@ module ShEx::Algebra
     def validate!
       operands.each {|op| op.validate! if op.respond_to?(:validate!)}
       self
+    end
+
+    ##
+    # Implement `to_hash` only if accessed; otherwise, it becomes an _Implicit Accessor_ which will cause problems with splat arguments, which causes the last to be turned into a hash for extracting keyword aruments.
+    def method_missing(method, *args)
+      return to_h(*args) if method == :hash
+      super
     end
 
     ##

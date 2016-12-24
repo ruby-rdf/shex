@@ -14,7 +14,7 @@ module ShEx::Algebra
       super
     end
 
-    def to_json(options = nil)
+    def to_h
       {
         'type' => json_type,
         'predicate' => operands.first.to_s,

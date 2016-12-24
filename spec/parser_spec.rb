@@ -1181,9 +1181,9 @@ describe ShEx::Parser do
             if t.positive_test?
               begin
                 expression = ShEx.parse(t.schema_source)
-                json = expression.to_json
+                hash = expression.to_h
                 shexj = JSON.parse t.schema_json
-                expect(json).to produce(shexj, logger: RDF::Spec.logger)
+                expect(hash).to produce(shexj, logger: RDF::Spec.logger)
               rescue IOError
                 # JSON file not there, ignore
               end
