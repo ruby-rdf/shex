@@ -1090,8 +1090,8 @@ describe ShEx::Parser do
 
         it "#{name} generates shexj from shexc" do
           expression = ShEx.parse(params[:shexc])
-          json = expression.to_json
-          expect(json).to produce(JSON.parse(params[:shexj]), logger: RDF::Spec.logger)
+          hash = expression.to_h
+          expect(hash).to produce(JSON.parse(params[:shexj]), logger: RDF::Spec.logger)
         end
       end
     end
@@ -1161,7 +1161,7 @@ describe ShEx::Parser do
   require 'suite_helper'
 
   %w(schemas negativeSyntax negativeStructure).each do |dir|
-    manifest = Fixtures::SuiteTest::BASE + "/#{dir}/manifest.jsonld"
+    manifest = Fixtures::SuiteTest::BASE + "#{dir}/manifest.jsonld"
     Fixtures::SuiteTest::Manifest.open(manifest) do |m|
       describe m.attributes['rdfs:comment'] do
         m.entries.each do |t|

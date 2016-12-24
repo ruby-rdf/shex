@@ -461,7 +461,7 @@ describe ShEx::Algebra do
           t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
           expected = t.positive_test? || ShEx::NotSatisfied
           schema = ShEx.parse(t.schema_source, validate: true, logger: t.logger, base_uri: t.base)
-          expect(schema).to satisfy(t.graph, RDF::Util::File.open_file(t.data, &:read), t.focus, t.shape, nil, expected, logger: t.logger, shapeExterns: t.shapeExterns)
+          expect(schema).to satisfy(t.graph, t.data_source, t.focus, t.shape, nil, expected, logger: t.logger, shapeExterns: t.shapeExterns)
         end
       end
     end

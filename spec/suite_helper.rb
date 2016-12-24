@@ -21,7 +21,9 @@ module Fixtures
                             structure: file.downcase.include?('structure'),
                             negative: file.include?('negative'))
         end
-        yield Manifest.new(json['@graph'].first, context: {base: "file:/#{file}"})
+        man = Manifest.new(json['@graph'].first, json: json, context: {base: "file:/#{file}"})
+        man.instance_variable_set(:@json, json)
+        yield man
       end
 
       def entries
@@ -31,11 +33,11 @@ module Fixtures
       end
 
       def self.generate_manifest(file, structure:, negative:)
-        dir = file.split('/')[0..-2].join('/')
+        dir = file.split('/')[0..-2].compact.join('/')
         man = JSON.parse(%({
-          "@context": "https://raw.githubusercontent.com/shexSpec/test-suite/gh-pages/tests/manifest-context.jsonld",
+          "@context": "https://raw.githubusercontent.com/shexSpec/shexTest/master/context.jsonld",
           "@graph": [{
-            "@id": "http://shexspec.github.io/test-suite/#{dir.split('/').join}/manifest.jsonld",
+            "@id": "https://raw.githubusercontent.com/shexSpec/shexTest/master/#{dir.split('/').last}/manifest",
             "@type": "mf:Manifest",
             "rdfs:comment": "ShEx#{negative ? " negative" : ""} #{structure ? "structure" : "syntax"} tests",
             "entries": []
@@ -43,14 +45,17 @@ module Fixtures
         }))
         entries = man['@graph'][0]['entries']
         Dir.glob("#{dir}/*.shex").each do |f|
-          f = f.split('/').last
-          name = f.sub(/\.shex$/, '')
-          entries << {
+          shex = f.split('/').last
+          name = shex.sub(/\.shex$/, '')
+          json = shex.sub('.shex', '.json') if File.exist?(f.sub('.shex', '.json'))
+          entry = {
             "@id" => "##{name}",
             "@type" => "sht:#{negative ? "Negative" : ""}#{structure ? "Structure" : "Syntax"}Test",
             "name" => name,
-            "action" => f
+            "shex" => shex
           }
+          entry['json'] = json if json
+          entries << entry
         end
         man
       end
@@ -64,11 +69,20 @@ module Fixtures
       end
 
       def schema
-        base.join(action.is_a?(Hash) ? action["schema"] : action)
+        base.join(action.is_a?(Hash) && action["schema"] ? action["schema"] : shex)
+      end
+
+      def json
+        sch = action["schema"].to_s.sub('.shex', '.json') if action.is_a?(Hash) && action["schema"]
+        base.join(attributes.fetch('json', sch))
       end
 
       def data
-        action.is_a?(Hash) && base.join(action["data"])
+        action.is_a?(Hash) && action["data"] && base.join(action["data"])
+      end
+
+      def turtle
+        attributes["turtle"] && base.join(attributes["turtle"])
       end
 
       def shapeExterns
@@ -87,10 +101,6 @@ module Fixtures
         action.is_a?(Hash) && action["focus"]
       end
 
-      def turtle
-        @turtle ||= File.read(data)
-      end
-
       def graph
         @graph ||= RDF::Graph.load(data, base_uri: base)
       end
@@ -100,7 +110,15 @@ module Fixtures
       end
 
       def schema_json
-        @schema_json ||= RDF::Util::File.open_file(schema.to_s.sub('.shex', '.json'), &:read)
+        @schema_json ||= RDF::Util::File.open_file(json, &:read)
+      end
+
+      def data_source
+        @data_source ||= RDF::Util::File.open_file(data, &:read)
+      end
+
+      def turtle_source
+        @turtle_source ||= RDF::Util::File.open_file(turtle, &:read)
       end
 
       def structure_test?

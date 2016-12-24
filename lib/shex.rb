@@ -167,7 +167,6 @@ module ShEx
     # ParseError includes `token` and `lineno` associated with the expression.
     #
     # @param  [String, #to_s]          message
-    # @param  [Hash{Symbol => Object}] options
     # @param [String]                  token  (nil)
     # @param [Integer]                 lineno (nil)
     def initialize(message, token: nil, lineno: nil)

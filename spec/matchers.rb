@@ -78,6 +78,7 @@ end
 
 RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **options|
   match do |input|
+    focus = focus['@value'] if focus.is_a?(Hash)
     map ||= {focus => shape} if shape
 
     case

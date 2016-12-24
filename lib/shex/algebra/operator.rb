@@ -404,19 +404,19 @@ module ShEx::Algebra
     end
 
     # Create URIs
-    # @param  (see iri)
-    # @option (see iri)
-    # @return (see iri)
-    def iri(value, options = @options)
-      self.class.iri(value, options)
-    end
-
-    # Create URIs
     # @param [RDF::Value, String] value
     # @param [Hash{Symbol => Object}] options
     # @option options [RDF::URI] :base_uri
     # @option options [Hash{String => RDF::URI}] :prefixes
     # @return [RDF::Value]
+    def iri(value, options = @options)
+      self.class.iri(value, options)
+    end
+
+    # Create URIs
+    # @param  (see #iri)
+    # @option (see #iri)
+    # @return (see #iri)
     def self.iri(value, options)
       # If we have a base URI, use that when constructing a new URI
       case value
@@ -451,19 +451,19 @@ module ShEx::Algebra
     end
 
     # Create Values, with "clever" matching to see if it might be a value, IRI or BNode.
-    # @param  (see value)
-    # @option (see value)
-    # @return (see value)
-    def value(value, options = @options)
-      self.class.value(value, options)
-    end
-
-    # Create Values, with "clever" matching to see if it might be a value, IRI or BNode.
     # @param [RDF::Value, String] value
     # @param [Hash{Symbol => Object}] options
     # @option options [RDF::URI] :base_uri
     # @option options [Hash{String => RDF::URI}] :prefixes
     # @return [RDF::Value]
+    def value(value, options = @options)
+      self.class.value(value, options)
+    end
+
+    # Create Values, with "clever" matching to see if it might be a value, IRI or BNode.
+    # @param  (see #value)
+    # @option (see #value)
+    # @return (see #value)
     def self.value(value, options)
       # If we have a base URI, use that when constructing a new URI
       case value
@@ -478,7 +478,7 @@ module ShEx::Algebra
     ##
     # Serialize a value, either as JSON, or as modififed N-Triples
     #
-    # @param [RDF::Value, Operator]
+    # @param [RDF::Value, Operator] value
     # @return [String]
     def serialize_value(value)
       case value

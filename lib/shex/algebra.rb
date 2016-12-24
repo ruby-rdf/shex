@@ -40,7 +40,7 @@ module ShEx
     #         }
     #   ))
     #   TripleConstraint.from(rep) #=> (tripleConstraint a)
-    # @param [Hash] representation
+    # @param [Hash] operator
     # @param [Hash] options ({})
     # @option options [RDF::URI] :base
     # @option options [Hash{String => RDF::URI}] :prefixes

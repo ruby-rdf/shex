@@ -19,8 +19,9 @@ This is a pure-Ruby library for working with the [Shape Expressions Language][Sh
 
 The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
 
-* `ShEx::Parser` parses ShExC formatted documents generating executable operators which can be serialized as [S-Expressions](http://en.wikipedia.org/wiki/S-expression).
+* `ShEx::Parser` parses ShExC and ShExJ formatted documents generating executable operators which can be serialized as [S-Expressions](http://en.wikipedia.org/wiki/S-expression).
 * `ShEx::Algebra` executes operators against Any `RDF::Graph`, including compliant [RDF.rb][].
+* [Implementation Report](file.earl.html)
 
 ## Example
 
