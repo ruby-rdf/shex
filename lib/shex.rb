@@ -24,10 +24,14 @@ module ShEx
   # @return (see ShEx::Parser#parse)
   # @raise  (see ShEx::Parser#parse)
   def self.parse(expression, format: 'shexc', **options)
-    case format
+    case format.to_s
     when 'shexc' then Parser.new(expression, options).parse
-    when 'shexj' then Algebra.from_sxp(JSON.parse expression)
+    when 'shexj'
+      expression = expression.read if expression.respond_to?(:read)
+      Algebra.from_shexj(JSON.parse expression)
     when 'sxp'
+      expression = expression.read if expression.respond_to?(:read)
+      Algebra.from_sxp(JSON.parse expression)
     else raise "Unknown expression format: #{format.inspect}"
     end
   end

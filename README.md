@@ -23,7 +23,8 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
 * `ShEx::Algebra` executes operators against Any `RDF::Graph`, including compliant [RDF.rb][].
 * [Implementation Report](file.earl.html)
 
-## Example
+## Examples
+### Validating a node using ShExC
 
     require 'rubygems'
     require 'rdf/turtle'
@@ -45,6 +46,99 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
     map = {
       "http://rubygems.org/gems/shex" => "TestShape"
     }
+    schema.satisfies?("http://rubygems.org/gems/shex", graph, map)
+    # => true
+### Validating a node using ShExC
+
+    require 'rubygems'
+    require 'rdf/turtle'
+    require 'shex'
+
+    shexj: %({
+      "type": "Schema",
+      "prefixes": {
+        "doap": "http://usefulinc.com/ns/doap#",
+        "dc": "http://purl.org/dc/terms/"
+      },
+      "shapes": {
+        "TestShape": {
+          "type": "Shape",
+          "extra": ["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"],
+          "expression": {
+            "type": "EachOf",
+            "expressions": [
+              {
+                "type": "TripleConstraint",
+                "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "values": ["http://usefulinc.com/ns/doap#Project"]
+                }
+              },
+              {
+                "type": "OneOf",
+                "expressions": [
+                  {
+                    "type": "EachOf",
+                    "expressions": [
+                      {
+                        "type": "TripleConstraint",
+                        "predicate": "http://usefulinc.com/ns/doap#name",
+                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
+                      },
+                      {
+                        "type": "TripleConstraint",
+                        "predicate": "http://usefulinc.com/ns/doap#description",
+                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
+                      }
+                    ]
+                  },
+                  {
+                    "type": "EachOf",
+                    "expressions": [
+                      {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/title",
+                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
+                      },
+                      {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/description",
+                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
+                      }
+                    ]
+                  }
+                ],
+                "min": 1, "max": "*"
+              },
+              {
+                "type": "TripleConstraint",
+                "predicate": "http://usefulinc.com/ns/doap#category",
+                "valueExpr": {"type": "NodeConstraint", "nodeKind": "iri"},
+                "min": 0, "max": "*"
+              },
+              {
+                "type": "TripleConstraint",
+                "predicate": "http://usefulinc.com/ns/doap#developer",
+                "valueExpr": {"type": "NodeConstraint", "nodeKind": "iri"},
+                "min": 1, "max": "*"
+              },
+              {
+                "type": "TripleConstraint",
+                "predicate": "http://usefulinc.com/ns/doap#implements",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "values": ["https://shexspec.github.io/spec/"]
+                }
+              }
+            ]
+          }
+        }
+      }
+    })
+    graph = RDF::Graph.load("etc/doap.ttl")
+    schema = ShEx.parse(shexj, format: :shexj)
+    map = {"http://rubygems.org/gems/shex" => "TestShape"}
     schema.satisfies?("http://rubygems.org/gems/shex", graph, map)
     # => true
 
