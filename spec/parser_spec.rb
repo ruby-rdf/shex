@@ -1168,7 +1168,7 @@ describe ShEx::Parser do
           specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?}" do
             validate = true
             case t.name
-            when '_all'
+            when '_all', 'kitchenSink'
               validate = false # Has self-included shape
             when 'openopen1dotOr1dotclose'
               pending("Our grammar allows nested bracketedTripleExpr")
@@ -1180,7 +1180,7 @@ describe ShEx::Parser do
 
             if t.positive_test?
               begin
-                expression = ShEx.parse(t.schema_source)
+                expression = ShEx.parse(t.schema_source, validate: validate, logger: RDF::Spec.logger)
                 hash = expression.to_h
                 shexj = JSON.parse t.schema_json
                 expect(hash).to produce(shexj, logger: RDF::Spec.logger)

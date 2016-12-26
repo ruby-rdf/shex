@@ -15,7 +15,7 @@ JSON_STATE = JSON::State.new(
      when :shexj
        ShEx::Algebra.from_shexj(JSON.parse input)
      else
-       parser = ShEx::Parser.new(input, {debug: @debug, resolve_iris: false}.merge(options))
+       parser = ShEx::Parser.new(input, {debug: @debug}.merge(options))
        options[:production] ? parser.parse(options[:production]) : parser.parse
      end
    end
@@ -78,7 +78,9 @@ end
 
 RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **options|
   match do |input|
-    focus = focus['@value'] if focus.is_a?(Hash)
+    focus = RDF::Literal(focus['@value'],
+                         datatype: focus['@type'],
+                         language: focus['@language']) if focus.is_a?(Hash)
     map ||= {focus => shape} if shape
 
     case

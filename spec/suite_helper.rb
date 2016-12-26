@@ -14,13 +14,7 @@ module Fixtures
         @file = file
 
         # Create a manifest, if `file` doesn't exist
-        json = if File.exist?(file)
-          JSON.parse(File.read(file))
-        else
-          generate_manifest(file,
-                            structure: file.downcase.include?('structure'),
-                            negative: file.include?('negative'))
-        end
+        json = JSON.parse(File.read(file))
         man = Manifest.new(json['@graph'].first, json: json, context: {base: "file:/#{file}"})
         man.instance_variable_set(:@json, json)
         yield man
@@ -30,34 +24,6 @@ module Fixtures
         # Map entries to resources
         ents = attributes['entries'].map {|e| Entry.new(e, context: context)}
         ents
-      end
-
-      def self.generate_manifest(file, structure:, negative:)
-        dir = file.split('/')[0..-2].compact.join('/')
-        man = JSON.parse(%({
-          "@context": "https://raw.githubusercontent.com/shexSpec/shexTest/master/context.jsonld",
-          "@graph": [{
-            "@id": "https://raw.githubusercontent.com/shexSpec/shexTest/master/#{dir.split('/').last}/manifest",
-            "@type": "mf:Manifest",
-            "rdfs:comment": "ShEx#{negative ? " negative" : ""} #{structure ? "structure" : "syntax"} tests",
-            "entries": []
-          }]
-        }))
-        entries = man['@graph'][0]['entries']
-        Dir.glob("#{dir}/*.shex").each do |f|
-          shex = f.split('/').last
-          name = shex.sub(/\.shex$/, '')
-          json = shex.sub('.shex', '.json') if File.exist?(f.sub('.shex', '.json'))
-          entry = {
-            "@id" => "##{name}",
-            "@type" => "sht:#{negative ? "Negative" : ""}#{structure ? "Structure" : "Syntax"}Test",
-            "name" => name,
-            "shex" => shex
-          }
-          entry['json'] = json if json
-          entries << entry
-        end
-        man
       end
     end
 

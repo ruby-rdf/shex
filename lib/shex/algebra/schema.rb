@@ -23,7 +23,7 @@ module ShEx::Algebra
     ##
     # Match on schema. Finds appropriate shape for node, and matches that shape.
     #
-    # @param [RDF::Resource] focus
+    # @param [RDF::Term] focus
     # @param [RDF::Queryable] graph
     # @param [Hash{RDF::Resource => RDF::Resource}] map
     # @param [Array<Schema, String>] shapeExterns ([])

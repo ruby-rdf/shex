@@ -79,7 +79,7 @@ module ShEx
     terminal(:PNAME_LN,             PNAME_LN, unescape: true) do |prod, token, input|
       prefix, suffix = token.value.split(":", 2)
       input[:iri] = ns(prefix, suffix)
-      error(nil, "Compact IRI missing prefix definition: #{token.value}", production: :PNAME_LN) unless input[:iri].absolute?
+      error(nil, "Compact IRI missing prefix definition: #{token.value}", production: :PNAME_LN) unless prefix(prefix)
     end
     terminal(:PNAME_NS,             PNAME_NS) do |prod, token, input|
       prefix = token.value[0..-2]
@@ -569,10 +569,6 @@ module ShEx
     #   the base URI to use when resolving relative URIs (for acessing intermediate parser productions)
     # @option options [#to_s]    :anon_base     ("b0")
     #   Basis for generating anonymous Nodes
-    # @option options [Boolean] :resolve_iris (false)
-    #   Resolve prefix and relative IRIs, otherwise, when serializing the parsed SXP
-    #   as S-Expressions, use the original prefixed and relative URIs along with `base` and `prefix`
-    #   definitions.
     # @option options [Boolean]  :validate     (false)
     #   whether to validate the parsed statements and values
     # @option options [Boolean] :progress
