@@ -10,6 +10,7 @@ group :development, :test do
   gem 'sxp',        github: "dryruby/sxp.rb",       branch: "develop"
   gem 'simplecov',  require: false
   gem 'coveralls',  require: false
+  gem 'earl-report'
 end
 
 group :debug do

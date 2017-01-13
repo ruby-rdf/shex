@@ -7,12 +7,12 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <negativeStructure/manifest> a mf:Manifest;
-   rdfs:comment "ShEx negative structure tests";
-   mf:entries (<negativeStructure/manifest#1focusMissingRefdot> <negativeStructure/manifest#1focusRefANDSelfdot> <negativeStructure/manifest#1MissingRef> <negativeStructure/manifest#includeNonSimpleShape> <negativeStructure/manifest#includeShapeNotFound>) .
+   rdfs:comment "ShEx representation tests";
+   mf:entries (<negativeStructure/manifest#1MissingRef> <negativeStructure/manifest#1focusMissingRefdot> <negativeStructure/manifest#1focusRefANDSelfdot> <negativeStructure/manifest#includeNonSimpleShape> <negativeStructure/manifest#includeShapeNotFound>) .
 
 <negativeSyntax/manifest> a mf:Manifest;
-   rdfs:comment "ShEx negative syntax tests";
-   mf:entries (<negativeSyntax/manifest#1decimalMininclusiveroman-numeral> <negativeSyntax/manifest#1dotAnnot_AIRIREF> <negativeSyntax/manifest#1dotUnlabeledCode1> <negativeSyntax/manifest#1doubleMininclusiveroman-numeral> <negativeSyntax/manifest#1floatMininclusiveroman-numeral> <negativeSyntax/manifest#1integerMininclusiveroman-numeral> <negativeSyntax/manifest#1inverseinversedot> <negativeSyntax/manifest#1iriLength2> <negativeSyntax/manifest#1iriMaxexclusive> <negativeSyntax/manifest#1iriMaxinclusive> <negativeSyntax/manifest#1iriMinexclusive> <negativeSyntax/manifest#1iriMininclusive> <negativeSyntax/manifest#1literalFractiondigitsxsd-integer> <negativeSyntax/manifest#1literalLength2> <negativeSyntax/manifest#1literalTotaldigitsxsd-integer> <negativeSyntax/manifest#1negatedinversenegateddot> <negativeSyntax/manifest#1negatednegateddot> <negativeSyntax/manifest#1unknowndatatypeMaxInclusive> <negativeSyntax/manifest#1val1bnode> <negativeSyntax/manifest#1val1iriMinusiri1> <negativeSyntax/manifest#1val1vcrefSTRING_LITERAL1> <negativeSyntax/manifest#1valA> <negativeSyntax/manifest#a> <negativeSyntax/manifest#base-no-uri> <negativeSyntax/manifest#base-uri-dot> <negativeSyntax/manifest#bnodedot> <negativeSyntax/manifest#capitol-A> <negativeSyntax/manifest#DECIMAL-123.abc> <negativeSyntax/manifest#DOUBLE-123e> <negativeSyntax/manifest#group-no-COMMA-separators> <negativeSyntax/manifest#groupShapeConstr-trailing-OR> <negativeSyntax/manifest#INTEGER-+-1> <negativeSyntax/manifest#INTEGER-123abc> <negativeSyntax/manifest#IRIREF-with-bad-UCHAR.1> <negativeSyntax/manifest#IRIREF-with-bad-UCHAR.2> <negativeSyntax/manifest#IRIREF-with-ECHAR> <negativeSyntax/manifest#IRIREF-with-PN_LOCAL_ESC> <negativeSyntax/manifest#IRIREF-with-SPACE> <negativeSyntax/manifest#literal-0x123> <negativeSyntax/manifest#open1dotclose> <negativeSyntax/manifest#open1dotcloseAnnot3> <negativeSyntax/manifest#open1dotclosecardOpt> <negativeSyntax/manifest#open1dotcloseCode1> <negativeSyntax/manifest#openopen1dotcloseCode1closeCode2> <negativeSyntax/manifest#openopen1dotOr1dotclose> <negativeSyntax/manifest#PN_LOCAL-dash-start> <negativeSyntax/manifest#PN_LOCAL-PERCENT-end> <negativeSyntax/manifest#PN_LOCAL-PERCENT-mid> <negativeSyntax/manifest#PN_LOCAL-PERCENT-start> <negativeSyntax/manifest#PN_LOCAL-unescaped-TILDE> <negativeSyntax/manifest#PN_LOCAL-with-UCHAR.1> <negativeSyntax/manifest#PNAME_NS-dot-at-end-declared> <negativeSyntax/manifest#PNAME_NS-dot-at-end-undeclared> <negativeSyntax/manifest#PNAME_NS-dot-at-start-declared> <negativeSyntax/manifest#PNAME_NS-dot-at-start-undeclared> <negativeSyntax/manifest#predicate-ANON> <negativeSyntax/manifest#predicate-BLANK_NODE_LABEL> <negativeSyntax/manifest#predicate-literal> <negativeSyntax/manifest#predicate-true> <negativeSyntax/manifest#prefix-missing> <negativeSyntax/manifest#prefix-no-COLON> <negativeSyntax/manifest#prefix-no-PNAME_NS> <negativeSyntax/manifest#prefix-no-uri> <negativeSyntax/manifest#prefix-none> <negativeSyntax/manifest#shapename-a> <negativeSyntax/manifest#shapename-literal> <negativeSyntax/manifest#shapename-true> <negativeSyntax/manifest#STRING_LITERAL1-ending-QUOTATION_MARK> <negativeSyntax/manifest#STRING_LITERAL2-bad-ECHAR> <negativeSyntax/manifest#STRING_LITERAL2-bad-LANGTAG> <negativeSyntax/manifest#STRING_LITERAL2-bad-UCHAR1> <negativeSyntax/manifest#STRING_LITERAL2-bad-UCHAR2-value> <negativeSyntax/manifest#STRING_LITERAL2-ending-APOSTROPHE> <negativeSyntax/manifest#STRING_LITERAL2-illegal-UCHAR1-value> <negativeSyntax/manifest#STRING_LITERAL2-with-LANGTAG-and-datatype> <negativeSyntax/manifest#STRING_LITERAL_LONG1-ending-APOSTROPHE> <negativeSyntax/manifest#STRING_LITERAL_LONG1-ending-APOSTROPHE4> <negativeSyntax/manifest#STRING_LITERAL_LONG2-ending-APOSTROPHE3> <negativeSyntax/manifest#STRING_LITERAL_LONG2-ending-QUOTATION_MARK4> <negativeSyntax/manifest#STRING_LITERAL_LONG2-unterminated> <negativeSyntax/manifest#tripleConsraint-no-valueClass> <negativeSyntax/manifest#tripleConsraint-with-datatype-and-dot> <negativeSyntax/manifest#tripleConsraint-with-datatype-and-valueSet> <negativeSyntax/manifest#tripleConsraint-with-dot-and-datatype> <negativeSyntax/manifest#tripleConsraint-with-two-cardinalities>) .
+   rdfs:comment "ShEx representation tests";
+   mf:entries (<negativeSyntax/manifest#1decimalMininclusiveroman-numeral> <negativeSyntax/manifest#1dotAnnot_AIRIREF> <negativeSyntax/manifest#1dotUnlabeledCode1> <negativeSyntax/manifest#1doubleMininclusiveroman-numeral> <negativeSyntax/manifest#1floatMininclusiveroman-numeral> <negativeSyntax/manifest#1integerMininclusiveroman-numeral> <negativeSyntax/manifest#1inverseinversedot> <negativeSyntax/manifest#1iriLength2> <negativeSyntax/manifest#1iriMaxexclusive> <negativeSyntax/manifest#1iriMaxinclusive> <negativeSyntax/manifest#1iriMinexclusive> <negativeSyntax/manifest#1iriMininclusive> <negativeSyntax/manifest#1literalFractiondigitsxsd-integer> <negativeSyntax/manifest#1literalLength2> <negativeSyntax/manifest#1literalTotaldigitsxsd-integer> <negativeSyntax/manifest#1negatedinversenegateddot> <negativeSyntax/manifest#1negatednegateddot> <negativeSyntax/manifest#1unknowndatatypeMaxInclusive> <negativeSyntax/manifest#1val1bnode> <negativeSyntax/manifest#1val1iriMinusiri1> <negativeSyntax/manifest#1val1vcrefSTRING_LITERAL1> <negativeSyntax/manifest#1valA> <negativeSyntax/manifest#DECIMAL-123.abc> <negativeSyntax/manifest#DOUBLE-123e> <negativeSyntax/manifest#INTEGER-+-1> <negativeSyntax/manifest#INTEGER-123abc> <negativeSyntax/manifest#IRIREF-with-ECHAR> <negativeSyntax/manifest#IRIREF-with-PN_LOCAL_ESC> <negativeSyntax/manifest#IRIREF-with-SPACE> <negativeSyntax/manifest#IRIREF-with-bad-UCHAR.1> <negativeSyntax/manifest#IRIREF-with-bad-UCHAR.2> <negativeSyntax/manifest#PNAME_NS-dot-at-end-declared> <negativeSyntax/manifest#PNAME_NS-dot-at-end-undeclared> <negativeSyntax/manifest#PNAME_NS-dot-at-start-declared> <negativeSyntax/manifest#PNAME_NS-dot-at-start-undeclared> <negativeSyntax/manifest#PN_LOCAL-PERCENT-end> <negativeSyntax/manifest#PN_LOCAL-PERCENT-mid> <negativeSyntax/manifest#PN_LOCAL-PERCENT-start> <negativeSyntax/manifest#PN_LOCAL-dash-start> <negativeSyntax/manifest#PN_LOCAL-unescaped-TILDE> <negativeSyntax/manifest#PN_LOCAL-with-UCHAR.1> <negativeSyntax/manifest#STRING_LITERAL1-ending-QUOTATION_MARK> <negativeSyntax/manifest#STRING_LITERAL2-bad-ECHAR> <negativeSyntax/manifest#STRING_LITERAL2-bad-LANGTAG> <negativeSyntax/manifest#STRING_LITERAL2-bad-UCHAR1> <negativeSyntax/manifest#STRING_LITERAL2-bad-UCHAR2-value> <negativeSyntax/manifest#STRING_LITERAL2-ending-APOSTROPHE> <negativeSyntax/manifest#STRING_LITERAL2-illegal-UCHAR1-value> <negativeSyntax/manifest#STRING_LITERAL2-with-LANGTAG-and-datatype> <negativeSyntax/manifest#STRING_LITERAL_LONG1-ending-APOSTROPHE> <negativeSyntax/manifest#STRING_LITERAL_LONG1-ending-APOSTROPHE4> <negativeSyntax/manifest#STRING_LITERAL_LONG2-ending-APOSTROPHE3> <negativeSyntax/manifest#STRING_LITERAL_LONG2-ending-QUOTATION_MARK4> <negativeSyntax/manifest#STRING_LITERAL_LONG2-unterminated> <negativeSyntax/manifest#a> <negativeSyntax/manifest#base-no-uri> <negativeSyntax/manifest#base-uri-dot> <negativeSyntax/manifest#bnodedot> <negativeSyntax/manifest#capitol-A> <negativeSyntax/manifest#group-no-COMMA-separators> <negativeSyntax/manifest#groupShapeConstr-trailing-OR> <negativeSyntax/manifest#literal-0x123> <negativeSyntax/manifest#open1dotclose> <negativeSyntax/manifest#open1dotcloseAnnot3> <negativeSyntax/manifest#open1dotcloseCode1> <negativeSyntax/manifest#open1dotclosecardOpt> <negativeSyntax/manifest#openopen1dotOr1dotclose> <negativeSyntax/manifest#openopen1dotcloseCode1closeCode2> <negativeSyntax/manifest#predicate-ANON> <negativeSyntax/manifest#predicate-BLANK_NODE_LABEL> <negativeSyntax/manifest#predicate-literal> <negativeSyntax/manifest#predicate-true> <negativeSyntax/manifest#prefix-missing> <negativeSyntax/manifest#prefix-no-COLON> <negativeSyntax/manifest#prefix-no-PNAME_NS> <negativeSyntax/manifest#prefix-no-uri> <negativeSyntax/manifest#prefix-none> <negativeSyntax/manifest#shapename-a> <negativeSyntax/manifest#shapename-literal> <negativeSyntax/manifest#shapename-true> <negativeSyntax/manifest#tripleConsraint-no-valueClass> <negativeSyntax/manifest#tripleConsraint-with-datatype-and-dot> <negativeSyntax/manifest#tripleConsraint-with-datatype-and-valueSet> <negativeSyntax/manifest#tripleConsraint-with-dot-and-datatype> <negativeSyntax/manifest#tripleConsraint-with-two-cardinalities>) .
 
 <schemas/manifest> a mf:Manifest;
    rdfs:comment "ShEx representation tests";
@@ -22,364 +22,454 @@
    rdfs:comment "ShEx validation tests";
    mf:entries (<validation/manifest#0_empty> <validation/manifest#0_other> <validation/manifest#0_otherbnode> <validation/manifest#1dot_fail-empty> <validation/manifest#1dot-base_fail-empty> <validation/manifest#1dot_fail-missing> <validation/manifest#1dot-base_fail-missing> <validation/manifest#1dot_pass-noOthers> <validation/manifest#1dot-base_pass-noOthers> <validation/manifest#1dotSemi_pass-noOthers> <validation/manifest#1dotLNex_pass-noOthers> <validation/manifest#1dotNS2_pass-noOthers> <validation/manifest#1dotNS2Comment_pass-noOthers> <validation/manifest#1dotLNexComment_pass-noOthers> <validation/manifest#1dotLNdefault_pass-noOthers> <validation/manifest#1dotNSdefault_pass-noOthers> <validation/manifest#1dotLNex-HYPHEN_MINUS_pass-noOthers> <validation/manifest#1dot_pass-others_lexicallyEarlier> <validation/manifest#1dot_pass-others_lexicallyLater> <validation/manifest#bnode1dot_fail-missing> <validation/manifest#bnode1dot_pass-others_lexicallyEarlier> <validation/manifest#1inversedot_fail-empty> <validation/manifest#1inversedot_fail-missing> <validation/manifest#1inversedot_pass-noOthers> <validation/manifest#1inversedot_pass-over_lexicallyEarlier> <validation/manifest#1inversedot_pass-over_lexicallyLater> <validation/manifest#1Adot_pass> <validation/manifest#1iri_pass-iri> <validation/manifest#1iri_fail-bnode> <validation/manifest#1iri_fail-literal> <validation/manifest#1bnode_fail-iri> <validation/manifest#1bnode_pass-bnode> <validation/manifest#1bnode_fail-literal> <validation/manifest#1literal_fail-iri> <validation/manifest#1literal_fail-bnode> <validation/manifest#1literal_pass-literal> <validation/manifest#1nonliteral_pass-iri> <validation/manifest#1focusnonLiteralLength-nonLiteralLength_fail-short> <validation/manifest#1focusnonLiteralLength-nonLiteralLength_pass> <validation/manifest#1nonliteral_pass-bnode> <validation/manifest#1nonliteral_fail-literal> <validation/manifest#1datatype_missing> <validation/manifest#1datatype_nonLiteral> <validation/manifest#1datatype_langString> <validation/manifest#1datatype_wrongDatatype> <validation/manifest#1datatype_pass> <validation/manifest#1datatypelangString_pass> <validation/manifest#1card2_fail0> <validation/manifest#1card2_fail1> <validation/manifest#1card2_pass2> <validation/manifest#1card2_fail3> <validation/manifest#1card25_fail0> <validation/manifest#1card25_fail1> <validation/manifest#1card25_pass2> <validation/manifest#1card25_pass3> <validation/manifest#1card25_pass4> <validation/manifest#1card25_pass5> <validation/manifest#1card25_fail6> <validation/manifest#1card2Star_fail0> <validation/manifest#1card2Star_fail1> <validation/manifest#1card2Star_pass2> <validation/manifest#1card2Star_pass3> <validation/manifest#1card2Star_pass6> <validation/manifest#1cardOpt_pass0> <validation/manifest#1cardOpt_pass1> <validation/manifest#1cardOpt_fail2> <validation/manifest#1cardOpt_pass6> <validation/manifest#1cardPlus_fail0> <validation/manifest#1cardPlus_pass1> <validation/manifest#1cardPlus_pass2> <validation/manifest#1cardPlus_pass6> <validation/manifest#1cardStar_pass0> <validation/manifest#1cardStar_pass1> <validation/manifest#1cardStar_pass2> <validation/manifest#1cardStar_pass6> <validation/manifest#1literalPlus_Is1_Ip1_La,Io1> <validation/manifest#1dotRef1_referent,referrer> <validation/manifest#1dotRef1_referrer,referent> <validation/manifest#1dotRef1_missingReferent> <validation/manifest#1dotRef1_selfReference> <validation/manifest#1dotRef1_missingSelfReference> <validation/manifest#1dotRef1_overReferrer> <validation/manifest#1dotRef1_overReferrer,overReferent> <validation/manifest#1dotRef1_overMatchesReferent> <validation/manifest#1refbnode1_pass> <validation/manifest#1refbnode1_fail-g1-arc> <validation/manifest#1refbnode1_fail-g2-arc> <validation/manifest#3circularRef1_pass-open> <validation/manifest#3circularRef1_pass-closed> <validation/manifest#1iriRef1_pass-iri> <validation/manifest#1iriRef1_fail-bnode> <validation/manifest#1bnodeRef1_fail-iri> <validation/manifest#1bnodeRef1_pass-bnode> <validation/manifest#1datatypeRef1_fail-datatype> <validation/manifest#1datatypeRef1_fail-reflexiveRef> <validation/manifest#1dotInline1_referrer,referent> <validation/manifest#1dotInline1_missingReferent> <validation/manifest#1dotInline1_selfReference> <validation/manifest#1dotInline1_missingSelfReference> <validation/manifest#1dotInline1_overReferrer> <validation/manifest#1dotInline1_overReferrer,overReferent> <validation/manifest#1dotInline1_overMatchesReferent> <validation/manifest#1val1IRIREF_pass> <validation/manifest#1val1IRIREF_v2> <validation/manifest#1val1IRIREF_v1v2> <validation/manifest#1val1INTEGER_pass> <validation/manifest#1val1INTEGER_00> <validation/manifest#1val1DECIMAL_00> <validation/manifest#1val1DECIMAL_pass> <validation/manifest#1val1DECIMAL_Lab> <validation/manifest#1val1INTEGER_Lab> <validation/manifest#1val1DOUBLE_pass> <validation/manifest#1val1DOUBLE_0_0e0> <validation/manifest#1val1DOUBLElowercase_pass> <validation/manifest#1val1DOUBLElowercase_fail-0E0> <validation/manifest#1val1DOUBLElowercase_0_0e0> <validation/manifest#1val1LANGTAG_pass> <validation/manifest#1val1LANGTAG_Lab> <validation/manifest#1val1LANGTAG_LabLTen> <validation/manifest#1val1LANGTAG_LabLTen-fr-jura> <validation/manifest#1val1LANGTAG_LaLTen-fr> <validation/manifest#1val1IRIREFDatatype_pass> <validation/manifest#1val1IRIREFDatatype_Lab> <validation/manifest#1val1IRIREFDatatype_LabDTbloodType999> <validation/manifest#1val1IRIREFDatatype_LaDTbloodType> <validation/manifest#1val1true_pass> <validation/manifest#1val1true_false> <validation/manifest#1val1true_ab> <validation/manifest#1val1false_pass> <validation/manifest#1val1false_true> <validation/manifest#1val1false_ab> <validation/manifest#1datatypeLength_fail-missing> <validation/manifest#1datatypeLength_fail-wrongDatatype> <validation/manifest#1datatypeLength_fail-short> <validation/manifest#1datatypeLength_pass> <validation/manifest#1datatypeLength_fail-long> <validation/manifest#1literalFractiondigits_pass-decimal-short> <validation/manifest#1literalFractiondigits_pass-decimal-equal> <validation/manifest#1literalFractiondigits_fail-decimal-long> <validation/manifest#1literalFractiondigits_pass-decimal-equalLead> <validation/manifest#1literalFractiondigits_fail-decimal-longLead> <validation/manifest#1literalFractiondigits_pass-decimal-equalTrail> <validation/manifest#1literalFractiondigits_fail-decimal-longTrail> <validation/manifest#1literalFractiondigits_pass-decimal-equalLeadTrail> <validation/manifest#1literalFractiondigits_fail-decimal-longLeadTrail> <validation/manifest#1literalFractiondigits_pass-integer-short> <validation/manifest#1literalFractiondigits_pass-xsd_integer-short> <validation/manifest#1literalFractiondigits_fail-float-equal> <validation/manifest#1literalFractiondigits_fail-double-equal> <validation/manifest#1literalFractiondigits_fail-malformedxsd_decimal-1_23ab> <validation/manifest#1literalFractiondigits_fail-malformedxsd_decimal-1_2345ab> <validation/manifest#1literalFractiondigits_fail-malformedxsd_integer-1_2345> <validation/manifest#1literalFractiondigits_fail-iri> <validation/manifest#1literalFractiondigits_fail-bnode> <validation/manifest#1literalTotaldigits_pass-decimal-short> <validation/manifest#1literalTotaldigits_pass-decimal-equal> <validation/manifest#1literalTotaldigits_fail-decimal-long> <validation/manifest#1literalTotaldigits_pass-decimal-equalLead> <validation/manifest#1literalTotaldigits_fail-decimal-longLead> <validation/manifest#1literalTotaldigits_pass-decimal-equalTrail> <validation/manifest#1literalTotaldigits_fail-decimal-longTrail> <validation/manifest#1literalTotaldigits_pass-decimal-equalLeadTrail> <validation/manifest#1literalTotaldigits_fail-decimal-longLeadTrail> <validation/manifest#1literalTotaldigits_pass-integer-equal> <validation/manifest#1literalTotaldigits_pass-xsd_integer-short> <validation/manifest#1literalTotaldigits_pass-integer-equalLead> <validation/manifest#1literalTotaldigits_fail-integer-longLead> <validation/manifest#1literalTotaldigits_pass-integer-equalTrail> <validation/manifest#1literalTotaldigits_fail-integer-longTrail> <validation/manifest#1literalTotaldigits_pass-integer-equalLeadTrail> <validation/manifest#1literalTotaldigits_fail-integer-longLeadTrail> <validation/manifest#1literalTotaldigits_pass-byte-short> <validation/manifest#1literalTotaldigits_pass-byte-equal> <validation/manifest#1literalTotaldigits_fail-byte-long> <validation/manifest#1literalTotaldigits_fail-float-equal> <validation/manifest#1literalTotaldigits_fail-double-equal> <validation/manifest#1literalTotaldigits_fail-malformedxsd_decimal-1_23ab> <validation/manifest#1literalTotaldigits_fail-malformedxsd_decimal-1_2345ab> <validation/manifest#1literalTotaldigits_fail-malformedxsd_integer-1_2345> <validation/manifest#1literalTotaldigits_fail-iri> <validation/manifest#1literalTotaldigits_fail-bnode> <validation/manifest#1literalMinexclusiveINTEGER_fail-low> <validation/manifest#1literalMinexclusiveINTEGER_pass-equal> <validation/manifest#1literalMinexclusiveINTEGER_pass-high> <validation/manifest#1literalMininclusiveINTEGER_fail-low> <validation/manifest#1literalMininclusiveINTEGER_pass-equal> <validation/manifest#1literalMininclusiveINTEGER_pass-high> <validation/manifest#1literalMaxexclusiveINTEGER_pass-low> <validation/manifest#1literalMaxexclusiveINTEGER_fail-equal> <validation/manifest#1literalMaxexclusiveINTEGER_fail-high> <validation/manifest#1literalMaxinclusiveINTEGER_pass-low> <validation/manifest#1literalMaxinclusiveINTEGER_pass-equal> <validation/manifest#1literalMaxinclusiveINTEGER_fail-high> <validation/manifest#1floatMininclusiveINTEGER_fail-low> <validation/manifest#1floatMininclusiveINTEGER_pass-equalLead> <validation/manifest#1floatMininclusiveINTEGER_pass-equalTrail> <validation/manifest#1floatMininclusiveINTEGER_pass-high> <validation/manifest#1integerMininclusiveINTEGER_fail-low> <validation/manifest#1integerMininclusiveINTEGER_pass-equal> <validation/manifest#1integerMininclusiveINTEGER_pass-equalLead> <validation/manifest#1integerMininclusiveINTEGER_pass-high> <validation/manifest#1floatMininclusiveINTEGERLead_pass-equal> <validation/manifest#1integerMininclusiveINTEGER_fail-integer-low> <validation/manifest#1integerMininclusiveINTEGER_pass-integer-equal> <validation/manifest#1integerMininclusiveINTEGER_pass-integer-high> <validation/manifest#1integerMininclusiveINTEGERLead_fail-integer-low> <validation/manifest#1integerMininclusiveINTEGERLead_pass-integer-equal> <validation/manifest#1integerMininclusiveINTEGERLead_pass-integer-equalLead> <validation/manifest#1integerMininclusiveINTEGERLead_pass-integer-high> <validation/manifest#1integerMininclusiveDECIMAL_pass-integer-equal> <validation/manifest#1integerMininclusiveDECIMALLeadTrail_fail-integer-low> <validation/manifest#1integerMininclusiveDECIMALLeadTrail_pass-integer-equal> <validation/manifest#1integerMininclusiveDECIMALLeadTrail_pass-integer-equalLead> <validation/manifest#1integerMininclusiveDECIMALLeadTrail_pass-integer-high> <validation/manifest#1integerMininclusiveDECIMALint_fail-integer-low> <validation/manifest#1integerMininclusiveDECIMALint_pass-integer-equal> <validation/manifest#1integerMininclusiveDECIMALint_pass-integer-high> <validation/manifest#1integerMininclusiveDECIMALintLeadTrail_fail-integer-low> <validation/manifest#1integerMininclusiveDECIMALintLeadTrail_pass-integer-equal> <validation/manifest#1integerMininclusiveDECIMALintLeadTrail_pass-integer-equalLead> <validation/manifest#1integerMininclusiveDECIMALintLeadTrail_pass-integer-high> <validation/manifest#1integerMininclusiveDOUBLE_pass-integer-equal> <validation/manifest#1integerMininclusiveDOUBLELeadTrail_fail-integer-low> <validation/manifest#1integerMininclusiveDOUBLELeadTrail_pass-integer-equal> <validation/manifest#1integerMininclusiveDOUBLELeadTrail_pass-integer-equalLead> <validation/manifest#1integerMininclusiveDOUBLELeadTrail_pass-integer-high> <validation/manifest#1integerMininclusiveDOUBLEint_pass-integer-equal> <validation/manifest#1integerMininclusiveDOUBLEintLeadTrail_fail-integer-low> <validation/manifest#1integerMininclusiveDOUBLEintLeadTrail_pass-integer-equal> <validation/manifest#1integerMininclusiveDOUBLEintLeadTrail_pass-integer-equalLead> <validation/manifest#1integerMininclusiveDOUBLEintLeadTrail_pass-integer-high> <validation/manifest#1integerMininclusiveINTEGER_fail-decimal-equal> <validation/manifest#1integerMininclusiveINTEGER_fail-float-equal> <validation/manifest#1integerMininclusiveINTEGER_fail-double-equal> <validation/manifest#1integerMininclusiveINTEGER_fail-dateTime-equal> <validation/manifest#1integerMininclusiveINTEGER_fail-string-equal> <validation/manifest#1integerMininclusiveINTEGER_fail-byte-equal> <validation/manifest#1integerMininclusivexsd-integer_fail-integer-low> <validation/manifest#1integerMininclusivexsd-integer_pass-integer-equal> <validation/manifest#1decimalMininclusiveINTEGER_fail-decimal-low> <validation/manifest#1decimalMininclusiveINTEGER_pass-decimal-high> <validation/manifest#1decimalMininclusiveINTEGERLead_fail-decimal-low> <validation/manifest#1decimalMininclusiveINTEGERLead_pass-decimal-high> <validation/manifest#1decimalMininclusiveDECIMAL_fail-decimal-low> <validation/manifest#1decimalMininclusiveDECIMAL_pass-decimal-equal> <validation/manifest#1decimalMininclusiveDECIMAL_pass-decimal-equalLeadTrail> <validation/manifest#1decimalMininclusiveDECIMAL_pass-decimal-high> <validation/manifest#1decimalMininclusiveDECIMALLeadTrail_fail-decimal-low> <validation/manifest#1decimalMininclusiveDECIMALLeadTrail_pass-decimal-equal> <validation/manifest#1decimalMininclusiveDECIMALLeadTrail_pass-decimal-equalLeadTrail> <validation/manifest#1decimalMininclusiveDECIMALLeadTrail_pass-decimal-high> <validation/manifest#1decimalMininclusiveDECIMALintLeadTrail_fail-decimal-low> <validation/manifest#1decimalMininclusiveDECIMALintLeadTrail_pass-decimal-high> <validation/manifest#1decimalMininclusiveDOUBLE_fail-decimal-low> <validation/manifest#1decimalMininclusiveDOUBLE_pass-decimal-equal> <validation/manifest#1decimalMininclusiveDOUBLE_pass-decimal-equalLeadTrail> <validation/manifest#1decimalMininclusiveDOUBLELeadTrail_fail-decimal-low> <validation/manifest#1decimalMininclusiveDOUBLELeadTrail_pass-decimal-equal> <validation/manifest#1decimalMininclusiveDOUBLELeadTrail_pass-decimal-equalLeadTrail> <validation/manifest#1decimalMininclusiveDOUBLELeadTrail_pass-decimal-high> <validation/manifest#1decimalMininclusiveDOUBLEintLeadTrail_fail-decimal-low> <validation/manifest#1decimalMininclusiveDOUBLEintLeadTrail_pass-decimal-high> <validation/manifest#1decimalMininclusiveDECIMAL_fail-float-equal> <validation/manifest#1decimalMininclusiveDECIMAL_fail-double-equal> <validation/manifest#1decimalMininclusivexsd-decimal_fail-decimal-low> <validation/manifest#1decimalMininclusivexsd-decimal_pass-decimal-equal> <validation/manifest#1floatMininclusiveINTEGERLead_fail-float-low> <validation/manifest#1floatMininclusiveINTEGERLead_pass-float-high> <validation/manifest#1floatMininclusiveDECIMAL_pass-float-equal> <validation/manifest#1floatMininclusiveDECIMAL_pass-float-equalLeadTrail> <validation/manifest#1floatMininclusiveDECIMALLeadTrail_fail-float-low> <validation/manifest#1floatMininclusiveDECIMALLeadTrail_pass-float-equal> <validation/manifest#1floatMininclusiveDECIMALLeadTrail_pass-float-equalLeadTrail> <validation/manifest#1floatMininclusiveDECIMALLeadTrail_pass-float-high> <validation/manifest#1floatMininclusiveDECIMALintLeadTrail_fail-float-low> <validation/manifest#1floatMininclusiveDECIMALintLeadTrail_pass-float-high> <validation/manifest#1floatMininclusiveDOUBLE_pass-float-equal> <validation/manifest#1floatMininclusiveDOUBLE_pass-float-equalLeadTrail> <validation/manifest#1floatMininclusiveDOUBLELeadTrail_fail-float-low> <validation/manifest#1floatMininclusiveDOUBLELeadTrail_pass-float-equal> <validation/manifest#1floatMininclusiveDOUBLELeadTrail_pass-float-equalLeadTrail> <validation/manifest#1floatMininclusiveDOUBLELeadTrail_pass-float-high> <validation/manifest#1floatMininclusiveDOUBLEintLeadTrail_fail-float-low> <validation/manifest#1floatMininclusiveDOUBLEintLeadTrail_pass-float-high> <validation/manifest#1floatMininclusivexsd-float_fail-float-low> <validation/manifest#1floatMininclusivexsd-float_pass-float-equal> <validation/manifest#1doubleMininclusiveINTEGERLead_fail-double-low> <validation/manifest#1doubleMininclusiveINTEGERLead_pass-double-high> <validation/manifest#1doubleMininclusiveDECIMAL_pass-double-equal> <validation/manifest#1doubleMininclusiveDECIMAL_pass-double-equalLeadTrail> <validation/manifest#1doubleMininclusiveDECIMALLeadTrail_fail-double-low> <validation/manifest#1doubleMininclusiveDECIMALLeadTrail_pass-double-equal> <validation/manifest#1doubleMininclusiveDECIMALLeadTrail_pass-double-equalLeadTrail> <validation/manifest#1doubleMininclusiveDECIMALLeadTrail_pass-double-high> <validation/manifest#1doubleMininclusiveDECIMALintLeadTrail_fail-double-low> <validation/manifest#1doubleMininclusiveDECIMALintLeadTrail_pass-double-high> <validation/manifest#1doubleMininclusiveDOUBLE_pass-double-equal> <validation/manifest#1doubleMininclusiveDOUBLE_pass-double-equalLeadTrail> <validation/manifest#1doubleMininclusiveDOUBLELeadTrail_fail-double-low> <validation/manifest#1doubleMininclusiveDOUBLELeadTrail_pass-double-equal> <validation/manifest#1doubleMininclusiveDOUBLELeadTrail_pass-double-equalLeadTrail> <validation/manifest#1doubleMininclusiveDOUBLELeadTrail_pass-double-high> <validation/manifest#1doubleMininclusiveDOUBLEintLeadTrail_fail-double-low> <validation/manifest#1doubleMininclusiveDOUBLEintLeadTrail_pass-double-high> <validation/manifest#1doubleMininclusivexsd-double_fail-double-low> <validation/manifest#1doubleMininclusivexsd-double_pass-double-equal> <validation/manifest#1integerMinexclusiveINTEGER_fail-integer-low> <validation/manifest#1integerMinexclusiveINTEGER_fail-integer-equal> <validation/manifest#1integerMinexclusiveINTEGER_pass-integer-high> <validation/manifest#1integerMinexclusiveDECIMALint_fail-integer-low> <validation/manifest#1integerMinexclusiveDECIMALint_fail-integer-equal> <validation/manifest#1integerMinexclusiveDECIMALint_pass-integer-high> <validation/manifest#1integerMinexclusiveDOUBLEint_fail-integer-low> <validation/manifest#1integerMinexclusiveDOUBLEint_fail-integer-equal> <validation/manifest#1integerMinexclusiveDOUBLEint_pass-integer-high> <validation/manifest#1decimalMinexclusiveINTEGER_fail-decimal-low> <validation/manifest#1decimalMinexclusiveINTEGER_pass-decimal-high> <validation/manifest#1decimalMinexclusiveDECIMAL_fail-decimal-low> <validation/manifest#1decimalMinexclusiveDECIMAL_fail-decimal-equal> <validation/manifest#1decimalMinexclusiveDECIMAL_pass-decimal-high> <validation/manifest#1decimalMinexclusiveDOUBLE_fail-decimal-low> <validation/manifest#1decimalMinexclusiveDOUBLE_fail-decimal-equal> <validation/manifest#1decimalMinexclusiveDOUBLE_pass-decimal-high> <validation/manifest#1decimalMinexclusiveDECIMAL_fail-float-equal> <validation/manifest#1decimalMinexclusiveDECIMAL_fail-double-equal> <validation/manifest#1floatMinexclusiveINTEGER_fail-float-low> <validation/manifest#1floatMinexclusiveINTEGER_pass-float-high> <validation/manifest#1floatMinexclusiveDECIMAL_fail-float-low> <validation/manifest#1floatMinexclusiveDECIMAL_fail-float-equal> <validation/manifest#1floatMinexclusiveDECIMAL_pass-float-high> <validation/manifest#1floatMinexclusiveDOUBLE_fail-float-low> <validation/manifest#1floatMinexclusiveDOUBLE_fail-float-equal> <validation/manifest#1floatMinexclusiveDOUBLE_pass-float-high> <validation/manifest#1floatMinexclusivexsd-float_fail-decimal-equal> <validation/manifest#1floatMinexclusivexsd-float_fail-double-equal> <validation/manifest#1doubleMinexclusiveINTEGER_fail-double-low> <validation/manifest#1doubleMinexclusiveINTEGER_pass-double-high> <validation/manifest#1doubleMinexclusiveDECIMAL_fail-double-low> <validation/manifest#1doubleMinexclusiveDECIMAL_fail-double-equal> <validation/manifest#1doubleMinexclusiveDECIMAL_pass-double-high> <validation/manifest#1doubleMinexclusiveDOUBLE_fail-double-low> <validation/manifest#1doubleMinexclusiveDOUBLE_fail-double-equal> <validation/manifest#1doubleMinexclusiveDOUBLE_pass-double-high> <validation/manifest#1doubleMinexclusiveDECIMAL_fail-float-equal> <validation/manifest#1integerMaxinclusiveINTEGER_pass-integer-low> <validation/manifest#1integerMaxinclusiveINTEGER_pass-integer-equal> <validation/manifest#1integerMaxinclusiveINTEGER_fail-integer-high> <validation/manifest#1integerMaxinclusiveDECIMALint_pass-integer-low> <validation/manifest#1integerMaxinclusiveDECIMALint_pass-integer-equal> <validation/manifest#1integerMaxinclusiveDECIMALint_fail-integer-high> <validation/manifest#1integerMaxinclusiveDOUBLEint_pass-integer-low> <validation/manifest#1integerMaxinclusiveDOUBLEint_pass-integer-equal> <validation/manifest#1integerMaxinclusiveDOUBLEint_fail-integer-high> <validation/manifest#1decimalMaxinclusiveINTEGER_pass-decimal-low> <validation/manifest#1decimalMaxinclusiveINTEGER_fail-decimal-high> <validation/manifest#1decimalMaxinclusiveDECIMAL_pass-decimal-low> <validation/manifest#1decimalMaxinclusiveDECIMAL_pass-decimal-equal> <validation/manifest#1decimalMaxinclusiveDECIMAL_fail-decimal-high> <validation/manifest#1decimalMaxinclusiveDOUBLE_pass-decimal-low> <validation/manifest#1decimalMaxinclusiveDOUBLE_pass-decimal-equal> <validation/manifest#1decimalMaxinclusiveDOUBLE_fail-decimal-high> <validation/manifest#1decimalMaxinclusiveDECIMAL_fail-float-equal> <validation/manifest#1decimalMaxinclusiveDECIMAL_fail-double-equal> <validation/manifest#1floatMaxinclusiveINTEGER_pass-float-low> <validation/manifest#1floatMaxinclusiveINTEGER_fail-float-high> <validation/manifest#1floatMaxinclusiveDECIMAL_pass-float-low> <validation/manifest#1floatMaxinclusiveDECIMAL_pass-float-equal> <validation/manifest#1floatMaxinclusiveDECIMAL_fail-float-high> <validation/manifest#1floatMaxinclusiveDOUBLE_pass-float-low> <validation/manifest#1floatMaxinclusiveDOUBLE_pass-float-equal> <validation/manifest#1floatMaxinclusiveDOUBLE_fail-float-high> <validation/manifest#1floatMaxinclusivexsd-float_fail-decimal-equal> <validation/manifest#1floatMaxinclusivexsd-float_fail-double-equal> <validation/manifest#1doubleMaxinclusiveINTEGER_pass-double-low> <validation/manifest#1doubleMaxinclusiveINTEGER_fail-double-high> <validation/manifest#1doubleMaxinclusiveDECIMAL_pass-double-low> <validation/manifest#1doubleMaxinclusiveDECIMAL_pass-double-equal> <validation/manifest#1doubleMaxinclusiveDECIMAL_fail-double-high> <validation/manifest#1doubleMaxinclusiveDOUBLE_pass-double-low> <validation/manifest#1doubleMaxinclusiveDOUBLE_pass-double-equal> <validation/manifest#1doubleMaxinclusiveDOUBLE_fail-double-high> <validation/manifest#1doubleMaxinclusiveDECIMAL_fail-float-equal> <validation/manifest#1integerMaxexclusiveINTEGER_pass-integer-low> <validation/manifest#1integerMaxexclusiveINTEGER_fail-integer-equal> <validation/manifest#1integerMaxexclusiveINTEGER_fail-integer-high> <validation/manifest#1integerMaxexclusiveDECIMALint_pass-integer-low> <validation/manifest#1integerMaxexclusiveDECIMALint_fail-integer-equal> <validation/manifest#1integerMaxexclusiveDECIMALint_fail-integer-high> <validation/manifest#1integerMaxexclusiveDOUBLEint_pass-integer-low> <validation/manifest#1integerMaxexclusiveDOUBLEint_fail-integer-equal> <validation/manifest#1integerMaxexclusiveDOUBLEint_fail-integer-high> <validation/manifest#1decimalMaxexclusiveINTEGER_pass-decimal-low> <validation/manifest#1decimalMaxexclusiveINTEGER_fail-decimal-high> <validation/manifest#1decimalMaxexclusiveDECIMAL_pass-decimal-low> <validation/manifest#1decimalMaxexclusiveDECIMAL_fail-decimal-equal> <validation/manifest#1decimalMaxexclusiveDECIMAL_fail-decimal-high> <validation/manifest#1decimalMaxexclusiveDOUBLE_pass-decimal-low> <validation/manifest#1decimalMaxexclusiveDOUBLE_fail-decimal-equal> <validation/manifest#1decimalMaxexclusiveDOUBLE_fail-decimal-high> <validation/manifest#1decimalMaxexclusiveDECIMAL_fail-float-equal> <validation/manifest#1decimalMaxexclusiveDECIMAL_fail-double-equal> <validation/manifest#1decimalMaxexclusivexsd-byte_fail-byte-equal> <validation/manifest#1decimalMaxexclusivexsd-decimal_fail-decimal-equal> <validation/manifest#1floatMaxexclusiveINTEGER_pass-float-low> <validation/manifest#1floatMaxexclusiveINTEGER_fail-float-high> <validation/manifest#1floatMaxexclusiveDECIMAL_pass-float-low> <validation/manifest#1floatMaxexclusiveDECIMAL_fail-float-high> <validation/manifest#1floatMaxexclusiveDOUBLE_pass-float-low> <validation/manifest#1floatMaxexclusiveDOUBLE_fail-float-high> <validation/manifest#1doubleMaxexclusiveINTEGER_pass-double-low> <validation/manifest#1doubleMaxexclusiveINTEGER_fail-double-equal> <validation/manifest#1doubleMaxexclusiveINTEGER_fail-double-high> <validation/manifest#1doubleMaxexclusiveINTEGERLead_fail-double-equal> <validation/manifest#1doubleMaxexclusiveDECIMAL_pass-double-low> <validation/manifest#1doubleMaxexclusiveDECIMAL_fail-double-equal> <validation/manifest#1doubleMaxexclusiveDECIMAL_fail-double-high> <validation/manifest#1doubleMaxexclusiveDECIMALLeadTrail_fail-double-equal> <validation/manifest#1doubleMaxexclusiveDECIMALint_fail-double-equal> <validation/manifest#1doubleMaxexclusiveDECIMALintLeadTrail_fail-double-equal> <validation/manifest#1doubleMaxexclusiveDOUBLE_pass-double-low> <validation/manifest#1doubleMaxexclusiveDOUBLE_fail-double-equal> <validation/manifest#1doubleMaxexclusiveDOUBLE_fail-double-high> <validation/manifest#1doubleMaxexclusiveDOUBLELeadTrail_fail-double-equal> <validation/manifest#1doubleMaxexclusiveDOUBLEint_fail-double-equal> <validation/manifest#1doubleMaxexclusiveDOUBLEintLeadTrail_fail-double-equal> <validation/manifest#1Length_fail-lit-short> <validation/manifest#1Length_pass-lit-equal> <validation/manifest#1Length_fail-lit-long> <validation/manifest#1literalLength_fail-lit-short> <validation/manifest#1literalLength_pass-lit-equal> <validation/manifest#1literalLength_fail-lit-long> <validation/manifest#1literalLength_fail-iri-equal> <validation/manifest#1literalLength_fail-bnode-equal> <validation/manifest#1iriLength_fail-iri-short> <validation/manifest#1iriLength_pass-iri-equal> <validation/manifest#1iriLength_fail-iri-long> <validation/manifest#1iriLength_fail-lit-equal> <validation/manifest#1iriLength_fail-bnode-equal> <validation/manifest#1iriRefLength1_fail-iri-short> <validation/manifest#1iriRefLength1_pass-iri-equal> <validation/manifest#1iriRefLength1_fail-iri-long> <validation/manifest#1iriRefLength1_fail-lit-equal> <validation/manifest#1iriRefLength1_fail-bnode-equal> <validation/manifest#1bnodeLength_fail-bnode-short> <validation/manifest#1bnodeLength_pass-bnode-equal> <validation/manifest#1bnodeLength_fail-bnode-long> <validation/manifest#1bnodeLength_fail-lit-equal> <validation/manifest#1bnodeLength_fail-iri-equal> <validation/manifest#1nonliteralLength_fail-iri-short> <validation/manifest#1nonliteralLength_pass-iri-equal> <validation/manifest#1nonliteralLength_fail-iri-long> <validation/manifest#1nonliteralLength_fail-lit-equal> <validation/manifest#1nonliteralLength_fail-bnode-short> <validation/manifest#1nonliteralLength_pass-bnode-equal> <validation/manifest#1nonliteralLength_fail-bnode-long> <validation/manifest#1literalMinlength_fail-lit-short> <validation/manifest#1literalMinlength_pass-lit-equal> <validation/manifest#1literalMinlength_pass-lit-long> <validation/manifest#1iriMinlength_fail-iri-short> <validation/manifest#1iriMinlength_pass-iri-equal> <validation/manifest#1iriMinlength_pass-iri-long> <validation/manifest#1bnodeMinlength_fail-bnode-short> <validation/manifest#1bnodeMinlength_pass-bnode-equal> <validation/manifest#1bnodeMinlength_pass-bnode-long> <validation/manifest#1nonliteralMinlength_fail-iri-short> <validation/manifest#1nonliteralMinlength_pass-iri-equal> <validation/manifest#1nonliteralMinlength_pass-iri-long> <validation/manifest#1nonliteralMinlength_fail-bnode-short> <validation/manifest#1nonliteralMinlength_pass-bnode-equal> <validation/manifest#1nonliteralMinlength_pass-bnode-long> <validation/manifest#1literalMaxlength_pass-lit-short> <validation/manifest#1literalMaxlength_pass-lit-equal> <validation/manifest#1literalMaxlength_fail-lit-long> <validation/manifest#1iriMaxlength_pass-iri-short> <validation/manifest#1iriMaxlength_pass-iri-equal> <validation/manifest#1iriMaxlength_fail-iri-long> <validation/manifest#1bnodeMaxlength_pass-bnode-short> <validation/manifest#1bnodeMaxlength_pass-bnode-equal> <validation/manifest#1bnodeMaxlength_fail-bnode-long> <validation/manifest#1nonliteralMaxlength_pass-iri-short> <validation/manifest#1nonliteralMaxlength_pass-iri-equal> <validation/manifest#1nonliteralMaxlength_fail-iri-long> <validation/manifest#1nonliteralMaxlength_pass-bnode-short> <validation/manifest#1nonliteralMaxlength_pass-bnode-equal> <validation/manifest#1nonliteralMaxlength_fail-bnode-long> <validation/manifest#1literalPattern_pass-lit-match> <validation/manifest#1literalPattern_fail-lit-short> <validation/manifest#1literalPattern_fail-ab> <validation/manifest#1literalPattern_fail-cd> <validation/manifest#1literalPattern_pass-lit-into> <validation/manifest#1literalPattern19_fail-iri-match> <validation/manifest#1literalPattern_fail-bnode-match> <validation/manifest#1literalPatternEnd_fail-litEnd> <validation/manifest#1literalPatternDollar_pass-litDollar-match> <validation/manifest#1literalPattern_pass-StartlitEnd-match> <validation/manifest#1literalStartPatternEnd_CarrotbcDollar> <validation/manifest#1literalCarrotPatternDollar_pass-bc> <validation/manifest#1literalCarrotPatternDollar_pass-CarrotbcDollar> <validation/manifest#1literalPatternabEnd_fail-bnode-match> <validation/manifest#1literalStartPattern_pass-bc> <validation/manifest#1literalStartPattern_fail-CarrotbcDollar> <validation/manifest#1literalPatternEnd_pass-bc> <validation/manifest#1literalPatternEnd_pass-CarrotbcDollar> <validation/manifest#1literalPattern_pass-bcDollar> <validation/manifest#1literalStarPatternEnd_pass-bc> <validation/manifest#1literalPattern_pass-CarrotbcDollar> <validation/manifest#1iriPattern_pass-iri-match> <validation/manifest#1iriPattern_fail-iri-short> <validation/manifest#1iriPattern_fail-iri-long> <validation/manifest#1iriPattern_fail-lit-match> <validation/manifest#1iriPattern_fail-bnode-match> <validation/manifest#1bnodePattern_pass-bnode-match> <validation/manifest#1bnodePattern_fail-bnode-short> <validation/manifest#1bnodePattern_fail-bnode-long> <validation/manifest#1bnodePattern_fail-lit-match> <validation/manifest#1bnodePattern_fail-iri-match> <validation/manifest#1nonliteralPattern_pass-iri-match> <validation/manifest#1nonliteralPattern_fail-iri-short> <validation/manifest#1nonliteralPattern_pass-iri-long> <validation/manifest#1nonliteralPattern_fail-lit-match> <validation/manifest#1nonliteralPattern_pass-bnode-match> <validation/manifest#1nonliteralPattern_fail-bnode-short> <validation/manifest#1nonliteralPattern_pass-bnode-long> <validation/manifest#1val1dotMinusiri3_pass> <validation/manifest#1val1dotMinusiri3_v1> <validation/manifest#1val1dotMinusiri3_v2> <validation/manifest#1val1dotMinusiri3_v3> <validation/manifest#1val1refvsMinusiri3_pass> <validation/manifest#1val1refvsMinusiri3_v1> <validation/manifest#1val1refvsMinusiri3_v2> <validation/manifest#1val1refvsMinusiri3_v3> <validation/manifest#1val1dotMinusiriStem3_pass> <validation/manifest#1val1dotMinusiriStem3_v1> <validation/manifest#1val1dotMinusiriStem3_v2> <validation/manifest#1val1dotMinusiriStem3_v3> <validation/manifest#1val1dotMinusiriStem3_v1a> <validation/manifest#1val1iriStem_passv1> <validation/manifest#1val1iriStem_passv1a> <validation/manifest#1val1iriStem_fail> <validation/manifest#1val1iriStemMinusiri3_passIv> <validation/manifest#1val1iriStemMinusiri3_passIv4> <validation/manifest#1val1iriStemMinusiri3_v1> <validation/manifest#1val1iriStemMinusiri3_v2> <validation/manifest#1val1iriStemMinusiri3_v3> <validation/manifest#1val1iriStemMinusiri3_passIv1a> <validation/manifest#1val1iriStemMinusiriStem3_passIv> <validation/manifest#1val1iriStemMinusiriStem3_passIv4> <validation/manifest#1val1iriStemMinusiriStem3_v1> <validation/manifest#1val1iriStemMinusiriStem3_v2> <validation/manifest#1val1iriStemMinusiriStem3_v3> <validation/manifest#1val1iriStemMinusiriStem3_v1a> <validation/manifest#1dotOne2dot_pass_p1> <validation/manifest#1dotOne2dot_pass_p2p3> <validation/manifest#1dotOne2dot-oneOf_fail_p1p2p3> <validation/manifest#1dotOne2dot-someOf_fail_p1p2p3> <validation/manifest#open1dotOneopen2dotcloseclose_pass_p1> <validation/manifest#open1dotOneopen2dotcloseclose_pass_p2p3> <validation/manifest#open1dotOneopen2dotcloseclose_fail_p1p2p3> <validation/manifest#openopen1dotOne1dotclose1dotclose_pass_p1p3> <validation/manifest#openopen1dotOne1dotclose1dotclose_pass_p2p3> <validation/manifest#openopen1dotOne1dotclose1dotclose_fail_p1> <validation/manifest#openopen1dotOne1dotclose1dotclose_fail_p3> <validation/manifest#openopen1dotOne1dotclose1dotclose_fail_p1p2> <validation/manifest#1val1vExprRefIRIREF1_fail-lit-short> <validation/manifest#1val1vExprRefIRIREF1_pass-lit-equal> <validation/manifest#1val1vExprRefbnode1_fail-lit-short> <validation/manifest#1val1vExprRefbnode1_pass-lit-equal> <validation/manifest#1dotShapeAND1dot3X_pass> <validation/manifest#1dotShapeAND1dot3X_fail> <validation/manifest#1dotRefAND3_failAll> <validation/manifest#1dotRefAND3_failShape2Shape3> <validation/manifest#1dotRefAND3_failShape1Shape3> <validation/manifest#1dotRefAND3_failShape1Shape2> <validation/manifest#1dotRefAND3_passShape1Shape2Shape3> <validation/manifest#1val1vExpr1AND1AND1Ref3_pass> <validation/manifest#1val1vExpr1AND1AND1Ref3_failvc1> <validation/manifest#1val1vExpr1AND1AND1Ref3_failvc2> <validation/manifest#1val1vExpr1AND1AND1Ref3_failvc3> <validation/manifest#1val1vExprRefAND3_pass> <validation/manifest#1val1vExprRefAND3_failvc3> <validation/manifest#1val1vExprRefAND3_failvc2> <validation/manifest#1val1vExprRefAND3_failvc1> <validation/manifest#1val1vExprAND3_pass> <validation/manifest#1val1vExprAND3_failvc1> <validation/manifest#1val1vExprAND3_failvc2> <validation/manifest#1val1vExprAND3_failvc3> <validation/manifest#refBNodeORrefIRI_ReflexiveIRI> <validation/manifest#refBNodeORrefIRI_ReflexiveShortIRI> <validation/manifest#refBNodeORrefIRI_IntoReflexiveIRI> <validation/manifest#refBNodeORrefIRI_IntoReflexiveBNode> <validation/manifest#refBNodeORrefIRI_CyclicIRI_IRI> <validation/manifest#refBNodeORrefIRI_CyclicIRI_BNode> <validation/manifest#refBNodeORrefIRI_CyclicIRI_ShortIRI> <validation/manifest#1dotRefOR3_fail> <validation/manifest#1dotRefOR3_passShape1> <validation/manifest#1dotRefOR3_passShape2> <validation/manifest#1dotRefOR3_passShape3> <validation/manifest#1dotRefOR3_passShape1Shape2Shape3> <validation/manifest#1val1vExpr1OR1OR1Ref3_fail> <validation/manifest#1val1vExpr1OR1OR1Ref3_passvc1> <validation/manifest#1val1vExpr1OR1OR1Ref3_passvc2> <validation/manifest#1val1vExpr1OR1OR1Ref3_passvc3> <validation/manifest#1val1vExpr1OR1OR1Ref3_passvc1vc2vc3> <validation/manifest#1val1vExprRefOR3_passvc1vc2vc3> <validation/manifest#1val1vExprRefOR3_passvc3> <validation/manifest#1val1vExprRefOR3_passvc2> <validation/manifest#1val1vExprRefOR3_passvc1> <validation/manifest#1val1vExprRefOR3_fail> <validation/manifest#1val1vExprOR3_fail> <validation/manifest#1val1vExprOR3_passvc1> <validation/manifest#1val1vExprOR3_passvc2> <validation/manifest#1val1vExprOR3_passvc3> <validation/manifest#1val1vExprOR3_passvc1vc2vc3> <validation/manifest#1val1vExpr1AND1OR1Ref3_pass-vc1vc2> <validation/manifest#1val1vExpr1AND1OR1Ref3_pass-vc1vc2vc3> <validation/manifest#1val1vExpr1AND1OR1Ref3_pass-vc1vc3> <validation/manifest#1val1vExpr1AND1OR1Ref3_failvc1vc3> <validation/manifest#1val1vExpr1AND1OR1Ref3_failvc2vc3> <validation/manifest#1val1vExpr1AND1OR1Ref3_failvc1vc2vc3> <validation/manifest#1val1vExpr1OR1AND1Ref3_pass-vc1> <validation/manifest#1val1vExpr1OR1AND1Ref3_pass-vc1vc3> <validation/manifest#1val1vExpr1OR1AND1Ref3_pass-vc2vc3> <validation/manifest#1val1vExpr1OR1AND1Ref3_failvc1vc2> <validation/manifest#1val1vExpr1OR1AND1Ref3_failvc1vc3> <validation/manifest#1val1vExpr1OR1AND1Ref3_failvc1vc2vc3> <validation/manifest#open3Onedotclosecard2_fail-p1> <validation/manifest#open3Onedotclosecard2_pass-p1X2> <validation/manifest#open3Onedotclosecard2_fail-p1X3> <validation/manifest#open3Onedotclosecard2_fail-p1X4> <validation/manifest#open3Onedotclosecard2_pass-p1p2> <validation/manifest#open3Onedotclosecard2_pass-p1p3> <validation/manifest#open3Onedotclosecard2_pass-p2p3> <validation/manifest#open3Onedotclosecard2_fail-p1p2p3> <validation/manifest#open3Onedotclosecard23_fail-p1> <validation/manifest#open3Onedotclosecard23_pass-p1X2> <validation/manifest#open3Onedotclosecard23_pass-p1X3> <validation/manifest#open3Onedotclosecard23_fail-p1X4> <validation/manifest#open3Onedotclosecard23_pass-p1p2> <validation/manifest#open3Onedotclosecard23_pass-p1p3> <validation/manifest#open3Onedotclosecard23_pass-p2p3> <validation/manifest#open3Onedotclosecard23_pass-p1p2p3> <validation/manifest#open4Onedotclosecard23_fail-p1p2p3p4> <validation/manifest#open3groupdotclosecard23_pass-p1p2p3X3> <validation/manifest#1val1vShapeANDRef3_pass> <validation/manifest#1dotClosed_pass> <validation/manifest#1dotClosed_fail_lower> <validation/manifest#1dotClosed_fail_higher> <validation/manifest#FocusIRI2groupBnodeNested2groupIRIRef_pass> <validation/manifest#FocusIRI2groupBnodeNested2groupIRIRef_fail> <validation/manifest#1val1IRIREFExtra1_pass-iri1> <validation/manifest#1val1IRIREFExtra1_pass-iri2> <validation/manifest#1val2IRIREFExtra1_fail-iri2> <validation/manifest#1val2IRIREFPlusExtra1_pass-iri2> <validation/manifest#1val2IRIREFExtra1_pass-iri-bnode> <validation/manifest#1val1IRIREFExtra1p2_pass-iri1> <validation/manifest#1val1IRIREFExtra1p2_fail-iri2> <validation/manifest#1dotOne2dotExtra-someOf_pass_p1p2p3> <validation/manifest#1val1IRIREFExtra1One_pass-iri1> <validation/manifest#1val1IRIREFExtra1One_pass-iri2> <validation/manifest#1dotExtra1_pass-iri1> <validation/manifest#1dotExtra1_fail-iri2> <validation/manifest#3groupdotExtra3_pass-iri1> <validation/manifest#3groupdot3Extra_pass-iri1> <validation/manifest#3groupdotExtra3NLex_pass-iri1> <validation/manifest#3groupdotExtra3_pass-iri2> <validation/manifest#3groupdot3Extra_pass-iri2> <validation/manifest#3groupdotExtra3NLex_pass-iri2> <validation/manifest#startRefIRIREF_pass-noOthers> <validation/manifest#startRefIRIREF_pass-others_lexicallyEarlier> <validation/manifest#startRefIRIREF_fail-missing> <validation/manifest#startRefbnode_pass-noOthers> <validation/manifest#startRefbnode_fail-missing> <validation/manifest#startInline_pass-noOthers> <validation/manifest#startEqualSpaceInline_pass-noOthers> <validation/manifest#startSpaceEqualInline_pass-noOthers> <validation/manifest#startInline_fail-missing> <validation/manifest#2EachInclude1_pass> <validation/manifest#2EachInclude1-after_pass> <validation/manifest#2OneInclude1_pass> <validation/manifest#2OneInclude1-after_pass> <validation/manifest#1dotAnnotIRIREF_pass> <validation/manifest#1dotAnnotIRIREF_missing> <validation/manifest#1dotPlusAnnotIRIREF_pass> <validation/manifest#1dotAnnotAIRIREF_pass> <validation/manifest#1dotAnnotSTRING_LITERAL1_pass> <validation/manifest#1dotAnnot3_pass> <validation/manifest#1dotAnnot3_missing> <validation/manifest#1inversedotAnnot3_pass> <validation/manifest#1inversedotAnnot3_missing> <validation/manifest#1dotCode1_pass> <validation/manifest#1dotNoCode1_pass> <validation/manifest#1inversedotCode1_pass> <validation/manifest#1dotCode3_pass> <validation/manifest#1dotNoCode3_pass> <validation/manifest#1dotCode3fail_abort> <validation/manifest#1dotCodeWithEscapes1_pass> <validation/manifest#1dotShapeCode1_pass> <validation/manifest#1dotShapeNoCode1_pass> <validation/manifest#open3groupdotcloseCode1-p1p2p3> <validation/manifest#startCode1_pass> <validation/manifest#startNoCode1_pass> <validation/manifest#startCode1fail_abort> <validation/manifest#startCode1startRef_pass> <validation/manifest#startCode1startReffail_abort> <validation/manifest#startCode3_pass> <validation/manifest#startCode3fail_abort> <validation/manifest#open3groupdotclosecard23Annot3Code2-p1p2p3X3> <validation/manifest#0focusIRI_other> <validation/manifest#0focusIRI_other_fail-bnodeFocusLabel> <validation/manifest#0focusIRI_empty> <validation/manifest#0focusIRI_empty_fail-bnodeFocusLabel> <validation/manifest#0focusBNODE_empty_fail-iriFocusLabel> <validation/manifest#0focusBNODE_empty> <validation/manifest#0focusBNODE_other_fail-iriFocusLabel> <validation/manifest#0focusBNODE_other> <validation/manifest#1focusIRI_dot_fail-bnodeFocusLabel> <validation/manifest#1focusIRI_dot_pass> <validation/manifest#1focusBNODE_dot_fail-iriFocusLabel-equal> <validation/manifest#1focusBNODE_dot_pass> <validation/manifest#1focusnonLiteral-dot_pass-iri-equal> <validation/manifest#focusdatatype_pass> <validation/manifest#focusdatatype_fail> <validation/manifest#focusvs_pass> <validation/manifest#focusvs_fail> <validation/manifest#1focusvsANDdatatype_fail> <validation/manifest#1focusvsANDIRI_pass> <validation/manifest#1focusvsANDIRI_fail> <validation/manifest#1focusvsORdatatype_pass-val> <validation/manifest#1focusvsORdatatype_fail-val> <validation/manifest#1focusvsORdatatype_pass-dt> <validation/manifest#1focusvsORdatatype_fail-dt> <validation/manifest#1focusLength-dot_fail-iri-short> <validation/manifest#1focusLength-dot_pass-iri-equal> <validation/manifest#1focusLength-dot_fail-iri-long> <validation/manifest#1focusLength-dot_fail-bnode-short> <validation/manifest#1focusLength-dot_pass-bnode-equal> <validation/manifest#1focusLength-dot_fail-bnode-long> <validation/manifest#1focusMinLength-dot_fail-iri-short> <validation/manifest#1focusMinLength-dot_pass-iri-equal> <validation/manifest#1focusMinLength-dot_pass-iri-long> <validation/manifest#1focusMinLength-dot_fail-bnode-short> <validation/manifest#1focusMinLength-dot_pass-bnode-equal> <validation/manifest#1focusMinLength-dot_pass-bnode-long> <validation/manifest#1focusMaxLength-dot_pass-iri-short> <validation/manifest#1focusMaxLength-dot_pass-iri-equal> <validation/manifest#1focusMaxLength-dot_fail-iri-long> <validation/manifest#1focusMaxLength-dot_pass-bnode-short> <validation/manifest#1focusMaxLength-dot_pass-bnode-equal> <validation/manifest#1focusMaxLength-dot_fail-bnode-long> <validation/manifest#1focusPattern-dot_fail-iri-match> <validation/manifest#1focusPattern-dot_fail-iri-short> <validation/manifest#1focusPattern-dot_pass-iri-match> <validation/manifest#1focusPattern-dot_fail-iri-long> <validation/manifest#1focusPatternB-dot_fail-iri-match> <validation/manifest#1focusPatternB-dot_fail-bnode-short> <validation/manifest#1focusPatternB-dot_pass-bnode-match> <validation/manifest#1focusPatternB-dot_pass-bnode-long> <validation/manifest#1focusIRILength_dot_fail-bnodeFocusLabel-equal> <validation/manifest#1focusIRILength_dot_fail-short> <validation/manifest#1focusIRILength_dot_pass> <validation/manifest#1focusIRILength_dot_fail-long> <validation/manifest#1focusBNODELength_dot_fail-iriFocusLabel-equal> <validation/manifest#1focusBNODELength_dot_fail-short> <validation/manifest#1focusBNODELength_dot_pass> <validation/manifest#1focusBNODELength_dot_fail-long> <validation/manifest#1focusnonLiteralLength-dot_pass-iri-equal> <validation/manifest#NOT1dotOR2dot_pass-empty> <validation/manifest#NOT1dotOR2dot_pass-NoShape1> <validation/manifest#NOT1dotOR2dot_pass-Shape2> <validation/manifest#NOT1dotOR2dot_fail-Shape2> <validation/manifest#NOT1dotOR2dotX3_pass-empty> <validation/manifest#NOT1dotOR2dotX3_pass-NoShape1> <validation/manifest#NOT1dotOR2dotX3_pass-Shape2> <validation/manifest#NOT1dotOR2dotX3_fail-Shape2> <validation/manifest#NOT1dotOR2dotX3AND1_fail-empty> <validation/manifest#NOT1dotOR2dotX3AND1_fail-NoShape1> <validation/manifest#NOT1dotOR2dotX3AND1_pass-Shape2> <validation/manifest#NOT1dotOR2dotX3AND1_fail-Shape2> <validation/manifest#shapeExtern_pass> <validation/manifest#shapeExtern_fail> <validation/manifest#shapeExternRef_pass> <validation/manifest#shapeExternRef_fail> <validation/manifest#false-lead-excluding-value-shape> <validation/manifest#nPlus1> <validation/manifest#nPlus1-greedy_fail> <validation/manifest#nPlus1-greedy-rewrite> <validation/manifest#skipped> <validation/manifest#repeated-group> <validation/manifest#simple-group> <validation/manifest#PstarT> <validation/manifest#PstarT-greedy> <validation/manifest#PTstar> <validation/manifest#PTstar-greedy-fail> <validation/manifest#PTstar-greedy-rewrite> <validation/manifest#PstarTstar> <validation/manifest#P2T2> <validation/manifest#1dot_fail-empty-err> <validation/manifest#2dot_fail-empty-err>) .
 
-<negativeStructure/manifest#1MissingRef> a sht:NegativeStructureTest;
+<negativeStructure/manifest#1MissingRef> a sht:NegativeStructure;
    mf:name "1MissingRef";
+   mf:status mf:proposed;
    sx:shex <negativeStructure/1MissingRef.shex> .
 
-<negativeStructure/manifest#1focusMissingRefdot> a sht:NegativeStructureTest;
+<negativeStructure/manifest#1focusMissingRefdot> a sht:NegativeStructure;
    mf:name "1focusMissingRefdot";
+   mf:status mf:proposed;
    sx:shex <negativeStructure/1focusMissingRefdot.shex> .
 
-<negativeStructure/manifest#1focusRefANDSelfdot> a sht:NegativeStructureTest;
+<negativeStructure/manifest#1focusRefANDSelfdot> a sht:NegativeStructure;
    mf:name "1focusRefANDSelfdot";
+   mf:status mf:proposed;
    sx:shex <negativeStructure/1focusRefANDSelfdot.shex> .
 
-<negativeStructure/manifest#includeNonSimpleShape> a sht:NegativeStructureTest;
+<negativeStructure/manifest#includeNonSimpleShape> a sht:NegativeStructure;
    mf:name "includeNonSimpleShape";
+   mf:status mf:proposed;
    sx:shex <negativeStructure/includeNonSimpleShape.shex> .
 
-<negativeStructure/manifest#includeShapeNotFound> a sht:NegativeStructureTest;
+<negativeStructure/manifest#includeShapeNotFound> a sht:NegativeStructure;
    mf:name "includeShapeNotFound";
+   mf:status mf:proposed;
    sx:shex <negativeStructure/includeShapeNotFound.shex> .
 
-<negativeSyntax/manifest#1decimalMininclusiveroman-numeral> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1decimalMininclusiveroman-numeral> a sht:NegativeSyntax;
    mf:name "1decimalMininclusiveroman-numeral";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1decimalMininclusiveroman-numeral.shex> .
 
-<negativeSyntax/manifest#1dotAnnot_AIRIREF> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1dotAnnot_AIRIREF> a sht:NegativeSyntax;
    mf:name "1dotAnnot_AIRIREF";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1dotAnnot_AIRIREF.shex> .
 
-<negativeSyntax/manifest#1dotUnlabeledCode1> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1dotUnlabeledCode1> a sht:NegativeSyntax;
    mf:name "1dotUnlabeledCode1";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1dotUnlabeledCode1.shex> .
 
-<negativeSyntax/manifest#1doubleMininclusiveroman-numeral> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1doubleMininclusiveroman-numeral> a sht:NegativeSyntax;
    mf:name "1doubleMininclusiveroman-numeral";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1doubleMininclusiveroman-numeral.shex> .
 
-<negativeSyntax/manifest#1floatMininclusiveroman-numeral> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1floatMininclusiveroman-numeral> a sht:NegativeSyntax;
    mf:name "1floatMininclusiveroman-numeral";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1floatMininclusiveroman-numeral.shex> .
 
-<negativeSyntax/manifest#1integerMininclusiveroman-numeral> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1integerMininclusiveroman-numeral> a sht:NegativeSyntax;
    mf:name "1integerMininclusiveroman-numeral";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1integerMininclusiveroman-numeral.shex> .
 
-<negativeSyntax/manifest#1inverseinversedot> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1inverseinversedot> a sht:NegativeSyntax;
    mf:name "1inverseinversedot";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1inverseinversedot.shex> .
 
-<negativeSyntax/manifest#1iriLength2> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1iriLength2> a sht:NegativeSyntax;
    mf:name "1iriLength2";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1iriLength2.shex> .
 
-<negativeSyntax/manifest#1iriMaxexclusive> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1iriMaxexclusive> a sht:NegativeSyntax;
    mf:name "1iriMaxexclusive";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1iriMaxexclusive.shex> .
 
-<negativeSyntax/manifest#1iriMaxinclusive> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1iriMaxinclusive> a sht:NegativeSyntax;
    mf:name "1iriMaxinclusive";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1iriMaxinclusive.shex> .
 
-<negativeSyntax/manifest#1iriMinexclusive> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1iriMinexclusive> a sht:NegativeSyntax;
    mf:name "1iriMinexclusive";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1iriMinexclusive.shex> .
 
-<negativeSyntax/manifest#1iriMininclusive> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1iriMininclusive> a sht:NegativeSyntax;
    mf:name "1iriMininclusive";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1iriMininclusive.shex> .
 
-<negativeSyntax/manifest#1literalFractiondigitsxsd-integer> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1literalFractiondigitsxsd-integer> a sht:NegativeSyntax;
    mf:name "1literalFractiondigitsxsd-integer";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1literalFractiondigitsxsd-integer.shex> .
 
-<negativeSyntax/manifest#1literalLength2> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1literalLength2> a sht:NegativeSyntax;
    mf:name "1literalLength2";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1literalLength2.shex> .
 
-<negativeSyntax/manifest#1literalTotaldigitsxsd-integer> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1literalTotaldigitsxsd-integer> a sht:NegativeSyntax;
    mf:name "1literalTotaldigitsxsd-integer";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1literalTotaldigitsxsd-integer.shex> .
 
-<negativeSyntax/manifest#1negatedinversenegateddot> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1negatedinversenegateddot> a sht:NegativeSyntax;
    mf:name "1negatedinversenegateddot";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1negatedinversenegateddot.shex> .
 
-<negativeSyntax/manifest#1negatednegateddot> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1negatednegateddot> a sht:NegativeSyntax;
    mf:name "1negatednegateddot";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1negatednegateddot.shex> .
 
-<negativeSyntax/manifest#1unknowndatatypeMaxInclusive> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1unknowndatatypeMaxInclusive> a sht:NegativeSyntax;
    mf:name "1unknowndatatypeMaxInclusive";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1unknowndatatypeMaxInclusive.shex> .
 
-<negativeSyntax/manifest#1val1bnode> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1val1bnode> a sht:NegativeSyntax;
    mf:name "1val1bnode";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1val1bnode.shex> .
 
-<negativeSyntax/manifest#1val1iriMinusiri1> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1val1iriMinusiri1> a sht:NegativeSyntax;
    mf:name "1val1iriMinusiri1";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1val1iriMinusiri1.shex> .
 
-<negativeSyntax/manifest#1val1vcrefSTRING_LITERAL1> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1val1vcrefSTRING_LITERAL1> a sht:NegativeSyntax;
    mf:name "1val1vcrefSTRING_LITERAL1";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1val1vcrefSTRING_LITERAL1.shex> .
 
-<negativeSyntax/manifest#1valA> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#1valA> a sht:NegativeSyntax;
    mf:name "1valA";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/1valA.shex> .
 
-<negativeSyntax/manifest#DECIMAL-123.abc> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#DECIMAL-123.abc> a sht:NegativeSyntax;
    mf:name "DECIMAL-123.abc";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/DECIMAL-123.abc.shex> .
 
-<negativeSyntax/manifest#DOUBLE-123e> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#DOUBLE-123e> a sht:NegativeSyntax;
    mf:name "DOUBLE-123e";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/DOUBLE-123e.shex> .
 
-<negativeSyntax/manifest#INTEGER-+-1> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#INTEGER-+-1> a sht:NegativeSyntax;
    mf:name "INTEGER-+-1";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/INTEGER-+-1.shex> .
 
-<negativeSyntax/manifest#INTEGER-123abc> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#INTEGER-123abc> a sht:NegativeSyntax;
    mf:name "INTEGER-123abc";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/INTEGER-123abc.shex> .
 
-<negativeSyntax/manifest#IRIREF-with-ECHAR> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#IRIREF-with-ECHAR> a sht:NegativeSyntax;
    mf:name "IRIREF-with-ECHAR";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/IRIREF-with-ECHAR.shex> .
 
-<negativeSyntax/manifest#IRIREF-with-PN_LOCAL_ESC> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#IRIREF-with-PN_LOCAL_ESC> a sht:NegativeSyntax;
    mf:name "IRIREF-with-PN_LOCAL_ESC";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/IRIREF-with-PN_LOCAL_ESC.shex> .
 
-<negativeSyntax/manifest#IRIREF-with-SPACE> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#IRIREF-with-SPACE> a sht:NegativeSyntax;
    mf:name "IRIREF-with-SPACE";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/IRIREF-with-SPACE.shex> .
 
-<negativeSyntax/manifest#IRIREF-with-bad-UCHAR.1> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#IRIREF-with-bad-UCHAR.1> a sht:NegativeSyntax;
    mf:name "IRIREF-with-bad-UCHAR.1";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/IRIREF-with-bad-UCHAR.1.shex> .
 
-<negativeSyntax/manifest#IRIREF-with-bad-UCHAR.2> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#IRIREF-with-bad-UCHAR.2> a sht:NegativeSyntax;
    mf:name "IRIREF-with-bad-UCHAR.2";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/IRIREF-with-bad-UCHAR.2.shex> .
 
-<negativeSyntax/manifest#PNAME_NS-dot-at-end-declared> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#PNAME_NS-dot-at-end-declared> a sht:NegativeSyntax;
    mf:name "PNAME_NS-dot-at-end-declared";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/PNAME_NS-dot-at-end-declared.shex> .
 
-<negativeSyntax/manifest#PNAME_NS-dot-at-end-undeclared> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#PNAME_NS-dot-at-end-undeclared> a sht:NegativeSyntax;
    mf:name "PNAME_NS-dot-at-end-undeclared";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/PNAME_NS-dot-at-end-undeclared.shex> .
 
-<negativeSyntax/manifest#PNAME_NS-dot-at-start-declared> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#PNAME_NS-dot-at-start-declared> a sht:NegativeSyntax;
    mf:name "PNAME_NS-dot-at-start-declared";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/PNAME_NS-dot-at-start-declared.shex> .
 
-<negativeSyntax/manifest#PNAME_NS-dot-at-start-undeclared> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#PNAME_NS-dot-at-start-undeclared> a sht:NegativeSyntax;
    mf:name "PNAME_NS-dot-at-start-undeclared";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/PNAME_NS-dot-at-start-undeclared.shex> .
 
-<negativeSyntax/manifest#PN_LOCAL-PERCENT-end> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#PN_LOCAL-PERCENT-end> a sht:NegativeSyntax;
    mf:name "PN_LOCAL-PERCENT-end";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/PN_LOCAL-PERCENT-end.shex> .
 
-<negativeSyntax/manifest#PN_LOCAL-PERCENT-mid> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#PN_LOCAL-PERCENT-mid> a sht:NegativeSyntax;
    mf:name "PN_LOCAL-PERCENT-mid";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/PN_LOCAL-PERCENT-mid.shex> .
 
-<negativeSyntax/manifest#PN_LOCAL-PERCENT-start> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#PN_LOCAL-PERCENT-start> a sht:NegativeSyntax;
    mf:name "PN_LOCAL-PERCENT-start";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/PN_LOCAL-PERCENT-start.shex> .
 
-<negativeSyntax/manifest#PN_LOCAL-dash-start> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#PN_LOCAL-dash-start> a sht:NegativeSyntax;
    mf:name "PN_LOCAL-dash-start";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/PN_LOCAL-dash-start.shex> .
 
-<negativeSyntax/manifest#PN_LOCAL-unescaped-TILDE> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#PN_LOCAL-unescaped-TILDE> a sht:NegativeSyntax;
    mf:name "PN_LOCAL-unescaped-TILDE";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/PN_LOCAL-unescaped-TILDE.shex> .
 
-<negativeSyntax/manifest#PN_LOCAL-with-UCHAR.1> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#PN_LOCAL-with-UCHAR.1> a sht:NegativeSyntax;
    mf:name "PN_LOCAL-with-UCHAR.1";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/PN_LOCAL-with-UCHAR.1.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL1-ending-QUOTATION_MARK> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL1-ending-QUOTATION_MARK> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL1-ending-QUOTATION_MARK";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL1-ending-QUOTATION_MARK.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL2-bad-ECHAR> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL2-bad-ECHAR> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL2-bad-ECHAR";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL2-bad-ECHAR.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL2-bad-LANGTAG> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL2-bad-LANGTAG> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL2-bad-LANGTAG";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL2-bad-LANGTAG.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL2-bad-UCHAR1> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL2-bad-UCHAR1> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL2-bad-UCHAR1";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL2-bad-UCHAR1.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL2-bad-UCHAR2-value> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL2-bad-UCHAR2-value> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL2-bad-UCHAR2-value";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL2-bad-UCHAR2-value.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL2-ending-APOSTROPHE> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL2-ending-APOSTROPHE> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL2-ending-APOSTROPHE";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL2-ending-APOSTROPHE.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL2-illegal-UCHAR1-value> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL2-illegal-UCHAR1-value> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL2-illegal-UCHAR1-value";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL2-illegal-UCHAR1-value.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL2-with-LANGTAG-and-datatype> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL2-with-LANGTAG-and-datatype> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL2-with-LANGTAG-and-datatype";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL2-with-LANGTAG-and-datatype.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL_LONG1-ending-APOSTROPHE> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL_LONG1-ending-APOSTROPHE> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL_LONG1-ending-APOSTROPHE";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL_LONG1-ending-APOSTROPHE.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL_LONG1-ending-APOSTROPHE4> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL_LONG1-ending-APOSTROPHE4> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL_LONG1-ending-APOSTROPHE4";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL_LONG1-ending-APOSTROPHE4.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL_LONG2-ending-APOSTROPHE3> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL_LONG2-ending-APOSTROPHE3> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL_LONG2-ending-APOSTROPHE3";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL_LONG2-ending-APOSTROPHE3.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL_LONG2-ending-QUOTATION_MARK4> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL_LONG2-ending-QUOTATION_MARK4> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL_LONG2-ending-QUOTATION_MARK4";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL_LONG2-ending-QUOTATION_MARK4.shex> .
 
-<negativeSyntax/manifest#STRING_LITERAL_LONG2-unterminated> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#STRING_LITERAL_LONG2-unterminated> a sht:NegativeSyntax;
    mf:name "STRING_LITERAL_LONG2-unterminated";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/STRING_LITERAL_LONG2-unterminated.shex> .
 
-<negativeSyntax/manifest#a> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#a> a sht:NegativeSyntax;
    mf:name "a";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/a.shex> .
 
-<negativeSyntax/manifest#base-no-uri> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#base-no-uri> a sht:NegativeSyntax;
    mf:name "base-no-uri";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/base-no-uri.shex> .
 
-<negativeSyntax/manifest#base-uri-dot> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#base-uri-dot> a sht:NegativeSyntax;
    mf:name "base-uri-dot";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/base-uri-dot.shex> .
 
-<negativeSyntax/manifest#bnodedot> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#bnodedot> a sht:NegativeSyntax;
    mf:name "bnodedot";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/bnodedot.shex> .
 
-<negativeSyntax/manifest#capitol-A> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#capitol-A> a sht:NegativeSyntax;
    mf:name "capitol-A";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/capitol-A.shex> .
 
-<negativeSyntax/manifest#group-no-COMMA-separators> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#group-no-COMMA-separators> a sht:NegativeSyntax;
    mf:name "group-no-COMMA-separators";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/group-no-COMMA-separators.shex> .
 
-<negativeSyntax/manifest#groupShapeConstr-trailing-OR> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#groupShapeConstr-trailing-OR> a sht:NegativeSyntax;
    mf:name "groupShapeConstr-trailing-OR";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/groupShapeConstr-trailing-OR.shex> .
 
-<negativeSyntax/manifest#literal-0x123> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#literal-0x123> a sht:NegativeSyntax;
    mf:name "literal-0x123";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/literal-0x123.shex> .
 
-<negativeSyntax/manifest#open1dotclose> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#open1dotclose> a sht:NegativeSyntax;
    mf:name "open1dotclose";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/open1dotclose.shex> .
 
-<negativeSyntax/manifest#open1dotcloseAnnot3> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#open1dotcloseAnnot3> a sht:NegativeSyntax;
    mf:name "open1dotcloseAnnot3";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/open1dotcloseAnnot3.shex> .
 
-<negativeSyntax/manifest#open1dotcloseCode1> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#open1dotcloseCode1> a sht:NegativeSyntax;
    mf:name "open1dotcloseCode1";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/open1dotcloseCode1.shex> .
 
-<negativeSyntax/manifest#open1dotclosecardOpt> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#open1dotclosecardOpt> a sht:NegativeSyntax;
    mf:name "open1dotclosecardOpt";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/open1dotclosecardOpt.shex> .
 
-<negativeSyntax/manifest#openopen1dotOr1dotclose> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#openopen1dotOr1dotclose> a sht:NegativeSyntax;
    mf:name "openopen1dotOr1dotclose";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/openopen1dotOr1dotclose.shex> .
 
-<negativeSyntax/manifest#openopen1dotcloseCode1closeCode2> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#openopen1dotcloseCode1closeCode2> a sht:NegativeSyntax;
    mf:name "openopen1dotcloseCode1closeCode2";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/openopen1dotcloseCode1closeCode2.shex> .
 
-<negativeSyntax/manifest#predicate-ANON> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#predicate-ANON> a sht:NegativeSyntax;
    mf:name "predicate-ANON";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/predicate-ANON.shex> .
 
-<negativeSyntax/manifest#predicate-BLANK_NODE_LABEL> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#predicate-BLANK_NODE_LABEL> a sht:NegativeSyntax;
    mf:name "predicate-BLANK_NODE_LABEL";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/predicate-BLANK_NODE_LABEL.shex> .
 
-<negativeSyntax/manifest#predicate-literal> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#predicate-literal> a sht:NegativeSyntax;
    mf:name "predicate-literal";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/predicate-literal.shex> .
 
-<negativeSyntax/manifest#predicate-true> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#predicate-true> a sht:NegativeSyntax;
    mf:name "predicate-true";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/predicate-true.shex> .
 
-<negativeSyntax/manifest#prefix-missing> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#prefix-missing> a sht:NegativeSyntax;
    mf:name "prefix-missing";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/prefix-missing.shex> .
 
-<negativeSyntax/manifest#prefix-no-COLON> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#prefix-no-COLON> a sht:NegativeSyntax;
    mf:name "prefix-no-COLON";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/prefix-no-COLON.shex> .
 
-<negativeSyntax/manifest#prefix-no-PNAME_NS> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#prefix-no-PNAME_NS> a sht:NegativeSyntax;
    mf:name "prefix-no-PNAME_NS";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/prefix-no-PNAME_NS.shex> .
 
-<negativeSyntax/manifest#prefix-no-uri> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#prefix-no-uri> a sht:NegativeSyntax;
    mf:name "prefix-no-uri";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/prefix-no-uri.shex> .
 
-<negativeSyntax/manifest#prefix-none> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#prefix-none> a sht:NegativeSyntax;
    mf:name "prefix-none";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/prefix-none.shex> .
 
-<negativeSyntax/manifest#shapename-a> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#shapename-a> a sht:NegativeSyntax;
    mf:name "shapename-a";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/shapename-a.shex> .
 
-<negativeSyntax/manifest#shapename-literal> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#shapename-literal> a sht:NegativeSyntax;
    mf:name "shapename-literal";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/shapename-literal.shex> .
 
-<negativeSyntax/manifest#shapename-true> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#shapename-true> a sht:NegativeSyntax;
    mf:name "shapename-true";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/shapename-true.shex> .
 
-<negativeSyntax/manifest#tripleConsraint-no-valueClass> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#tripleConsraint-no-valueClass> a sht:NegativeSyntax;
    mf:name "tripleConsraint-no-valueClass";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/tripleConsraint-no-valueClass.shex> .
 
-<negativeSyntax/manifest#tripleConsraint-with-datatype-and-dot> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#tripleConsraint-with-datatype-and-dot> a sht:NegativeSyntax;
    mf:name "tripleConsraint-with-datatype-and-dot";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/tripleConsraint-with-datatype-and-dot.shex> .
 
-<negativeSyntax/manifest#tripleConsraint-with-datatype-and-valueSet> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#tripleConsraint-with-datatype-and-valueSet> a sht:NegativeSyntax;
    mf:name "tripleConsraint-with-datatype-and-valueSet";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/tripleConsraint-with-datatype-and-valueSet.shex> .
 
-<negativeSyntax/manifest#tripleConsraint-with-dot-and-datatype> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#tripleConsraint-with-dot-and-datatype> a sht:NegativeSyntax;
    mf:name "tripleConsraint-with-dot-and-datatype";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/tripleConsraint-with-dot-and-datatype.shex> .
 
-<negativeSyntax/manifest#tripleConsraint-with-two-cardinalities> a sht:NegativeSyntaxTest;
+<negativeSyntax/manifest#tripleConsraint-with-two-cardinalities> a sht:NegativeSyntax;
    mf:name "tripleConsraint-with-two-cardinalities";
+   mf:status mf:proposed;
    sx:shex <negativeSyntax/tripleConsraint-with-two-cardinalities.shex> .
 
 <schemas/manifest#0> a sht:RepresentationTest;
@@ -2180,7 +2270,7 @@
    rdfs:comment "<S1> {  } on { _:abcd <p1> <o1> }";
    mf:action [
      sht:data <validation/Babcd_Ip1_Io1.ttl>;
-     sht:focus _:g70322271129240;
+     sht:focus _:g70253576179640;
      sht:schema <schemas/0.shex>;
      sht:shape <http://a.example/S1>
    ];
@@ -2192,7 +2282,7 @@
    rdfs:comment "<S> BNODE {  } on { }";
    mf:action [
      sht:data <validation/empty.ttl>;
-     sht:focus _:g70322271129240;
+     sht:focus _:g70253576179640;
      sht:schema <schemas/0focusBNODE.shex>;
      sht:shape <http://a.example/S1>
    ];
@@ -2215,7 +2305,7 @@
    rdfs:comment "<S> BNODE {  } on { _:abcd <p1> <o1> }";
    mf:action [
      sht:data <validation/Babcd_Ip1_Io1.ttl>;
-     sht:focus _:g70322271129240;
+     sht:focus _:g70253576179640;
      sht:schema <schemas/0focusBNODE.shex>;
      sht:shape <http://a.example/S1>
    ];
@@ -2273,7 +2363,7 @@
    rdfs:comment "<S> IRI {  } on { }";
    mf:action [
      sht:data <validation/Babcd_Ip1_Io1.ttl>;
-     sht:focus _:g70322271129240;
+     sht:focus _:g70253576179640;
      sht:schema <schemas/0focusIRI.shex>;
      sht:shape <http://a.example/S1>
    ];
@@ -5749,7 +5839,7 @@
    rdfs:comment "<S> BNODE LENGTH 19 { <p1> . } on <s> in { _:abcd <p1> <o1> }";
    mf:action [
      sht:data <validation/Babcd_Ip1_Io1.ttl>;
-     sht:focus _:g70322271129240;
+     sht:focus _:g70253576179640;
      sht:schema <schemas/1focusBNODELength_dot.shex>;
      sht:shape <http://a.example/S1>
    ];
@@ -5840,7 +5930,7 @@
    rdfs:comment "<S> IRI { <p1> . } on <s> in { _:abcd <p1> <o1> }";
    mf:action [
      sht:data <validation/Babcd_Ip1_Io1.ttl>;
-     sht:focus _:g70322271129240;
+     sht:focus _:g70253576179640;
      sht:schema <schemas/1focusIRI_dot.shex>;
      sht:shape <http://a.example/S1>
    ];
@@ -5874,7 +5964,7 @@
    rdfs:comment "<S1> LENGTH 19 { <p1> . } on { _:abcd <p1> <o1> }";
    mf:action [
      sht:data <validation/Babcd_Ip1_Io1.ttl>;
-     sht:focus _:g70322271129240;
+     sht:focus _:g70253576179640;
      sht:schema <schemas/1focusLength-dot.shex>;
      sht:shape <http://a.example/S1>
    ];
@@ -5965,7 +6055,7 @@
    rdfs:comment "<S1> MINLENGTH 19 { <p1> . } on { _:abcd <p1> <o1> }";
    mf:action [
      sht:data <validation/Babcd_Ip1_Io1.ttl>;
-     sht:focus _:g70322271129240;
+     sht:focus _:g70253576179640;
      sht:schema <schemas/1focusMaxLength-dot.shex>;
      sht:shape <http://a.example/S1>
    ];
@@ -6001,7 +6091,7 @@
    rdfs:comment "<S1> MINLENGTH 19 { <p1> . } on { _:abcd <p1> <o1> }";
    mf:action [
      sht:data <validation/Babcd_Ip1_Io1.ttl>;
-     sht:focus _:g70322271129240;
+     sht:focus _:g70253576179640;
      sht:schema <schemas/1focusMinLength-dot.shex>;
      sht:shape <http://a.example/S1>
    ];
@@ -6116,7 +6206,7 @@
    rdfs:comment "<S1> PATTERN 'abcdefghijklmnopqrs' { <p1> } on { _:abcd <p1> <o1> }";
    mf:action [
      sht:data <validation/Babcd_Ip1_Io1.ttl>;
-     sht:focus _:g70322271129240;
+     sht:focus _:g70253576179640;
      sht:schema <schemas/1focusPatternB-dot.shex>;
      sht:shape <http://a.example/S1>
    ];
@@ -6243,7 +6333,7 @@
    rdfs:comment "<S> [<v1> <v2> <v3>] OR <dt1> on {  }";
    mf:action [
      sht:data <validation/empty.ttl>;
-     sht:focus "\"v1\"^^http://a.example/dt2";
+     sht:focus "v1"^^<http://a.example/dt2>;
      sht:schema <schemas/focusvsORdatatype.shex>;
      sht:shape <http://a.example/vs1>
    ];
@@ -6265,7 +6355,7 @@
    rdfs:comment "<S> [<v1> <v2> <v3>] OR <dt1> on {  }";
    mf:action [
      sht:data <validation/empty.ttl>;
-     sht:focus "\"v1\"^^http://a.example/dt1";
+     sht:focus "v1"^^<http://a.example/dt1>;
      sht:schema <schemas/focusvsORdatatype.shex>;
      sht:shape <http://a.example/vs1>
    ];
@@ -10591,7 +10681,7 @@
    rdfs:comment "<S> <dt1> on {  }";
    mf:action [
      sht:data <validation/Is1_Ip1_LabDTbloodType999.ttl>;
-     sht:focus "\"ab\"^^http://a.example/bloodType999";
+     sht:focus "ab"^^<http://a.example/bloodType999>;
      sht:schema <schemas/focusdatatype.shex>;
      sht:shape <http://a.example/S1>
    ];
@@ -10602,7 +10692,7 @@
    rdfs:comment "<S> <dt1> on {  }";
    mf:action [
      sht:data <validation/Is1_Ip1_LabDTbloodType.ttl>;
-     sht:focus "\"ab\"^^http://a.example/bloodType";
+     sht:focus "ab"^^<http://a.example/bloodType>;
      sht:schema <schemas/focusdatatype.shex>;
      sht:shape <http://a.example/S1>
    ];

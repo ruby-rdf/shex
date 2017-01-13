@@ -1,6 +1,10 @@
 ---
 :format: :json
-:manifest: manifests.ttl
+:manifest:
+- https://raw.githubusercontent.com/shexSpec/shexTest/master/schemas/manifest.ttl
+- https://raw.githubusercontent.com/shexSpec/shexTest/master/negativeSyntax/manifest.ttl
+- https://raw.githubusercontent.com/shexSpec/shexTest/master/negativeStructure/manifest.ttl
+- https://raw.githubusercontent.com/shexSpec/shexTest/master/validation/manifest.ttl
 :bibRef: ! '[[shex]]'
 :name: Shape Expressions Language
 :query: >
