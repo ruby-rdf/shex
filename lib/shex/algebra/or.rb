@@ -37,7 +37,7 @@ module ShEx::Algebra
       expressions.any? do |op|
         begin
           matched_op = op.satisfies?(focus)
-          return satisfy focus: focus, satisfied: matched_op, unsatisfied: unsatisfied
+          return satisfy focus: focus, satisfied: matched_op
         rescue ShEx::NotSatisfied => e
           status "unsatisfied #{focus}"
           op = op.dup

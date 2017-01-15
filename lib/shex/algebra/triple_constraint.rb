@@ -59,7 +59,7 @@ module ShEx::Algebra
         op.satisfies?(results)
       end unless results.empty?
 
-      satisfy matched: results, satisfied: satisfied, unsatisfied: unsatisfied
+      satisfy matched: results, satisfied: satisfied
     rescue ShEx::NotMatched, ShEx::NotSatisfied => e
       not_matched e.message,
                   matched:   results,   unmatched:   (statements - results),
