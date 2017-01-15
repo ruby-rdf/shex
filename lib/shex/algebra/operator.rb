@@ -585,7 +585,7 @@ module ShEx::Algebra
   protected
     def dup
       operands = @operands.map {|o| o.dup}
-      self.class.new(*operands, label: self.label)
+      self.class.new(*operands, label: @label)
     end
 
     ##
