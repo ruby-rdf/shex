@@ -46,29 +46,29 @@ describe ShEx do
     let(:doap_shape) {RDF::URI("TestShape")}
     let(:doap_graph) {RDF::Graph.load(doap_ttl)}
     let(:doap_sxp) {%{(schema
-     (prefix (("doap" <http://usefulinc.com/ns/doap#>) ("dc" <http://purl.org/dc/terms/>)))
      (shapes
-      ((<TestShape> (shape
-         (extra a)
+      (shape
+       (label <TestShape>)
+       (extra a)
+       (eachOf
+        (tripleConstraint a (nodeConstraint (value <http://usefulinc.com/ns/doap#Project>)))
+        (oneOf
          (eachOf
-          (tripleConstraint a (nodeConstraint (value <http://usefulinc.com/ns/doap#Project>)))
-          (oneOf
-           (eachOf
-            (tripleConstraint <http://usefulinc.com/ns/doap#name> (nodeConstraint literal))
-            (tripleConstraint <http://usefulinc.com/ns/doap#description>
-             (nodeConstraint literal)) )
-           (eachOf
-            (tripleConstraint <http://purl.org/dc/terms/title> (nodeConstraint literal))
-            (tripleConstraint <http://purl.org/dc/terms/description> (nodeConstraint literal)))
-           (min 1) (max "*"))
-          (tripleConstraint <http://usefulinc.com/ns/doap#category>
-           (nodeConstraint iri)
-           (min 0) (max "*"))
-          (tripleConstraint <http://usefulinc.com/ns/doap#developer>
-           (nodeConstraint iri)
-           (min 1) (max "*"))
-          (tripleConstraint <http://usefulinc.com/ns/doap#implements>
-           (nodeConstraint (value <https://shexspec.github.io/spec/>))) ))))))}
+          (tripleConstraint <http://usefulinc.com/ns/doap#name> (nodeConstraint literal))
+          (tripleConstraint <http://usefulinc.com/ns/doap#description>
+           (nodeConstraint literal)) )
+         (eachOf
+          (tripleConstraint <http://purl.org/dc/terms/title> (nodeConstraint literal))
+          (tripleConstraint <http://purl.org/dc/terms/description> (nodeConstraint literal)))
+         (min 1) (max "*"))
+        (tripleConstraint <http://usefulinc.com/ns/doap#category>
+         (nodeConstraint iri)
+         (min 0) (max "*"))
+        (tripleConstraint <http://usefulinc.com/ns/doap#developer>
+         (nodeConstraint iri)
+         (min 1) (max "*"))
+        (tripleConstraint <http://usefulinc.com/ns/doap#implements>
+         (nodeConstraint (value <https://shexspec.github.io/spec/>))) ))))}
     }
 
     it "parses doap.shex" do
