@@ -6,9 +6,12 @@ module ShEx::Algebra
 
     def initialize(*args, **options)
       case
-      when args.length <= 1
-        raise ArgumentError, "wrong number of arguments (given #{args.length}, expected 1..)"
+      when args.length < 2
+        raise ArgumentError, "wrong number of arguments (given #{args.length}, expected 2..)"
       end
+
+      # All arguments must be Satisfiable
+      raise ArgumentError, "All operands must be Shape operands" unless args.all? {|o| o.is_a?(Satisfiable)}
       super
     end
 

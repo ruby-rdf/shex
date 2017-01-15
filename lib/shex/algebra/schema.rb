@@ -106,7 +106,6 @@ module ShEx::Algebra
     # @yieldparam [Satisfiable] shape, or `nil` if shape already entered
     # @return [Satisfiable]
     def enter_shape(label, node, &block)
-      label = serialize_value(label)
       shape = shapes.detect {|s| s.label == label}
       structure_error("No shape found for #{label}") unless shape
       @shapes_entered[label] ||= {}
