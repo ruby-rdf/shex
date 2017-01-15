@@ -12,8 +12,8 @@ describe ShEx::Algebra do
     subject {described_class.new(ShEx::Algebra::Shape.new, ShEx::Algebra::NodeConstraint.new(:iri))}
     it {expect {described_class.new}.to raise_error(ArgumentError, /wrong number of arguments/)}
     it {expect {described_class.new(ShEx::Algebra::Shape.new)}.to raise_error(ArgumentError, /wrong number of arguments/)}
-    it {expect {described_class.new(nil, nil)}.to raise_error(ArgumentError, /Found nil operand/)}
-    it {expect {described_class.new(ShEx::Algebra::Shape.new, ShEx::Parser.new)}.to raise_error(TypeError, /invalid ShEx::Algebra::Operator/)}
+    it {expect {described_class.new(nil, nil)}.to raise_error(ArgumentError, /All operands must be Shape/)}
+    it {expect {described_class.new(ShEx::Algebra::Shape.new, ShEx::Algebra::TripleConstraint.new)}.to raise_error(ArgumentError, /All operands must be Shape/)}
     it {expect {subject}.not_to raise_error}
 
     it "raises NotSatisfied if any operand does not satisfy" do
@@ -46,8 +46,8 @@ describe ShEx::Algebra do
     subject {described_class.new(ShEx::Algebra::NodeConstraint.new(:literal), ShEx::Algebra::NodeConstraint.new(:iri))}
     it {expect {described_class.new}.to raise_error(ArgumentError, /wrong number of arguments/)}
     it {expect {described_class.new(ShEx::Algebra::Shape.new)}.to raise_error(ArgumentError, /wrong number of arguments/)}
-    it {expect {described_class.new(nil, nil)}.to raise_error(ArgumentError, /Found nil operand/)}
-    it {expect {described_class.new(ShEx::Algebra::Shape.new, ShEx::Parser.new)}.to raise_error(TypeError, /invalid ShEx::Algebra::Operator/)}
+    it {expect {described_class.new(nil, nil)}.to raise_error(ArgumentError, /All operands must be Shape/)}
+    it {expect {described_class.new(ShEx::Algebra::Shape.new, ShEx::Parser.new)}.to raise_error(ArgumentError, /All operands must be Shape/)}
     it {expect {subject}.not_to raise_error}
 
     it "raises NotSatisfied if all operands do not satisfy" do
