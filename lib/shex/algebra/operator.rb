@@ -146,12 +146,24 @@ module ShEx::Algebra
     end
 
     ##
+    # On a result instance, the failure message. (failure only).
+    # @return [String]
+    def message
+      (operands.detect {|op| op.is_a?(Array) && op[0] == :message} || [:message])[1..-1]
+    end
+    def message=(str)
+      operands.delete_if {|op| op.is_a?(Array) && op[0] == :message}
+      operands << [:message, str]
+    end
+
+    ##
     # Duplication this operand, and add `matched`, `unmatched`, `satisfied`, and `unsatisfied` operands for accessing downstream.
     #
     # @return [Operand]
-    def satisfy(focus: nil, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil)
+    def satisfy(focus: nil, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, message: nil)
       log_debug(self.class.const_get(:NAME), "satisfied", depth: options.fetch(:depth, 0))
       expression = self.dup
+      expression.message = message if message
       expression.focus = focus if focus
       expression.matched = Array(matched) if matched
       expression.unmatched = Array(unmatched) if unmatched
@@ -167,7 +179,8 @@ module ShEx::Algebra
         matched:     matched,
         unmatched:   unmatched,
         satisfied:   satisfied,
-        unsatisfied: unsatisfied)
+        unsatisfied: unsatisfied,
+        message:     message)
       exception = opts.fetch(:exception, ShEx::NotMatched)
       status(message) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
       raise exception.new(message, expression: expression)
@@ -179,7 +192,8 @@ module ShEx::Algebra
         matched:     matched,
         unmatched:   unmatched,
         satisfied:   satisfied,
-        unsatisfied: unsatisfied)
+        unsatisfied: unsatisfied,
+        message:     message)
       exception = opts.fetch(:exception, ShEx::NotSatisfied)
       status(message) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
       raise exception.new(message, expression: expression)
@@ -599,6 +613,12 @@ module ShEx::Algebra
     def validate!
       operands.each {|op| op.validate! if op.respond_to?(:validate!)}
       self
+    end
+
+  protected
+    def dup
+      operands = @operands.map {|o| o.dup}
+      self.class.new(*operands, label: @label)
     end
 
     ##
