@@ -38,7 +38,7 @@ module ShEx::Algebra
       focus = value(focus)
 
       # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same label
-      graph_focus = graph.enum_term.detect {|t| t.id == focus.id} if focus.is_a?(RDF::Node)
+      graph_focus = graph.enum_term.detect {|t| t.node? && t.id == focus.id} if focus.is_a?(RDF::Node)
       graph_focus ||= focus
 
       # Make sure they're URIs
