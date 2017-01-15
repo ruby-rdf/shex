@@ -1168,11 +1168,8 @@ describe ShEx::Parser do
           specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?}" do
             validate = true
             case t.name
-            when 'kitchenSink'
+            when '_all', 'kitchenSink'
               validate = false # Has self-included shape
-            when '_all'
-              #validate = false # Has self-included shape
-              pending("Ordering of shapes in schema")
             when 'openopen1dotOr1dotclose'
               pending("Our grammar allows nested bracketedTripleExpr")
             when '1focusRefANDSelfdot'
