@@ -54,5 +54,14 @@ module ShEx::Algebra
       structure_error("Referenced shape must be a Shape: #{operands.first}") unless referenced_shape.is_a?(Shape)
       super
     end
+
+    ##
+    # Returns the binary S-Expression (SXP) representation of this operator.
+    #
+    # @return [Array]
+    # @see    https://en.wikipedia.org/wiki/S-expression
+    def to_sxp_bin
+      [:inclusion, ([:label, label] if label), operands.first].compact.to_sxp_bin
+    end
   end
 end
