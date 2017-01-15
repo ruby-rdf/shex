@@ -466,7 +466,9 @@ module ShEx::Algebra
       else
         if options[:context]
           options[:context].expand_iri(value, document: true)
-          els        if base_uri
+        elsif base_uri
+          base_uri.join(value)
+        elsif base_uri
           base_uri.join(value)
         else
           RDF::URI(value)
@@ -500,11 +502,6 @@ module ShEx::Algebra
         else
           ShEx::Algebra.from_shexj(value, options)
         end
-      when /^"([^"]*)"(?:\^\^(.*))?(@.*)?$/
-        # FIXME: should go away
-        # Sorta N-Triples encoded
-        value = %("#{$1}"^^<#{$2}>) if $2
-        RDF::NTriples.unserialize(value)
       else iri(value, options)
       end
     end
