@@ -40,7 +40,7 @@ module ShEx::Algebra
     #
     # @return [Operand]
     def referenced_shape
-      schema.shapes[operands.first.to_s]
+      @referenced_shape ||= schema.shapes.detect {|s| s.label == operands.first}
     end
 
     ##

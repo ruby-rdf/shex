@@ -23,7 +23,7 @@ module ShEx::Algebra
     def satisfies?(focus)
       status ""
       satisfied_op = begin
-        operands.first.satisfies?(focus)
+        operands.last.satisfies?(focus)
       rescue ShEx::NotSatisfied => e
         return satisfy focus: focus, satisfied: e.expression.unsatisfied
       end

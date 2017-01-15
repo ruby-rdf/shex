@@ -156,12 +156,9 @@ module ShEx
     production(:shexDoc) do |input, data, callback|
       data[:start] = data[:start] if data[:start]
 
-      expressions = []
-      expressions << [:base, data[:baseDecl]] if data[:baseDecl]
-      expressions << [:prefix, data[:prefixDecl]] if data[:prefixDecl]
-      expressions += Array(data[:codeDecl])
+      expressions = Array(data[:codeDecl])
       expressions << Algebra::Start.new(data[:start]) if data[:start]
-      expressions << [:shapes, data[:shapes]] if data[:shapes]
+      expressions << data[:shapes].unshift(:shapes) if data[:shapes]
 
       input[:schema] = Algebra::Schema.new(*expressions, options)
 
@@ -176,14 +173,13 @@ module ShEx
 
     # [3]     baseDecl              ::= "BASE" IRIREF
     production(:baseDecl) do |input, data, callback|
-      input[:baseDecl] = self.base_uri = iri(data[:iri])
+      self.base_uri = iri(data[:iri])
     end
 
     # [4]     prefixDecl            ::= "PREFIX" PNAME_NS IRIREF
     production(:prefixDecl) do |input, data, callback|
       pfx = data[:prefix]
       self.prefix(pfx, data[:iri])
-      (input[:prefixDecl] ||= {})[pfx.to_s] = data[:iri]
     end
 
     # [5]     notStartAction        ::= start | shapeExprDecl
@@ -204,8 +200,9 @@ module ShEx
       else
         data[:external] ? Algebra::External.new() : Algebra::Shape.new()
       end
+      expression.label = label
 
-      (input[:shapes] ||= {})[label] = expression
+      (input[:shapes] ||= []) << expression
     end
 
     # [10]    shapeExpression       ::= shapeOr
@@ -431,7 +428,7 @@ module ShEx
     # [40]    unaryTripleExpr            ::= productionLabel? (tripleConstraint | bracketedTripleExpr) | include
     production(:unaryTripleExpr) do |input, data, callback|
       expression = data[:tripleExpression]
-      expression.operands << data[:productionLabel] if expression && data[:productionLabel]
+      expression.label = data[:productionLabel] if expression && data[:productionLabel]
 
       (input[:tripleExpression] ||= []) << expression if expression
     end
@@ -732,7 +729,7 @@ module ShEx
     #
     # @return [HRDF::URI]
     def base_uri
-      RDF::URI(@options[:base_uri]) if @options[:base_uri]
+      @options[:base_uri]
     end
 
     ##

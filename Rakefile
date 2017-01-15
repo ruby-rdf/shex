@@ -59,3 +59,13 @@ file "etc/shex.html" => "etc/shex.ebnf" do |t|
       etc/shex.ebnf
   }
 end
+
+desc "Build shex JSON-LD context cache"
+task context: "lib/shex/shex_context.rb"
+file "lib/shex/shex_context.rb" do
+  require 'json/ld'
+  File.open("lib/shex/shex_context.rb", "w") do |f|
+    c = JSON::LD::Context.new().parse("https://shexspec.github.io/context.jsonld")
+    f.write c.to_rb
+  end
+end

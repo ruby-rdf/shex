@@ -45,7 +45,7 @@ module ShEx::Algebra
     #
     # @return [Shape]
     def referenced_shape
-      schema.shapes[operands.first.to_s]
+      @referenced_shape ||= schema.shapes.detect {|s| s.label == operands.first}
     end
 
     ##
@@ -64,9 +64,8 @@ module ShEx::Algebra
     #
     # @return [Array]
     # @see    https://en.wikipedia.org/wiki/S-expression
-    def to_sxp_bin
-      operator = [self.class.const_get(:NAME)].flatten.first
-      [:shapeRef, operands.first].to_sxp_bin
-    end
+    #def to_sxp_bin
+    #  [:shapeRef, operands.first].to_sxp_bin
+    #end
   end
 end

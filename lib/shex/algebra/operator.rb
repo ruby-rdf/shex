@@ -1,4 +1,6 @@
 require 'sparql/algebra'
+require 'json/ld/preloaded'
+require 'shex/shex_context'
 
 module ShEx::Algebra
 
@@ -30,6 +32,8 @@ module ShEx::Algebra
     #     any additional options
     #   @option options [Boolean] :memoize (false)
     #     whether to memoize results for particular operands
+    #   @option options [RDF::Resource] :label
+    #     Identifier of the operator
     # @raise  [TypeError] if any operand is invalid
     def initialize(*operands)
       @options  = operands.last.is_a?(Hash) ? operands.pop.dup : {}
@@ -50,6 +54,8 @@ module ShEx::Algebra
           else raise TypeError, "invalid ShEx::Algebra::Operator operand: #{operand.inspect}"
         end
       end
+
+      @label = options[:label]
 
       if options[:logger]
         options[:depth] = 0
@@ -197,6 +203,11 @@ module ShEx::Algebra
     attr_reader :operands
 
     ##
+    # The label (or subject) of this operand
+    # @return [RDF::Resource]
+    attr_accessor :label
+
+    ##
     # Returns the operand at the given `index`.
     #
     # @param  [Integer] index
@@ -212,8 +223,9 @@ module ShEx::Algebra
     # @return [Array]
     # @see    https://en.wikipedia.org/wiki/S-expression
     def to_sxp_bin
-      operator = [self.class.const_get(:NAME)].flatten.first
-      [operator, *(operands || []).map(&:to_sxp_bin)]
+      [self.class.const_get(:NAME)] +
+      (label ? [[:label, label]] : []) +
+      (operands || []).map(&:to_sxp_bin)
     end
 
     ##
@@ -239,28 +251,28 @@ module ShEx::Algebra
     # @option options [Hash{String => RDF::URI}] :prefixes
     # @return [Operator]
     def self.from_shexj(operator, options = {})
+      options[:context] ||= JSON::LD::Context.parse(ShEx::CONTEXT)
       operands = []
+      label = nil
 
       operator.each do |k, v|
         case k
         when /length|pattern|clusive/          then operands << [k.to_sym, v]
+        when 'label'                           then label = iri(v, options)
         when 'min', 'max', 'inverse', 'closed' then operands << [k.to_sym, v]
         when 'nodeKind'                        then operands << v.to_sym
         when 'object'                          then operands << value(v, options)
         when 'start'                           then operands << Start.new(ShEx::Algebra.from_shexj(v, options))
-        when 'base'
-          options[:base_uri] = RDF::URI(v)
-          operands << [:base, options[:base_uri]]
-        when 'prefixes'
-          options[:prefixes] = v.inject({}) do |memo, (kk,vv)|
-            memo.merge(kk => RDF::URI(vv))
-          end
-          operands << [:prefix, options[:prefixes]]
+        when '@context'                        then
+          options[:context] = JSON::LD::Context.parse(v)
+          options[:base_uri] = options[:context].base
         when 'shapes'
-          operands << [:shapes,
-                       v.inject({}) do |memo, (kk,vv)|
-                         memo.merge(iri(kk, options) => ShEx::Algebra.from_shexj(vv, options))
-                       end]
+          operands << case v
+          when Array
+            [:shapes] + v.map {|vv| ShEx::Algebra.from_shexj(vv, options)}
+          else
+            raise "Expected value of shapes #{v.inspect}"
+          end
         when 'reference', 'include', 'stem', 'name'
           # Value may be :wildcard for stem
           operands << (v.is_a?(Symbol) ? v : iri(v, options))
@@ -285,14 +297,12 @@ module ShEx::Algebra
         when 'values'
           v = [v] unless v.is_a?(Array)
           operands += v.map do |op|
-            Value.new(op.is_a?(Hash) ?
-                        ShEx::Algebra.from_shexj(op, options) :
-                        value(op, options))
+            Value.new(value(op, options))
           end
         end
       end
 
-      new(*operands)
+      new(*operands, label: label)
     end
 
     def json_type
@@ -307,19 +317,21 @@ module ShEx::Algebra
     # Create a hash version of the operator, suitable for turning into JSON.
     # @return [Hash]
     def to_h
-      obj = {'type' => json_type}
+      obj = json_type == 'Schema' ?
+        {'@context' => ShEx::CONTEXT, 'type' => json_type} : 
+        {'type' => json_type}
+      obj['label'] = label.to_s if label
       operands.each do |op|
         case op
         when Array
           # First element should be a symbol
           case sym = op.first
-          when :base            then obj['base'] = op.last.to_s
           when :datatype,
                :pattern         then obj[op.first.to_s] = op.last.to_s
           when :exclusions      then obj['exclusions'] = Array(op[1..-1]).map {|v| serialize_value(v)}
           when :extra           then (obj['extra'] ||= []).concat Array(op[1..-1]).map(&:to_s)
-          when :prefix          then obj['prefixes'] = op.last.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_s)}
-          when :shapes          then obj['shapes'] = op.last.inject({}) {|memo, (k,v)| memo.merge(k.to_s => v.to_h)}
+            # FIXME Shapes should be an array, not a hash
+          when :shapes          then obj['shapes'] = Array(op[1..-1]).map {|v| v.to_h}
           when :minlength,
                :maxlength,
                :length,
@@ -330,6 +342,8 @@ module ShEx::Algebra
                :totaldigits,
                :fractiondigits  then obj[op.first.to_s] = op.last.object
           when :min, :max       then obj[op.first.to_s] = op.last
+          when :base, :prefix
+            # Ignore base and prefix
           when Symbol           then obj[sym.to_s] = Array(op[1..-1]).map(&:to_h)
           else
             raise "Expected array to start with a symbol for #{self}"
@@ -400,7 +414,7 @@ module ShEx::Algebra
     #
     # @return [HRDF::URI]
     def base_uri
-      RDF::URI(@options[:base_uri]) if @options[:base_uri]
+      @options[:base_uri]
     end
 
     # Create URIs
@@ -408,6 +422,7 @@ module ShEx::Algebra
     # @param [Hash{Symbol => Object}] options
     # @option options [RDF::URI] :base_uri
     # @option options [Hash{String => RDF::URI}] :prefixes
+    # @option options [JSON::LD::Context] :context
     # @return [RDF::Value]
     def iri(value, options = @options)
       self.class.iri(value, options)
@@ -419,9 +434,15 @@ module ShEx::Algebra
     # @return (see #iri)
     def self.iri(value, options)
       # If we have a base URI, use that when constructing a new URI
+      base_uri = options[:base_uri]
+
       case value
+      when Hash
+        # A JSON-LD node reference
+        v = options[:context].expand_value(value)
+        raise "Expected #{value.inspect} to be a JSON-LD Node Reference" unless JSON::LD::Utils.node_reference?(v)
+        self.iri(v['@id'], options)
       when RDF::URI
-        base_uri = options[:base_uri]
         if base_uri && value.relative?
           base_uri.join(value)
         else
@@ -437,12 +458,15 @@ module ShEx::Algebra
           prefixes[$1].join($2)
         elsif RDF.type == value
           a = RDF.type.dup; a.lexical = 'a'; a
+        elsif options[:context]
+          options[:context].expand_iri(value, vocab: true)
         else
           RDF::URI(value)
         end
       else
-        base_uri = options[:base_uri]
-        if base_uri
+        if options[:context]
+          options[:context].expand_iri(value, document: true)
+          els        if base_uri
           base_uri.join(value)
         else
           RDF::URI(value)
@@ -467,7 +491,17 @@ module ShEx::Algebra
     def self.value(value, options)
       # If we have a base URI, use that when constructing a new URI
       case value
+      when Hash
+        # Either a value object or a node reference
+        if value['uri']
+          iri(value['uri'], options)
+        elsif value['value']
+          RDF::Literal(value['value'], datatype: value['type'], language: value['language'])
+        else
+          ShEx::Algebra.from_shexj(value, options)
+        end
       when /^"([^"]*)"(?:\^\^(.*))?(@.*)?$/
+        # FIXME: should go away
         # Sorta N-Triples encoded
         value = %("#{$1}"^^<#{$2}>) if $2
         RDF::NTriples.unserialize(value)
@@ -483,10 +517,12 @@ module ShEx::Algebra
     def serialize_value(value)
       case value
         when RDF::Literal
-          %("#{value}") +
-          (value.has_datatype? ? "^^#{value.datatype}" : "") +
-          (value.has_language? ? "@#{value.language}" : "")
-        when RDF::Resource then value.to_s
+          {'value' => value.to_s}.
+          merge(value.has_datatype? ? {'type' => value.datatype.to_s} : {}).
+          merge(value.has_language? ? {'language' => value.language.to_s} : {})
+        when RDF::Resource
+          # value.to_s
+          {'uri' => value.to_s}
         else value.to_h
       end
     end

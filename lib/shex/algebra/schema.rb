@@ -90,14 +90,11 @@ module ShEx::Algebra
 
     ##
     # Shapes as a hash
-    # @return [Hash{RDF::Resource => Operator}]
+    # @return [Array<Operator>]
     def shapes
       @shapes ||= begin
-        shapes = operands.detect {|op| op.is_a?(Array) && op.first == :shapes}
-        shapes = shapes ? shapes.last : {}
-        shapes.inject({}) do |memo, (label, operand)|
-          memo.merge(label.to_s => operand)
-        end
+        shapes = Array(operands.detect {|op| op.is_a?(Array) && op.first == :shapes})
+        Array(shapes[1..-1])
       end
     end
 
@@ -110,7 +107,7 @@ module ShEx::Algebra
     # @return [Satisfiable]
     def enter_shape(label, node, &block)
       label = serialize_value(label)
-      shape = shapes[label]
+      shape = shapes.detect {|s| s.label == label}
       structure_error("No shape found for #{label}") unless shape
       @shapes_entered[label] ||= {}
       if @shapes_entered[label][node]
@@ -149,7 +146,7 @@ module ShEx::Algebra
     def each_descendant(depth = 0, &block)
       if block_given?
         super(depth + 1, &block)
-        shapes.values.each do |op|
+        shapes.each do |op|
           op.each_descendant(depth + 1, &block) if op.respond_to?(:each_descendant)
 
           case block.arity
@@ -172,7 +169,7 @@ module ShEx::Algebra
     # @return [SPARQL::Algebra::Expression] `self`
     # @raise  [ArgumentError] if the value is invalid
     def validate!
-      shapes.values.each {|op| op.validate! if op.respond_to?(:validate!)}
+      shapes.each {|op| op.validate! if op.respond_to?(:validate!)}
       super
     end
   end
