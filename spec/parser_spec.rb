@@ -1192,6 +1192,15 @@ describe ShEx::Parser do
               expect(t.schema_source).to generate(exp, validate: validate, logger: RDF::Spec.logger)
             end
           end
+
+          # Run with rspec --tag isomorphic
+          # This tests the tests, not the implementation
+          specify "#{t.name} – json isomorphic to turtle", isomorphic: true do
+            g1 = RDF::Graph.new {|g| g << JSON::LD::Reader.new(t.schema_json, base_uri: t.base)}
+            g2 = RDF::Graph.new {|g| g << RDF::Turtle::Reader.new(t.turtle_source, base_uri: t.base)}
+            expect(g1).not_to be_empty
+            expect(g1).to be_isomorphic(g2)
+          end if t.ttl
         end
       end
     end

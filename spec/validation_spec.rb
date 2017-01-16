@@ -447,6 +447,7 @@ describe ShEx::Algebra do
   end
 
   require 'suite_helper'
+  SHEXR = File.expand_path("../shexTest/doc/ShExR.shex", __FILE__)
   manifest = Fixtures::SuiteTest::BASE + "validation/manifest.jsonld"
   Fixtures::SuiteTest::Manifest.open(manifest) do |m|
     describe m.attributes['rdfs:comment'] do
@@ -462,6 +463,32 @@ describe ShEx::Algebra do
           expected = t.positive_test? || ShEx::NotSatisfied
           schema = ShEx.parse(t.schema_source, validate: true, logger: t.logger, base_uri: t.base)
           expect(schema).to satisfy(t.graph, t.data_source, t.focus, t.shape, nil, expected, logger: t.logger, shapeExterns: t.shapeExterns)
+        end
+
+        if File.exist?(SHEXR)
+          let(:shexr) {@@shexr ||= ShEx.open(SHEXR)}
+          specify "#{t.name} validates against ShExR.shex", shexr: true do
+            case t.name
+            when 'false-lead-excluding-value-shape',
+                 'nPlus1',
+                 'nPlus1-greedy_fail',
+                 'nPlus1-greedy-rewrite',
+                 'repeated-group',
+                 'simple-group',
+                 'PstarT',
+                 'PstarT-greedy',
+                 'PTstar',
+                 'PTstar-greedy-fail',
+                 'PTstar-greedy-rewrite',
+                 'PstarTstar',
+                 'P2T2'
+              pending "explaination"
+            end
+            graph = RDF::Graph.new {|g| g << JSON::LD::Reader.new(t.schema_json, base_uri: t.base)}
+            focus = graph.first_subject(predicate: RDF.type, object: RDF::URI("http://shex.io/ns/shex#Schema"))
+            expect(focus).to be_a(RDF::Resource)
+            expect(shexr).to satisfy(graph, t.schema_json, focus)
+          end
         end
       end
     end
