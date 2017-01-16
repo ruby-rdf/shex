@@ -161,7 +161,7 @@ module ShEx::Algebra
     #
     # @return [Operand]
     def satisfy(focus: nil, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, message: nil)
-      log_debug(self.class.const_get(:NAME), "satisfied", depth: options.fetch(:depth, 0))
+      log_debug(self.class.const_get(:NAME), "satisfied", depth: options.fetch(:depth, 0)) unless message
       expression = self.dup
       expression.message = message if message
       expression.focus = focus if focus
