@@ -50,7 +50,7 @@ module ShEx::Algebra
 
       # Max violations handled in Shape
       if num_iters < minimum
-        raise ShEx::NotMatched, "Minimum Cardinality Violation: #{results.length} < #{minimum}", depth: depth
+        raise ShEx::NotMatched, "Minimum Cardinality Violation: #{results.length} < #{minimum}"
       end
 
       # Last, evaluate semantic acts
