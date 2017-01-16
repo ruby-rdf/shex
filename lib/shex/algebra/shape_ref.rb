@@ -65,8 +65,7 @@ module ShEx::Algebra
     # @return [Array]
     # @see    https://en.wikipedia.org/wiki/S-expression
     def to_sxp_bin
-      operator = [self.class.const_get(:NAME)].flatten.first
-      [:shapeRef, operands.first].to_sxp_bin
+      ([:shapeRef, ([:label, label] if label)].compact + operands).to_sxp_bin
     end
   end
 end
