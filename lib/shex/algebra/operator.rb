@@ -154,8 +154,8 @@ module ShEx::Algebra
     # Duplication this operand, and add `matched`, `unmatched`, `satisfied`, and `unsatisfied` operands for accessing downstream.
     #
     # @return [Operand]
-    def satisfy(focus: nil, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, message: nil)
-      log_debug(self.class.const_get(:NAME), "satisfied", depth: options.fetch(:depth, 0)) unless message
+    def satisfy(focus: nil, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, message: nil, **opts)
+      log_debug(self.class.const_get(:NAME), "satisfied", **opts) unless message
       expression = self.dup
       expression.message = message if message
       expression.focus = focus if focus
@@ -168,28 +168,17 @@ module ShEx::Algebra
 
     ##
     # Exception handling
-    def not_matched(message, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, **opts, &block)
-      expression = opts.fetch(:expression, self).satisfy(
-        matched:     matched,
-        unmatched:   unmatched,
-        satisfied:   satisfied,
-        unsatisfied: unsatisfied,
-        message:     message)
+    def not_matched(message, **opts, &block)
+      expression = opts.fetch(:expression, self).satisfy(**opts)
       exception = opts.fetch(:exception, ShEx::NotMatched)
-      status(message) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
+      status(message, **opts) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
       raise exception.new(message, expression: expression)
     end
 
-    def not_satisfied(message, focus: nil, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, **opts)
-      expression = opts.fetch(:expression, self).satisfy(
-        focus:       focus,
-        matched:     matched,
-        unmatched:   unmatched,
-        satisfied:   satisfied,
-        unsatisfied: unsatisfied,
-        message:     message)
+    def not_satisfied(message, **opts)
+      expression = opts.fetch(:expression, self).satisfy(**opts)
       exception = opts.fetch(:exception, ShEx::NotSatisfied)
-      status(message) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
+      status(message, **opts) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
       raise exception.new(message, expression: expression)
     end
 
@@ -199,8 +188,8 @@ module ShEx::Algebra
       log_error(message, depth: options.fetch(:depth, 0), exception: exception) {"expression: #{expression.to_sxp}"}
     end
 
-    def status(message, &block)
-      log_debug(self.class.const_get(:NAME), message, depth: options.fetch(:depth, 0), &block)
+    def status(message, **opts, &block)
+      log_debug(self.class.const_get(:NAME).to_s + (@label ? "(#{@label})" : ""), message, **opts, &block)
       true
     end
 

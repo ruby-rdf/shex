@@ -20,7 +20,7 @@ module ShEx::Algebra
     # @param  (see TripleExpression#matches)
     # @return (see TripleExpression#matches)
     # @raise  (see TripleExpression#matches)
-    def matches(arcs_in, arcs_out)
+    def matches(arcs_in, arcs_out, depth: 0)
       results, satisfied, unsatisfied = [], [], []
       num_iters, max = 0, maximum
 
@@ -29,14 +29,14 @@ module ShEx::Algebra
       while num_iters < max
         matched_something = operands.select {|o| o.is_a?(TripleExpression)}.any? do |op|
           begin
-            matched_op = op.matches(arcs_in, arcs_out)
+            matched_op = op.matches(arcs_in, arcs_out, depth: depth + 1)
             satisfied << matched_op
             results += matched_op.matched
             arcs_in -= matched_op.matched
             arcs_out -= matched_op.matched
-            status "matched #{matched_op.matched.to_sxp}"
+            status "matched #{matched_op.matched.to_sxp}", depth: depth
           rescue ShEx::NotMatched => e
-            status "not matched: #{e.message}"
+            status "not matched: #{e.message}", depth: depth
             op = op.dup
             op.unmatched = (arcs_in + arcs_out).uniq - results
             unsatisfied << op
@@ -45,7 +45,7 @@ module ShEx::Algebra
         end
         break unless matched_something
         num_iters += 1
-        status "matched #{results.length} statements after #{num_iters} iterations"
+        status "matched #{results.length} statements after #{num_iters} iterations", depth: depth
       end
 
       # Max violations handled in Shape
@@ -55,14 +55,14 @@ module ShEx::Algebra
 
       # Last, evaluate semantic acts
       semantic_actions.all? do |op|
-        op.satisfies?(results)
+        op.satisfies?(results, depth: depth + 1)
       end unless results.empty?
 
-      satisfy matched: results, satisfied: satisfied
+      satisfy matched: results, satisfied: satisfied, depth: depth
     rescue ShEx::NotMatched, ShEx::NotSatisfied => e
       not_matched e.message,
                   matched:   results,   unmatched:   ((arcs_in + arcs_out).uniq - results),
-                  satisfied: satisfied, unsatisfied: unsatisfied
+                  satisfied: satisfied, unsatisfied: unsatisfied, depth: depth
     end
   end
 end

@@ -25,14 +25,14 @@ module ShEx::Algebra
     # @param  (see TripleExpression#matches)
     # @return (see TripleExpression#matches)
     # @raise  (see TripleExpression#matches)
-    def matches(arcs_in, arcs_out)
+    def matches(arcs_in, arcs_out, depth: 0)
       status "referenced_shape: #{operands.first}"
       expression = referenced_shape.expression
       max = maximum
-      matched_expression = expression.matches(arcs_in, arcs_out)
-      satisfy matched: matched_expression.matched
+      matched_expression = expression.matches(arcs_in, arcs_out, depth: depth + 1)
+      satisfy matched: matched_expression.matched, depth: depth
     rescue ShEx::NotMatched => e
-      not_matched e.message, unsatisfied: e.expression
+      not_matched e.message, unsatisfied: e.expression, depth: depth
     end
 
     ##
@@ -61,7 +61,7 @@ module ShEx::Algebra
     # @return [Array]
     # @see    https://en.wikipedia.org/wiki/S-expression
     def to_sxp_bin
-      ([:inclusion, ([:label, label] if label)].compact + operands).to_sxp_bin
+      ([:inclusion, ([:label, @label] if @label)].compact + operands).to_sxp_bin
     end
   end
 end

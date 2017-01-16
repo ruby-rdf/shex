@@ -30,27 +30,27 @@ module ShEx::Algebra
     # @param  (see Satisfiable#satisfies?)
     # @return (see Satisfiable#satisfies?)
     # @raise  (see Satisfiable#satisfies?)
-    def satisfies?(focus)
-      status ""
+    def satisfies?(focus, depth: 0)
+      status "", depth: depth
       expressions = operands.select {|o| o.is_a?(Satisfiable)}
       unsatisfied = []
       expressions.any? do |op|
         begin
-          matched_op = op.satisfies?(focus)
-          return satisfy focus: focus, satisfied: matched_op
+          matched_op = op.satisfies?(focus, depth: depth + 1)
+          return satisfy focus: focus, satisfied: matched_op, depth: depth
         rescue ShEx::NotSatisfied => e
-          status "unsatisfied #{focus}"
+          status "unsatisfied #{focus}", depth: depth
           op = op.dup
           op.satisfied = e.expression.satisfied
           op.unsatisfied = e.expression.unsatisfied
           unsatisfied << op
-          status("unsatisfied: #{e.message}")
+          status "unsatisfied: #{e.message}", depth: depth
           false
         end
       end
 
       not_satisfied "Expected some expression to be satisfied",
-                    focus: focus, unsatisfied: unsatisfied
+                    focus: focus, unsatisfied: unsatisfied, depth: depth
     end
 
     def json_type

@@ -20,8 +20,8 @@ module ShEx::Algebra
     # @param  (see TripleExpression#matches)
     # @return (see TripleExpression#matches)
     # @raise  (see TripleExpression#matches)
-    def matches(arcs_in, arcs_out)
-      status ""
+    def matches(arcs_in, arcs_out, depth: 0)
+      status "", depth: depth
       results, satisfied, unsatisfied = [], [], []
       num_iters, max = 0, maximum
 
@@ -30,11 +30,11 @@ module ShEx::Algebra
           matched_this_iter = []
           operands.select {|o| o.is_a?(TripleExpression)}.all? do |op|
             begin
-              matched_op = op.matches(arcs_in - matched_this_iter, arcs_out - matched_this_iter)
+              matched_op = op.matches(arcs_in - matched_this_iter, arcs_out - matched_this_iter, depth: depth + 1)
               satisfied << matched_op
               matched_this_iter += matched_op.matched
             rescue ShEx::NotMatched => e
-              status "not matched: #{e.message}"
+              status "not matched: #{e.message}", depth: depth
               op = op.dup
               op.unmatched = (arcs_in + arcs_out).uniq - matched_this_iter
               unsatisfied << op
@@ -45,9 +45,9 @@ module ShEx::Algebra
           arcs_in -= matched_this_iter
           arcs_out -= matched_this_iter
           num_iters += 1
-          status "matched #{results.length} statements after #{num_iters} iterations"
+          status "matched #{results.length} statements after #{num_iters} iterations", depth: depth
         rescue ShEx::NotMatched => e
-          status "no match after #{num_iters} iterations (ignored)"
+          status "no match after #{num_iters} iterations (ignored)", depth: depth
           break
         end
       end
@@ -59,14 +59,15 @@ module ShEx::Algebra
 
       # Last, evaluate semantic acts
       semantic_actions.all? do |op|
-        op.satisfies?(results)
+        op.satisfies?(results, depth: depth + 1)
       end unless results.empty?
 
-      satisfy matched: results, satisfied: satisfied
+      satisfy matched: results, satisfied: satisfied, depth: depth
     rescue ShEx::NotMatched, ShEx::NotSatisfied => e
       not_matched e.message,
                   matched:   results,   unmatched:   ((arcs_in + arcs_out).uniq - results),
-                  satisfied: satisfied, unsatisfied: unsatisfied
+                  satisfied: satisfied, unsatisfied: unsatisfied,
+                  depth:     depth
     end
   end
 end
