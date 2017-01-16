@@ -12,7 +12,7 @@ end
 require 'getoptlong'
 
 def run(graph, options = {})
-  if options[:debug]
+  if options[:verbose]
     STDERR.puts "target graph:\n#{graph.dump(:ttl, standard_prefixes: true)}\n"
     STDERR.puts "shex:\n#{options[:shex]}\n"
   end
@@ -23,7 +23,7 @@ def run(graph, options = {})
 
   shex =  ShEx.parse(options[:shex], options)
 
-  STDERR.puts ("\nSXP:\n" + shex.to_sxp) if options[:debug]
+  STDERR.puts ("\nSXP:\n" + SXP::Generator.string(shex.to_sxp_bin)) if options[:verbose]
 
   if options[:to_sxp]
     SXP::Generator.print(shex.to_sxp_bin)
@@ -46,7 +46,7 @@ end
 
 OPT_ARGS = [
   ["--base", GetoptLong::REQUIRED_ARGUMENT,           "Base URI of target graph, if different from graph location"],
-  ["--debug", GetoptLong::NO_ARGUMENT,                "Display detailed debug output"],
+  ["--debug", GetoptLong::NO_ARGUMENT,                "Debug shape matching"],
   ["--execute", "-e", GetoptLong::REQUIRED_ARGUMENT,  "Use option argument as the patch input"],
   ["--focus", GetoptLong::REQUIRED_ARGUMENT,          "Starting point"],
   ["--shape", GetoptLong::REQUIRED_ARGUMENT,          "Shape to start with"],
@@ -80,7 +80,11 @@ options = {}
 opts.each do |opt, arg|
   case opt
   when '--base'         then options[:base_uri] = arg
-  when '--debug'        then options[:debug] = true
+  when '--debug'        then
+    logger = Logger.new(STDERR)
+    logger.level = Logger::DEBUG
+    logger.formatter = lambda {|severity, datetime, progname, msg| "#{severity} #{msg}\n"}
+    options[:logger] = logger
   when '--execute'      then options[:shex] = arg
   when '--focus'        then options[:focus] = arg
   when '--shape'        then options[:shape] = arg

@@ -145,7 +145,7 @@ module ShEx::Algebra
       values = operands.select {|op| op.is_a?(Value)}
       return true if values.empty?
       matched_value = values.detect {|v| v.match?(value)}
-      not_satisfied "Node #{value.inspect} not expected" unless matched_value
+      not_satisfied "Value #{value.to_sxp} not expected, wanted #{values.to_sxp}" unless matched_value
       status "right value: #{value}"
       true
     end
