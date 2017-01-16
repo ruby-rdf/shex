@@ -32,7 +32,7 @@ module ShEx::Algebra
     # @param  (see Satisfiable#satisfies?)
     # @return (see Satisfiable#satisfies?)
     # @raise  (see Satisfiable#satisfies?)
-    def satisfies?(focus)
+    def satisfies?(focus, depth: 0)
       expression = self.expression
       # neigh(G, n) is the neighbourhood of the node n in the graph G.
       #
@@ -42,8 +42,8 @@ module ShEx::Algebra
       neigh = (arcs_in + arcs_out).uniq
 
       # `matched` is the subset of statements which match `expression`.
-      status("arcsIn: #{arcs_in.count}, arcsOut: #{arcs_out.count}")
-      matched_expression = expression.matches(arcs_in, arcs_out) if expression
+      status("arcsIn: #{arcs_in.count}, arcsOut: #{arcs_out.count}", depth: depth)
+      matched_expression = expression.matches(arcs_in, arcs_out, depth: depth + 1) if expression
       matched = Array(matched_expression && matched_expression.matched)
 
       # `remainder` is the set of unmatched statements
@@ -63,7 +63,7 @@ module ShEx::Algebra
       unmatched = matchables.select do |statement|
         expression.triple_constraints.any? do |expr|
           begin
-            statement.predicate == expr.predicate && expr.matches([], [statement])
+            statement.predicate == expr.predicate && expr.matches([], [statement], depth: depth + 1)
           rescue ShEx::NotMatched
             false # Expected not to match
           end
@@ -73,7 +73,8 @@ module ShEx::Algebra
         not_satisfied "Statements remain matching TripleConstraints",
                       matched: matched,
                       unmatched: unmatched,
-                      satisfied: expression
+                      satisfied: expression,
+                      depth: depth
       end
 
       # There is no triple in matchables whose predicate does not appear in extra.
@@ -82,19 +83,20 @@ module ShEx::Algebra
         not_satisfied "Statements remains with predicate #{unmatched.map(&:predicate).compact.join(',')} not in extra",
                       matched: matched,
                       unmatched: unmatched,
-                      satisfied: expression
+                      satisfied: expression,
+                      depth: depth
       end
 
       # closed is false or unmatchables is empty.
-      not_satisfied "Unmatchables remain on a closed shape" unless !closed? || unmatchables.empty?
+      not_satisfied "Unmatchables remain on a closed shape", depth: depth unless !closed? || unmatchables.empty?
 
       # Presumably, to be satisfied, there must be some triples in matches
       semantic_actions.all? {|op| op.satisfies?(matched)} unless matched.empty?
 
       # FIXME: also record matchables, outs and others?
-      satisfy focus: focus, matched: matched
+      satisfy focus: focus, matched: matched, depth: depth
     rescue ShEx::NotMatched => e
-      not_satisfied e.message, focus: focus, unsatisfied: e.expression
+      not_satisfied e.message, focus: focus, unsatisfied: e.expression, depth: depth
     end
 
 

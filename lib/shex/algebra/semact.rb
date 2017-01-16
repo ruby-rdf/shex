@@ -20,7 +20,7 @@ module ShEx::Algebra
     # @param [Array<RDF::Statement>] statements
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
-    def satisfies?(statements)
+    def satisfies?(statements, depth: 0)
       # FIXME: should have a registry
       case operands.first.to_s
       when "http://shex.io/extensions/Test/"
@@ -39,7 +39,7 @@ module ShEx::Algebra
         not_satisfied "fail" if md && md[1] == 'fail'
         true
       else
-        status("unknown SemAct name #{operands.first}") {"expression: #{self.to_sxp}"}
+        status("unknown SemAct name #{operands.first}", depth: depth) {"expression: #{self.to_sxp}"}
         false
       end
     end

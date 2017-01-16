@@ -12,7 +12,7 @@ module ShEx::Algebra
     # @param [Array<RDF::Statement>] arcs_out
     # @return [TripleExpression] with `matched` accessor for matched triples
     # @raise [ShEx::NotMatched] with `expression` accessor to access `matched` and `unmatched` statements along with `satisfied` and `unsatisfied` operations.
-    def matches(arcs_in, arcs_out)
+    def matches(arcs_in, arcs_out, depth: 0)
       raise NotImplementedError, "#matches Not implemented in #{self.class}"
     end
 

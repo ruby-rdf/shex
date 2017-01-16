@@ -20,14 +20,15 @@ module ShEx::Algebra
     # @return (see Satisfiable#satisfies?)
     # @raise  (see Satisfiable#satisfies?)
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
-    def satisfies?(focus)
+    def satisfies?(focus, depth: 0)
       status ""
       satisfied_op = begin
-        operands.last.satisfies?(focus)
+        operands.last.satisfies?(focus, depth: depth + 1)
       rescue ShEx::NotSatisfied => e
-        return satisfy focus: focus, satisfied: e.expression.unsatisfied
+        return satisfy focus: focus, satisfied: e.expression.unsatisfied, depth: depth
       end
-      not_satisfied "Expression should not have matched", focus: focus, unsatisfied: satisfied_op
+      not_satisfied "Expression should not have matched",
+        focus: focus, unsatisfied: satisfied_op, depth: depth
     end
 
     def json_type

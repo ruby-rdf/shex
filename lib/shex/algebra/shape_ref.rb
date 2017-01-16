@@ -25,19 +25,19 @@ module ShEx::Algebra
     # @return (see Satisfiable#satisfies?)
     # @raise  (see Satisfiable#satisfies?)
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
-    def satisfies?(focus)
-      status "ref #{operands.first.to_s}"
+    def satisfies?(focus, depth: 0)
+      status "ref #{operands.first.to_s}", depth: depth
       schema.enter_shape(operands.first, focus) do |shape|
         if shape
-          matched_shape = shape.satisfies?(focus)
-          satisfy focus: focus, satisfied: matched_shape
+          matched_shape = shape.satisfies?(focus, depth: depth + 1)
+          satisfy focus: focus, satisfied: matched_shape, depth: depth
         else
-          status "Satisfy as #{operands.first} was re-entered for #{focus}"
-          satisfy focus: focus, satisfied: referenced_shape
+          status "Satisfy as #{operands.first} was re-entered for #{focus}", depth: depth
+          satisfy focus: focus, satisfied: referenced_shape, depth: depth
         end
       end
     rescue ShEx::NotSatisfied => e
-      not_satisfied e.message, focus: focus, unsatisfied: e.expression
+      not_satisfied e.message, focus: focus, unsatisfied: e.expression, depth: depth
     end
 
     ##

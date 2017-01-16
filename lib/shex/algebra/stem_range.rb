@@ -27,7 +27,7 @@ module ShEx::Algebra
     #
     # * vsv is a StemRange with stem st and exclusions excls and nodeIn(n, st) and there is no x in excls such that nodeIn(n, excl).
     # * vsv is a Wildcard with exclusions excls and there is no x in excls such that nodeIn(n, excl).
-    def match?(value)
+    def match?(value, depth: 0)
       initial_match = case operands.first
       when :wildcard then true
       when RDF::Value then value.start_with?(operands.first)
@@ -35,22 +35,22 @@ module ShEx::Algebra
       end
 
       unless initial_match
-        status "#{value} does not match #{operands.first}"
+        status "#{value} does not match #{operands.first}", depth: depth
         return false
       end
 
       if exclusions.any? do |exclusion|
           case exclusion
           when RDF::Value then value == exclusion
-          when Stem       then exclusion.match?(value)
+          when Stem       then exclusion.match?(value, depth: depth + 1)
           else                 false
           end
         end
-        status "#{value} excluded"
+        status "#{value} excluded", depth: depth
         return false
       end
 
-      status "matched #{value}"
+      status "matched #{value}", depth: depth
       true
     end
 

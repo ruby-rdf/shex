@@ -32,7 +32,7 @@ module ShEx::Algebra
     # @param [Hash{Symbol => Object}] options
     # @option options [String] :base_uri
     # @raise [ShEx::NotSatisfied] along with operand graph described for return
-    def execute(focus, graph, map, shapeExterns: [], **options)
+    def execute(focus, graph, map, shapeExterns: [], depth: 0, **options)
       @graph, @shapes_entered = graph, {}
       @external_schemas = shapeExterns
       focus = value(focus)
@@ -46,15 +46,14 @@ module ShEx::Algebra
 
       # First, evaluate semantic acts
       semantic_actions.all? do |op|
-        op.satisfies?([])
+        op.satisfies?([], depth: depth + 1)
       end
 
       # Keep a new Schema, specifically for recording actions
       satisfied_schema = Schema.new
       # Next run any start expression
       if start
-        status("start") {"expression: #{start.to_sxp}"}
-        satisfied_schema.operands << start.satisfies?(focus)
+        satisfied_schema.operands << start.satisfies?(focus, depth: depth + 1)
       end
 
       # Add shape result(s)
@@ -64,10 +63,10 @@ module ShEx::Algebra
       # Match against all shapes associated with the labels for focus
       Array(@map[focus]).each do |label|
         enter_shape(label, focus) do |shape|
-          satisfied_shapes[label] = shape.satisfies?(graph_focus)
+          satisfied_shapes[label] = shape.satisfies?(graph_focus, depth: depth + 1)
         end
       end
-      status "schema satisfied"
+      status "schema satisfied", depth: depth
       satisfied_schema
     end
 

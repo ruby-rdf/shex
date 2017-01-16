@@ -30,7 +30,7 @@ module ShEx::Algebra
     # @param  (see Satisfiable#satisfies?)
     # @return (see Satisfiable#satisfies?)
     # @raise  (see Satisfiable#satisfies?)
-    def satisfies?(focus)
+    def satisfies?(focus, depth: 0)
       status ""
       expressions = operands.select {|o| o.is_a?(Satisfiable)}
       satisfied = []
@@ -38,15 +38,16 @@ module ShEx::Algebra
 
       # Operand raises NotSatisfied, so no need to check here.
       expressions.each do |op|
-        satisfied << op.satisfies?(focus)
+        satisfied << op.satisfies?(focus, depth: depth)
         unsatisfied.shift
       end
-      satisfy focus: focus, satisfied: satisfied
+      satisfy focus: focus, satisfied: satisfied, depth: depth
     rescue ShEx::NotSatisfied => e
       not_satisfied e.message,
                     focus:       focus, 
                     satisfied:   satisfied,
-                    unsatisfied: unsatisfied
+                    unsatisfied: unsatisfied,
+                    depth:       depth
     end
 
     def json_type
