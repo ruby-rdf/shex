@@ -521,8 +521,7 @@ module ShEx::Algebra
           merge(value.has_datatype? ? {'type' => value.datatype.to_s} : {}).
           merge(value.has_language? ? {'language' => value.language.to_s} : {})
         when RDF::Resource
-          # value.to_s
-          {'uri' => value.to_s}
+          value.to_s
         else value.to_h
       end
     end

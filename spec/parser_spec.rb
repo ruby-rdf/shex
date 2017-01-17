@@ -192,8 +192,8 @@ describe ShEx::Parser do
                 "valueExpr": {
                   "type": "NodeConstraint",
                   "values": [
-                    {"uri": "http://schema.example/Resolved"},
-                    {"uri": "http://schema.example/Rejected"}
+                    "http://schema.example/Resolved",
+                    "http://schema.example/Rejected"
                   ]
                 }
               }
@@ -526,7 +526,7 @@ describe ShEx::Parser do
                 "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
                 "valueExpr": {
                   "type": "NodeConstraint",
-                  "values": [{"uri": "http://schema.example/Teacher"}]
+                  "values": ["http://schema.example/Teacher"]
                 }
               }
             }
@@ -627,7 +627,7 @@ describe ShEx::Parser do
               "predicate": "http://schema.example/role",
               "valueExpr":
               { "type": "NodeConstraint",
-                "values": [ {"uri": "http://schema.example/testingRole"} ] } } }
+                "values": [ "http://schema.example/testingRole" ] } } }
           ] }),
         sxp: %{(schema
          (shapes
@@ -750,7 +750,7 @@ describe ShEx::Parser do
               "predicate": "http://schema.example/role",
               "valueExpr":
               { "type": "NodeConstraint",
-                "values": [ {"uri": "http://schema.example/testingRole"} ] } } },
+                "values": [ "http://schema.example/testingRole" ] } } },
            { "type": "Shape",
              "label": "http://schema.example/ProgrammerShape",
              "expression":
@@ -758,7 +758,7 @@ describe ShEx::Parser do
               "predicate": "http://schema.example/department",
               "valueExpr":
               { "type": "NodeConstraint",
-                "values": [ {"uri": "http://schema.example/ProgrammingDepartment"} ] } } }
+                "values": [ "http://schema.example/ProgrammingDepartment" ] } } }
           ] }),
         sxp: %{(schema
          (shapes
