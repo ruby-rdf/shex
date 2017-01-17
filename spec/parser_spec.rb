@@ -1199,7 +1199,7 @@ describe ShEx::Parser do
             g1 = RDF::Graph.new {|g| g << JSON::LD::Reader.new(t.schema_json, base_uri: t.base)}
             g2 = RDF::Graph.new {|g| g << RDF::Turtle::Reader.new(t.turtle_source, base_uri: t.base)}
             expect(g1).not_to be_empty
-            expect(g1).to be_isomorphic(g2)
+            expect(g1).to be_equivalent_graph(g2)
           end if t.ttl
         end
       end
