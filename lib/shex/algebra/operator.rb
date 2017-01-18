@@ -56,16 +56,6 @@ module ShEx::Algebra
       end
 
       @label = options[:label]
-
-      if options[:logger]
-        options[:depth] = 0
-        each_descendant(1) do |depth, operand|
-          if operand.respond_to?(:options)
-            operand.options[:logger] = options[:logger]
-            operand.options[:depth] = depth
-          end
-        end
-      end
     end
 
     ##
@@ -209,6 +199,11 @@ module ShEx::Algebra
     # The label (or subject) of this operand
     # @return [RDF::Resource]
     attr_accessor :label
+
+    ##
+    # Logging support (reader is in RDF::Util::Logger)
+    # @return [Logger]
+    attr_writer :logger
 
     ##
     # Returns the operand at the given `index`.
@@ -550,6 +545,12 @@ module ShEx::Algebra
     # @return [Enumerator]
     def each_descendant(depth = 0, &block)
       if block_given?
+
+        case block.arity
+        when 1 then block.call(self)
+        else block.call(depth, self)
+        end
+
         operands.each do |operand|
           case operand
           when Array
@@ -558,11 +559,6 @@ module ShEx::Algebra
             end
           else
             operand.each_descendant(depth + 1, &block) if operand.respond_to?(:each_descendant)
-          end
-
-          case block.arity
-          when 1 then block.call(operand)
-          else block.call(depth, operand)
           end
         end
       end

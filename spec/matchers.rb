@@ -76,7 +76,7 @@ RSpec::Matchers.define :generate do |expected, options = {}|
   end
 end
 
-RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **options|
+RSpec::Matchers.define :satisfy do |graph, data, focus, shape: nil, map: nil, expected: nil, logger: nil, **options|
   match do |input|
     focus = RDF::Literal(focus['@value'],
                          datatype: focus['@type'],
@@ -86,14 +86,14 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **
     case
     when [ShEx::NotSatisfied, ShEx::StructureError].include?(expected)
       begin
-        input.execute(focus, graph, map, options)
+        input.execute(focus, graph, map, logger: logger, **options)
         false
       rescue expected
         true
       end
     else
       begin
-        input.execute(focus, graph, map, options)
+        input.execute(focus, graph, map, logger: logger, **options)
       rescue ShEx::NotSatisfied => e
         @exception = e
         false
@@ -103,20 +103,20 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **
 
   failure_message do |input|
     (expected == ShEx::NotSatisfied ? "Shape matched" : "Shape did not match: #{@exception.message}\n") +
-    "Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
+    #"Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
     "Data      : #{data}\n" +
     "Shape     : #{shape}\n" +
     "Focus     : #{focus}\n" +
     "Results   : #{SXP::Generator.string(@exception.expression.to_sxp_bin)}" +
-    (options[:logger] ? "Trace     :\n#{options[:logger].to_s}" : "")
+    (logger ? "Trace     :\n#{logger.to_s}" : "")
   end
 
   failure_message_when_negated do |input|
     "Shape matched\n" +
-    "Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
+    #"Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
     "Data      : #{data}\n" +
     "Shape     : #{shape}\n" +
     "Focus     : #{focus}\n" +
-    (options[:logger] ? "Trace     :\n#{options[:logger].to_s}" : "")
+    (logger ? "Trace     :\n#{logger.to_s}" : "")
   end
 end

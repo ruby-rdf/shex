@@ -81,12 +81,12 @@ describe ShEx do
 
     it "validates doap.ttl from shexc" do
       schema = ShEx.open(doap_shex)
-      expect(schema).to satisfy(doap_graph, File.read(doap_ttl), doap_subj, doap_shape, logger: RDF::Spec.logger)
+      expect(schema).to satisfy(doap_graph, File.read(doap_ttl), doap_subj, shape: doap_shape, logger: RDF::Spec.logger)
     end
 
     it "validates doap.ttl from shexj" do
       schema = ShEx.open(doap_json, format: :shexj)
-      expect(schema).to satisfy(doap_graph, File.read(doap_ttl), doap_subj, doap_shape, logger: RDF::Spec.logger)
+      expect(schema).to satisfy(doap_graph, File.read(doap_ttl), doap_subj, shape: doap_shape, logger: RDF::Spec.logger)
     end
   end
 end
