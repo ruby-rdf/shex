@@ -161,11 +161,6 @@ module ShEx
       expressions << data[:shapes].unshift(:shapes) if data[:shapes]
 
       input[:schema] = Algebra::Schema.new(*expressions, options)
-
-      # Set schema accessor for all included expressions
-      input[:schema].each_descendant do |op|
-        op.schema = input[:schema] if op.respond_to?(:schema=)
-      end
       self
     end
 

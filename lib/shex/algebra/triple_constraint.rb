@@ -44,6 +44,7 @@ module ShEx::Algebra
           num_iters += 1
         rescue ShEx::NotSatisfied => e
           status "not satisfied: #{e.message}", depth: depth
+          unsatisfied << e.expression
           statement = statement.dup.extend(ReferencedStatement)
           unmatched << statement.referenced = shape
         end
@@ -59,7 +60,7 @@ module ShEx::Algebra
         op.satisfies?(results)
       end unless results.empty?
 
-      satisfy matched: results, satisfied: satisfied, depth: depth
+      satisfy matched: results, satisfied: satisfied, unsatisfied: unsatisfied, depth: depth
     rescue ShEx::NotMatched, ShEx::NotSatisfied => e
       not_matched e.message,
                   matched:   results,   unmatched:   (statements - results),

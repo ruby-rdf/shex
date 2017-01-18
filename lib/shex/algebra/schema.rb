@@ -37,6 +37,14 @@ module ShEx::Algebra
       @external_schemas = shapeExterns
       focus = value(focus)
 
+      logger = options[:logger] || @options[:logger]
+      each_descendant do |op|
+        # Set logging everywhere
+        op.logger = logger
+        # Set schema everywhere
+        op.schema = self
+      end
+
       # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same label
       graph_focus = graph.enum_term.detect {|t| t.node? && t.id == focus.id} if focus.is_a?(RDF::Node)
       graph_focus ||= focus
@@ -134,26 +142,6 @@ module ShEx::Algebra
         schema.graph = graph
         schema
       end
-    end
-
-    ##
-    # Enumerate via depth-first recursive descent over operands, yielding each operator
-    # @yield operator
-    # @yieldparam [Object] operator
-    # @return [Enumerator]
-    def each_descendant(depth = 0, &block)
-      if block_given?
-        super(depth + 1, &block)
-        shapes.each do |op|
-          op.each_descendant(depth + 1, &block) if op.respond_to?(:each_descendant)
-
-          case block.arity
-          when 1 then block.call(op)
-          else block.call(depth, op)
-          end
-        end
-      end
-      enum_for(:each_descendant)
     end
 
     ##
