@@ -45,7 +45,7 @@ module ShEx::Algebra
       @map = (map || {}).inject({}) {|memo, (k,v)| memo.merge(value(k) => iri(v))}
 
       # First, evaluate semantic acts
-      semantic_actions.all? do |op|
+      semantic_actions.each do |op|
         op.satisfies?([], depth: depth + 1)
       end
 

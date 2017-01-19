@@ -91,7 +91,9 @@ module ShEx::Algebra
       not_satisfied "Unmatchables remain on a closed shape", depth: depth unless !closed? || unmatchables.empty?
 
       # Presumably, to be satisfied, there must be some triples in matches
-      semantic_actions.all? {|op| op.satisfies?(matched)} unless matched.empty?
+      semantic_actions.each do |op|
+        op.satisfies?(matched, matched: matched, depth: depth + 1)
+      end unless matched.empty?
 
       # FIXME: also record matchables, outs and others?
       satisfy focus: focus, matched: matched, depth: depth
