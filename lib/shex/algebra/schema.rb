@@ -20,6 +20,15 @@ module ShEx::Algebra
       super
     end
 
+    # (see Operator#initialize)
+    def initialize(*operands)
+      super
+      each_descendant do |op|
+        # Set schema everywhere
+        op.schema = self
+      end
+    end
+
     ##
     # Match on schema. Finds appropriate shape for node, and matches that shape.
     #
@@ -41,8 +50,6 @@ module ShEx::Algebra
       each_descendant do |op|
         # Set logging everywhere
         op.logger = logger
-        # Set schema everywhere
-        op.schema = self
       end
 
       # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same label
