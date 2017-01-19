@@ -165,14 +165,14 @@ module ShEx::Algebra
     ##
     # Exception handling
     def not_matched(message, **opts, &block)
-      expression = opts.fetch(:expression, self).satisfy(**opts)
+      expression = opts.fetch(:expression, self).satisfy(message: message, **opts)
       exception = opts.fetch(:exception, ShEx::NotMatched)
       status(message, **opts) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
       raise exception.new(message, expression: expression)
     end
 
     def not_satisfied(message, **opts)
-      expression = opts.fetch(:expression, self).satisfy(**opts)
+      expression = opts.fetch(:expression, self).satisfy(message: message, **opts)
       exception = opts.fetch(:exception, ShEx::NotSatisfied)
       status(message, **opts) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
       raise exception.new(message, expression: expression)

@@ -36,7 +36,7 @@ class JSON::LD::Context
       "expression" => TermDefinition.new("expression", id: "http://shex.io/ns/shex#expression", type_mapping: "@id"),
       "expressions" => TermDefinition.new("expressions", id: "http://shex.io/ns/shex#expressions", type_mapping: "@id", container_mapping: "@list"),
       "extra" => TermDefinition.new("extra", id: "http://shex.io/ns/shex#extra", type_mapping: "@id"),
-      "fraction digits" => TermDefinition.new("fraction digits", id: "http://shex.io/ns/shex#fraction digits", type_mapping: "http://www.w3.org/2001/XMLSchema#integer"),
+      "fractiondigits" => TermDefinition.new("fractiondigits", id: "http://shex.io/ns/shex#fractiondigits", type_mapping: "http://www.w3.org/2001/XMLSchema#integer"),
       "id" => TermDefinition.new("id", id: "@id", simple: true),
       "include" => TermDefinition.new("include", id: "http://shex.io/ns/shex#include", type_mapping: "@id"),
       "inverse" => TermDefinition.new("inverse", id: "http://shex.io/ns/shex#inverse", type_mapping: "http://www.w3.org/2001/XMLSchema#boolean"),
