@@ -465,25 +465,11 @@ describe ShEx::Algebra do
           expect(schema).to satisfy(t.graph, t.data_source, t.focus, shape: t.shape, expected: expected, logger: t.logger, shapeExterns: t.shapeExterns)
         end
 
+        # Run with rspec --tag shexr
+        # This tests the tests, not the implementation
         if File.exist?(SHEXR)
           let(:shexr) {@@shexr ||= ShEx.open(SHEXR)}
           specify "#{t.name} validates against ShExR.shex", shexr: true do
-            case t.name
-            when 'false-lead-excluding-value-shape',
-                 'nPlus1',
-                 'nPlus1-greedy_fail',
-                 'nPlus1-greedy-rewrite',
-                 'repeated-group',
-                 'simple-group',
-                 'PstarT',
-                 'PstarT-greedy',
-                 'PTstar',
-                 'PTstar-greedy-fail',
-                 'PTstar-greedy-rewrite',
-                 'PstarTstar',
-                 'P2T2'
-              pending "explaination"
-            end
             graph = RDF::Graph.new {|g| g << JSON::LD::Reader.new(t.schema_json, base_uri: t.base)}
             focus = graph.first_subject(predicate: RDF.type, object: RDF::URI("http://shex.io/ns/shex#Schema"))
             expect(focus).to be_a(RDF::Resource)
