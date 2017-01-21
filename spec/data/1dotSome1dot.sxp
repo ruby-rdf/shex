@@ -1,9 +1,0 @@
-(schema
- (shapes
-  (
-   (<http://a.example/S1>
-    (shape
-     (oneOf
-      (tripleConstraint <http://a.example/p1>)
-      (tripleConstraint <http://a.example/p2>)) )) )) )
-

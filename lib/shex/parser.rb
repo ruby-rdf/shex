@@ -79,7 +79,7 @@ module ShEx
     terminal(:PNAME_LN,             PNAME_LN, unescape: true) do |prod, token, input|
       prefix, suffix = token.value.split(":", 2)
       input[:iri] = ns(prefix, suffix)
-      error(nil, "Compact IRI missing prefix definition: #{token.value}", production: :PNAME_LN) unless input[:iri].absolute?
+      error(nil, "Compact IRI missing prefix definition: #{token.value}", production: :PNAME_LN) unless prefix(prefix)
     end
     terminal(:PNAME_NS,             PNAME_NS) do |prod, token, input|
       prefix = token.value[0..-2]
@@ -156,19 +156,11 @@ module ShEx
     production(:shexDoc) do |input, data, callback|
       data[:start] = data[:start] if data[:start]
 
-      expressions = []
-      expressions << [:base, data[:baseDecl]] if data[:baseDecl]
-      expressions << [:prefix, data[:prefixDecl]] if data[:prefixDecl]
-      expressions += Array(data[:codeDecl])
+      expressions = Array(data[:codeDecl])
       expressions << Algebra::Start.new(data[:start]) if data[:start]
-      expressions << [:shapes, data[:shapes]] if data[:shapes]
+      expressions << data[:shapes].unshift(:shapes) if data[:shapes]
 
       input[:schema] = Algebra::Schema.new(*expressions, options)
-
-      # Set schema accessor for all included expressions
-      input[:schema].each_descendant do |op|
-        op.schema = input[:schema] if op.respond_to?(:schema=)
-      end
       self
     end
 
@@ -176,14 +168,13 @@ module ShEx
 
     # [3]     baseDecl              ::= "BASE" IRIREF
     production(:baseDecl) do |input, data, callback|
-      input[:baseDecl] = self.base_uri = iri(data[:iri])
+      self.base_uri = iri(data[:iri])
     end
 
     # [4]     prefixDecl            ::= "PREFIX" PNAME_NS IRIREF
     production(:prefixDecl) do |input, data, callback|
       pfx = data[:prefix]
       self.prefix(pfx, data[:iri])
-      (input[:prefixDecl] ||= []) << [pfx.to_s, data[:iri]]
     end
 
     # [5]     notStartAction        ::= start | shapeExprDecl
@@ -204,8 +195,9 @@ module ShEx
       else
         data[:external] ? Algebra::External.new() : Algebra::Shape.new()
       end
+      expression.label = label
 
-      (input[:shapes] ||= {})[label] = expression
+      (input[:shapes] ||= []) << expression
     end
 
     # [10]    shapeExpression       ::= shapeOr
@@ -337,7 +329,7 @@ module ShEx
       end
 
       attrs = []
-      attrs += [:datatype, data[:datatype]] if data [:datatype]
+      attrs << [:datatype, data[:datatype]] if data [:datatype]
       attrs += [data[:shapeAtomLiteral], data[:nonLiteralKind]]
       attrs += Array(data[:valueSetValue])
       attrs += Array(data[:numericFacet])
@@ -394,10 +386,11 @@ module ShEx
       expression = data[:tripleExpression]
       attrs = Array(data[:extraPropertySet])
       attrs << :closed if data[:closed]
+      attrs << expression
       attrs += Array(data[:annotation])
       attrs += Array(data[:codeDecl])
 
-      input[:shape] = Algebra::Shape.new(expression, *attrs) if expression
+      input[:shape] = Algebra::Shape.new(*attrs) if expression
     end
     private :shape_definition
 
@@ -430,7 +423,7 @@ module ShEx
     # [40]    unaryTripleExpr            ::= productionLabel? (tripleConstraint | bracketedTripleExpr) | include
     production(:unaryTripleExpr) do |input, data, callback|
       expression = data[:tripleExpression]
-      expression.operands << data[:productionLabel] if expression && data[:productionLabel]
+      expression.label = data[:productionLabel] if expression && data[:productionLabel]
 
       (input[:tripleExpression] ||= []) << expression if expression
     end
@@ -568,10 +561,6 @@ module ShEx
     #   the base URI to use when resolving relative URIs (for acessing intermediate parser productions)
     # @option options [#to_s]    :anon_base     ("b0")
     #   Basis for generating anonymous Nodes
-    # @option options [Boolean] :resolve_iris (false)
-    #   Resolve prefix and relative IRIs, otherwise, when serializing the parsed SXP
-    #   as S-Expressions, use the original prefixed and relative URIs along with `base` and `prefix`
-    #   definitions.
     # @option options [Boolean]  :validate     (false)
     #   whether to validate the parsed statements and values
     # @option options [Boolean] :progress
@@ -735,7 +724,7 @@ module ShEx
     #
     # @return [HRDF::URI]
     def base_uri
-      RDF::URI(@options[:base_uri]) if @options[:base_uri]
+      @options[:base_uri]
     end
 
     ##
@@ -762,9 +751,7 @@ module ShEx
 
     # Generate a BNode identifier
     def bnode(id)
-      @bnode_cache ||= {}
-      raise Error, "Illegal attempt to reuse a BNode" if @bnode_cache[id] && @bnode_cache[id].frozen?
-      @bnode_cache[id] ||= RDF::Node.new(id)
+      RDF::Node.intern(id)
     end
 
     # Create URIs

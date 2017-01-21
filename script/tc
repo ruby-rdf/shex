@@ -12,6 +12,7 @@ require 'getoptlong'
 
 ASSERTOR = "http://greggkellogg.net/foaf#me"
 RUN_TIME = Time.now
+TEST_BASE = 'https://raw.githubusercontent.com/shexSpec/shexTest/master/'
 
 def earl_preamble(options)
   options[:output].write File.read(File.expand_path("../../etc/doap.ttl", __FILE__))
@@ -34,18 +35,31 @@ def run_tc(t, options)
   begin
     puts t.inspect if options[:verbose]
 
+    validate = case t.name
+    when '_all', 'kitchenSink' then false
+    else true
+    end
     schema = ShEx.parse(t.schema_source,
       base_uri: t.base,
-      validate: true,
+      validate: validate,
       logger: t.logger)
 
     puts "\nsxp: " + SXP::Generator.string(schema.to_sxp_bin) if options[:verbose]
 
-    map = {t.focus => t.shape} if t.shape
+    focus = if t.focus.is_a?(Hash)
+      RDF::Literal(t.focus['@value'],
+                   datatype: t.focus['@type'],
+                   language: t.focus['@language'])
+    elsif t.focus.to_s.start_with?('_:')
+      RDF::Node.intern(t.focus[2..-1])
+    else
+      RDF::URI(t.focus)
+    end
+    map = {focus => t.shape} if t.shape
 
     if t.positive_test?
       if t.validation_test?
-        r = schema.execute(t.focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
+        r = schema.execute(focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
         puts "\nresult: " + SXP::Generator.string(r.to_sxp_bin) if options[:verbose]
         result = "passed"
       else
@@ -53,7 +67,7 @@ def run_tc(t, options)
       end
     else
       if t.validation_test?
-        r = schema.execute(t.focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
+        r = schema.execute(focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
         puts "\nresult: " + SXP::Generator.string(r.to_sxp_bin) if options[:verbose]
         result = "failed"
       else
@@ -85,7 +99,7 @@ def run_tc(t, options)
   end
 
   if options[:earl]
-    test = 'http://shexspec.github.io/shexTest/' + t.base.join(t.id).to_s.sub('.jsonld', '').split('/')[-2..-1].join("/")
+    test = TEST_BASE + t.base.join(t.id).to_s.sub('.jsonld', '').split('/')[-2..-1].join("/")
     options[:output].puts %{
 [ a earl:Assertion;
   earl:assertedBy <#{ASSERTOR}>;
@@ -119,6 +133,7 @@ opts = GetoptLong.new(
   ["--debug", GetoptLong::NO_ARGUMENT],
   ["--earl", GetoptLong::NO_ARGUMENT],
   ["--help", "-?", GetoptLong::NO_ARGUMENT],
+  ["--mancache", GetoptLong::NO_ARGUMENT],
   ["--output", "-o", GetoptLong::REQUIRED_ARGUMENT],
   ["--quiet", "-q", GetoptLong::NO_ARGUMENT],
   ["--verbose", "-v", GetoptLong::NO_ARGUMENT],
@@ -130,6 +145,7 @@ def help(options)
   puts "      --debug:              Display detailed debug output"
   puts "      --earl:               Generate EARL report"
   puts "      --quiet:              Minimal output"
+  puts "      --mancache:           Creates an N-Triples representation of the combined manifests"
   puts "      --output:             Output to specified file"
   puts "      --verbose:            Verbose processing"
   puts "      --help,-?:            This message"
@@ -138,21 +154,32 @@ end
 
 opts.each do |opt, arg|
   case opt
-  when '--earl'         then options[:quiet] = options[:earl] = true
-  when '--debug'        then options[:debug] = true
-  when '--output'       then options[:output] = File.open(arg, "w")
-  when '--quiet'        then options[:quiet] = true
-  when '--verbose'      then options[:verbose] = true
+  when '--earl'     then options[:quiet] = options[:earl] = true
+  when '--debug'    then options[:debug] = true
+  when '--mancache' then options[:mancache] = true
+  when '--output'   then options[:output] = File.open(arg, "w")
+  when '--quiet'    then options[:quiet] = true
+  when '--verbose'  then options[:verbose] = true
   end
 end
 
 earl_preamble(options) if options[:earl]
 result_count = {}
+man_graph = RDF::Graph.new
 
 %w(schemas/manifest.jsonld negativeSyntax/manifest.jsonld negativeStructure/manifest.jsonld validation/manifest.jsonld).each do |variant|
   manifest = Fixtures::SuiteTest::BASE + variant
 
   Fixtures::SuiteTest::Manifest.open(manifest) do |m|
+    if options[:mancache]
+      # Output N-Triples for this manifest
+      puts m.id
+      JSON::LD::API.toRdf(m.instance_variable_get(:@json), base: "#{TEST_BASE}#{variant.sub('.jsonld', '')}") {|s|
+        man_graph << s
+      }
+      next
+    end
+
     m.entries.each do |tc|
       next unless ARGV.empty? || ARGV.any? {|n| tc.name.match(/#{n}/)}
       run_tc(tc, options.merge(result_count: result_count))
@@ -160,8 +187,19 @@ result_count = {}
   end
 end
 
-STDERR.puts "" if options[:quiet]
+if options[:mancache]
+  require 'rdf/turtle'
+  options[:output].write(man_graph.dump(:ttl, standard_prefixes: true,
+    base_uri: TEST_BASE,
+    prefixes: {
+      mf:    "http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#",
+      sht:   "http://www.w3.org/ns/shacl/test-suite#",
+      sx:    "https://shexspec.github.io/shexTest/ns#"
+  }))
+else
+  STDERR.puts "" if options[:quiet]
 
-result_count.each do |result, count|
-  puts "#{result}: #{count}"
+  result_count.each do |result, count|
+    puts "#{result}: #{count}"
+  end
 end

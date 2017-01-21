@@ -5,11 +5,22 @@ module ShEx::Algebra
     NAME = :oneOf
 
     ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param (see Operator#from_shexj)
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == 'OneOf'
+      raise ArgumentError, "missing expressions in #{operator.inspect}" unless operator.has_key?('expressions')
+      super
+    end
+
+    ##
     # `expr` is a OneOf and there is some shape expression `se2` in shapeExprs such that a `matches(T, se2, m)`...
     #
-    # @param [Array<RDF::Statement>] statements
-    # @return [Array<RDF::Statement]
-    def matches(statements)
+    # @param  (see TripleExpression#matches)
+    # @return (see TripleExpression#matches)
+    # @raise  (see TripleExpression#matches)
+    def matches(arcs_in, arcs_out, depth: 0)
       results, satisfied, unsatisfied = [], [], []
       num_iters, max = 0, maximum
 
@@ -18,22 +29,21 @@ module ShEx::Algebra
       while num_iters < max
         matched_something = operands.select {|o| o.is_a?(TripleExpression)}.any? do |op|
           begin
-            matched_op = op.matches(statements)
+            matched_op = op.matches(arcs_in, arcs_out, depth: depth + 1)
             satisfied << matched_op
             results += matched_op.matched
-            statements -= matched_op.matched
-            status "matched #{matched_op.matched.to_sxp}"
+            arcs_in -= matched_op.matched
+            arcs_out -= matched_op.matched
+            status "matched #{matched_op.matched.to_sxp}", depth: depth
           rescue ShEx::NotMatched => e
-            status "not matched: #{e.message}"
-            op = op.dup
-            op.unmatched = statements - results
-            unsatisfied << op
+            status "not matched: #{e.message}", depth: depth
+            unsatisfied << e.expression
             false
           end
         end
         break unless matched_something
         num_iters += 1
-        status "matched #{results.length} statements after #{num_iters} iterations"
+        status "matched #{results.length} statements after #{num_iters} iterations", depth: depth
       end
 
       # Max violations handled in Shape
@@ -42,15 +52,15 @@ module ShEx::Algebra
       end
 
       # Last, evaluate semantic acts
-      semantic_actions.all? do |op|
-        op.satisfies?(results)
+      semantic_actions.each do |op|
+        op.satisfies?(matched: results, depth: depth + 1)
       end unless results.empty?
 
-      satisfy matched: results, satisfied: satisfied, unsatisfied: unsatisfied
+      satisfy matched: results, satisfied: satisfied, depth: depth
     rescue ShEx::NotMatched, ShEx::NotSatisfied => e
       not_matched e.message,
-                  matched:   results,   unmatched:   (statements - results),
-                  satisfied: satisfied, unsatisfied: unsatisfied
+                  matched:   results,   unmatched:   ((arcs_in + arcs_out).uniq - results),
+                  satisfied: satisfied, unsatisfied: unsatisfied, depth: depth
     end
   end
 end

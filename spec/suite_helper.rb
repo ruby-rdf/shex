@@ -14,45 +14,16 @@ module Fixtures
         @file = file
 
         # Create a manifest, if `file` doesn't exist
-        json = if File.exist?(file)
-          JSON.parse(File.read(file))
-        else
-          generate_manifest(file,
-                            structure: file.downcase.include?('structure'),
-                            negative: file.include?('negative'))
-        end
-        yield Manifest.new(json['@graph'].first, context: {base: "file:/#{file}"})
+        json = JSON.parse(File.read(file))
+        man = Manifest.new(json['@graph'].first, json: json, context: {base: "file:/#{file}"})
+        man.instance_variable_set(:@json, json)
+        yield man
       end
 
       def entries
         # Map entries to resources
         ents = attributes['entries'].map {|e| Entry.new(e, context: context)}
         ents
-      end
-
-      def self.generate_manifest(file, structure:, negative:)
-        dir = file.split('/')[0..-2].join('/')
-        man = JSON.parse(%({
-          "@context": "https://raw.githubusercontent.com/shexSpec/test-suite/gh-pages/tests/manifest-context.jsonld",
-          "@graph": [{
-            "@id": "http://shexspec.github.io/test-suite/#{dir.split('/').join}/manifest.jsonld",
-            "@type": "mf:Manifest",
-            "rdfs:comment": "ShEx#{negative ? " negative" : ""} #{structure ? "structure" : "syntax"} tests",
-            "entries": []
-          }]
-        }))
-        entries = man['@graph'][0]['entries']
-        Dir.glob("#{dir}/*.shex").each do |f|
-          f = f.split('/').last
-          name = f.sub(/\.shex$/, '')
-          entries << {
-            "@id" => "##{name}",
-            "@type" => "sht:#{negative ? "Negative" : ""}#{structure ? "Structure" : "Syntax"}Test",
-            "name" => name,
-            "action" => f
-          }
-        end
-        man
       end
     end
 
@@ -64,11 +35,20 @@ module Fixtures
       end
 
       def schema
-        base.join(action.is_a?(Hash) ? action["schema"] : action)
+        base.join(action.is_a?(Hash) && action["schema"] ? action["schema"] : shex)
+      end
+
+      def json
+        sch = action["schema"].to_s.sub('.shex', '.json') if action.is_a?(Hash) && action["schema"]
+        base.join(attributes.fetch('json', sch))
       end
 
       def data
-        action.is_a?(Hash) && base.join(action["data"])
+        action.is_a?(Hash) && action["data"] && base.join(action["data"])
+      end
+
+      def ttl
+        attributes["ttl"] && base.join(attributes["ttl"])
       end
 
       def shapeExterns
@@ -87,16 +67,24 @@ module Fixtures
         action.is_a?(Hash) && action["focus"]
       end
 
-      def turtle
-        @turtle ||= File.read(data)
-      end
-
       def graph
         @graph ||= RDF::Graph.load(data, base_uri: base)
       end
 
       def schema_source
         @schema_source ||= RDF::Util::File.open_file(schema, &:read)
+      end
+
+      def schema_json
+        @schema_json ||= RDF::Util::File.open_file(json, &:read)
+      end
+
+      def data_source
+        @data_source ||= RDF::Util::File.open_file(data, &:read)
+      end
+
+      def turtle_source
+        @turtle_source ||= RDF::Util::File.open_file(ttl, &:read)
       end
 
       def structure_test?

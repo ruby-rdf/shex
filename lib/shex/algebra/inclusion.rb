@@ -4,6 +4,16 @@ module ShEx::Algebra
     include TripleExpression
     NAME = :inclusion
 
+    ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param (see Operator#from_shexj)
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == "Inclusion"
+      raise ArgumentError, "missing include in #{operator.inspect}" unless operator.has_key?('include')
+      super
+    end
+
     def initialize(arg, **options)
       raise ArgumentError, "Shape inclusion must be an IRI or BNode: #{arg}" unless arg.is_a?(RDF::Resource)
       super
@@ -12,17 +22,17 @@ module ShEx::Algebra
     ##
     # In this case, we accept an array of statements, and match based on cardinality.
     #
-    # @param [Array<RDF::Statement>] statements
-    # @return [Array<RDF::Statement>]
-    # @raise [ShEx::NotMatched]
-    def matches(statements)
+    # @param  (see TripleExpression#matches)
+    # @return (see TripleExpression#matches)
+    # @raise  (see TripleExpression#matches)
+    def matches(arcs_in, arcs_out, depth: 0)
       status "referenced_shape: #{operands.first}"
-      expression = referenced_shape.triple_expressions.first
+      expression = referenced_shape.expression
       max = maximum
-      matched_expression = expression.matches(statements)
-      satisfy matched: matched_expression.matched
+      matched_expression = expression.matches(arcs_in, arcs_out, depth: depth + 1)
+      satisfy matched: matched_expression.matched, depth: depth
     rescue ShEx::NotMatched => e
-      not_matched e.message, unsatisfied: e.expression
+      not_matched e.message, unsatisfied: e.expression, depth: depth
     end
 
     ##
@@ -30,7 +40,7 @@ module ShEx::Algebra
     #
     # @return [Operand]
     def referenced_shape
-      schema.shapes[operands.first.to_s]
+      @referenced_shape ||= schema.shapes.detect {|s| s.label == operands.first}
     end
 
     ##
@@ -41,16 +51,17 @@ module ShEx::Algebra
     def validate!
       structure_error("Missing included shape: #{operands.first}") if referenced_shape.nil?
       structure_error("Self included shape: #{operands.first}") if referenced_shape == first_ancestor(Shape)
-
-      triple_expressions = referenced_shape.triple_expressions
-      case triple_expressions.length
-      when 0
-        structure_error("Includes shape with no triple expressions")
-      when 1
-      else
-        structure_error("Includes shape with multiple triple expressions")
-      end
+      structure_error("Referenced shape must be a Shape: #{operands.first}") unless referenced_shape.is_a?(Shape)
       super
+    end
+
+    ##
+    # Returns the binary S-Expression (SXP) representation of this operator.
+    #
+    # @return [Array]
+    # @see    https://en.wikipedia.org/wiki/S-expression
+    def to_sxp_bin
+      ([:inclusion, ([:label, @label] if @label)].compact + operands).to_sxp_bin
     end
   end
 end

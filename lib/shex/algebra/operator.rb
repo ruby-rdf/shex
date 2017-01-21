@@ -1,4 +1,6 @@
 require 'sparql/algebra'
+require 'json/ld/preloaded'
+require 'shex/shex_context'
 
 module ShEx::Algebra
 
@@ -30,6 +32,8 @@ module ShEx::Algebra
     #     any additional options
     #   @option options [Boolean] :memoize (false)
     #     whether to memoize results for particular operands
+    #   @option options [RDF::Resource] :label
+    #     Identifier of the operator
     # @raise  [TypeError] if any operand is invalid
     def initialize(*operands)
       @options  = operands.last.is_a?(Hash) ? operands.pop.dup : {}
@@ -51,15 +55,7 @@ module ShEx::Algebra
         end
       end
 
-      if options[:logger]
-        options[:depth] = 0
-        each_descendant(1) do |depth, operand|
-          if operand.respond_to?(:options)
-            operand.options[:logger] = options[:logger]
-            operand.options[:depth] = depth
-          end
-        end
-      end
+      @label = options[:label]
     end
 
     ##
@@ -84,6 +80,16 @@ module ShEx::Algebra
 
     # Does this operator a SemAct?
     def semact?; false; end
+
+    ##
+    # On a result instance, the focus of the expression
+    def focus
+      Array(operands.detect {|op| op.is_a?(Array) && op[0] == :focus} || [:focus])[1]
+    end
+    def focus=(node)
+      operands.delete_if {|op| op.is_a?(Array) && op[0] == :focus}
+      operands << [:focus, node]
+    end
 
     ##
     # On a result instance, the statements that matched this expression.
@@ -130,12 +136,25 @@ module ShEx::Algebra
     end
 
     ##
+    # On a result instance, the failure message. (failure only).
+    # @return [String]
+    def message
+      (operands.detect {|op| op.is_a?(Array) && op[0] == :message} || [:message])[1..-1]
+    end
+    def message=(str)
+      operands.delete_if {|op| op.is_a?(Array) && op[0] == :message}
+      operands << [:message, str]
+    end
+
+    ##
     # Duplication this operand, and add `matched`, `unmatched`, `satisfied`, and `unsatisfied` operands for accessing downstream.
     #
     # @return [Operand]
-    def satisfy(matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil)
-      log_debug(self.class.const_get(:NAME), "satisfied", depth: options.fetch(:depth, 0))
+    def satisfy(focus: nil, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, message: nil, **opts)
+      log_debug(self.class.const_get(:NAME), "satisfied", **opts) unless message
       expression = self.dup
+      expression.message = message if message
+      expression.focus = focus if focus
       expression.matched = Array(matched) if matched
       expression.unmatched = Array(unmatched) if unmatched
       expression.satisfied = Array(satisfied) if satisfied
@@ -145,25 +164,17 @@ module ShEx::Algebra
 
     ##
     # Exception handling
-    def not_matched(message, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, **opts, &block)
-      expression = opts.fetch(:expression, self).satisfy(
-        matched:     matched,
-        unmatched:   unmatched,
-        satisfied:   satisfied,
-        unsatisfied: unsatisfied)
+    def not_matched(message, **opts, &block)
+      expression = opts.fetch(:expression, self).satisfy(message: message, **opts)
       exception = opts.fetch(:exception, ShEx::NotMatched)
-      status(message) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
+      status(message, **opts) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
       raise exception.new(message, expression: expression)
     end
 
-    def not_satisfied(message, matched: nil, unmatched: nil, satisfied: nil, unsatisfied: nil, **opts)
-      expression = opts.fetch(:expression, self).satisfy(
-        matched:     matched,
-        unmatched:   unmatched,
-        satisfied:   satisfied,
-        unsatisfied: unsatisfied)
+    def not_satisfied(message, **opts)
+      expression = opts.fetch(:expression, self).satisfy(message: message, **opts)
       exception = opts.fetch(:exception, ShEx::NotSatisfied)
-      status(message) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
+      status(message, **opts) {(block_given? ? block.call : "") + "expression: #{expression.to_sxp}"}
       raise exception.new(message, expression: expression)
     end
 
@@ -173,8 +184,8 @@ module ShEx::Algebra
       log_error(message, depth: options.fetch(:depth, 0), exception: exception) {"expression: #{expression.to_sxp}"}
     end
 
-    def status(message, &block)
-      log_debug(self.class.const_get(:NAME), message, depth: options.fetch(:depth, 0), &block)
+    def status(message, **opts, &block)
+      log_debug(self.class.const_get(:NAME).to_s + (@label ? "(#{@label})" : ""), message, **opts, &block)
       true
     end
 
@@ -183,6 +194,16 @@ module ShEx::Algebra
     #
     # @return [Array]
     attr_reader :operands
+
+    ##
+    # The label (or subject) of this operand
+    # @return [RDF::Resource]
+    attr_accessor :label
+
+    ##
+    # Logging support (reader is in RDF::Util::Logger)
+    # @return [Logger]
+    attr_writer :logger
 
     ##
     # Returns the operand at the given `index`.
@@ -200,8 +221,9 @@ module ShEx::Algebra
     # @return [Array]
     # @see    https://en.wikipedia.org/wiki/S-expression
     def to_sxp_bin
-      operator = [self.class.const_get(:NAME)].flatten.first
-      [operator, *(operands || []).map(&:to_sxp_bin)]
+      [self.class.const_get(:NAME)] +
+      (label ? [[:label, label]] : []) +
+      (operands || []).map(&:to_sxp_bin)
     end
 
     ##
@@ -217,6 +239,286 @@ module ShEx::Algebra
       require 'sparql/algebra/sxp_extensions'
 
       to_sxp_bin.to_sxp
+    end
+
+    ##
+    # Creates an operator instance from a parsed ShExJ representation
+    # @param [Hash] operator
+    # @param [Hash] options ({})
+    # @option options [RDF::URI] :base
+    # @option options [Hash{String => RDF::URI}] :prefixes
+    # @return [Operator]
+    def self.from_shexj(operator, options = {})
+      options[:context] ||= JSON::LD::Context.parse(ShEx::CONTEXT)
+      operands = []
+      label = nil
+
+      operator.each do |k, v|
+        case k
+        when /length|pattern|clusive/          then operands << [k.to_sym, v]
+        when 'label'                           then label = iri(v, options)
+        when 'min', 'max', 'inverse', 'closed' then operands << [k.to_sym, v]
+        when 'nodeKind'                        then operands << v.to_sym
+        when 'object'                          then operands << value(v, options)
+        when 'start'                           then operands << Start.new(ShEx::Algebra.from_shexj(v, options))
+        when '@context'                        then
+          options[:context] = JSON::LD::Context.parse(v)
+          options[:base_uri] = options[:context].base
+        when 'shapes'
+          operands << case v
+          when Array
+            [:shapes] + v.map {|vv| ShEx::Algebra.from_shexj(vv, options)}
+          else
+            raise "Expected value of shapes #{v.inspect}"
+          end
+        when 'reference', 'include', 'stem', 'name'
+          # Value may be :wildcard for stem
+          operands << (v.is_a?(Symbol) ? v : iri(v, options))
+        when 'predicate' then operands << iri(v, options)
+        when 'extra', 'datatype'
+          v = [v] unless v.is_a?(Array)
+          operands << (v.map {|op| iri(op, options)}).unshift(k.to_sym)
+        when 'exclusions'
+          v = [v] unless v.is_a?(Array)
+          operands << v.map do |op|
+            op.is_a?(Hash) ?
+              ShEx::Algebra.from_shexj(op, options) :
+              value(op, options)
+          end.unshift(:exclusions)
+        when 'min', 'max', 'inverse', 'closed', 'valueExpr', 'semActs',
+             'shapeExpr', 'shapeExprs', 'startActs', 'expression',
+             'expressions', 'annotations'
+          v = [v] unless v.is_a?(Array)
+          operands += v.map {|op| ShEx::Algebra.from_shexj(op, options)}
+        when 'code'
+          operands << v
+        when 'values'
+          v = [v] unless v.is_a?(Array)
+          operands += v.map do |op|
+            Value.new(value(op, options))
+          end
+        end
+      end
+
+      new(*operands, label: label)
+    end
+
+    def json_type
+      self.class.name.split('::').last
+    end
+
+    def to_json(options = nil)
+      self.to_h.to_json(options)
+    end
+
+    ##
+    # Create a hash version of the operator, suitable for turning into JSON.
+    # @return [Hash]
+    def to_h
+      obj = json_type == 'Schema' ?
+        {'@context' => ShEx::CONTEXT, 'type' => json_type} : 
+        {'type' => json_type}
+      obj['label'] = label.to_s if label
+      operands.each do |op|
+        case op
+        when Array
+          # First element should be a symbol
+          case sym = op.first
+          when :datatype,
+               :pattern         then obj[op.first.to_s] = op.last.to_s
+          when :exclusions      then obj['exclusions'] = Array(op[1..-1]).map {|v| serialize_value(v)}
+          when :extra           then (obj['extra'] ||= []).concat Array(op[1..-1]).map(&:to_s)
+            # FIXME Shapes should be an array, not a hash
+          when :shapes          then obj['shapes'] = Array(op[1..-1]).map {|v| v.to_h}
+          when :minlength,
+               :maxlength,
+               :length,
+               :mininclusive,
+               :maxinclusive,
+               :minexclusive,
+               :maxexclusive,
+               :totaldigits,
+               :fractiondigits  then obj[op.first.to_s] = op.last.object
+          when :min, :max       then obj[op.first.to_s] = op.last
+          when :base, :prefix
+            # Ignore base and prefix
+          when Symbol           then obj[sym.to_s] = Array(op[1..-1]).map(&:to_h)
+          else
+            raise "Expected array to start with a symbol for #{self}"
+          end
+        when :wildcard  then obj['stem'] = {'type' => 'Wildcard'}
+        when Annotation then (obj['annotations'] ||= []) << op.to_h
+        when SemAct     then (obj[is_a?(Schema) ? 'startActs' : 'semActs'] ||= []) << op.to_h
+        when Start      then obj['start'] = op.operands.first.to_h
+        when RDF::Value
+          case self
+          when TripleConstraint then obj['predicate'] = op.to_s
+          when Stem, StemRange  then obj['stem'] = op.to_s
+          when Inclusion        then obj['include'] = op.to_s
+          when ShapeRef         then obj['reference'] = op.to_s
+          when SemAct           then obj[op.is_a?(RDF::URI) ? 'name' : 'code'] = op.to_s
+          else
+            raise "How to serialize Value #{op.inspect} to json for #{self}"
+          end
+        when Symbol
+          case self
+          when NodeConstraint   then obj['nodeKind'] = op.to_s
+          when Shape            then obj['closed'] = true
+          when TripleConstraint then obj['inverse'] = true
+          else
+            raise "How to serialize Symbol #{op.inspect} to json for #{self}"
+          end
+        when TripleConstraint, EachOf, OneOf, Inclusion
+          case self
+          when EachOf, OneOf
+            (obj['expressions'] ||= []) << op.to_h
+          else
+            obj['expression'] = op.to_h
+          end
+        when NodeConstraint
+          case self
+          when And, Or
+            (obj['shapeExprs'] ||= []) << op.to_h
+          else
+            obj['valueExpr'] = op.to_h
+          end
+        when And, Or, Shape, Not, ShapeRef
+          case self
+          when And, Or
+            (obj['shapeExprs'] ||= []) << op.to_h
+          when TripleConstraint
+            obj['valueExpr'] = op.to_h
+          else
+            obj['shapeExpr'] = op.to_h
+          end
+        when Value
+          obj['values'] ||= []
+          Array(op).map {|o| o.operands}.flatten.each do |oo|
+            obj['values'] << serialize_value(oo)
+          end
+        else
+          raise "How to serialize #{op.inspect} to json for #{self}"
+        end
+      end
+      obj
+    end
+
+    ##
+    # Returns the Base URI defined for the parser,
+    # as specified or when parsing a BASE prologue element.
+    #
+    # @example
+    #   base  #=> RDF::URI('http://example.com/')
+    #
+    # @return [HRDF::URI]
+    def base_uri
+      @options[:base_uri]
+    end
+
+    # Create URIs
+    # @param [RDF::Value, String] value
+    # @param [Hash{Symbol => Object}] options
+    # @option options [RDF::URI] :base_uri
+    # @option options [Hash{String => RDF::URI}] :prefixes
+    # @option options [JSON::LD::Context] :context
+    # @return [RDF::Value]
+    def iri(value, options = @options)
+      self.class.iri(value, options)
+    end
+
+    # Create URIs
+    # @param  (see #iri)
+    # @option (see #iri)
+    # @return (see #iri)
+    def self.iri(value, options)
+      # If we have a base URI, use that when constructing a new URI
+      base_uri = options[:base_uri]
+
+      case value
+      when Hash
+        # A JSON-LD node reference
+        v = options[:context].expand_value(value)
+        raise "Expected #{value.inspect} to be a JSON-LD Node Reference" unless JSON::LD::Utils.node_reference?(v)
+        self.iri(v['@id'], options)
+      when RDF::URI
+        if base_uri && value.relative?
+          base_uri.join(value)
+        else
+          value
+        end
+      when RDF::Value then value
+      when /^_:/ then
+        id = value[2..-1].to_s
+        RDF::Node.intern(id)
+      when /^(\w+):(\S+)$/
+        prefixes = options.fetch(:prefixes, {})
+        if prefixes.has_key?($1)
+          prefixes[$1].join($2)
+        elsif RDF.type == value
+          a = RDF.type.dup; a.lexical = 'a'; a
+        elsif options[:context]
+          options[:context].expand_iri(value, vocab: true)
+        else
+          RDF::URI(value)
+        end
+      else
+        if options[:context]
+          options[:context].expand_iri(value, document: true)
+        elsif base_uri
+          base_uri.join(value)
+        elsif base_uri
+          base_uri.join(value)
+        else
+          RDF::URI(value)
+        end
+      end
+    end
+
+    # Create Values, with "clever" matching to see if it might be a value, IRI or BNode.
+    # @param [RDF::Value, String] value
+    # @param [Hash{Symbol => Object}] options
+    # @option options [RDF::URI] :base_uri
+    # @option options [Hash{String => RDF::URI}] :prefixes
+    # @return [RDF::Value]
+    def value(value, options = @options)
+      self.class.value(value, options)
+    end
+
+    # Create Values, with "clever" matching to see if it might be a value, IRI or BNode.
+    # @param  (see #value)
+    # @option (see #value)
+    # @return (see #value)
+    def self.value(value, options)
+      # If we have a base URI, use that when constructing a new URI
+      case value
+      when Hash
+        # Either a value object or a node reference
+        if value['uri']
+          iri(value['uri'], options)
+        elsif value['value']
+          RDF::Literal(value['value'], datatype: value['type'], language: value['language'])
+        else
+          ShEx::Algebra.from_shexj(value, options)
+        end
+      else iri(value, options)
+      end
+    end
+
+    ##
+    # Serialize a value, either as JSON, or as modififed N-Triples
+    #
+    # @param [RDF::Value, Operator] value
+    # @return [String]
+    def serialize_value(value)
+      case value
+        when RDF::Literal
+          {'value' => value.to_s}.
+          merge(value.has_datatype? ? {'type' => value.datatype.to_s} : {}).
+          merge(value.has_language? ? {'language' => value.language.to_s} : {})
+        when RDF::Resource
+          value.to_s
+        else value.to_h
+      end
     end
 
     ##
@@ -243,6 +545,12 @@ module ShEx::Algebra
     # @return [Enumerator]
     def each_descendant(depth = 0, &block)
       if block_given?
+
+        case block.arity
+        when 1 then block.call(self)
+        else block.call(depth, self)
+        end
+
         operands.each do |operand|
           case operand
           when Array
@@ -251,11 +559,6 @@ module ShEx::Algebra
             end
           else
             operand.each_descendant(depth + 1, &block) if operand.respond_to?(:each_descendant)
-          end
-
-          case block.arity
-          when 1 then block.call(operand)
-          else block.call(depth, operand)
           end
         end
       end
@@ -294,6 +597,19 @@ module ShEx::Algebra
     def validate!
       operands.each {|op| op.validate! if op.respond_to?(:validate!)}
       self
+    end
+
+  protected
+    def dup
+      operands = @operands.map {|o| o.dup rescue o}
+      self.class.new(*operands, label: @label)
+    end
+
+    ##
+    # Implement `to_hash` only if accessed; otherwise, it becomes an _Implicit Accessor_ which will cause problems with splat arguments, which causes the last to be turned into a hash for extracting keyword aruments.
+    def method_missing(method, *args)
+      return to_h(*args) if method == :hash
+      super
     end
 
     ##

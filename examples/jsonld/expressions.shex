@@ -1,0 +1,27 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX shex: <https://shexspec.github.io/ns/>
+PREFIX ex: <http://schema.example/>
+
+shex:EachOf CLOSED {
+  rdf:type shex:EachOf;
+  shex:expressions BNODE @ex:ListOfTwoExpressions;
+}
+
+ex:ListOfTwoExpressions CLOSED {
+  rdf:type rdf:List?;
+  rdf:first @shex:TripleExpression;
+  rdf:rest {
+    rdf:first @shex:TripleExpression;
+    rdf:rest @ex:ListOfExpressions;
+  }
+}
+
+ex:ListOfExpressions CLOSED {
+  rdf:type rdf:List?;
+  rdf:first @shex:TripleExpression;
+  rdf:rest [rdf:nil] OR @ex:ListOfExpressions;
+}
+
+shex:TripleExpression {
+  rdf:type shex:OneOf OR shex:EachOf OR shex:Inclusion OR shex:TripleConstraint;
+}

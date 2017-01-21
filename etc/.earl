@@ -1,0 +1,22 @@
+---
+:format: :json
+:manifest:
+- https://raw.githubusercontent.com/shexSpec/shexTest/master/schemas/manifest.ttl
+- https://raw.githubusercontent.com/shexSpec/shexTest/master/negativeSyntax/manifest.ttl
+- https://raw.githubusercontent.com/shexSpec/shexTest/master/negativeStructure/manifest.ttl
+- https://raw.githubusercontent.com/shexSpec/shexTest/master/validation/manifest.ttl
+:bibRef: ! '[[shex]]'
+:name: Shape Expressions Language
+:query: >
+    PREFIX mf:  <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX sx:  <https://shexspec.github.io/shexTest/ns#>
+
+    SELECT ?uri ?testAction ?manUri
+    WHERE {
+      ?uri mf:action | sx:shex ?testAction .
+      OPTIONAL {
+        ?manUri a mf:Manifest; mf:entries ?lh .
+        ?lh rdf:first ?uri .
+      }
+    }

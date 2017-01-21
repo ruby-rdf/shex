@@ -19,10 +19,12 @@ This is a pure-Ruby library for working with the [Shape Expressions Language][Sh
 
 The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
 
-* `ShEx::Parser` parses ShExC formatted documents generating executable operators which can be serialized as [S-Expressions](http://en.wikipedia.org/wiki/S-expression).
+* `ShEx::Parser` parses ShExC and ShExJ formatted documents generating executable operators which can be serialized as [S-Expressions](http://en.wikipedia.org/wiki/S-expression).
 * `ShEx::Algebra` executes operators against Any `RDF::Graph`, including compliant [RDF.rb][].
+* [Implementation Report](file.earl.html)
 
-## Example
+## Examples
+### Validating a node using ShExC
 
     require 'rubygems'
     require 'rdf/turtle'
@@ -46,6 +48,121 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
     }
     schema.satisfies?("http://rubygems.org/gems/shex", graph, map)
     # => true
+### Validating a node using ShExC
+
+    require 'rubygems'
+    require 'rdf/turtle'
+    require 'shex'
+
+    shexj: %({
+      "type": "Schema",
+      "prefixes": {
+        "doap": "http://usefulinc.com/ns/doap#",
+        "dc": "http://purl.org/dc/terms/"
+      },
+      "shapes": {
+        "TestShape": {
+          "type": "Shape",
+          "extra": ["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"],
+          "expression": {
+            "type": "EachOf",
+            "expressions": [
+              {
+                "type": "TripleConstraint",
+                "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "values": ["http://usefulinc.com/ns/doap#Project"]
+                }
+              },
+              {
+                "type": "OneOf",
+                "expressions": [
+                  {
+                    "type": "EachOf",
+                    "expressions": [
+                      {
+                        "type": "TripleConstraint",
+                        "predicate": "http://usefulinc.com/ns/doap#name",
+                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
+                      },
+                      {
+                        "type": "TripleConstraint",
+                        "predicate": "http://usefulinc.com/ns/doap#description",
+                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
+                      }
+                    ]
+                  },
+                  {
+                    "type": "EachOf",
+                    "expressions": [
+                      {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/title",
+                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
+                      },
+                      {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/description",
+                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
+                      }
+                    ]
+                  }
+                ],
+                "min": 1, "max": "*"
+              },
+              {
+                "type": "TripleConstraint",
+                "predicate": "http://usefulinc.com/ns/doap#category",
+                "valueExpr": {"type": "NodeConstraint", "nodeKind": "iri"},
+                "min": 0, "max": "*"
+              },
+              {
+                "type": "TripleConstraint",
+                "predicate": "http://usefulinc.com/ns/doap#developer",
+                "valueExpr": {"type": "NodeConstraint", "nodeKind": "iri"},
+                "min": 1, "max": "*"
+              },
+              {
+                "type": "TripleConstraint",
+                "predicate": "http://usefulinc.com/ns/doap#implements",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "values": ["https://shexspec.github.io/spec/"]
+                }
+              }
+            ]
+          }
+        }
+      }
+    })
+    graph = RDF::Graph.load("etc/doap.ttl")
+    schema = ShEx.parse(shexj, format: :shexj)
+    map = {"http://rubygems.org/gems/shex" => "TestShape"}
+    schema.satisfies?("http://rubygems.org/gems/shex", graph, map)
+    # => true
+
+## Extensions
+ShEx has an extension mechanism using [Semantic Actions](https://shexspec.github.io/spec/#semantic-actions). Extensions may be implemented in Ruby ShEx by sub-classing {ShEx::Extension} and implementing {ShEx::Extension#visit} and possibly {ShEx::Extension#initialize}, {ShEx::Extension#enter}, {ShEx::Extension#exit}, and {ShEx::Extension#close}. The `#visit` method will be called as part of the `#satisfies?` operation.
+
+    require 'shex'
+    class ShEx::Test < ShEx::Extension("http://shex.io/extensions/Test/")
+      # (see ShEx::Extension#initialize)
+      def initialize(schema: nil, logger: nil, depth: 0, **options)
+        ...
+      end
+
+      # (see ShEx::Extension#visit)
+      def visit(code: nil, matched: nil, expression: nil, depth: 0, **options)
+        ...
+      end
+    end
+
+The `#enter` method will be called on any {ShEx::Algebra::TripleExpression} that includes a {ShEx::Algebra::SemAct} referencing the extension, while the `#exit` method will be called on exit, even if not satisfied.
+
+The `#initialize` method is called when {ShEx::Algebra::Schema#execute} starts and `#close` called on exit, even if not satisfied.
+
+To make sure your extension is found, make sure to require it before the shape is executed.
 
 ## Documentation
 

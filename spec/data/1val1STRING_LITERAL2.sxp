@@ -1,7 +1,0 @@
-(schema
- (shapes
-  (
-   (<http://a.example/S1>
-    (shape
-     (tripleConstraint <http://a.example/p1> (nodeConstraint (value "STRING_LITERAL2")))) )) ))
-

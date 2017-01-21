@@ -1,4 +1,0 @@
-(schema
- (start (shapeRef _:S1))
- (shapes ((_:S1 (shape (tripleConstraint <http://a.example/p1>))))))
-

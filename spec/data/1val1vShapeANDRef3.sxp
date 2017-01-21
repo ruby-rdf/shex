@@ -1,9 +1,0 @@
-(schema
- (shapes
-  (
-   (<http://a.example/S1>
-    (and
-     (shape (tripleConstraint <http://a.example/p1> (nodeConstraint literal (minlength 4))))
-     (shape (tripleConstraint <http://a.example/p1> (nodeConstraint literal (maxlength 5))))
-     (shape
-      (tripleConstraint <http://a.example/p1> (nodeConstraint literal (pattern "(ab)+")))) )) )) )

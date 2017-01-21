@@ -1,0 +1,112 @@
+{
+  "@context": "https://shexspec.github.io/context.jsonld",
+  "type": "Schema",
+  "shapes": [
+    {
+      "type": "Shape",
+      "label": "TestShape",
+      "extra": [
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+      ],
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "values": [
+                {
+                  "uri": "http://usefulinc.com/ns/doap#Project"
+                }
+              ]
+            }
+          },
+          {
+            "type": "OneOf",
+            "expressions": [
+              {
+                "type": "EachOf",
+                "expressions": [
+                  {
+                    "type": "TripleConstraint",
+                    "predicate": "http://usefulinc.com/ns/doap#name",
+                    "valueExpr": {
+                      "type": "NodeConstraint",
+                      "nodeKind": "literal"
+                    }
+                  },
+                  {
+                    "type": "TripleConstraint",
+                    "predicate": "http://usefulinc.com/ns/doap#description",
+                    "valueExpr": {
+                      "type": "NodeConstraint",
+                      "nodeKind": "literal"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "EachOf",
+                "expressions": [
+                  {
+                    "type": "TripleConstraint",
+                    "predicate": "http://purl.org/dc/terms/title",
+                    "valueExpr": {
+                      "type": "NodeConstraint",
+                      "nodeKind": "literal"
+                    }
+                  },
+                  {
+                    "type": "TripleConstraint",
+                    "predicate": "http://purl.org/dc/terms/description",
+                    "valueExpr": {
+                      "type": "NodeConstraint",
+                      "nodeKind": "literal"
+                    }
+                  }
+                ]
+              }
+            ],
+            "min": 1,
+            "max": "*"
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://usefulinc.com/ns/doap#category",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "iri"
+            },
+            "min": 0,
+            "max": "*"
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://usefulinc.com/ns/doap#developer",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "iri"
+            },
+            "min": 1,
+            "max": "*"
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://usefulinc.com/ns/doap#implements",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "values": [
+                {
+                  "uri": "https://shexspec.github.io/spec/"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+

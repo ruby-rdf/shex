@@ -1,4 +1,0 @@
-(schema
- (base <http://a.example/>)
- (shapes ((<http://a.example/S1> (shape (tripleConstraint <http://a.example/p1>))))))
-

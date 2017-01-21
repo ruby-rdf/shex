@@ -1,8 +1,0 @@
-(schema
- (shapes
-  (
-   (<http://a.example/S1>
-    (shape
-     (tripleConstraint <http://a.example/p1>
-      (annotation <http://a.example/annot> "STRING_LITERAL1")) )) )) )
-

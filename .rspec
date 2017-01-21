@@ -1,0 +1,3 @@
+# Skip isomorphic tests
+--tag ~isomorphic
+--tag ~shexr

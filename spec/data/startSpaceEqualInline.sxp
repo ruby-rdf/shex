@@ -1,2 +1,0 @@
-(schema (start (shape (tripleConstraint <http://a.example/p1>))))
-
