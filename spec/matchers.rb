@@ -107,7 +107,7 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape, map, expected, **
     "Data      : #{data}\n" +
     "Shape     : #{shape}\n" +
     "Focus     : #{focus}\n" +
-    "Results   : #{SXP::Generator.string(@exception.expression.to_sxp_bin)}" +
+    "Results   : #{SXP::Generator.string(@exception.expression.to_sxp_bin) if @exception && @exception.expression}" +
     (options[:logger] ? "Trace     :\n#{options[:logger].to_s}" : "")
   end
 

@@ -6,8 +6,12 @@ module ShEx
   autoload :Algebra,    'shex/algebra'
   autoload :Meta,       'shex/meta'
   autoload :Parser,     'shex/parser'
+  autoload :Extension,  'shex/extensions/extension'
   autoload :Terminals,  'shex/terminals'
   autoload :VERSION,    'shex/version'
+
+  # Extensions defined in this gem
+  EXTENSIONS = %w{test}
 
   ##
   # Parse the given ShEx `query` string.
@@ -87,6 +91,15 @@ module ShEx
     queryable = queryable || RDF::Graph.new
 
     shex.satisfies?(focus, queryable, {focus => shape}, options)
+  end
+
+  ##
+  # Alias for `ShEx::Extension.create`.
+  #
+  # @param (see ShEx::Extension#create)
+  # @return [Class]
+  def self.Extension(uri)
+    Extension.send(:create, uri)
   end
 
   class Error < StandardError

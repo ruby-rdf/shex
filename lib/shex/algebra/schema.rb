@@ -11,6 +11,10 @@ module ShEx::Algebra
     # @return [Hash{RDF::Resource => RDF::Resource}]
     attr_reader :map
 
+    # Map of Semantic Action instances
+    # @return [Hash{String => ShEx::Extension}]
+    attr_reader :extensions
+
     ##
     # Creates an operator instance from a parsed ShExJ representation
     # @param (see Operator#from_shexj)
@@ -36,6 +40,16 @@ module ShEx::Algebra
       @graph, @shapes_entered = graph, {}
       @external_schemas = shapeExterns
       focus = value(focus)
+
+      # Initialize Extensions
+      @extensions = {}
+      each_descendant do |op|
+        next unless op.is_a?(SemAct)
+        name = op.operands.first.to_s
+        if ext_class = ShEx::Extension.find(name)
+          @extensions[name] ||= ext_class.new(schema: self, depth: depth, **options)
+        end
+      end
 
       # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same label
       graph_focus = graph.enum_term.detect {|t| t.node? && t.id == focus.id} if focus.is_a?(RDF::Node)
@@ -68,6 +82,9 @@ module ShEx::Algebra
       end
       status "schema satisfied", depth: depth
       satisfied_schema
+    ensure
+      # Close Semantic Action extensions
+      @extensions.values.each {|ext| ext.close(schema: self, depth: depth, **options)}
     end
 
     ##

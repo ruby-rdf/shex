@@ -25,6 +25,9 @@ module ShEx::Algebra
       results, satisfied, unsatisfied = [], [], []
       num_iters, max = 0, maximum
 
+      # enter semantic acts
+      semantic_actions.each {|op| op.enter(arcs_in: arcs_in, arcs_out: arcs_out, depth: depth + 1)}
+
       while num_iters < max
         begin
           matched_this_iter = []
@@ -58,9 +61,7 @@ module ShEx::Algebra
       end
 
       # Last, evaluate semantic acts
-      semantic_actions.each do |op|
-        op.satisfies?(results, matched: results, depth: depth + 1)
-      end unless results.empty?
+      semantic_actions.each {|op| op.satisfies?(nil, matched: results, depth: depth + 1)}
 
       satisfy matched: results, satisfied: satisfied, depth: depth
     rescue ShEx::NotMatched, ShEx::NotSatisfied => e
@@ -68,6 +69,8 @@ module ShEx::Algebra
                   matched:   results,   unmatched:   ((arcs_in + arcs_out).uniq - results),
                   satisfied: satisfied, unsatisfied: unsatisfied,
                   depth:     depth
+    ensure
+      semantic_actions.each {|op| op.exit(matched: matched, depth: depth + 1)}
     end
   end
 end
