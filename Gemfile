@@ -2,7 +2,9 @@ source "https://rubygems.org"
 
 gemspec
 
-gem 'rdf',          github: "ruby-rdf/rdf",         branch: "develop"
+gem 'rdf',              github: "ruby-rdf/rdf",               branch: "develop"
+gem 'json-ld',          github: "ruby-rdf/json-ld",           branch: "develop"
+gem 'json-ld-preloaded',github: "ruby-rdf/json-ld-preloaded", branch: "develop"
 
 group :development, :test do
   gem 'ebnf',       github: "gkellogg/ebnf",        branch: "develop"
