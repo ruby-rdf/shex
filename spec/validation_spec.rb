@@ -426,7 +426,7 @@ describe ShEx::Algebra do
       },
     }.each do |label, params|
       context label do
-        let(:schema) {ShEx.parse(params[:schema], logger: logger)}
+        let(:schema) {ShEx.parse(params[:schema])}
         let(:decls) {%(
           PREFIX ex: <http://schema.example/>
           PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -438,7 +438,7 @@ describe ShEx::Algebra do
             if graph.empty?
               fail "No triples in graph"
             else
-              expect(schema).to satisfy(graph, params[:data], p[:focus], p[:shape], params[:map], p[:result], logger: logger)
+              expect(schema).to satisfy(graph, params[:data], p[:focus], shape: p[:shape], map: params[:map], expected: p[:result], logger: logger)
             end
           end
         end
@@ -447,6 +447,7 @@ describe ShEx::Algebra do
   end
 
   require 'suite_helper'
+  SHEXR = File.expand_path("../shexTest/doc/ShExR.shex", __FILE__)
   manifest = Fixtures::SuiteTest::BASE + "validation/manifest.jsonld"
   Fixtures::SuiteTest::Manifest.open(manifest) do |m|
     describe m.attributes['rdfs:comment'] do
@@ -460,8 +461,21 @@ describe ShEx::Algebra do
           end
           t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
           expected = t.positive_test? || ShEx::NotSatisfied
-          schema = ShEx.parse(t.schema_source, validate: true, logger: t.logger, base_uri: t.base)
-          expect(schema).to satisfy(t.graph, t.data_source, t.focus, t.shape, nil, expected, logger: t.logger, shapeExterns: t.shapeExterns)
+          schema = ShEx.parse(t.schema_source, validate: true, base_uri: t.base)
+          expect(schema).to satisfy(t.graph, t.data_source, t.focus, shape: t.shape, expected: expected, logger: t.logger, shapeExterns: t.shapeExterns)
+        end
+
+        # Run with rspec --tag shexr
+        # This tests the tests, not the implementation
+        if File.exist?(SHEXR)
+          let(:shexr) {@@shexr ||= ShEx.open(SHEXR)}
+          specify "#{t.name} validates against ShExR.shex", shexr: true do
+            graph = RDF::Graph.new {|g| g << JSON::LD::Reader.new(t.schema_json, base_uri: t.base)}
+            focus = graph.first_subject(predicate: RDF.type, object: RDF::URI("http://shex.io/ns/shex#Schema"))
+            expect(focus).to be_a(RDF::Resource)
+            t.logger.level = Logger::DEBUG
+            expect(shexr).to satisfy(graph, t.schema_json, focus, logger: t.logger)
+          end
         end
       end
     end

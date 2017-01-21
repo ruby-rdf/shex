@@ -22,7 +22,7 @@ module ShEx::Algebra
     # @raise  (see TripleExpression#matches)
     def matches(arcs_in, arcs_out, depth: 0)
       status "predicate #{predicate}", depth: depth
-      results, satisfied, unsatisfied = [], [], []
+      results, unmatched, satisfied, unsatisfied = [], [], [], []
       num_iters, max = 0, maximum
 
       statements = inverse? ? arcs_in : arcs_out
@@ -44,8 +44,10 @@ module ShEx::Algebra
           num_iters += 1
         rescue ShEx::NotSatisfied => e
           status "not satisfied: #{e.message}", depth: depth
+          unsatisfied << e.expression
           statement = statement.dup.extend(ReferencedStatement)
-          unmatched << statement.referenced = shape
+          statement.referenced = shape
+          unmatched << statement
         end
       end
 
@@ -59,10 +61,11 @@ module ShEx::Algebra
         op.satisfies?(results, matched: results, depth: depth + 1)
       end unless results.empty?
 
-      satisfy matched: results, satisfied: satisfied, depth: depth
+      satisfy matched:   results,   unmatched:   unmatched,
+              satisfied: satisfied, unsatisfied: unsatisfied, depth: depth
     rescue ShEx::NotMatched, ShEx::NotSatisfied => e
       not_matched e.message,
-                  matched:   results,   unmatched:   (statements - results),
+                  matched:   results,   unmatched:   unmatched,
                   satisfied: satisfied, unsatisfied: unsatisfied, depth: depth
     end
 

@@ -35,7 +35,7 @@ module ShEx::Algebra
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
     def satisfies_node_kind?(value, depth: 0)
-      kind = case operands.first
+      kind = case operands.detect {|o| o.is_a?(Symbol)}
       when :iri         then RDF::URI
       when :bnode       then RDF::Node
       when :literal     then RDF::Literal

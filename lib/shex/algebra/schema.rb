@@ -24,6 +24,15 @@ module ShEx::Algebra
       super
     end
 
+    # (see Operator#initialize)
+    def initialize(*operands)
+      super
+      each_descendant do |op|
+        # Set schema everywhere
+        op.schema = self
+      end
+    end
+
     ##
     # Match on schema. Finds appropriate shape for node, and matches that shape.
     #
@@ -40,6 +49,12 @@ module ShEx::Algebra
       @graph, @shapes_entered = graph, {}
       @external_schemas = shapeExterns
       focus = value(focus)
+
+      logger = options[:logger] || @options[:logger]
+      each_descendant do |op|
+        # Set logging everywhere
+        op.logger = logger
+      end
 
       # Initialize Extensions
       @extensions = {}
@@ -59,7 +74,7 @@ module ShEx::Algebra
       @map = (map || {}).inject({}) {|memo, (k,v)| memo.merge(value(k) => iri(v))}
 
       # First, evaluate semantic acts
-      semantic_actions.each do |op|
+      semantic_actions.all? do |op|
         op.satisfies?([], depth: depth + 1)
       end
 
@@ -106,14 +121,11 @@ module ShEx::Algebra
 
     ##
     # Shapes as a hash
-    # @return [Hash{RDF::Resource => Operator}]
+    # @return [Array<Operator>]
     def shapes
       @shapes ||= begin
-        shapes = operands.detect {|op| op.is_a?(Array) && op.first == :shapes}
-        shapes = shapes ? shapes.last : {}
-        shapes.inject({}) do |memo, (label, operand)|
-          memo.merge(label.to_s => operand)
-        end
+        shapes = Array(operands.detect {|op| op.is_a?(Array) && op.first == :shapes})
+        Array(shapes[1..-1])
       end
     end
 
@@ -125,8 +137,7 @@ module ShEx::Algebra
     # @yieldparam [Satisfiable] shape, or `nil` if shape already entered
     # @return [Satisfiable]
     def enter_shape(label, node, &block)
-      label = serialize_value(label)
-      shape = shapes[label]
+      shape = shapes.detect {|s| s.label == label}
       structure_error("No shape found for #{label}") unless shape
       @shapes_entered[label] ||= {}
       if @shapes_entered[label][node]
@@ -158,26 +169,6 @@ module ShEx::Algebra
     end
 
     ##
-    # Enumerate via depth-first recursive descent over operands, yielding each operator
-    # @yield operator
-    # @yieldparam [Object] operator
-    # @return [Enumerator]
-    def each_descendant(depth = 0, &block)
-      if block_given?
-        super(depth + 1, &block)
-        shapes.values.each do |op|
-          op.each_descendant(depth + 1, &block) if op.respond_to?(:each_descendant)
-
-          case block.arity
-          when 1 then block.call(op)
-          else block.call(depth, op)
-          end
-        end
-      end
-      enum_for(:each_descendant)
-    end
-
-    ##
     # Start action, if any
     def start
       @start ||= operands.detect {|op| op.is_a?(Start)}
@@ -188,7 +179,7 @@ module ShEx::Algebra
     # @return [SPARQL::Algebra::Expression] `self`
     # @raise  [ArgumentError] if the value is invalid
     def validate!
-      shapes.values.each {|op| op.validate! if op.respond_to?(:validate!)}
+      shapes.each {|op| op.validate! if op.respond_to?(:validate!)}
       super
     end
   end

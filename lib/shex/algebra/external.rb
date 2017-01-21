@@ -10,11 +10,10 @@ module ShEx::Algebra
       extern_shape = nil
 
       # Find the label for this external
-      label = schema.shapes.key(self)
       not_satisfied("Can't find label for this extern", depth: depth) unless label
 
       schema.external_schemas.each do |schema|
-        extern_shape ||= schema.shapes[label]
+        extern_shape ||= schema.shapes.detect {|s| s.label == label}
       end
 
       not_satisfied("External not configured for this shape", depth: depth) unless extern_shape

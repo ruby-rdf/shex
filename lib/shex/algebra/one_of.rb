@@ -37,9 +37,7 @@ module ShEx::Algebra
             status "matched #{matched_op.matched.to_sxp}", depth: depth
           rescue ShEx::NotMatched => e
             status "not matched: #{e.message}", depth: depth
-            op = op.dup
-            op.unmatched = (arcs_in + arcs_out).uniq - results
-            unsatisfied << op
+            unsatisfied << e.expression
             false
           end
         end

@@ -29,7 +29,6 @@ describe ShEx::Algebra do
     subject {described_class.new(ShEx::Algebra::NodeConstraint.new(:literal))}
     it {expect {described_class.new}.to raise_error(ArgumentError, /wrong number of arguments/)}
     it {expect {described_class.new(ShEx::Algebra::Shape.new, ShEx::Algebra::Shape.new)}.to raise_error(ArgumentError, /wrong number of arguments/)}
-    it {expect {described_class.new(nil)}.to raise_error(ArgumentError, /Found nil operand/)}
     it {expect {described_class.new(ShEx::Parser.new)}.to raise_error(TypeError, /invalid ShEx::Algebra::Operator/)}
     it {expect {subject}.not_to raise_error}
 

@@ -10,6 +10,9 @@ module ShEx
   autoload :Terminals,  'shex/terminals'
   autoload :VERSION,    'shex/version'
 
+  # Location of the ShEx JSON-LD context
+  CONTEXT = "https://shexspec.github.io/context.jsonld"
+
   # Extensions defined in this gem
   EXTENSIONS = %w{test}
 

@@ -47,8 +47,8 @@ module Fixtures
         action.is_a?(Hash) && action["data"] && base.join(action["data"])
       end
 
-      def turtle
-        attributes["turtle"] && base.join(attributes["turtle"])
+      def ttl
+        attributes["ttl"] && base.join(attributes["ttl"])
       end
 
       def shapeExterns
@@ -84,7 +84,7 @@ module Fixtures
       end
 
       def turtle_source
-        @turtle_source ||= RDF::Util::File.open_file(turtle, &:read)
+        @turtle_source ||= RDF::Util::File.open_file(ttl, &:read)
       end
 
       def structure_test?
