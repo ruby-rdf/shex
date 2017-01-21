@@ -52,8 +52,8 @@ module ShEx::Algebra
       end
 
       # Last, evaluate semantic acts
-      semantic_actions.all? do |op|
-        op.satisfies?(results, depth: depth + 1)
+      semantic_actions.each do |op|
+        op.satisfies?(matched: results, depth: depth + 1)
       end unless results.empty?
 
       satisfy matched: results, satisfied: satisfied, depth: depth

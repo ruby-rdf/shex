@@ -59,6 +59,49 @@ describe ShEx::Algebra do
     end
   end
 
+  describe ShEx::Algebra::SemAct do
+    subject {described_class.new(RDF::URI("http://example/TestAct"), "foo")}
+    let(:implementation) {double("implementation")}
+    let(:schema) {double("schema", extensions: {"http://example/TestAct" => implementation})}
+    before {allow(subject).to receive(:schema).and_return(schema)}
+
+    describe "#enter" do
+      it "enters implementation" do
+        expect(implementation).to receive(:enter)
+        subject.enter
+      end
+    end
+
+    describe "#exit" do
+      it "exits implementation" do
+        expect(implementation).to receive(:exit)
+        subject.exit
+      end
+    end
+
+    describe "#satisfies?" do
+      it "visits implementation with nothing matched" do
+        expect(implementation).to receive(:visit).with(code: "foo", expression: nil, depth: 0).and_return(true)
+        subject.satisfies?(nil, matched: [])
+      end
+
+      it "visits implementation and raises error with nothing matched" do
+        expect(implementation).to receive(:visit).with(code: "foo", expression: nil, depth: 0).and_return(false)
+        expect {subject.satisfies?(nil, matched: [])}.to raise_error(ShEx::NotSatisfied)
+      end
+
+      it "visits implementation all matched statements" do
+        expect(implementation).to receive(:visit).with(code: "foo", matched: anything, expression: nil, depth: 0).and_return(true, true)
+        subject.satisfies?(nil, matched: %w(a b))
+      end
+
+      it "visits implementation all matched statements and raises error" do
+        expect(implementation).to receive(:visit).with(code: "foo", matched: anything, expression: nil, depth: 0).and_return(true, false)
+        expect {subject.satisfies?(nil, matched: %w(a b))}.to raise_error(ShEx::NotSatisfied)
+      end
+    end
+  end
+
   subject {described_class.new(RDF.type)}
 
   describe ".from_shexj" do

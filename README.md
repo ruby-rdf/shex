@@ -142,6 +142,28 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
     schema.satisfies?("http://rubygems.org/gems/shex", graph, map)
     # => true
 
+## Extensions
+ShEx has an extension mechanism using [Semantic Actions](https://shexspec.github.io/spec/#semantic-actions). Extensions may be implemented in Ruby ShEx by sub-classing {ShEx::Extension} and implementing {ShEx::Extension#visit} and possibly {ShEx::Extension#initialize}, {ShEx::Extension#enter}, {ShEx::Extension#exit}, and {ShEx::Extension#close}. The `#visit` method will be called as part of the `#satisfies?` operation.
+
+    require 'shex'
+    class ShEx::Test < ShEx::Extension("http://shex.io/extensions/Test/")
+      # (see ShEx::Extension#initialize)
+      def initialize(schema: nil, logger: nil, depth: 0, **options)
+        ...
+      end
+
+      # (see ShEx::Extension#visit)
+      def visit(code: nil, matched: nil, expression: nil, depth: 0, **options)
+        ...
+      end
+    end
+
+The `#enter` method will be called on any {ShEx::Algebra::TripleExpression} that includes a {ShEx::Algebra::SemAct} referencing the extension, while the `#exit` method will be called on exit, even if not satisfied.
+
+The `#initialize` method is called when {ShEx::Algebra::Schema#execute} starts and `#close` called on exit, even if not satisfied.
+
+To make sure your extension is found, make sure to require it before the shape is executed.
+
 ## Documentation
 
 <http://rubydoc.info/github/ruby-rdf/shex>

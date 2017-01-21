@@ -15,32 +15,70 @@ module ShEx::Algebra
       super
     end
 
+    ##
+    # Called on entry
+    #
+    # @param [String] code
+    # @param [Array<RDF::Statement>] arcs_in available statements to be matched having `focus` as an object
+    # @param [Array<RDF::Statement>] arcs_out available statements to be matched having `focus` as a subject
+    # @param [Integer] depth for logging
+    # @param [Hash{Symbol => Object}] options
+    #   Other, operand-specific options
+    # @return [Boolean] Returning `false` results in {ShEx::NotSatisfied} exception
+    def enter(**options)
+      if implementation = schema.extensions[operands.first.to_s]
+        implementation.enter(code: operands[0], expression: parent, **options)
+      end
+    end
+
     #
     # The evaluation semActsSatisfied on a list of SemActs returns success or failure. The evaluation of an individual SemAct is implementation-dependent.
-    # @param [Array<RDF::Statement>] statements
+    #
+    # In addition to standard arguments `satsisfies` arguments, the current `matched` and `unmatched` statements may be passed. Additionally, all sub-classes of `Operator` have available `parent`, and `schema` accessors, which allows access to the operands of the parent, for example.
+    #
+    # @param [Object] focus (ignored)
+    # @param [Array<RDF::Statement>] matched matched statements
+    # @param [Array<RDF::Statement>] unmatched unmatched statements
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
-    def satisfies?(statements, depth: 0)
-      # FIXME: should have a registry
-      case operands.first.to_s
-      when "http://shex.io/extensions/Test/"
-        str = if md = /^ *(fail|print) *\( *(?:(\"(?:[^\\"]|\\")*\")|([spo])) *\) *$/.match(operands[1].to_s)
-          md[2] || case md[3]
-          when 's' then statements.first.subject
-          when 'p' then statements.first.predicate
-          when 'o' then statements.first.object
-          else          statements.first.to_sxp
-          end.to_s
-        else
-          statements.empty? ? 'no statement' : statements.first.to_sxp
+    def satisfies?(focus, matched: [], unmatched: [], depth: 0)
+      if implementation = schema.extensions[operands.first.to_s]
+        if matched.empty?
+          implementation.visit(code: operands[1],
+                         expression: parent,
+                              depth: depth) ||
+            not_satisfied("SemAct failed", unmatched: unmatched)
         end
-        $stdout.puts str
-        status str
-        not_satisfied "fail" if md && md[1] == 'fail'
-        true
+        matched.all? do |statement|
+          implementation.visit(code: operands[1],
+                            matched: statement,
+                         expression: parent,
+                              depth: depth)
+        end || not_satisfied("SemAct failed", matched: matched, unmatched: unmatched)
       else
         status("unknown SemAct name #{operands.first}", depth: depth) {"expression: #{self.to_sxp}"}
         false
+      end
+    end
+
+    ##
+    # Called on exit from containing {ShEx::TripleExpression}
+    #
+    # @param [String] code
+    # @param [Array<RDF::Statement>] matched statements matched by this expression
+    # @param [Array<RDF::Statement>] unmatched statements considered, but not matched by this expression
+    # @param [ShEx::Algebra::TripleExpression] expression containing this semantic act
+    # @param [Integer] depth for logging
+    # @param [Hash{Symbol => Object}] options
+    #   Other, operand-specific options
+    # @return [void]
+    def exit(code: nil, matched: [], unmatched: [], depth: 0, **options)
+      if implementation = schema.extensions[operands.first.to_s]
+        implementation.exit(code: operands[1],
+                         matched: matched,
+                       unmatched: unmatched,
+                     expresssion: parent,
+                           depth: depth)
       end
     end
 
