@@ -46,6 +46,7 @@ describe ShEx do
     let(:doap_shape) {RDF::URI("TestShape")}
     let(:doap_graph) {RDF::Graph.load(doap_ttl)}
     let(:doap_sxp) {%{(schema
+     (prefix (("doap" <http://usefulinc.com/ns/doap#>) ("dc" <http://purl.org/dc/terms/>)))
      (shapes
       (shape
        (label <TestShape>)
@@ -76,7 +77,8 @@ describe ShEx do
     end
 
     it "parses doap.json" do
-      expect(File.read(doap_json)).to generate(doap_sxp, format: :shexj)
+      sxp = doap_sxp.split("\n").reject {|l| l =~ /\(prefix/}.join("\n")
+      expect(File.read(doap_json)).to generate(sxp, format: :shexj)
     end
 
     it "validates doap.ttl from shexc" do

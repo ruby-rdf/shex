@@ -156,7 +156,10 @@ module ShEx
     production(:shexDoc) do |input, data, callback|
       data[:start] = data[:start] if data[:start]
 
-      expressions = Array(data[:codeDecl])
+      expressions = []
+      expressions << [:base, data[:baseDecl]] if data[:baseDecl]
+      expressions << [:prefix, data[:prefixDecl]] if data[:prefixDecl]
+      expressions += Array(data[:codeDecl])
       expressions << Algebra::Start.new(data[:start]) if data[:start]
       expressions << data[:shapes].unshift(:shapes) if data[:shapes]
 
@@ -168,13 +171,14 @@ module ShEx
 
     # [3]     baseDecl              ::= "BASE" IRIREF
     production(:baseDecl) do |input, data, callback|
-      self.base_uri = iri(data[:iri])
+      input[:baseDecl] = self.base_uri = iri(data[:iri])
     end
 
     # [4]     prefixDecl            ::= "PREFIX" PNAME_NS IRIREF
     production(:prefixDecl) do |input, data, callback|
       pfx = data[:prefix]
       self.prefix(pfx, data[:iri])
+      (input[:prefixDecl] ||= []) << [pfx.to_s, data[:iri]]
     end
 
     # [5]     notStartAction        ::= start | shapeExprDecl

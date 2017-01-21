@@ -65,7 +65,8 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
-         (shapes
+          (prefix (("ex" <http://schema.example/>)))
+          (shapes
            (shape
              (label <http://schema.example/IssueShape>)
              (tripleConstraint <http://schema.example/state> (nodeConstraint iri)))))}
@@ -95,6 +96,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes (shape
           (label <http://schema.example/IssueShape>)
           (tripleConstraint <http://schema.example/submittedOn>
@@ -121,6 +123,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)) )
          (shapes
           (shape
            (label <http://schema.example/IssueShape>)
@@ -147,6 +150,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
            (label <http://schema.example/IssueShape>)
@@ -171,6 +175,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
            (label <http://schema.example/IssueShape>)
@@ -201,6 +206,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
            (label <http://schema.example/NoActionIssueShape>)
@@ -249,6 +255,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/0.1/>)))
          (shapes
           (shape
            (label <http://schema.example/EmployeeShape>)
@@ -295,6 +302,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/0.1/>)))
          (shapes
           (shape
            (label <http://schema.example/EmployeeShape>)
@@ -343,6 +351,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/0.1/>)))
          (shapes
           (shape
            (label <http://schema.example/PersonShape>)
@@ -378,6 +387,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/#>)))
          (shapes
           (not
            (label <http://schema.example/#S>)
@@ -414,6 +424,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://a.example/>) ("Test" <http://shex.io/extensions/Test/>)))
          (shapes
           (shape
            (label <http://a.example/S1>)
@@ -454,6 +465,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("rdfs" <http://www.w3.org/2000/01/rdf-schema#>)))
          (shapes
           (shape
            (label <http://schema.example/IssueShape>)
@@ -480,6 +492,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes
           (nodeConstraint
            (label <http://schema.example/IntConstraint>)
@@ -503,6 +516,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
            (label <http://schema.example/UserShape>)
@@ -533,6 +547,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
            (shape
             (label <http://schema.example/UserShape>)
@@ -586,6 +601,7 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/0.1/>)))
          (shapes
           (shape
            (label <http://schema.example/UserShape>)
@@ -630,6 +646,7 @@ describe ShEx::Parser do
                 "values": [ "http://schema.example/testingRole" ] } } }
           ] }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape (label <http://schema.example/IssueShape>)
            (tripleConstraint <http://schema.example/reproducedBy>
@@ -654,6 +671,7 @@ describe ShEx::Parser do
               "min": 0, "max": "*"
             } } ] }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes (shape
           (label <http://schema.example/IssueShape>)
           (tripleConstraint <http://schema.example/related>
@@ -697,6 +715,7 @@ describe ShEx::Parser do
                     ] }, "min": 1, "max": "*" }
               ] } } ] }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
            (label <http://schema.example/TestResultsShape>)
@@ -761,6 +780,7 @@ describe ShEx::Parser do
                 "values": [ "http://schema.example/ProgrammingDepartment" ] } } }
           ] }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
            (label <http://schema.example/IssueShape>)
@@ -821,6 +841,7 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>) ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)) )
          (shapes
           (shape
            (label <IssueShape>)
@@ -906,6 +927,7 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes
           (shape (label <IssueShape>) closed
            (eachOf
@@ -951,6 +973,7 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>) ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)) )
          (shapes (shape (label <UserShape>)
           (extra <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
                  <http://xmlns.com/foaf/mbox>)
@@ -983,6 +1006,7 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes
           (shape
            (label <SomeShape>)
@@ -1022,6 +1046,7 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/>)))
          (shapes
           (and
            (label <EmployeeShape>)
@@ -1059,6 +1084,7 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes
           (shape
            (label <SomeShape>)
@@ -1084,7 +1110,9 @@ describe ShEx::Parser do
 
       if params[:shexj]
         it "#{name} (shexj)" do
-          expect(params[:shexj]).to generate(params[:sxp].gsub(/^        /m, ''), logger: RDF::Spec.logger, format: :shexj)
+          # Get rid of prefix & base
+          sxp_source = params[:sxp].dup.gsub(/^        /m, '').split("\n").reject {|l| l =~ /\((prefix|base)/}.join("\n")
+          expect(params[:shexj]).to generate(sxp_source, logger: RDF::Spec.logger, format: :shexj)
         end
 
         it "#{name} generates shexj from shexc" do
@@ -1129,11 +1157,12 @@ describe ShEx::Parser do
           ex:S NOT (IRI OR NOT @ex:S)
         ),
         result: %{(schema
-           (shapes
-             (not 
-               (label <http://schema.example/S>)
-               (or (nodeConstraint iri)
-                   (not (shapeRef <http://schema.example/S>)))) ))}
+          (prefix (("ex" <http://schema.example/>)))
+          (shapes
+           (not 
+             (label <http://schema.example/S>)
+             (or (nodeConstraint iri)
+                 (not (shapeRef <http://schema.example/S>)))) ))}
       },
       "This self-reference on a predicate designated as extra violates the negation requirement" => {
         input: %(PREFIX ex: <http://schema.example/> ex:S EXTRA ex:p {ex:p @ex:S}),
