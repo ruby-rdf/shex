@@ -66,7 +66,7 @@ module ShEx::Algebra
         end
       end
 
-      # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same label
+      # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same id
       graph_focus = graph.enum_term.detect {|t| t.node? && t.id == focus.id} if focus.is_a?(RDF::Node)
       graph_focus ||= focus
 
@@ -89,10 +89,10 @@ module ShEx::Algebra
       satisfied_shapes = {}
       satisfied_schema.operands << [:shapes, satisfied_shapes] unless shapes.empty?
 
-      # Match against all shapes associated with the labels for focus
-      Array(@map[focus]).each do |label|
-        enter_shape(label, focus) do |shape|
-          satisfied_shapes[label] = shape.satisfies?(graph_focus, depth: depth + 1)
+      # Match against all shapes associated with the ids for focus
+      Array(@map[focus]).each do |id|
+        enter_shape(id, focus) do |shape|
+          satisfied_shapes[id] = shape.satisfies?(graph_focus, depth: depth + 1)
         end
       end
       status "schema satisfied", depth: depth
@@ -131,23 +131,23 @@ module ShEx::Algebra
 
     ##
     # Indicate that a shape has been entered with a specific focus node. Any future attempt to enter the same shape with the same node raises an exception.
-    # @param [RDF::Resource] label
+    # @param [RDF::Resource] id
     # @param [RDF::Resource] node
     # @yield :shape
     # @yieldparam [Satisfiable] shape, or `nil` if shape already entered
     # @return [Satisfiable]
-    def enter_shape(label, node, &block)
-      shape = shapes.detect {|s| s.label == label}
-      structure_error("No shape found for #{label}") unless shape
-      @shapes_entered[label] ||= {}
-      if @shapes_entered[label][node]
+    def enter_shape(id, node, &block)
+      shape = shapes.detect {|s| s.id == id}
+      structure_error("No shape found for #{id}") unless shape
+      @shapes_entered[id] ||= {}
+      if @shapes_entered[id][node]
         block.call(false)
       else
-        @shapes_entered[label][node] = self
+        @shapes_entered[id][node] = self
         begin
           block.call(shape)
         ensure
-          @shapes_entered[label].delete(node)
+          @shapes_entered[id].delete(node)
         end
       end
     end

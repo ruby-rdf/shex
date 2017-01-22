@@ -465,14 +465,16 @@ describe ShEx::Algebra do
           expect(schema).to satisfy(t.graph, t.data_source, t.focus, shape: t.shape, expected: expected, logger: t.logger, shapeExterns: t.shapeExterns)
         end
 
-        specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?} (ShExJ)", skip: "Validating ShExJ" do
+        specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?} (ShExJ)" do
           case t.name
           when 'nPlus1', 'PTstar-greedy-fail'
             pending "greedy"
           end
-          t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
+          t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}", "json: #{t.schema_json}"]
+          t.debug << "shexc(1): #{SXP::Generator.string(ShEx.parse(t.schema_source).to_sxp_bin)}"
           expected = t.positive_test? || ShEx::NotSatisfied
           schema = ShEx.parse(t.schema_json, format: :shexj, validate: true, base_uri: t.base)
+          t.debug << "shexc(2): #{SXP::Generator.string(schema.to_sxp_bin)}"
           expect(schema).to satisfy(t.graph, t.data_source, t.focus, shape: t.shape, expected: expected, logger: t.logger, shapeExterns: t.shapeExterns)
         end
 

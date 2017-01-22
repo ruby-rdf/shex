@@ -40,7 +40,7 @@ module ShEx::Algebra
     #
     # @return [Operand]
     def referenced_shape
-      @referenced_shape ||= schema.shapes.detect {|s| s.label == operands.first}
+      @referenced_shape ||= schema.shapes.detect {|s| s.id == operands.first}
     end
 
     ##
@@ -61,7 +61,7 @@ module ShEx::Algebra
     # @return [Array]
     # @see    https://en.wikipedia.org/wiki/S-expression
     def to_sxp_bin
-      ([:inclusion, ([:label, @label] if @label)].compact + operands).to_sxp_bin
+      ([:inclusion, ([:id, @id] if @id)].compact + operands).to_sxp_bin
     end
   end
 end

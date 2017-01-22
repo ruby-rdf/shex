@@ -32,7 +32,7 @@ module ShEx::Algebra
     #     any additional options
     #   @option options [Boolean] :memoize (false)
     #     whether to memoize results for particular operands
-    #   @option options [RDF::Resource] :label
+    #   @option options [RDF::Resource] :id
     #     Identifier of the operator
     # @raise  [TypeError] if any operand is invalid
     def initialize(*operands)
@@ -55,7 +55,7 @@ module ShEx::Algebra
         end
       end
 
-      @label = options[:label]
+      @id = options[:id]
     end
 
     ##
@@ -185,7 +185,7 @@ module ShEx::Algebra
     end
 
     def status(message, **opts, &block)
-      log_debug(self.class.const_get(:NAME).to_s + (@label ? "(#{@label})" : ""), message, **opts, &block)
+      log_debug(self.class.const_get(:NAME).to_s + (@id ? "(#{@id})" : ""), message, **opts, &block)
       true
     end
 
@@ -196,9 +196,9 @@ module ShEx::Algebra
     attr_reader :operands
 
     ##
-    # The label (or subject) of this operand
+    # The id (or subject) of this operand
     # @return [RDF::Resource]
-    attr_accessor :label
+    attr_accessor :id
 
     ##
     # Logging support (reader is in RDF::Util::Logger)
@@ -222,7 +222,7 @@ module ShEx::Algebra
     # @see    https://en.wikipedia.org/wiki/S-expression
     def to_sxp_bin
       [self.class.const_get(:NAME)] +
-      (label ? [[:label, label]] : []) +
+      (id ? [[:id, id]] : []) +
       (operands || []).map(&:to_sxp_bin)
     end
 
@@ -251,12 +251,12 @@ module ShEx::Algebra
     def self.from_shexj(operator, options = {})
       options[:context] ||= JSON::LD::Context.parse(ShEx::CONTEXT)
       operands = []
-      label = nil
+      id = nil
 
       operator.each do |k, v|
         case k
         when /length|pattern|clusive/          then operands << [k.to_sym, v]
-        when 'label'                           then label = iri(v, options)
+        when 'id'                              then id = iri(v, options)
         when 'min', 'max', 'inverse', 'closed' then operands << [k.to_sym, v]
         when 'nodeKind'                        then operands << v.to_sym
         when 'object'                          then operands << value(v, options)
@@ -285,11 +285,34 @@ module ShEx::Algebra
               ShEx::Algebra.from_shexj(op, options) :
               value(op, options)
           end.unshift(:exclusions)
-        when 'min', 'max', 'inverse', 'closed', 'valueExpr', 'semActs',
-             'shapeExpr', 'shapeExprs', 'startActs', 'expression',
-             'expressions', 'annotations'
+        when 'min', 'max', 'inverse', 'closed', 'semActs',
+             'startActs', 'annotations'
           v = [v] unless v.is_a?(Array)
           operands += v.map {|op| ShEx::Algebra.from_shexj(op, options)}
+        when 'expression', 'expressions'
+          v = [v] unless v.is_a?(Array)
+          operands += v.map do |op|
+            op = case op
+            when String
+              # It's a URI reference to a Shape
+              {"type" => "Inclusion", "include" => op}
+            when Hash
+              op['id'] ? {"type" => "Inclusion", "include" => op[id]} : op
+            end
+            ShEx::Algebra.from_shexj(op, options) 
+          end
+        when 'shapeExpr', 'shapeExprs', 'valueExpr'
+          v = [v] unless v.is_a?(Array)
+          operands += v.map do |op|
+            op = case op
+            when String
+              # It's a URI reference to a Shape
+              {"type" => "ShapeRef", "reference" => op}
+            when Hash
+              op['id'] ? {"type" => "ShapeRef", "reference" => op[id]} : op
+            end
+            ShEx::Algebra.from_shexj(op, options) 
+          end
         when 'code'
           operands << v
         when 'values'
@@ -300,7 +323,7 @@ module ShEx::Algebra
         end
       end
 
-      new(*operands, label: label)
+      new(*operands, id: id)
     end
 
     def json_type
@@ -315,10 +338,9 @@ module ShEx::Algebra
     # Create a hash version of the operator, suitable for turning into JSON.
     # @return [Hash]
     def to_h
-      obj = json_type == 'Schema' ?
-        {'@context' => ShEx::CONTEXT, 'type' => json_type} : 
-        {'type' => json_type}
-      obj['label'] = label.to_s if label
+      obj = json_type == 'Schema' ? {'@context' => ShEx::CONTEXT} :  {}
+      obj['id'] = id.to_s if id
+      obj['type'] = json_type
       operands.each do |op|
         case op
         when Array
@@ -349,7 +371,11 @@ module ShEx::Algebra
         when :wildcard  then obj['stem'] = {'type' => 'Wildcard'}
         when Annotation then (obj['annotations'] ||= []) << op.to_h
         when SemAct     then (obj[is_a?(Schema) ? 'startActs' : 'semActs'] ||= []) << op.to_h
-        when Start      then obj['start'] = op.operands.first.to_h
+        when Start
+         obj['start'] =  case op.operands.first
+          when ShapeRef then op.operands.first.operand.to_s
+          else               op.operands.first.to_h
+          end
         when RDF::Value
           case self
           when TripleConstraint then obj['predicate'] = op.to_s
@@ -368,12 +394,19 @@ module ShEx::Algebra
           else
             raise "How to serialize Symbol #{op.inspect} to json for #{self}"
           end
-        when TripleConstraint, EachOf, OneOf, Inclusion
+        when TripleConstraint, EachOf, OneOf
           case self
           when EachOf, OneOf
             (obj['expressions'] ||= []) << op.to_h
           else
             obj['expression'] = op.to_h
+          end
+        when Inclusion
+          case self
+          when EachOf, OneOf
+            (obj['expressions'] ||= []) << op.operand.to_s
+          else
+            obj['expression'] = op.operand.to_s
           end
         when NodeConstraint
           case self
@@ -382,7 +415,7 @@ module ShEx::Algebra
           else
             obj['valueExpr'] = op.to_h
           end
-        when And, Or, Shape, Not, ShapeRef
+        when And, Or, Shape, Not
           case self
           when And, Or
             (obj['shapeExprs'] ||= []) << op.to_h
@@ -390,6 +423,15 @@ module ShEx::Algebra
             obj['valueExpr'] = op.to_h
           else
             obj['shapeExpr'] = op.to_h
+          end
+        when ShapeRef
+          case self
+          when And, Or
+            (obj['shapeExprs'] ||= []) << op.operand.to_s
+          when TripleConstraint
+            obj['valueExpr'] = op.operand.to_s
+          else
+            obj['shapeExpr'] = op.operand.to_s
           end
         when Value
           obj['values'] ||= []
@@ -602,7 +644,7 @@ module ShEx::Algebra
   protected
     def dup
       operands = @operands.map {|o| o.dup rescue o}
-      self.class.new(*operands, label: @label)
+      self.class.new(*operands, id: @id)
     end
 
     ##

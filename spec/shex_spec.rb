@@ -49,7 +49,7 @@ describe ShEx do
      (prefix (("doap" <http://usefulinc.com/ns/doap#>) ("dc" <http://purl.org/dc/terms/>)))
      (shapes
       (shape
-       (label <TestShape>)
+       (id <TestShape>)
        (extra a)
        (eachOf
         (tripleConstraint a (nodeConstraint (value <http://usefulinc.com/ns/doap#Project>)))

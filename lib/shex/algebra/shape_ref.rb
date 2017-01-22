@@ -45,11 +45,11 @@ module ShEx::Algebra
     #
     # @return [Shape]
     def referenced_shape
-      @referenced_shape ||= schema.shapes.detect {|s| s.label == operands.first}
+      @referenced_shape ||= schema.shapes.detect {|s| s.id == operands.first}
     end
 
     ##
-    # A ShapeRef is valid if it's ancestor schema has any shape with a label
+    # A ShapeRef is valid if it's ancestor schema has any shape with a id
     # the same as it's reference.
     # A ref cannot reference itself (via whatever path) without going through a TripleConstraint.
     # Even when going through TripleConstraints, there can't be a negative reference.
@@ -65,7 +65,7 @@ module ShEx::Algebra
     # @return [Array]
     # @see    https://en.wikipedia.org/wiki/S-expression
     def to_sxp_bin
-      ([:shapeRef, ([:label, @label] if @label)].compact + operands).to_sxp_bin
+      ([:shapeRef, ([:id, @id] if @id)].compact + operands).to_sxp_bin
     end
   end
 end

@@ -192,14 +192,14 @@ module ShEx
 
     # [9]     shapeExprDecl         ::= shapeLabel (shapeExpression|"EXTERNAL")
     production(:shapeExprDecl) do |input, data, callback|
-      label = Array(data[:shapeLabel]).first
+      id = Array(data[:shapeLabel]).first
       expression = case data[:shapeExpression]
       when Algebra::NodeConstraint, Algebra::Or, Algebra::And, Algebra::Not, Algebra::ShapeRef, Algebra::Shape
         data[:shapeExpression]
       else
         data[:external] ? Algebra::External.new() : Algebra::Shape.new()
       end
-      expression.label = label
+      expression.id = id
 
       (input[:shapes] ||= []) << expression
     end
@@ -427,7 +427,7 @@ module ShEx
     # [40]    unaryTripleExpr            ::= productionLabel? (tripleConstraint | bracketedTripleExpr) | include
     production(:unaryTripleExpr) do |input, data, callback|
       expression = data[:tripleExpression]
-      expression.label = data[:productionLabel] if expression && data[:productionLabel]
+      expression.id = data[:productionLabel] if expression && data[:productionLabel]
 
       (input[:tripleExpression] ||= []) << expression if expression
     end
