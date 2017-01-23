@@ -43,12 +43,12 @@ module ShEx::Algebra
     #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
     # @return [Operand] Returns operand graph annotated with satisfied and unsatisfied operations.
     # @param [Hash{Symbol => Object}] options
-    # @option options [String] :base_uri
+    # @option options [String] :base_uri (for resolving focus)
     # @raise [ShEx::NotSatisfied] along with operand graph described for return
     def execute(focus, graph, map, shapeExterns: [], depth: 0, **options)
       @graph, @shapes_entered = graph, {}
       @external_schemas = shapeExterns
-      focus = value(focus)
+      focus = value(focus, options)
 
       logger = options[:logger] || @options[:logger]
       each_descendant do |op|

@@ -1200,6 +1200,7 @@ describe ShEx::Parser do
             if t.positive_test?
               begin
                 expression = ShEx.parse(t.schema_source, validate: validate, logger: RDF::Spec.logger)
+
                 hash = expression.to_h
                 shexj = JSON.parse t.schema_json
                 expect(hash).to produce(shexj, logger: RDF::Spec.logger)

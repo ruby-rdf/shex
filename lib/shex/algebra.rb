@@ -57,6 +57,7 @@ module ShEx
       when 'SemAct'           then SemAct
       when 'Shape'            then Shape
       when 'ShapeAnd'         then And
+      when 'ShapeExternal'    then External
       when 'ShapeNot'         then Not
       when 'ShapeOr'          then Or
       when 'ShapeRef'         then ShapeRef

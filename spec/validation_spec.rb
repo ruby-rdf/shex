@@ -454,28 +454,51 @@ describe ShEx::Algebra do
       m.entries.each do |t|
         specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?}" do
           case t.name
-          when 'nPlus1', 'PTstar-greedy-fail'
+          when 'PTstar-greedy-fail', 'nPlus1-greedy_fail'
             pending "greedy"
           when '1val1DECIMAL_00'
             pending "Turtle reader ensures numeric literals start with a sign or digit, not '.'."
           end
-          t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
+          t.debug = [
+            "info: #{t.inspect}",
+            "schema: #{t.schema_source}",
+            "data: #{t.data_source}",
+            "json: #{t.schema_json}",
+            "shexc: #{SXP::Generator.string(ShEx.parse(t.schema_source).to_sxp_bin)}"
+          ]
           expected = t.positive_test? || ShEx::NotSatisfied
           schema = ShEx.parse(t.schema_source, validate: true, base_uri: t.base)
-          expect(schema).to satisfy(t.graph, t.data_source, t.focus, shape: t.shape, expected: expected, logger: t.logger, shapeExterns: t.shapeExterns)
+          expect(schema).to satisfy(t.graph, t.data_source, t.focus,
+                                    shape: t.shape,
+                                    expected: expected,
+                                    logger: t.logger,
+                                    base_uri: t.base,
+                                    shapeExterns: t.shapeExterns)
         end
 
         specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?} (ShExJ)" do
           case t.name
           when 'nPlus1', 'PTstar-greedy-fail'
             pending "greedy"
+          when '1val1DECIMAL_00'
+            pending "Turtle reader ensures numeric literals start with a sign or digit, not '.'."
           end
-          t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}", "json: #{t.schema_json}"]
-          t.debug << "shexc(1): #{SXP::Generator.string(ShEx.parse(t.schema_source).to_sxp_bin)}"
+          t.debug = [
+            "info: #{t.inspect}",
+            "schema: #{t.schema_source}",
+            "data: #{t.data_source}",
+            "json: #{t.schema_json}",
+            "shexc: #{SXP::Generator.string(ShEx.parse(t.schema_source).to_sxp_bin)}"
+          ]
           expected = t.positive_test? || ShEx::NotSatisfied
           schema = ShEx.parse(t.schema_json, format: :shexj, validate: true, base_uri: t.base)
           t.debug << "shexc(2): #{SXP::Generator.string(schema.to_sxp_bin)}"
-          expect(schema).to satisfy(t.graph, t.data_source, t.focus, shape: t.shape, expected: expected, logger: t.logger, shapeExterns: t.shapeExterns)
+          expect(schema).to satisfy(t.graph, t.data_source, t.focus,
+                                    shape: t.shape,
+                                    expected: expected,
+                                    logger: t.logger,
+                                    base_uri: t.base,
+                                    shapeExterns: t.shapeExterns)
         end
 
         # Run with rspec --tag shexr

@@ -255,15 +255,24 @@ module ShEx::Algebra
 
       operator.each do |k, v|
         case k
-        when /length|pattern|clusive/          then operands << [k.to_sym, v]
+        when /length|pattern|clusive|digits/   then operands << [k.to_sym, RDF::Literal(v)]
         when 'id'                              then id = iri(v, options)
-        when 'min', 'max', 'inverse', 'closed' then operands << [k.to_sym, v]
+        when 'min', 'max'                      then operands << [k.to_sym, v]
+        when 'inverse', 'closed'               then operands << k.to_sym
         when 'nodeKind'                        then operands << v.to_sym
         when 'object'                          then operands << value(v, options)
-        when 'start'                           then operands << Start.new(ShEx::Algebra.from_shexj(v, options))
+        when 'start'
+          v = case v
+          when String
+            # It's a URI reference to a Shape
+            {"type" => "ShapeRef", "reference" => v}
+          when Hash
+            v['id'] ? {"type" => "ShapeRef", "reference" => v[id]} : v
+          end
+          operands << Start.new(ShEx::Algebra.from_shexj(v, options))
         when '@context'                        then
           options[:context] = JSON::LD::Context.parse(v)
-          options[:base_uri] = options[:context].base
+          options[:base_uri] ||= options[:context].base
         when 'shapes'
           operands << case v
           when Array
@@ -285,8 +294,7 @@ module ShEx::Algebra
               ShEx::Algebra.from_shexj(op, options) :
               value(op, options)
           end.unshift(:exclusions)
-        when 'min', 'max', 'inverse', 'closed', 'semActs',
-             'startActs', 'annotations'
+        when 'semActs', 'startActs', 'annotations'
           v = [v] unless v.is_a?(Array)
           operands += v.map {|op| ShEx::Algebra.from_shexj(op, options)}
         when 'expression', 'expressions'
@@ -323,7 +331,7 @@ module ShEx::Algebra
         end
       end
 
-      new(*operands, id: id)
+      new(*operands, options.merge(id: id))
     end
 
     def json_type
@@ -504,11 +512,7 @@ module ShEx::Algebra
           RDF::URI(value)
         end
       else
-        if options[:context]
-          options[:context].expand_iri(value, document: true)
-        elsif base_uri
-          base_uri.join(value)
-        elsif base_uri
+        if base_uri
           base_uri.join(value)
         else
           RDF::URI(value)
@@ -568,14 +572,17 @@ module ShEx::Algebra
     #
     # @return [String]
     def inspect
-      sprintf("#<%s:%#0x(%s)>", self.class.name, __id__, operands.to_sse.gsub(/\s+/m, ' '))
+      sprintf("#<%s:%#0x(%s)>", self.class.name, __id__, operands.inspect)
     end
 
     ##
+    # Comparison does not consider operand order
     # @param  [Statement] other
     # @return [Boolean]
     def eql?(other)
-      other.class == self.class && other.operands == self.operands
+      other.class == self.class &&
+        other.id == self.id &&
+        other.operands.sort_by(&:to_s) == self.operands.sort_by(&:to_s)
     end
     alias_method :==, :eql?
 
