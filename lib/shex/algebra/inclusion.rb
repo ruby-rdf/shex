@@ -26,8 +26,8 @@ module ShEx::Algebra
     # @return (see TripleExpression#matches)
     # @raise  (see TripleExpression#matches)
     def matches(arcs_in, arcs_out, depth: 0)
-      status "referenced_shape: #{operands.first}"
-      expression = referenced_shape.expression
+      status "reference: #{operands.first}"
+      expression = referenced_expression
       max = maximum
       matched_expression = expression.matches(arcs_in, arcs_out, depth: depth + 1)
       satisfy matched: matched_expression.matched, depth: depth
@@ -39,8 +39,12 @@ module ShEx::Algebra
     # Returns the referenced shape
     #
     # @return [Operand]
-    def referenced_shape
-      @referenced_shape ||= schema.shapes.detect {|s| s.id == operands.first}
+    def referenced_expression
+      @referenced_expression ||= begin
+        ref = schema.find(operands.first)
+        ref = ref.expression if ref.is_a?(Satisfiable) && ref.respond_to?(:expression)
+        ref
+      end
     end
 
     ##
@@ -49,9 +53,9 @@ module ShEx::Algebra
     #
     # An Inclusion object's include property must appear in the schema's shapes map and the corresponding triple expression must be a Shape with a tripleExpr. The function dereference(include) returns the shape's tripleExpr.
     def validate!
-      structure_error("Missing included shape: #{operands.first}") if referenced_shape.nil?
-      structure_error("Self included shape: #{operands.first}") if referenced_shape == first_ancestor(Shape)
-      structure_error("Referenced shape must be a Shape: #{operands.first}") unless referenced_shape.is_a?(Shape)
+      structure_error("Missing included shape: #{operands.first}") if referenced_expression.nil?
+      structure_error("Self included expression: #{operands.first}") if referenced_expression == self
+      structure_error("Reference must be an Expression: #{operands.first}") unless referenced_expression.is_a?(TripleExpression)
       super
     end
 

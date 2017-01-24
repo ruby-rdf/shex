@@ -300,25 +300,15 @@ module ShEx::Algebra
         when 'expression', 'expressions'
           v = [v] unless v.is_a?(Array)
           operands += v.map do |op|
-            op = case op
-            when String
-              # It's a URI reference to a Shape
-              {"type" => "Inclusion", "include" => op}
-            when Hash
-              op['id'] ? {"type" => "Inclusion", "include" => op[id]} : op
-            end
+            # It's a URI reference to a Shape
+            op = {"type" => "Inclusion", "include" => op} if op.is_a?(String)
             ShEx::Algebra.from_shexj(op, options) 
           end
         when 'shapeExpr', 'shapeExprs', 'valueExpr'
           v = [v] unless v.is_a?(Array)
           operands += v.map do |op|
-            op = case op
-            when String
-              # It's a URI reference to a Shape
-              {"type" => "ShapeRef", "reference" => op}
-            when Hash
-              op['id'] ? {"type" => "ShapeRef", "reference" => op[id]} : op
-            end
+            # It's a URI reference to a Shape
+            op = {"type" => "ShapeRef", "reference" => op} if op.is_a?(String)
             ShEx::Algebra.from_shexj(op, options) 
           end
         when 'code'
@@ -572,7 +562,7 @@ module ShEx::Algebra
     #
     # @return [String]
     def inspect
-      sprintf("#<%s:%#0x(%s)>", self.class.name, __id__, operands.inspect)
+      sprintf("#<%s:%#0x(%s%s)>", self.class.name, __id__, ("id: #{id} " if id), operands.inspect)
     end
 
     ##
@@ -592,22 +582,19 @@ module ShEx::Algebra
     # @yield operator
     # @yieldparam [Object] operator
     # @return [Enumerator]
-    def each_descendant(depth = 0, &block)
+    def each_descendant(&block)
       if block_given?
 
-        case block.arity
-        when 1 then block.call(self)
-        else block.call(depth, self)
-        end
+        block.call(self)
 
         operands.each do |operand|
           case operand
           when Array
             operand.each do |op|
-              op.each_descendant(depth + 1, &block) if op.respond_to?(:each_descendant)
+              op.each_descendant(&block) if op.respond_to?(:each_descendant)
             end
           else
-            operand.each_descendant(depth + 1, &block) if operand.respond_to?(:each_descendant)
+            operand.each_descendant(&block) if operand.respond_to?(:each_descendant)
           end
         end
       end
@@ -652,13 +639,6 @@ module ShEx::Algebra
     def dup
       operands = @operands.map {|o| o.dup rescue o}
       self.class.new(*operands, id: @id)
-    end
-
-    ##
-    # Implement `to_hash` only if accessed; otherwise, it becomes an _Implicit Accessor_ which will cause problems with splat arguments, which causes the last to be turned into a hash for extracting keyword aruments.
-    def method_missing(method, *args)
-      return to_h(*args) if method == :hash
-      super
     end
 
     ##

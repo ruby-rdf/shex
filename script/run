@@ -88,7 +88,9 @@ opts.each do |opt, arg|
   when '--execute'      then options[:shex] = arg
   when '--focus'        then options[:focus] = arg
   when '--shape'        then options[:shape] = arg
-  when '--shex'         then options[:shex] = RDF::Util::File.open_file(arg).read
+  when '--shex'
+    options[:shex] = RDF::Util::File.open_file(arg).read
+    options[:format] = :shexj if arg.end_with?(".json")
   when '--progress'     then options[:debug] ||= 2
   when '--to-json'      then options[:to_json] = true
   when '--to-sxp'       then options[:to_sxp] = true

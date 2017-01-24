@@ -175,6 +175,14 @@ module ShEx::Algebra
     end
 
     ##
+    # Find a ShapeExpression or TripleExpression by identifier
+    # @param [#to_s] id
+    # @return [TripleExpression, ShapeExpression]
+    def find(id)
+      each_descendant.detect {|op| op.id == id}
+    end
+
+    ##
     # Validate shapes, in addition to other operands
     # @return [SPARQL::Algebra::Expression] `self`
     # @raise  [ArgumentError] if the value is invalid
