@@ -1,7 +1,7 @@
 module ShEx::Algebra
   ##
   class External < Operator
-    include Satisfiable
+    include ShapeExpression
     NAME = :external
 
     #

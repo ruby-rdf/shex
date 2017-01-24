@@ -1,7 +1,7 @@
 module ShEx::Algebra
   ##
   class And < Operator
-    include Satisfiable
+    include ShapeExpression
     NAME = :and
 
     def initialize(*args, **options)
@@ -10,8 +10,8 @@ module ShEx::Algebra
         raise ArgumentError, "wrong number of arguments (given #{args.length}, expected 2..)"
       end
 
-      # All arguments must be Satisfiable
-      raise ArgumentError, "All operands must be Shape operands" unless args.all? {|o| o.is_a?(Satisfiable)}
+      # All arguments must be ShapeExpression
+      raise ArgumentError, "All operands must be Shape operands" unless args.all? {|o| o.is_a?(ShapeExpression)}
       super
     end
 
@@ -27,12 +27,12 @@ module ShEx::Algebra
 
     #
     # S is a ShapeAnd and for every shape expression se2 in shapeExprs, satisfies(n, se2, G, m).
-    # @param  (see Satisfiable#satisfies?)
-    # @return (see Satisfiable#satisfies?)
-    # @raise  (see Satisfiable#satisfies?)
+    # @param  (see ShapeExpression#satisfies?)
+    # @return (see ShapeExpression#satisfies?)
+    # @raise  (see ShapeExpression#satisfies?)
     def satisfies?(focus, depth: 0)
       status ""
-      expressions = operands.select {|o| o.is_a?(Satisfiable)}
+      expressions = operands.select {|o| o.is_a?(ShapeExpression)}
       satisfied = []
       unsatisfied = expressions.dup
 

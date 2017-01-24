@@ -42,7 +42,7 @@ module ShEx::Algebra
     def referenced_expression
       @referenced_expression ||= begin
         ref = schema.find(operands.first)
-        ref = ref.expression if ref.is_a?(Satisfiable) && ref.respond_to?(:expression)
+        ref = ref.expression if ref.is_a?(ShapeExpression) && ref.respond_to?(:expression)
         ref
       end
     end

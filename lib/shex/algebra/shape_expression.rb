@@ -2,7 +2,7 @@ require 'sparql/algebra'
 
 module ShEx::Algebra
   # Implements `satisfies?` and `not_satisfies?`
-  module Satisfiable
+  module ShapeExpression
     ##
     # Satisfies method
     # @param [RDF::Resource] focus
@@ -15,8 +15,5 @@ module ShEx::Algebra
     def satisfies?(focus, depth: 0, **options)
       raise NotImplementedError, "#satisfies? Not implemented in #{self.class}"
     end
-
-    # This operator includes Satisfiable
-    def satisfiable?; true; end
   end
 end

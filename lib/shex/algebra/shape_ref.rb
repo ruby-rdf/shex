@@ -1,7 +1,7 @@
 module ShEx::Algebra
   ##
   class ShapeRef < Operator::Unary
-    include Satisfiable
+    include ShapeExpression
     NAME = :shapeRef
 
     def initialize(arg, **options)
@@ -21,9 +21,9 @@ module ShEx::Algebra
 
     ##
     # Satisfies referenced shape.
-    # @param  (see Satisfiable#satisfies?)
-    # @return (see Satisfiable#satisfies?)
-    # @raise  (see Satisfiable#satisfies?)
+    # @param  (see ShapeExpression#satisfies?)
+    # @return (see ShapeExpression#satisfies?)
+    # @raise  (see ShapeExpression#satisfies?)
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
     def satisfies?(focus, depth: 0)
       status "ref #{operands.first.to_s}", depth: depth
@@ -55,7 +55,7 @@ module ShEx::Algebra
     # Even when going through TripleConstraints, there can't be a negative reference.
     def validate!
       structure_error("Missing referenced shape: #{operands.first}") if referenced_shape.nil?
-      raise ShEx::StructureError, "Self referencing shape: #{operands.first}" if referenced_shape == first_ancestor(Satisfiable)
+      raise ShEx::StructureError, "Self referencing shape: #{operands.first}" if referenced_shape == first_ancestor(ShapeExpression)
       super
     end
 

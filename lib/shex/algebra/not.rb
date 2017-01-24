@@ -1,7 +1,7 @@
 module ShEx::Algebra
   ##
   class Not < Operator::Unary
-    include Satisfiable
+    include ShapeExpression
     NAME = :not
 
     ##
@@ -16,9 +16,9 @@ module ShEx::Algebra
 
     #
     # S is a ShapeNot and for the shape expression se2 at shapeExpr, notSatisfies(n, se2, G, m).
-    # @param  (see Satisfiable#satisfies?)
-    # @return (see Satisfiable#satisfies?)
-    # @raise  (see Satisfiable#satisfies?)
+    # @param  (see ShapeExpression#satisfies?)
+    # @return (see ShapeExpression#satisfies?)
+    # @raise  (see ShapeExpression#satisfies?)
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
     def satisfies?(focus, depth: 0)
       status ""

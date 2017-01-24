@@ -134,8 +134,8 @@ module ShEx::Algebra
     # @param [RDF::Resource] id
     # @param [RDF::Resource] node
     # @yield :shape
-    # @yieldparam [Satisfiable] shape, or `nil` if shape already entered
-    # @return [Satisfiable]
+    # @yieldparam [ShapeExpression] shape, or `nil` if shape already entered
+    # @return [ShapeExpression]
     def enter_shape(id, node, &block)
       shape = shapes.detect {|s| s.id == id}
       structure_error("No shape found for #{id}") unless shape

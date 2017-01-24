@@ -1,7 +1,7 @@
 module ShEx::Algebra
   ##
   class Shape < Operator
-    include Satisfiable
+    include ShapeExpression
     NAME = :shape
 
     ##
@@ -29,9 +29,9 @@ module ShEx::Algebra
     end
 
     # The `satisfies` semantics for a `Shape` depend on a matches function defined below. For a node `n`, shape `S`, graph `G`, and shapeMap `m`, `satisfies(n, S, G, m)`.
-    # @param  (see Satisfiable#satisfies?)
-    # @return (see Satisfiable#satisfies?)
-    # @raise  (see Satisfiable#satisfies?)
+    # @param  (see ShapeExpression#satisfies?)
+    # @return (see ShapeExpression#satisfies?)
+    # @raise  (see ShapeExpression#satisfies?)
     def satisfies?(focus, depth: 0)
       expression = self.expression
       # neigh(G, n) is the neighbourhood of the node n in the graph G.

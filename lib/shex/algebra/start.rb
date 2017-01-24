@@ -1,13 +1,13 @@
 module ShEx::Algebra
   ##
   class Start < Operator::Unary
-    include Satisfiable
+    include ShapeExpression
     NAME = :start
 
     #
-    # @param  (see Satisfiable#satisfies?)
-    # @return (see Satisfiable#satisfies?)
-    # @raise  (see Satisfiable#satisfies?)
+    # @param  (see ShapeExpression#satisfies?)
+    # @return (see ShapeExpression#satisfies?)
+    # @raise  (see ShapeExpression#satisfies?)
     def satisfies?(focus, depth: 0)
       status "", depth: depth
       matched_op = operands.first.satisfies?(focus, depth: depth + 1)

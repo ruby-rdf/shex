@@ -85,7 +85,7 @@ module ShEx::Algebra
     end
 
     def shape
-      operands.detect {|o| o.is_a?(Satisfiable)}
+      operands.detect {|o| o.is_a?(ShapeExpression)}
     end
   end
 end
