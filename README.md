@@ -48,7 +48,7 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
     }
     schema.satisfies?("http://rubygems.org/gems/shex", graph, map)
     # => true
-### Validating a node using ShExC
+### Validating a node using ShExJ
 
     require 'rubygems'
     require 'rdf/turtle'
@@ -174,10 +174,12 @@ The ShExC parser uses the [EBNF][] gem to generate first, follow and branch tabl
 
 The parser takes branch and follow tables generated from the [ShEx Grammar](file.shex.html) described in the [specification][ShExSpec]. Branch and Follow tables are specified in the generated {ShEx::Meta}.
 
+The result of parsing either ShExC or ShExJ is the creation of a set of executable {ShEx::Algebra} Operators which are directly executed to perform shape validation.
+
 ## Dependencies
 
-* [Ruby](http://ruby-lang.org/) (>= 2.0)
-* [RDF.rb](http://rubygems.org/gems/rdf) (>= 2.1)
+* [Ruby](http://ruby-lang.org/) (>= 2.2.2)
+* [RDF.rb](http://rubygems.org/gems/rdf) (>= 2.2)
 
 ## Installation
 
