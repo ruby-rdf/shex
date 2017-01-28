@@ -1,7 +1,7 @@
 module ShEx::Algebra
   ##
   class Shape < Operator
-    include Satisfiable
+    include ShapeExpression
     NAME = :shape
 
     ##
@@ -29,11 +29,10 @@ module ShEx::Algebra
     end
 
     # The `satisfies` semantics for a `Shape` depend on a matches function defined below. For a node `n`, shape `S`, graph `G`, and shapeMap `m`, `satisfies(n, S, G, m)`.
-    # @param  (see Satisfiable#satisfies?)
-    # @return (see Satisfiable#satisfies?)
-    # @raise  (see Satisfiable#satisfies?)
+    # @param  (see ShapeExpression#satisfies?)
+    # @return (see ShapeExpression#satisfies?)
+    # @raise  (see ShapeExpression#satisfies?)
     def satisfies?(focus, depth: 0)
-      expression = self.expression
       # neigh(G, n) is the neighbourhood of the node n in the graph G.
       #
       #    neigh(G, n) = arcsOut(G, n) ∪ arcsIn(G, n)
@@ -43,7 +42,12 @@ module ShEx::Algebra
 
       # `matched` is the subset of statements which match `expression`.
       status("arcsIn: #{arcs_in.count}, arcsOut: #{arcs_out.count}", depth: depth)
-      matched_expression = expression.matches(arcs_in, arcs_out, depth: depth + 1) if expression
+      matched_expression = case expression
+      when RDF::Resource
+        ref.matches(arcs_in, arcs_out, depth: depth + 1)
+      when TripleExpression
+        expression.matches(arcs_in, arcs_out, depth: depth + 1)
+      end
       matched = Array(matched_expression && matched_expression.matched)
 
       # `remainder` is the set of unmatched statements
@@ -101,12 +105,22 @@ module ShEx::Algebra
       not_satisfied e.message, focus: focus, unsatisfied: e.expression, depth: depth
     end
 
-
     ##
-    # The optional TripleExpression for this Shape.
-    # @return [TripleExpression]
-    def expression
-      operands.detect {|op| op.is_a?(TripleExpression)}
+    # expression must be a TripleExpression
+    #
+    # @return [Operator] `self`
+    # @raise  [ShEx::StructureError] if the value is invalid
+    def validate!
+      case expression
+      when nil, TripleExpression
+      when RDF::Resource
+        ref = schema.find(expression)
+        ref.is_a?(TripleExpression) ||
+        structure_error("#{json_type} must reference a TripleExpression: #{ref}")
+      else
+        structure_error("#{json_type} must reference a TripleExpression: #{ref}")
+      end
+      super
     end
 
     private

@@ -17,7 +17,7 @@ module ShEx::Algebra
     def to_h
       {
         'type' => json_type,
-        'predicate' => operands.first.to_s,
+        'predicate' => operands.first.last.to_s,
         'object' => serialize_value(operands.last)
       }
     end

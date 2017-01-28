@@ -1,8 +1,0 @@
-{
-  "@context": "context.jsonld",
-  "type": "Schema",
-  "shapes": {
-    "id": "http://a.example/S1",
-    "type": "Shape"
-  }
-}

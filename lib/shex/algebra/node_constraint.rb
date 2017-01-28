@@ -1,7 +1,7 @@
 module ShEx::Algebra
   ##
   class NodeConstraint < Operator
-    include Satisfiable
+    include ShapeExpression
     NAME = :nodeConstraint
 
     ##
@@ -15,9 +15,9 @@ module ShEx::Algebra
 
     #
     # S is a NodeConstraint and satisfies2(focus, se) as described below in Node Constraints. Note that testing if a node satisfies a node constraint does not require a graph or shapeMap.
-    # @param  (see Satisfiable#satisfies?)
-    # @return (see Satisfiable#satisfies?)
-    # @raise  (see Satisfiable#satisfies?)
+    # @param  (see ShapeExpression#satisfies?)
+    # @return (see ShapeExpression#satisfies?)
+    # @raise  (see ShapeExpression#satisfies?)
     def satisfies?(focus, depth: 0)
       status "", depth: depth
       satisfies_node_kind?(focus, depth: depth + 1) &&

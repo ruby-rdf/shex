@@ -1,7 +1,7 @@
 module ShEx::Algebra
   ##
   class Or < Operator
-    include Satisfiable
+    include ShapeExpression
     NAME = :or
 
     def initialize(*args, **options)
@@ -10,8 +10,8 @@ module ShEx::Algebra
         raise ArgumentError, "wrong number of arguments (given #{args.length}, expected 2..)"
       end
 
-      # All arguments must be Satisfiable
-      raise ArgumentError, "All operands must be Shape operands" unless args.all? {|o| o.is_a?(Satisfiable)}
+      # All arguments must be ShapeExpression
+      raise ArgumentError, "All operands must be Shape operands or resource" unless args.all? {|o| o.is_a?(ShapeExpression) || o.is_a?(RDF::Resource)}
       super
     end
 
@@ -27,22 +27,35 @@ module ShEx::Algebra
 
     #
     # S is a ShapeOr and there is some shape expression se2 in shapeExprs such that satisfies(n, se2, G, m).
-    # @param  (see Satisfiable#satisfies?)
-    # @return (see Satisfiable#satisfies?)
-    # @raise  (see Satisfiable#satisfies?)
+    # @param  (see ShapeExpression#satisfies?)
+    # @return (see ShapeExpression#satisfies?)
+    # @raise  (see ShapeExpression#satisfies?)
     def satisfies?(focus, depth: 0)
       status "", depth: depth
-      expressions = operands.select {|o| o.is_a?(Satisfiable)}
       unsatisfied = []
       expressions.any? do |op|
         begin
-          matched_op = op.satisfies?(focus, depth: depth + 1)
+          matched_op = case op
+          when RDF::Resource
+            schema.enter_shape(op, focus) do |shape|
+              if shape
+                shape.satisfies?(focus, depth: depth + 1)
+              else
+                status "Satisfy as #{op} was re-entered for #{focus}", depth: depth
+                shape
+              end
+            end
+          when ShapeExpression
+            op.satisfies?(focus, depth: depth + 1)
+          end
           return satisfy focus: focus, satisfied: matched_op, depth: depth
         rescue ShEx::NotSatisfied => e
           status "unsatisfied #{focus}", depth: depth
           op = op.dup
-          op.satisfied = e.expression.satisfied
-          op.unsatisfied = e.expression.unsatisfied
+          if op.respond_to?(:satisfied)
+            op.satisfied = e.expression.satisfied
+            op.unsatisfied = e.expression.unsatisfied
+          end
           unsatisfied << op
           status "unsatisfied: #{e.message}", depth: depth
           false
@@ -51,6 +64,26 @@ module ShEx::Algebra
 
       not_satisfied "Expected some expression to be satisfied",
                     focus: focus, unsatisfied: unsatisfied, depth: depth
+    end
+
+    ##
+    # expressions must be ShapeExpressions
+    #
+    # @return [Operator] `self`
+    # @raise  [ShEx::StructureError] if the value is invalid
+    def validate!
+      expressions.each do |op|
+        case op
+        when ShapeExpression
+        when RDF::Resource
+          ref = schema.find(op)
+          ref.is_a?(ShapeExpression) ||
+          structure_error("#{json_type} must reference a ShapeExpression: #{ref}")
+        else
+          structure_error("#{json_type} must reference a ShapeExpression: #{ref}")
+        end
+      end
+      super
     end
 
     def json_type

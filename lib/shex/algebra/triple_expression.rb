@@ -53,7 +53,7 @@ module ShEx::Algebra
   end
 
   module ReferencedStatement
-    # @return [ShEx::Algebra::Satisfiable] referenced operand which satisfied some of this statement
+    # @return [ShEx::Algebra::ShapeExpression] referenced operand which satisfied some of this statement
     attr_accessor :referenced
 
     def to_sxp_bin

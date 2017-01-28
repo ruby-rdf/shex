@@ -35,10 +35,10 @@ module ShEx
     when 'shexc' then Parser.new(expression, options).parse
     when 'shexj'
       expression = expression.read if expression.respond_to?(:read)
-      Algebra.from_shexj(JSON.parse expression)
+      Algebra.from_shexj(JSON.parse(expression), options)
     when 'sxp'
       expression = expression.read if expression.respond_to?(:read)
-      Algebra.from_sxp(JSON.parse expression)
+      Algebra.from_sxp(expression, options)
     else raise "Unknown expression format: #{format.inspect}"
     end
   end

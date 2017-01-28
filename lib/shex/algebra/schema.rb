@@ -43,12 +43,12 @@ module ShEx::Algebra
     #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
     # @return [Operand] Returns operand graph annotated with satisfied and unsatisfied operations.
     # @param [Hash{Symbol => Object}] options
-    # @option options [String] :base_uri
+    # @option options [String] :base_uri (for resolving focus)
     # @raise [ShEx::NotSatisfied] along with operand graph described for return
     def execute(focus, graph, map, shapeExterns: [], depth: 0, **options)
       @graph, @shapes_entered = graph, {}
       @external_schemas = shapeExterns
-      focus = value(focus)
+      focus = value(focus, options)
 
       logger = options[:logger] || @options[:logger]
       each_descendant do |op|
@@ -66,7 +66,7 @@ module ShEx::Algebra
         end
       end
 
-      # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same label
+      # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same id
       graph_focus = graph.enum_term.detect {|t| t.node? && t.id == focus.id} if focus.is_a?(RDF::Node)
       graph_focus ||= focus
 
@@ -89,10 +89,10 @@ module ShEx::Algebra
       satisfied_shapes = {}
       satisfied_schema.operands << [:shapes, satisfied_shapes] unless shapes.empty?
 
-      # Match against all shapes associated with the labels for focus
-      Array(@map[focus]).each do |label|
-        enter_shape(label, focus) do |shape|
-          satisfied_shapes[label] = shape.satisfies?(graph_focus, depth: depth + 1)
+      # Match against all shapes associated with the ids for focus
+      Array(@map[focus]).each do |id|
+        enter_shape(id, focus) do |shape|
+          satisfied_shapes[id] = shape.satisfies?(graph_focus, depth: depth + 1)
         end
       end
       status "schema satisfied", depth: depth
@@ -131,23 +131,24 @@ module ShEx::Algebra
 
     ##
     # Indicate that a shape has been entered with a specific focus node. Any future attempt to enter the same shape with the same node raises an exception.
-    # @param [RDF::Resource] label
+    # @param [RDF::Resource] id
     # @param [RDF::Resource] node
     # @yield :shape
-    # @yieldparam [Satisfiable] shape, or `nil` if shape already entered
-    # @return [Satisfiable]
-    def enter_shape(label, node, &block)
-      shape = shapes.detect {|s| s.label == label}
-      structure_error("No shape found for #{label}") unless shape
-      @shapes_entered[label] ||= {}
-      if @shapes_entered[label][node]
+    # @yieldparam [ShapeExpression] shape, or `nil` if shape already entered
+    # @return (see ShapeExpression#satisfies?)
+    # @raise (see ShapeExpression#satisfies?)
+    def enter_shape(id, node, &block)
+      shape = shapes.detect {|s| s.id == id}
+      structure_error("No shape found for #{id}") unless shape
+      @shapes_entered[id] ||= {}
+      if @shapes_entered[id][node]
         block.call(false)
       else
-        @shapes_entered[label][node] = self
+        @shapes_entered[id][node] = self
         begin
           block.call(shape)
         ensure
-          @shapes_entered[label].delete(node)
+          @shapes_entered[id].delete(node)
         end
       end
     end
@@ -175,11 +176,25 @@ module ShEx::Algebra
     end
 
     ##
+    # Find a ShapeExpression or TripleExpression by identifier
+    # @param [#to_s] id
+    # @return [TripleExpression, ShapeExpression]
+    def find(id)
+      each_descendant.detect {|op| op.id == id}
+    end
+
+    ##
     # Validate shapes, in addition to other operands
-    # @return [SPARQL::Algebra::Expression] `self`
+    # @return [Operator] `self`
     # @raise  [ArgumentError] if the value is invalid
     def validate!
-      shapes.each {|op| op.validate! if op.respond_to?(:validate!)}
+      shapes.each do |op|
+        op.validate! if op.respond_to?(:validate!)
+        if op.is_a?(RDF::Resource)
+          ref = find(op)
+          structure_error("Missing reference: #{op}") if ref.nil?
+        end
+      end
       super
     end
   end

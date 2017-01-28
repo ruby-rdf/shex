@@ -1,7 +1,7 @@
 module ShEx::Algebra
   ##
   class External < Operator
-    include Satisfiable
+    include ShapeExpression
     NAME = :external
 
     #
@@ -9,11 +9,11 @@ module ShEx::Algebra
     def satisfies?(focus, depth: 0)
       extern_shape = nil
 
-      # Find the label for this external
-      not_satisfied("Can't find label for this extern", depth: depth) unless label
+      # Find the id for this external
+      not_satisfied("Can't find id for this extern", depth: depth) unless id
 
       schema.external_schemas.each do |schema|
-        extern_shape ||= schema.shapes.detect {|s| s.label == label}
+        extern_shape ||= schema.shapes.detect {|s| s.id == id}
       end
 
       not_satisfied("External not configured for this shape", depth: depth) unless extern_shape

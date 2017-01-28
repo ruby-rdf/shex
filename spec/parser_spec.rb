@@ -38,12 +38,12 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
-              "label": "http://a.example/S1",
+              "id": "http://a.example/S1",
               "type": "Shape"
             }
           ]
         }),
-        sxp: %{(schema (shapes (shape (label <http://a.example/S1>))))}
+        sxp: %{(schema (shapes (shape (id <http://a.example/S1>))))}
       },
       "Node Kind Example 1" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:state IRI}),
@@ -52,8 +52,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/IssueShape",
               "type": "Shape",
-              "label": "http://schema.example/IssueShape",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://schema.example/state",
@@ -65,10 +65,11 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
-         (shapes
+          (prefix (("ex" <http://schema.example/>)))
+          (shapes
            (shape
-             (label <http://schema.example/IssueShape>)
-             (tripleConstraint <http://schema.example/state> (nodeConstraint iri)))))}
+             (id <http://schema.example/IssueShape>)
+             (tripleConstraint (predicate <http://schema.example/state>) (nodeConstraint iri)))))}
       },
       "Datatype Example 1" => {
         shexc: %(
@@ -81,8 +82,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/IssueShape",
               "type": "Shape",
-              "label": "http://schema.example/IssueShape",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://schema.example/submittedOn",
@@ -95,9 +96,10 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes (shape
-          (label <http://schema.example/IssueShape>)
-          (tripleConstraint <http://schema.example/submittedOn>
+          (id <http://schema.example/IssueShape>)
+          (tripleConstraint (predicate <http://schema.example/submittedOn>)
            (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#dateTime>))))))}
       },
       "String Facets Example 1" => {
@@ -110,8 +112,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/IssueShape",
               "type": "Shape",
-              "label": "http://schema.example/IssueShape",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://schema.example/submittedBy",
@@ -121,10 +123,11 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)) )
          (shapes
           (shape
-           (label <http://schema.example/IssueShape>)
-           (tripleConstraint <http://schema.example/submittedBy> (nodeConstraint (minlength 10))))))}
+           (id <http://schema.example/IssueShape>)
+           (tripleConstraint (predicate <http://schema.example/submittedBy>) (nodeConstraint (minlength 10))))))}
       },
       "String Facets Example 2" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy PATTERN "genUser[0-9]+"}),
@@ -133,8 +136,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/IssueShape",
               "type": "Shape",
-              "label": "http://schema.example/IssueShape",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://schema.example/submittedBy",
@@ -147,10 +150,11 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
-           (label <http://schema.example/IssueShape>)
-           (tripleConstraint <http://schema.example/submittedBy>
+           (id <http://schema.example/IssueShape>)
+           (tripleConstraint (predicate <http://schema.example/submittedBy>)
             (nodeConstraint (pattern "genUser[0-9]+"))))))}
       },
       "Numeric Facets Example 1" => {
@@ -160,8 +164,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/IssueShape",
               "type": "Shape",
-              "label": "http://schema.example/IssueShape",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://schema.example/confirmations",
@@ -171,10 +175,11 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
-           (label <http://schema.example/IssueShape>)
-           (tripleConstraint <http://schema.example/confirmations>
+           (id <http://schema.example/IssueShape>)
+           (tripleConstraint (predicate <http://schema.example/confirmations>)
             (nodeConstraint (mininclusive 1))))))}
       },
       "Values Constraint Example 1" => {
@@ -184,8 +189,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/NoActionIssueShape",
               "type": "Shape",
-              "label": "http://schema.example/NoActionIssueShape",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://schema.example/state",
@@ -201,10 +206,11 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
-           (label <http://schema.example/NoActionIssueShape>)
-            (tripleConstraint <http://schema.example/state>
+           (id <http://schema.example/NoActionIssueShape>)
+            (tripleConstraint (predicate <http://schema.example/state>)
              (nodeConstraint
               (value <http://schema.example/Resolved>)
               (value <http://schema.example/Rejected>))))))}
@@ -226,8 +232,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/EmployeeShape",
               "type": "Shape",
-              "label": "http://schema.example/EmployeeShape",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://xmlns.com/foaf/0.1/mbox",
@@ -249,10 +255,11 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/0.1/>)))
          (shapes
           (shape
-           (label <http://schema.example/EmployeeShape>)
-           (tripleConstraint <http://xmlns.com/foaf/0.1/mbox>
+           (id <http://schema.example/EmployeeShape>)
+           (tripleConstraint (predicate <http://xmlns.com/foaf/0.1/mbox>)
             (nodeConstraint
              (value "N/A")
              (value (stem <mailto:engineering->))
@@ -273,8 +280,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/EmployeeShape",
               "type": "Shape",
-              "label": "http://schema.example/EmployeeShape",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://xmlns.com/foaf/0.1/mbox",
@@ -295,10 +302,11 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/0.1/>)))
          (shapes
           (shape
-           (label <http://schema.example/EmployeeShape>)
-           (tripleConstraint <http://xmlns.com/foaf/0.1/mbox>
+           (id <http://schema.example/EmployeeShape>)
+           (tripleConstraint (predicate <http://xmlns.com/foaf/0.1/mbox>)
             (nodeConstraint
              (value
               (stemRange wildcard (exclusions (stem <mailto:engineering->) (stem <mailto:sales->)))) )))))}
@@ -320,20 +328,20 @@ describe ShEx::Parser do
           "type":"Schema",
           "shapes": [
             {
+              "id": "http://schema.example/PersonShape",
               "type":"Shape",
-              "label": "http://schema.example/PersonShape",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://xmlns.com/foaf/0.1/name"
               }
             },
             {
+              "id": "http://schema.example/EmployeeShape",
               "type":"Shape",
-              "label": "http://schema.example/EmployeeShape",
               "expression": {
                 "type":"EachOf",
                 "expressions": [
-                  { "type": "Inclusion", "include": "http://schema.example/PersonShape" },
+                  "http://schema.example/PersonShape",
                   { "type": "TripleConstraint",
                     "predicate": "http://schema.example/employeeNumber"
                   }
@@ -343,15 +351,16 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/0.1/>)))
          (shapes
           (shape
-           (label <http://schema.example/PersonShape>)
-           (tripleConstraint <http://xmlns.com/foaf/0.1/name>))
+           (id <http://schema.example/PersonShape>)
+           (tripleConstraint (predicate <http://xmlns.com/foaf/0.1/name>)))
           (shape
-           (label <http://schema.example/EmployeeShape>)
+           (id <http://schema.example/EmployeeShape>)
            (eachOf
-            (inclusion <http://schema.example/PersonShape>)
-            (tripleConstraint <http://schema.example/employeeNumber>)) )) )}
+            <http://schema.example/PersonShape>
+            (tripleConstraint (predicate <http://schema.example/employeeNumber>))) )) )}
       },
       "Double Negated reference" => {
         shexc: %(PREFIX ex: <http://schema.example/#> ex:S NOT (IRI OR NOT @ex:S)),
@@ -360,17 +369,14 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/#S",
               "type": "ShapeNot",
-              "label": "http://schema.example/#S",
               "shapeExpr": {
                 "type": "ShapeOr",
                 "shapeExprs": [
                   { "type": "NodeConstraint", "nodeKind": "iri" },
                   { "type": "ShapeNot",
-                    "shapeExpr": {
-                      "type": "ShapeRef",
-                      "reference": "http://schema.example/#S"
-                    }
+                    "shapeExpr": "http://schema.example/#S"
                   }
                 ]
               }
@@ -378,12 +384,13 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/#>)))
          (shapes
           (not
-           (label <http://schema.example/#S>)
+           (id <http://schema.example/#S>)
            (or
             (nodeConstraint iri)
-            (not (shapeRef <http://schema.example/#S>))))) )}
+            (not <http://schema.example/#S>)))) )}
       },
       "Semantic Actions Example 1" => {
         shexc: %(
@@ -398,8 +405,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://a.example/S1",
               "type": "Shape",
-              "label": "http://a.example/S1",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://a.example/p1",
@@ -414,10 +421,11 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://a.example/>) ("Test" <http://shex.io/extensions/Test/>)))
          (shapes
           (shape
-           (label <http://a.example/S1>)
-           (tripleConstraint <http://a.example/p1>
+           (id <http://a.example/S1>)
+           (tripleConstraint (predicate <http://a.example/p1>)
             (semact <http://shex.io/extensions/Test/> " print(s) ")
             (semact <http://shex.io/extensions/Test/> " print(o) ")) )) )}
       },
@@ -436,8 +444,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/IssueShape",
               "type": "Shape",
-              "label": "http://schema.example/IssueShape",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://schema.example/status",
@@ -454,13 +462,14 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("rdfs" <http://www.w3.org/2000/01/rdf-schema#>)))
          (shapes
           (shape
-           (label <http://schema.example/IssueShape>)
-           (tripleConstraint <http://schema.example/status>
-            (annotation <http://www.w3.org/2000/01/rdf-schema#comment>
+           (id <http://schema.example/IssueShape>)
+           (tripleConstraint (predicate <http://schema.example/status>)
+            (annotation (predicate <http://www.w3.org/2000/01/rdf-schema#comment>)
              "Represents reported software issues." )
-            (annotation <http://www.w3.org/2000/01/rdf-schema#label> "software issue")))))}
+            (annotation (predicate <http://www.w3.org/2000/01/rdf-schema#label>) "software issue")))))}
       },
       "Validation Example 1" => {
         shexc: %(
@@ -473,16 +482,17 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/IntConstraint",
               "type": "NodeConstraint",
-              "label": "http://schema.example/IntConstraint",
               "datatype": "http://www.w3.org/2001/XMLSchema#integer"
             }
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes
           (nodeConstraint
-           (label <http://schema.example/IntConstraint>)
+           (id <http://schema.example/IntConstraint>)
            (datatype <http://www.w3.org/2001/XMLSchema#integer>)))
         )}
       },
@@ -493,8 +503,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/UserShape",
               "type": "Shape",
-              "label": "http://schema.example/UserShape",
               "expression": {
                 "type": "TripleConstraint",
                 "predicate": "http://schema.example/shoeSize"
@@ -503,10 +513,11 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
-           (label <http://schema.example/UserShape>)
-           (tripleConstraint <http://schema.example/shoeSize>))))}
+           (id <http://schema.example/UserShape>)
+           (tripleConstraint (predicate <http://schema.example/shoeSize>)))))}
       },
       "Validation Example 3" => {
         shexc: %(
@@ -518,8 +529,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/UserShape",
               "type": "Shape",
-              "label": "http://schema.example/UserShape",
               "extra": ["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"],
               "expression": {
                 "type": "TripleConstraint",
@@ -533,11 +544,12 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
            (shape
-            (label <http://schema.example/UserShape>)
+            (id <http://schema.example/UserShape>)
             (extra a)
-            (tripleConstraint a (nodeConstraint (value <http://schema.example/Teacher>)))) ))}
+            (tripleConstraint (predicate a) (nodeConstraint (value <http://schema.example/Teacher>)))) ))}
       },
       "Disjunction Example" => {
         shexc: %(
@@ -558,8 +570,8 @@ describe ShEx::Parser do
           "type": "Schema",
           "shapes": [
             {
+              "id": "http://schema.example/UserShape",
               "type": "Shape",
-              "label": "http://schema.example/UserShape",
               "expression": {
                 "type": "OneOf",
                 "expressions": [
@@ -586,17 +598,18 @@ describe ShEx::Parser do
           ]
         }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/0.1/>)))
          (shapes
           (shape
-           (label <http://schema.example/UserShape>)
+           (id <http://schema.example/UserShape>)
            (oneOf
-            (tripleConstraint <http://xmlns.com/foaf/0.1/name> (nodeConstraint literal))
+            (tripleConstraint (predicate <http://xmlns.com/foaf/0.1/name>) (nodeConstraint literal))
             (eachOf
-             (tripleConstraint <http://xmlns.com/foaf/0.1/givenName>
+             (tripleConstraint (predicate <http://xmlns.com/foaf/0.1/givenName>)
               (nodeConstraint literal)
               (min 1)
               (max "*"))
-             (tripleConstraint <http://xmlns.com/foaf/0.1/familyName> (nodeConstraint literal)))))) )}
+             (tripleConstraint (predicate <http://xmlns.com/foaf/0.1/familyName>) (nodeConstraint literal)))))) )}
       },
       "Dependent Shape Example" => {
         shexc: %(
@@ -612,16 +625,14 @@ describe ShEx::Parser do
           "@context": "https://shexspec.github.io/context.jsonld",
           "type": "Schema",
           "shapes": [
-           { "type": "Shape",
-             "label": "http://schema.example/IssueShape",
+           { "id": "http://schema.example/IssueShape",
+             "type": "Shape",
              "expression":
             { "type": "TripleConstraint",
               "predicate": "http://schema.example/reproducedBy",
-              "valueExpr":
-              { "type": "ShapeRef",
-                "reference": "http://schema.example/TesterShape" } } },
-           { "type": "Shape",
-             "label": "http://schema.example/TesterShape",
+              "valueExpr": "http://schema.example/TesterShape" } },
+           { "id": "http://schema.example/TesterShape",
+             "type": "Shape",
              "expression":
             { "type": "TripleConstraint",
               "predicate": "http://schema.example/role",
@@ -630,12 +641,13 @@ describe ShEx::Parser do
                 "values": [ "http://schema.example/testingRole" ] } } }
           ] }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
-          (shape (label <http://schema.example/IssueShape>)
-           (tripleConstraint <http://schema.example/reproducedBy>
-            (shapeRef <http://schema.example/TesterShape>)) )
-          (shape (label <http://schema.example/TesterShape>)
-           (tripleConstraint <http://schema.example/role>
+          (shape (id <http://schema.example/IssueShape>)
+           (tripleConstraint (predicate <http://schema.example/reproducedBy>)
+            <http://schema.example/TesterShape>) )
+          (shape (id <http://schema.example/TesterShape>)
+           (tripleConstraint (predicate <http://schema.example/role>)
             (nodeConstraint (value <http://schema.example/testingRole>))))))}
       },
       "Recursion Example" => {
@@ -644,20 +656,20 @@ describe ShEx::Parser do
           "@context": "https://shexspec.github.io/context.jsonld",
           "type": "Schema",
           "shapes": [
-           { "type": "Shape",
-             "label": "http://schema.example/IssueShape",
+           { "id": "http://schema.example/IssueShape",
+             "type": "Shape",
              "expression":
             { "type": "TripleConstraint",
               "predicate": "http://schema.example/related",
-              "valueExpr":
-              { "type": "ShapeRef", "reference": "http://schema.example/IssueShape" },
+              "valueExpr": "http://schema.example/IssueShape",
               "min": 0, "max": "*"
             } } ] }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes (shape
-          (label <http://schema.example/IssueShape>)
-          (tripleConstraint <http://schema.example/related>
-           (shapeRef <http://schema.example/IssueShape>)
+          (id <http://schema.example/IssueShape>)
+          (tripleConstraint (predicate <http://schema.example/related>)
+           <http://schema.example/IssueShape>
            (min 0)
            (max "*")))))}
       },
@@ -673,8 +685,8 @@ describe ShEx::Parser do
           "@context": "https://shexspec.github.io/context.jsonld",
           "type": "Schema",
           "shapes": [
-           { "type": "Shape",
-             "label": "http://schema.example/TestResultsShape",
+           { "id": "http://schema.example/TestResultsShape",
+             "type": "Shape",
              "expression": {
               "type": "EachOf", "expressions": [
                 { "type": "TripleConstraint",
@@ -697,15 +709,16 @@ describe ShEx::Parser do
                     ] }, "min": 1, "max": "*" }
               ] } } ] }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
-           (label <http://schema.example/TestResultsShape>)
+           (id <http://schema.example/TestResultsShape>)
            (eachOf
-            (tripleConstraint <http://schema.example/val>
+            (tripleConstraint (predicate <http://schema.example/val>)
              (nodeConstraint (value "a") (value "b") (value "c"))
              (min 1)
              (max "*"))
-            (tripleConstraint <http://schema.example/val>
+            (tripleConstraint (predicate <http://schema.example/val>)
              (nodeConstraint (value "b") (value "c") (value "d"))
              (min 1)
              (max "*")) )) ))}
@@ -728,31 +741,27 @@ describe ShEx::Parser do
           "@context": "https://shexspec.github.io/context.jsonld",
           "type": "Schema",
           "shapes": [
-           { "type": "Shape",
-             "label": "http://schema.example/IssueShape",
+           { "id": "http://schema.example/IssueShape",
+             "type": "Shape",
              "expression":
             { "type": "EachOf", "expressions": [
                 { "type": "TripleConstraint",
                   "predicate": "http://schema.example/reproducedBy",
-                  "valueExpr":
-                  { "type": "ShapeRef",
-                    "reference": "http://schema.example/TesterShape" } },
+                  "valueExpr": "http://schema.example/TesterShape" },
                 { "type": "TripleConstraint",
                   "predicate": "http://schema.example/reproducedBy",
-                  "valueExpr":
-                  { "type": "ShapeRef",
-                    "reference": "http://schema.example/ProgrammerShape" } }
+                  "valueExpr": "http://schema.example/ProgrammerShape" }
               ] } },
-           { "type": "Shape",
-             "label": "http://schema.example/TesterShape",
+           { "id": "http://schema.example/TesterShape",
+             "type": "Shape",
              "expression":
             { "type": "TripleConstraint",
               "predicate": "http://schema.example/role",
               "valueExpr":
               { "type": "NodeConstraint",
                 "values": [ "http://schema.example/testingRole" ] } } },
-           { "type": "Shape",
-             "label": "http://schema.example/ProgrammerShape",
+           { "id": "http://schema.example/ProgrammerShape",
+             "type": "Shape",
              "expression":
             { "type": "TripleConstraint",
               "predicate": "http://schema.example/department",
@@ -761,21 +770,22 @@ describe ShEx::Parser do
                 "values": [ "http://schema.example/ProgrammingDepartment" ] } } }
           ] }),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
          (shapes
           (shape
-           (label <http://schema.example/IssueShape>)
+           (id <http://schema.example/IssueShape>)
              (eachOf
-              (tripleConstraint <http://schema.example/reproducedBy>
-               (shapeRef <http://schema.example/TesterShape>))
-              (tripleConstraint <http://schema.example/reproducedBy>
-               (shapeRef <http://schema.example/ProgrammerShape>)) ))
+              (tripleConstraint (predicate <http://schema.example/reproducedBy>)
+               <http://schema.example/TesterShape>)
+              (tripleConstraint (predicate <http://schema.example/reproducedBy>)
+               <http://schema.example/ProgrammerShape>) ))
           (shape
-          (label <http://schema.example/TesterShape>)
-           (tripleConstraint <http://schema.example/role>
+          (id <http://schema.example/TesterShape>)
+           (tripleConstraint (predicate <http://schema.example/role>)
             (nodeConstraint (value <http://schema.example/testingRole>))) )
           (shape
-          (label <http://schema.example/ProgrammerShape>)
-           (tripleConstraint <http://schema.example/department>
+          (id <http://schema.example/ProgrammerShape>)
+           (tripleConstraint (predicate <http://schema.example/department>)
             (nodeConstraint (value <http://schema.example/ProgrammingDepartment>)))
           )) )}
       },
@@ -821,67 +831,89 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
+         (prefix
+          (
+           ("ex" <http://schema.example/>)
+           ("foaf" <http://xmlns.com/foaf/>)
+           ("xsd" <http://www.w3.org/2001/XMLSchema#>)
+           ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)) )
          (shapes
           (shape
-           (label <IssueShape>)
-             (extra <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) closed
-             (eachOf
-              (tripleConstraint a (nodeConstraint (value <http://schema.example/Issue>)))
-              (tripleConstraint <http://schema.example/state>
-               (nodeConstraint
-                (value <http://schema.example/unassigned>)
-                (value <http://schema.example/assigned>)) )
-              (tripleConstraint <http://schema.example/reportedBy> (shapeRef <UserShape>))
-              (tripleConstraint <http://schema.example/reportedOn>
-               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#dateTime>)))
-              (eachOf
-               (tripleConstraint <http://schema.example/reproducedBy> (shapeRef <EmployeeShape>))
-               (tripleConstraint <http://schema.example/reproducedOn>
-                (or
-                 (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
-                 (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#date>))) )
-               (min 0)
-               (max 1))
-              (tripleConstraint inverse <http://schema.example/related>
-               (shapeRef <IssueShape>)
-               (min 0)
-               (max "*")) )
-              )
+           (id <IssueShape>)
+           (extra <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) closed
+           (eachOf
+            (tripleConstraint (predicate a) (nodeConstraint (value <http://schema.example/Issue>)))
+            (tripleConstraint
+             (predicate <http://schema.example/state>)
+             (nodeConstraint
+              (value <http://schema.example/unassigned>)
+              (value <http://schema.example/assigned>)) )
+            (tripleConstraint (predicate <http://schema.example/reportedBy>) <UserShape>)
+            (tripleConstraint
+             (predicate <http://schema.example/reportedOn>)
+             (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#dateTime>)))
+            (eachOf
+             (tripleConstraint (predicate <http://schema.example/reproducedBy>) <EmployeeShape>)
+             (tripleConstraint
+              (predicate <http://schema.example/reproducedOn>)
+              (or
+               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
+               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#date>))) )
+             (min 0)
+             (max 1))
+            (tripleConstraint inverse
+             (predicate <http://schema.example/related>) <IssueShape>
+             (min 0)
+             (max "*")) )
+            )
            (and
-            (label <UserShape>)
+            (id <UserShape>)
              (nodeConstraint (pattern "^http:/example.org/.*"))
              (shape
               (eachOf
                (oneOf
-                (tripleConstraint <http://xmlns.com/foaf/name>
+                (tripleConstraint
+                 (predicate <http://xmlns.com/foaf/name>)
                  (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>)))
                 (eachOf
-                 (tripleConstraint <http://xmlns.com/foaf/givenName>
+                 (tripleConstraint
+                  (predicate <http://xmlns.com/foaf/givenName>)
                   (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>))
                   (min 1)
                   (max "*"))
-                 (tripleConstraint <http://xmlns.com/foaf/familyName>
+                 (tripleConstraint
+                  (predicate <http://xmlns.com/foaf/familyName>)
                   (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>)))
                 ))
-               (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri))) ))
+               (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint iri))) ))
            (and
-            (label <EmployeeShape>)
+            (id <EmployeeShape>)
              (shape
               (eachOf
-               (tripleConstraint <http://xmlns.com/foaf/phone> (nodeConstraint iri) (min 0) (max "*"))
-               (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri))) )
+               (tripleConstraint
+                (predicate <http://xmlns.com/foaf/phone>)
+                (nodeConstraint iri)
+                (min 0)
+                (max "*"))
+               (tripleConstraint
+                (predicate <http://xmlns.com/foaf/mbox>)
+                (nodeConstraint iri))) )
              (shape
               (eachOf
                (eachOf
-                (tripleConstraint <http://xmlns.com/foaf/phone>
+                (tripleConstraint
+                 (predicate <http://xmlns.com/foaf/phone>)
                  (nodeConstraint (pattern "^tel:\\\\+33")))
-                (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\\\.fr$")))
+                (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint (pattern "\\\\.fr$")))
                 (min 0)
                 (max 1))
                (eachOf
-                (tripleConstraint <http://xmlns.com/foaf/phone>
+                (tripleConstraint
+                 (predicate <http://xmlns.com/foaf/phone>)
                  (nodeConstraint (pattern "^tel:\\\\+44")))
-                (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\\\.uk$")))
+                (tripleConstraint
+                 (predicate <http://xmlns.com/foaf/mbox>)
+                 (nodeConstraint (pattern "\\\\.uk$")))
                 (min 0)
                 (max 1)) )) )) )}
       },
@@ -906,28 +938,29 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes
-          (shape (label <IssueShape>) closed
+          (shape (id <IssueShape>) closed
            (eachOf
-            (tripleConstraint <http://schema.example/state>
+            (tripleConstraint (predicate <http://schema.example/state>)
              (nodeConstraint
               (value <http://schema.example/unassigned>)
               (value <http://schema.example/assigned>)) )
-            (tripleConstraint <http://schema.example/reportedBy> (shapeRef <UserShape>))
-            (tripleConstraint <http://schema.example/reportedOn>
+            (tripleConstraint (predicate <http://schema.example/reportedBy>) <UserShape>)
+            (tripleConstraint (predicate <http://schema.example/reportedOn>)
              (or
               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#dateTime>))
               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#date>))) )
-            (tripleConstraint <http://schema.example/related>
-             (shapeRef <IssueShape>)
+            (tripleConstraint (predicate <http://schema.example/related>)
+             <IssueShape>
              (min 0)
              (max "*"))
-            (tripleConstraint inverse <http://schema.example/related>
-             (shapeRef <IssueShape>)
+            (tripleConstraint inverse (predicate <http://schema.example/related>)
+             <IssueShape>
              (min 0)
              (max "*")) ) )
-          (shape (label <UserShape>)
-           (tripleConstraint a (nodeConstraint (pattern "http://example.org/User#.*"))))))}
+          (shape (id <UserShape>)
+           (tripleConstraint (predicate a) (nodeConstraint (pattern "http://example.org/User#.*"))))))}
       },
       "Closed shape expression with EXTRA modifier" => {
         shexc: %(
@@ -951,26 +984,27 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
-         (shapes (shape (label <UserShape>)
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>) ("rdf" <http://www.w3.org/1999/02/22-rdf-syntax-ns#>)) )
+         (shapes (shape (id <UserShape>)
           (extra <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
                  <http://xmlns.com/foaf/mbox>)
           closed
           (eachOf
-           (tripleConstraint <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
+           (tripleConstraint (predicate <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
             (nodeConstraint (value <http://xmlns.com/foaf/Person>)))
-           (tripleConstraint <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
+           (tripleConstraint (predicate <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
             (nodeConstraint (value <http://schema.example/User>)))
            (oneOf
-            (tripleConstraint <http://xmlns.com/foaf/name>
+            (tripleConstraint (predicate <http://xmlns.com/foaf/name>)
              (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>)))
             (eachOf
-             (tripleConstraint <http://xmlns.com/foaf/givenName>
+             (tripleConstraint (predicate <http://xmlns.com/foaf/givenName>)
               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>))
               (min 1)
               (max "*"))
-             (tripleConstraint <http://xmlns.com/foaf/familyName>
+             (tripleConstraint (predicate <http://xmlns.com/foaf/familyName>)
               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>))) ))
-           (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri))))))}
+           (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint iri))))))}
       },
       "Non closed shape expression" => {
         shexc: %(
@@ -983,18 +1017,19 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes
           (shape
-           (label <SomeShape>)
+           (id <SomeShape>)
            (eachOf
-            (tripleConstraint <http://schema.example/p>
+            (tripleConstraint (predicate <http://schema.example/p>)
              (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#int>))
              (min 0)
              (max "*"))
             (oneOf
-             (tripleConstraint <http://schema.example/q>
+             (tripleConstraint (predicate <http://schema.example/q>)
               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#int>)))
-             (tripleConstraint <http://schema.example/r> (nodeConstraint iri))
+             (tripleConstraint (predicate <http://schema.example/r>) (nodeConstraint iri))
              (min 0)
              (max 1)) )) ))
         }},
@@ -1022,26 +1057,27 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/>)))
          (shapes
           (and
-           (label <EmployeeShape>)
+           (id <EmployeeShape>)
            (nodeConstraint (pattern "^http:/example.org/.*"))
            (shape closed
             (eachOf
-             (tripleConstraint <http://xmlns.com/foaf/phone> (nodeConstraint iri) (min 0) (max "*"))
-             (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint iri))))
+             (tripleConstraint (predicate <http://xmlns.com/foaf/phone>) (nodeConstraint iri) (min 0) (max "*"))
+             (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint iri))))
            (shape closed
             (eachOf
              (eachOf
-              (tripleConstraint <http://xmlns.com/foaf/phone>
+              (tripleConstraint (predicate <http://xmlns.com/foaf/phone>)
                (nodeConstraint (pattern "^tel:\\\\+33")))
-              (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\\\.fr$")))
+              (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint (pattern "\\\\.fr$")))
               (min 0)
               (max 1))
              (eachOf
-              (tripleConstraint <http://xmlns.com/foaf/phone>
+              (tripleConstraint (predicate <http://xmlns.com/foaf/phone>)
                (nodeConstraint (pattern "^tel:\\\\+44")))
-              (tripleConstraint <http://xmlns.com/foaf/mbox> (nodeConstraint (pattern "\\\\.uk$")))
+              (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint (pattern "\\\\.uk$")))
               (min 0)
               (max 1)) ) )) ))}
       },
@@ -1059,21 +1095,22 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>) ("xsd" <http://www.w3.org/2001/XMLSchema#>)))
          (shapes
           (shape
-           (label <SomeShape>)
+           (id <SomeShape>)
            closed
            (eachOf
-            (tripleConstraint <http://schema.example/p>
+            (tripleConstraint (predicate <http://schema.example/p>)
              (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#int>))
              (min 0)
              (max "*"))
             (oneOf
-             (tripleConstraint <http://schema.example/q>
+             (tripleConstraint (predicate <http://schema.example/q>)
               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#int>))
               (min 0)
               (max 0))
-             (tripleConstraint <http://schema.example/r> (nodeConstraint iri))
+             (tripleConstraint (predicate <http://schema.example/r>) (nodeConstraint iri))
              (min 0)
              (max 1)) ))))}
       },
@@ -1084,7 +1121,9 @@ describe ShEx::Parser do
 
       if params[:shexj]
         it "#{name} (shexj)" do
-          expect(params[:shexj]).to generate(params[:sxp].gsub(/^        /m, ''), logger: RDF::Spec.logger, format: :shexj)
+          # Get rid of prefix & base
+          sxp_source = params[:sxp].dup.gsub(/^        /m, '').split("\n").reject {|l| l =~ /\((prefix|base)/}.join("\n")
+          expect(params[:shexj]).to generate(sxp_source, logger: RDF::Spec.logger, format: :shexj)
         end
 
         it "#{name} generates shexj from shexc" do
@@ -1129,11 +1168,12 @@ describe ShEx::Parser do
           ex:S NOT (IRI OR NOT @ex:S)
         ),
         result: %{(schema
-           (shapes
-             (not 
-               (label <http://schema.example/S>)
-               (or (nodeConstraint iri)
-                   (not (shapeRef <http://schema.example/S>)))) ))}
+          (prefix (("ex" <http://schema.example/>)))
+          (shapes
+           (not 
+             (id <http://schema.example/S>)
+             (or (nodeConstraint iri)
+                 (not <http://schema.example/S>))) ))}
       },
       "This self-reference on a predicate designated as extra violates the negation requirement" => {
         input: %(PREFIX ex: <http://schema.example/> ex:S EXTRA ex:p {ex:p @ex:S}),
@@ -1146,9 +1186,8 @@ describe ShEx::Parser do
     }.each do |name, params|
       it name do
         case name
-        when "This negated, indirect self-reference violates the negation requirement"
-          pending "Checking references through indirects"
-        when "The same shape with a negated self-reference still violates the negation requirement because the reference occurs with a ShapeNot"
+        when "This self-reference on a predicate designated as extra violates the negation requirement",
+             "The same shape with a negated self-reference still violates the negation requirement because the reference occurs with a ShapeNot"
           pending "Negated references"
         end
         result = params[:result]
@@ -1165,15 +1204,13 @@ describe ShEx::Parser do
     Fixtures::SuiteTest::Manifest.open(manifest) do |m|
       describe m.attributes['rdfs:comment'] do
         m.entries.each do |t|
-          specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?}" do
+          specify "#{t.name} – #{t.comment || dir}#{' (negative)' if t.negative_test?}" do
             validate = true
             case t.name
             when '_all', 'kitchenSink'
               validate = false # Has self-included shape
             when 'openopen1dotOr1dotclose'
               pending("Our grammar allows nested bracketedTripleExpr")
-            when '1focusRefANDSelfdot'
-              #pending("Is self referencing (OK?) and includes an empty shape (OK?)")
             end
 
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
@@ -1181,6 +1218,7 @@ describe ShEx::Parser do
             if t.positive_test?
               begin
                 expression = ShEx.parse(t.schema_source, validate: validate, logger: RDF::Spec.logger)
+
                 hash = expression.to_h
                 shexj = JSON.parse t.schema_json
                 expect(hash).to produce(shexj, logger: RDF::Spec.logger)

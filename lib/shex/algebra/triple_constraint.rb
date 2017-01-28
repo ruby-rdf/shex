@@ -29,10 +29,21 @@ module ShEx::Algebra
       statements.select {|st| st.predicate == predicate}.each do |statement|
         break if num_iters == max # matched enough
 
-        value = inverse? ? statement.subject : statement.object
+        focus = inverse? ? statement.subject : statement.object
 
         begin
-          shape && (matched_shape = shape.satisfies?(value, depth: depth + 1))
+          matched_shape = if expression.is_a?(RDF::Resource)
+            schema.enter_shape(expression, focus) do |shape|
+              if shape
+                shape.satisfies?(focus, depth: depth + 1)
+              else
+                status "Satisfy as #{expression} was re-entered for #{focus}", depth: depth
+                nil
+              end
+            end
+          elsif expression
+            expression.satisfies?(focus, depth: depth + 1)
+          end
           status "matched #{statement.to_sxp}", depth: depth
           if matched_shape
             matched_shape.matched = [statement]
@@ -46,7 +57,7 @@ module ShEx::Algebra
           status "not satisfied: #{e.message}", depth: depth
           unsatisfied << e.expression
           statement = statement.dup.extend(ReferencedStatement)
-          statement.referenced = shape
+          statement.referenced = expression
           unmatched << statement
         end
       end
@@ -70,7 +81,25 @@ module ShEx::Algebra
     end
 
     def predicate
-      operands.detect {|o| o.is_a?(RDF::URI)}
+      @predicate ||= operands.detect {|o| o.is_a?(Array) && o.first == :predicate}.last
+    end
+
+    ##
+    # expression must be a ShapeExpression
+    #
+    # @return [Operator] `self`
+    # @raise  [ShEx::StructureError] if the value is invalid
+    def validate!
+      case expression
+      when nil, ShapeExpression
+      when RDF::Resource
+        ref = schema.find(expression)
+        ref.is_a?(ShapeExpression) ||
+        structure_error("#{json_type} must reference a ShapeExpression: #{ref}")
+      else
+        structure_error("#{json_type} must reference a ShapeExpression: #{ref}")
+      end
+      super
     end
 
     ##
@@ -82,10 +111,6 @@ module ShEx::Algebra
 
     def inverse?
       operands.include?(:inverse)
-    end
-
-    def shape
-      operands.detect {|o| o.is_a?(Satisfiable)}
     end
   end
 end

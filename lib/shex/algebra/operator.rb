@@ -32,7 +32,7 @@ module ShEx::Algebra
     #     any additional options
     #   @option options [Boolean] :memoize (false)
     #     whether to memoize results for particular operands
-    #   @option options [RDF::Resource] :label
+    #   @option options [RDF::Resource] :id
     #     Identifier of the operator
     # @raise  [TypeError] if any operand is invalid
     def initialize(*operands)
@@ -55,7 +55,7 @@ module ShEx::Algebra
         end
       end
 
-      @label = options[:label]
+      @id = options[:id]
     end
 
     ##
@@ -71,9 +71,6 @@ module ShEx::Algebra
     def semantic_actions
       operands.select {|o| o.is_a?(SemAct)}
     end
-
-    # Does this operator include Satisfiable?
-    def satisfiable?; false; end
 
     # Does this operator include TripleExpression?
     def triple_expression?; false; end
@@ -185,7 +182,7 @@ module ShEx::Algebra
     end
 
     def status(message, **opts, &block)
-      log_debug(self.class.const_get(:NAME).to_s + (@label ? "(#{@label})" : ""), message, **opts, &block)
+      log_debug(self.class.const_get(:NAME).to_s + (@id ? "(#{@id})" : ""), message, **opts, &block)
       true
     end
 
@@ -196,9 +193,9 @@ module ShEx::Algebra
     attr_reader :operands
 
     ##
-    # The label (or subject) of this operand
+    # The id (or subject) of this operand
     # @return [RDF::Resource]
-    attr_accessor :label
+    attr_accessor :id
 
     ##
     # Logging support (reader is in RDF::Util::Logger)
@@ -216,13 +213,28 @@ module ShEx::Algebra
     end
 
     ##
+    # Expressions are all operands which are Operators or RDF::Resource
+    # @return [RDF::Resource, Operand]
+    def expressions
+      @expressions = operands.
+        select {|op| op.is_a?(RDF::Resource) || op.is_a?(ShapeExpression) || op.is_a?(TripleExpression)}
+    end
+
+    ##
+    # The optional TripleExpression for this Shape.
+    # @return [TripleExpression]
+    def expression
+      expressions.first
+    end
+
+    ##
     # Returns the binary S-Expression (SXP) representation of this operator.
     #
     # @return [Array]
     # @see    https://en.wikipedia.org/wiki/S-expression
     def to_sxp_bin
       [self.class.const_get(:NAME)] +
-      (label ? [[:label, label]] : []) +
+      (id ? [[:id, id]] : []) +
       (operands || []).map(&:to_sxp_bin)
     end
 
@@ -251,19 +263,25 @@ module ShEx::Algebra
     def self.from_shexj(operator, options = {})
       options[:context] ||= JSON::LD::Context.parse(ShEx::CONTEXT)
       operands = []
-      label = nil
+      id = nil
 
       operator.each do |k, v|
         case k
-        when /length|pattern|clusive/          then operands << [k.to_sym, v]
-        when 'label'                           then label = iri(v, options)
-        when 'min', 'max', 'inverse', 'closed' then operands << [k.to_sym, v]
+        when /length|pattern|clusive|digits/   then operands << [k.to_sym, RDF::Literal(v)]
+        when 'id'                              then id = iri(v, options)
+        when 'min', 'max'                      then operands << [k.to_sym, v]
+        when 'inverse', 'closed'               then operands << k.to_sym
         when 'nodeKind'                        then operands << v.to_sym
         when 'object'                          then operands << value(v, options)
-        when 'start'                           then operands << Start.new(ShEx::Algebra.from_shexj(v, options))
+        when 'start'
+          if v.is_a?(String)
+            operands << Start.new(iri(v, options))
+          else
+            operands << Start.new(ShEx::Algebra.from_shexj(v, options))
+          end
         when '@context'                        then
           options[:context] = JSON::LD::Context.parse(v)
-          options[:base_uri] = options[:context].base
+          options[:base_uri] ||= options[:context].base
         when 'shapes'
           operands << case v
           when Array
@@ -271,10 +289,10 @@ module ShEx::Algebra
           else
             raise "Expected value of shapes #{v.inspect}"
           end
-        when 'reference', 'include', 'stem', 'name'
+        when 'stem', 'name'
           # Value may be :wildcard for stem
           operands << (v.is_a?(Symbol) ? v : iri(v, options))
-        when 'predicate' then operands << iri(v, options)
+        when 'predicate' then operands << [:predicate, iri(v, options)]
         when 'extra', 'datatype'
           v = [v] unless v.is_a?(Array)
           operands << (v.map {|op| iri(op, options)}).unshift(k.to_sym)
@@ -285,11 +303,15 @@ module ShEx::Algebra
               ShEx::Algebra.from_shexj(op, options) :
               value(op, options)
           end.unshift(:exclusions)
-        when 'min', 'max', 'inverse', 'closed', 'valueExpr', 'semActs',
-             'shapeExpr', 'shapeExprs', 'startActs', 'expression',
-             'expressions', 'annotations'
+        when 'semActs', 'startActs', 'annotations'
           v = [v] unless v.is_a?(Array)
           operands += v.map {|op| ShEx::Algebra.from_shexj(op, options)}
+        when 'expression', 'expressions', 'shapeExpr', 'shapeExprs', 'valueExpr'
+          v = [v] unless v.is_a?(Array)
+          operands += v.map do |op|
+            # It's a URI reference to a Shape
+            op.is_a?(String) ? iri(op, options) : ShEx::Algebra.from_shexj(op, options) 
+          end
         when 'code'
           operands << v
         when 'values'
@@ -300,7 +322,7 @@ module ShEx::Algebra
         end
       end
 
-      new(*operands, label: label)
+      new(*operands, options.merge(id: id))
     end
 
     def json_type
@@ -315,10 +337,9 @@ module ShEx::Algebra
     # Create a hash version of the operator, suitable for turning into JSON.
     # @return [Hash]
     def to_h
-      obj = json_type == 'Schema' ?
-        {'@context' => ShEx::CONTEXT, 'type' => json_type} : 
-        {'type' => json_type}
-      obj['label'] = label.to_s if label
+      obj = json_type == 'Schema' ? {'@context' => ShEx::CONTEXT} :  {}
+      obj['id'] = id.to_s if id
+      obj['type'] = json_type
       operands.each do |op|
         case op
         when Array
@@ -340,6 +361,7 @@ module ShEx::Algebra
                :totaldigits,
                :fractiondigits  then obj[op.first.to_s] = op.last.object
           when :min, :max       then obj[op.first.to_s] = op.last
+          when :predicate       then obj[op.first.to_s] = op.last.to_s
           when :base, :prefix
             # Ignore base and prefix
           when Symbol           then obj[sym.to_s] = Array(op[1..-1]).map(&:to_h)
@@ -349,14 +371,20 @@ module ShEx::Algebra
         when :wildcard  then obj['stem'] = {'type' => 'Wildcard'}
         when Annotation then (obj['annotations'] ||= []) << op.to_h
         when SemAct     then (obj[is_a?(Schema) ? 'startActs' : 'semActs'] ||= []) << op.to_h
-        when Start      then obj['start'] = op.operands.first.to_h
+        when Start
+         obj['start'] =  case op.operands.first
+          when RDF::Resource then op.operands.first.to_s
+          else                    op.operands.first.to_h
+          end
         when RDF::Value
           case self
-          when TripleConstraint then obj['predicate'] = op.to_s
           when Stem, StemRange  then obj['stem'] = op.to_s
-          when Inclusion        then obj['include'] = op.to_s
-          when ShapeRef         then obj['reference'] = op.to_s
           when SemAct           then obj[op.is_a?(RDF::URI) ? 'name' : 'code'] = op.to_s
+          when TripleConstraint then obj['valueExpr'] = op.to_s
+          when Shape            then obj['expression'] = op.to_s
+          when EachOf, OneOf    then (obj['expressions'] ||= []) << op.to_s
+          when And, Or          then (obj['shapeExprs'] ||= []) << op.to_s
+          when Not              then obj['shapeExpr'] = op.to_s
           else
             raise "How to serialize Value #{op.inspect} to json for #{self}"
           end
@@ -368,7 +396,7 @@ module ShEx::Algebra
           else
             raise "How to serialize Symbol #{op.inspect} to json for #{self}"
           end
-        when TripleConstraint, EachOf, OneOf, Inclusion
+        when TripleConstraint, EachOf, OneOf
           case self
           when EachOf, OneOf
             (obj['expressions'] ||= []) << op.to_h
@@ -382,7 +410,7 @@ module ShEx::Algebra
           else
             obj['valueExpr'] = op.to_h
           end
-        when And, Or, Shape, Not, ShapeRef
+        when And, Or, Shape, Not
           case self
           when And, Or
             (obj['shapeExprs'] ||= []) << op.to_h
@@ -462,11 +490,7 @@ module ShEx::Algebra
           RDF::URI(value)
         end
       else
-        if options[:context]
-          options[:context].expand_iri(value, document: true)
-        elsif base_uri
-          base_uri.join(value)
-        elsif base_uri
+        if base_uri
           base_uri.join(value)
         else
           RDF::URI(value)
@@ -526,14 +550,17 @@ module ShEx::Algebra
     #
     # @return [String]
     def inspect
-      sprintf("#<%s:%#0x(%s)>", self.class.name, __id__, operands.to_sse.gsub(/\s+/m, ' '))
+      sprintf("#<%s:%#0x(%s%s)>", self.class.name, __id__, ("id: #{id} " if id), operands.inspect)
     end
 
     ##
+    # Comparison does not consider operand order
     # @param  [Statement] other
     # @return [Boolean]
     def eql?(other)
-      other.class == self.class && other.operands == self.operands
+      other.class == self.class &&
+        other.id == self.id &&
+        other.operands.sort_by(&:to_s) == self.operands.sort_by(&:to_s)
     end
     alias_method :==, :eql?
 
@@ -543,22 +570,19 @@ module ShEx::Algebra
     # @yield operator
     # @yieldparam [Object] operator
     # @return [Enumerator]
-    def each_descendant(depth = 0, &block)
+    def each_descendant(&block)
       if block_given?
 
-        case block.arity
-        when 1 then block.call(self)
-        else block.call(depth, self)
-        end
+        block.call(self)
 
         operands.each do |operand|
           case operand
           when Array
             operand.each do |op|
-              op.each_descendant(depth + 1, &block) if op.respond_to?(:each_descendant)
+              op.each_descendant(&block) if op.respond_to?(:each_descendant)
             end
           else
-            operand.each_descendant(depth + 1, &block) if operand.respond_to?(:each_descendant)
+            operand.each_descendant(&block) if operand.respond_to?(:each_descendant)
           end
         end
       end
@@ -582,34 +606,38 @@ module ShEx::Algebra
     end
 
     ##
-    # First ancestor operator of type `klass`
-    #
-    # @param [Class] klass
-    # @return [Operator]
-    def first_ancestor(klass)
-      parent.is_a?(klass) ? parent : parent.first_ancestor(klass) if parent
-    end
+    # Ancestors of this Operator
+    # @return [Array<Operator>]
+    #def ancestors
+    #  parent.is_a?(Operator) ? ([parent] + parent.ancestors) : []
+    #end
 
     ##
-    # Validate all operands, operator specific classes should override for operator-specific validation
+    # Validate all operands, operator specific classes should override for operator-specific validation.
+    #
+    # A schema **must not** contain any shape expression `S` with negated references, either directly or transitively, to `S`.
+    #
     # @return [SPARQL::Algebra::Expression] `self`
     # @raise  [ShEx::StructureError] if the value is invalid
     def validate!
-      operands.each {|op| op.validate! if op.respond_to?(:validate!)}
+      operands.each do |op|
+        op.validate! if op.respond_to?(:validate!)
+        if op.is_a?(RDF::Resource) && (is_a?(ShapeExpression) || is_a?(TripleExpression))
+          ref = schema.find(op)
+          structure_error("Missing reference: #{op}") if ref.nil?
+          #if ancestors.unshift(self).include?(ref)
+          #  structure_error("Self-recursive reference to #{op}")
+          #end
+          structure_error("Self referencing shape: #{operands.first}") if ref == self
+        end
+      end
       self
     end
 
   protected
     def dup
       operands = @operands.map {|o| o.dup rescue o}
-      self.class.new(*operands, label: @label)
-    end
-
-    ##
-    # Implement `to_hash` only if accessed; otherwise, it becomes an _Implicit Accessor_ which will cause problems with splat arguments, which causes the last to be turned into a hash for extracting keyword aruments.
-    def method_missing(method, *args)
-      return to_h(*args) if method == :hash
-      super
+      self.class.new(*operands, id: @id)
     end
 
     ##

@@ -112,7 +112,7 @@ describe ShEx::Algebra do
       },
       "1Adot" => {
         shexj: %({ "type": "TripleConstraint", "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"}),
-        shexc: %{(tripleConstraint a)}
+        shexc: %{(tripleConstraint (predicate a))}
       },
       "1length" => {
         shexj: %({
@@ -120,7 +120,7 @@ describe ShEx::Algebra do
           "predicate": "http://a.example/p1",
           "valueExpr": { "type": "NodeConstraint", "length": 5 }
         }),
-        shexc: %{(tripleConstraint <http://a.example/p1> (nodeConstraint (length 5)))}
+        shexc: %{(tripleConstraint (predicate <http://a.example/p1>) (nodeConstraint (length 5)))}
       }
     }.each do |name, params|
       it name do
