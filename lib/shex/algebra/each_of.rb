@@ -31,8 +31,9 @@ module ShEx::Algebra
       while num_iters < max
         begin
           matched_this_iter = []
-          operands.select {|o| o.is_a?(TripleExpression)}.all? do |op|
+          expressions.select {|o| o.is_a?(TripleExpression) || o.is_a?(RDF::Resource)}.all? do |op|
             begin
+              op = schema.find(op) if op.is_a?(RDF::Resource)
               matched_op = op.matches(arcs_in - matched_this_iter, arcs_out - matched_this_iter, depth: depth + 1)
               satisfied << matched_op
               matched_this_iter += matched_op.matched
@@ -69,6 +70,26 @@ module ShEx::Algebra
                   depth:     depth
     ensure
       semantic_actions.each {|op| op.exit(matched: matched, depth: depth + 1)}
+    end
+
+    ##
+    # expressions must be TripleExpressions
+    #
+    # @return [Operator] `self`
+    # @raise  [ShEx::StructureError] if the value is invalid
+    def validate!
+      expressions.each do |op|
+        case op
+        when TripleExpression
+        when RDF::Resource
+          ref = schema.find(op)
+          ref.is_a?(TripleExpression) ||
+          structure_error("#{json_type} must reference a TripleExpression: #{ref}")
+        else
+          structure_error("#{json_type} must reference a TripleExpression: #{ref}")
+        end
+      end
+      super
     end
   end
 end

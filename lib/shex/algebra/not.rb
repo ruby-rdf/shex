@@ -22,13 +22,44 @@ module ShEx::Algebra
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
     def satisfies?(focus, depth: 0)
       status ""
+      op = expressions.last
       satisfied_op = begin
-        operands.last.satisfies?(focus, depth: depth + 1)
+        case op
+        when RDF::Resource
+          schema.enter_shape(op, focus) do |shape|
+            if shape
+              shape.satisfies?(focus, depth: depth + 1)
+            else
+              status "Satisfy as #{op} was re-entered for #{focus}", depth: depth
+              shape
+            end
+          end
+        when ShapeExpression
+          op.satisfies?(focus, depth: depth + 1)
+        end
       rescue ShEx::NotSatisfied => e
         return satisfy focus: focus, satisfied: e.expression.unsatisfied, depth: depth
       end
       not_satisfied "Expression should not have matched",
         focus: focus, unsatisfied: satisfied_op, depth: depth
+    end
+
+    ##
+    # expression must be a ShapeExpression
+    #
+    # @return [Operator] `self`
+    # @raise  [ShEx::StructureError] if the value is invalid
+    def validate!
+      case expression
+      when ShapeExpression
+      when RDF::Resource
+        ref = schema.find(expression)
+        ref.is_a?(ShapeExpression) ||
+        structure_error("#{json_type} must reference a ShapeExpression: #{ref}")
+      else
+        structure_error("#{json_type} must reference a ShapeExpression: #{ref}")
+      end
+      super
     end
 
     def json_type

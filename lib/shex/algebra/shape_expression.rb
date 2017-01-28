@@ -9,7 +9,7 @@ module ShEx::Algebra
     # @param [Integer] depth for logging
     # @param [Hash{Symbol => Object}] options
     #   Other, operand-specific options
-    # @return [Operator] with `matched` and `satisfied` accessors for matched triples and sub-expressions
+    # @return [ShapeExpression] with `matched` and `satisfied` accessors for matched triples and sub-expressions
     # @raise [ShEx::NotMatched] with `expression` accessor to access `matched` and `unmatched` statements along with `satisfied` and `unsatisfied` operations.
     # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
     def satisfies?(focus, depth: 0, **options)

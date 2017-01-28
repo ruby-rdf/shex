@@ -27,8 +27,9 @@ module ShEx::Algebra
       # OneOf is greedy, and consumes triples from every sub-expression, although only one is requred it succeed. Cardinality is somewhat complicated, as if two expressions match, this works for either a cardinality of one or two. Or two passes with just one match on each pass.
       status ""
       while num_iters < max
-        matched_something = operands.select {|o| o.is_a?(TripleExpression)}.any? do |op|
+        matched_something = expressions.select {|o| o.is_a?(TripleExpression) || o.is_a?(RDF::Resource)}.any? do |op|
           begin
+            op = schema.find(op) if op.is_a?(RDF::Resource)
             matched_op = op.matches(arcs_in, arcs_out, depth: depth + 1)
             satisfied << matched_op
             results += matched_op.matched
@@ -61,6 +62,26 @@ module ShEx::Algebra
       not_matched e.message,
                   matched:   results,   unmatched:   ((arcs_in + arcs_out).uniq - results),
                   satisfied: satisfied, unsatisfied: unsatisfied, depth: depth
+    end
+
+    ##
+    # expressions must be TripleExpressions
+    #
+    # @return [Operator] `self`
+    # @raise  [ShEx::StructureError] if the value is invalid
+    def validate!
+      expressions.each do |op|
+        case op
+        when TripleExpression
+        when RDF::Resource
+          ref = schema.find(op)
+          ref.is_a?(TripleExpression) ||
+          structure_error("#{json_type} must reference a TripleExpression: #{ref}")
+        else
+          structure_error("#{json_type} must reference a TripleExpression: #{ref}")
+        end
+      end
+      super
     end
   end
 end

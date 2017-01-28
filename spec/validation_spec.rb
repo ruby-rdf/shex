@@ -463,7 +463,6 @@ describe ShEx::Algebra do
             "info: #{t.inspect}",
             "schema: #{t.schema_source}",
             "data: #{t.data_source}",
-            "json: #{t.schema_json}",
             "shexc: #{SXP::Generator.string(ShEx.parse(t.schema_source).to_sxp_bin)}"
           ]
           expected = t.positive_test? || ShEx::NotSatisfied

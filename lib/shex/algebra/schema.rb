@@ -135,7 +135,8 @@ module ShEx::Algebra
     # @param [RDF::Resource] node
     # @yield :shape
     # @yieldparam [ShapeExpression] shape, or `nil` if shape already entered
-    # @return [ShapeExpression]
+    # @return (see ShapeExpression#satisfies?)
+    # @raise (see ShapeExpression#satisfies?)
     def enter_shape(id, node, &block)
       shape = shapes.detect {|s| s.id == id}
       structure_error("No shape found for #{id}") unless shape
@@ -184,10 +185,16 @@ module ShEx::Algebra
 
     ##
     # Validate shapes, in addition to other operands
-    # @return [SPARQL::Algebra::Expression] `self`
+    # @return [Operator] `self`
     # @raise  [ArgumentError] if the value is invalid
     def validate!
-      shapes.each {|op| op.validate! if op.respond_to?(:validate!)}
+      shapes.each do |op|
+        op.validate! if op.respond_to?(:validate!)
+        if op.is_a?(RDF::Resource)
+          ref = find(op)
+          structure_error("Missing reference: #{op}") if ref.nil?
+        end
+      end
       super
     end
   end

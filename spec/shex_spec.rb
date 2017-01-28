@@ -52,24 +52,29 @@ describe ShEx do
        (id <TestShape>)
        (extra a)
        (eachOf
-        (tripleConstraint a (nodeConstraint (value <http://usefulinc.com/ns/doap#Project>)))
+        (tripleConstraint
+         (predicate a)
+         (nodeConstraint (value <http://usefulinc.com/ns/doap#Project>)))
         (oneOf
          (eachOf
-          (tripleConstraint <http://usefulinc.com/ns/doap#name> (nodeConstraint literal))
-          (tripleConstraint <http://usefulinc.com/ns/doap#description>
+          (tripleConstraint
+            (predicate <http://usefulinc.com/ns/doap#name>)
+            (nodeConstraint literal))
+          (tripleConstraint
+           (predicate <http://usefulinc.com/ns/doap#description>)
            (nodeConstraint literal)) )
          (eachOf
-          (tripleConstraint <http://purl.org/dc/terms/title> (nodeConstraint literal))
-          (tripleConstraint <http://purl.org/dc/terms/description> (nodeConstraint literal)))
+          (tripleConstraint (predicate <http://purl.org/dc/terms/title>) (nodeConstraint literal))
+          (tripleConstraint (predicate <http://purl.org/dc/terms/description>) (nodeConstraint literal)))
          (min 1) (max "*"))
-        (tripleConstraint <http://usefulinc.com/ns/doap#category>
+        (tripleConstraint (predicate <http://usefulinc.com/ns/doap#category>)
          (nodeConstraint iri)
          (min 0) (max "*"))
-        (tripleConstraint <http://usefulinc.com/ns/doap#developer>
+        (tripleConstraint (predicate <http://usefulinc.com/ns/doap#developer>)
          (nodeConstraint iri)
          (min 1) (max "*"))
-        (tripleConstraint <http://usefulinc.com/ns/doap#implements>
-         (nodeConstraint (value <https://shexspec.github.io/spec/>))) ))))}
+        (tripleConstraint (predicate <http://usefulinc.com/ns/doap#implements>)
+         (nodeConstraint (value <https://shexspec.github.io/spec/>))) ))))}.gsub(/^    /m, '')
     }
 
     it "parses doap.shex" do

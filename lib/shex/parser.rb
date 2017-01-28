@@ -194,12 +194,12 @@ module ShEx
     production(:shapeExprDecl) do |input, data, callback|
       id = Array(data[:shapeLabel]).first
       expression = case data[:shapeExpression]
-      when Algebra::NodeConstraint, Algebra::Or, Algebra::And, Algebra::Not, Algebra::ShapeRef, Algebra::Shape
+      when Algebra::NodeConstraint, Algebra::Or, Algebra::And, Algebra::Not, Algebra::Shape, RDF::Resource
         data[:shapeExpression]
       else
         data[:external] ? Algebra::External.new() : Algebra::Shape.new()
       end
-      expression.id = id
+      expression.id = id if id && !expression.is_a?(RDF::Resource)
 
       (input[:shapes] ||= []) << expression
     end
@@ -218,7 +218,7 @@ module ShEx
     def shape_or(input, data)
       input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
       expression = if Array(data[:shapeExpression]).length > 1
-        Algebra::Or.new(*data[:shapeExpression])
+        Algebra::Or.new(*data[:shapeExpression], {})
       else
         Array(data[:shapeExpression]).first
       end
@@ -242,7 +242,7 @@ module ShEx
         memo.concat(expr.is_a?(Algebra::And) ? expr.operands : [expr])
       end
       expression = if expressions.length > 1
-        Algebra::And.new(*expressions)
+        Algebra::And.new(*expressions, {})
       else
         expressions.first
       end
@@ -291,9 +291,8 @@ module ShEx
       expression = [constraint, shape].compact
       expression = case expression.length
       when 0 then nil
-      when 1
-         expression.first
-      else   Algebra::And.new(*expression)
+      when 1 then expression.first
+      else        Algebra::And.new(*expression, {})
       end
 
       input[:shapeExpression] = expression if expression
@@ -311,7 +310,7 @@ module ShEx
     def shape_or_ref(input, data)
       input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
       if data[:shape] || Array(data[:shapeLabel]).first
-        input[:shapeOrRef] = data[:shape] || Algebra::ShapeRef.new(Array(data[:shapeLabel]).first)
+        input[:shapeOrRef] = data[:shape] || Array(data[:shapeLabel]).first
       end
     rescue ArgumentError => e
       error(nil, "Argument Error on ShapeOrRef: #{e.message}")
@@ -339,7 +338,7 @@ module ShEx
       attrs += Array(data[:numericFacet])
       attrs += Array(data[:stringFacet])
 
-      input[:nodeConstraint] = Algebra::NodeConstraint.new(*attrs.compact)
+      input[:nodeConstraint] = Algebra::NodeConstraint.new(*attrs.compact, {})
     end
 
     # [23]    nonLiteralKind        ::= "IRI" | "BNODE" | "NONLITERAL"
@@ -394,7 +393,7 @@ module ShEx
       attrs += Array(data[:annotation])
       attrs += Array(data[:codeDecl])
 
-      input[:shape] = Algebra::Shape.new(*attrs) if expression
+      input[:shape] = Algebra::Shape.new(*attrs, {}) if expression
     end
     private :shape_definition
 
@@ -407,7 +406,7 @@ module ShEx
     # [34]    oneOfTripleExpr           ::= groupTripleExpr ('|' groupTripleExpr)*
     production(:oneOfTripleExpr) do |input, data, callback|
       expression = if Array(data[:tripleExpression]).length > 1
-        Algebra::OneOf.new(*data[:tripleExpression])
+        Algebra::OneOf.new(*data[:tripleExpression], {})
       else
         Array(data[:tripleExpression]).first
       end
@@ -417,7 +416,7 @@ module ShEx
     # [37]    groupTripleExpr            ::= unaryTripleExpr (';' unaryTripleExpr?)*
     production(:groupTripleExpr) do |input, data, callback|
       expression = if Array(data[:tripleExpression]).length > 1
-        Algebra::EachOf.new(*data[:tripleExpression])
+        Algebra::EachOf.new(*data[:tripleExpression], {})
       else
         Array(data[:tripleExpression]).first
       end
@@ -462,7 +461,7 @@ module ShEx
       cardinality = data.fetch(:cardinality, {})
       attrs = [
         (:inverse if data[:inverse] || data[:not]),
-        Array(data[:predicate]).first,  # predicate
+        [:predicate, Array(data[:predicate]).first],
         data[:shapeExpression],
         ([:min, cardinality[:min]] if cardinality[:min]),
         ([:max, cardinality[:max]] if cardinality[:max])
@@ -470,7 +469,7 @@ module ShEx
       attrs += Array(data[:codeDecl])
       attrs += Array(data[:annotation])
 
-      input[:tripleExpression] = Algebra::TripleConstraint.new(*attrs) unless attrs.empty?
+      input[:tripleExpression] = Algebra::TripleConstraint.new(*attrs, {}) unless attrs.empty?
     end
 
     # [44]    cardinality            ::= '*' | '+' | '?' | REPEAT_RANGE
@@ -503,12 +502,12 @@ module ShEx
 
     # [50]     include               ::= '&' shapeLabel
     production(:include) do |input, data, callback|
-      input[:tripleExpression] = Algebra::Inclusion.new(*data[:shapeLabel])
+      input[:tripleExpression] = data[:shapeLabel].first
     end
 
     # [51]    annotation            ::= '//' predicate (iri | literal)
     production(:annotation) do |input, data, callback|
-      annotation = Algebra::Annotation.new(data[:predicate].first, (data[:iri] || data[:literal]))
+      annotation = Algebra::Annotation.new([:predicate, data[:predicate].first], (data[:iri] || data[:literal]))
       (input[:annotation] ||= []) << annotation
     end
 
@@ -516,7 +515,7 @@ module ShEx
 
     # [53]    codeDecl              ::= '%' iri (CODE | "%")
     production(:codeDecl) do |input, data, callback|
-      (input[:codeDecl] ||= []) <<  Algebra::SemAct.new(*[data[:iri], data[:code]].compact)
+      (input[:codeDecl] ||= []) <<  Algebra::SemAct.new(*[data[:iri], data[:code]].compact, {})
     end
 
     # [13t]   literal               ::= rdfLiteral | numericLiteral | booleanLiteral
@@ -666,7 +665,7 @@ module ShEx
       @result.validate! if @result && validate?
       @result
     rescue EBNF::LL1::Parser::Error, EBNF::LL1::Lexer::Error =>  e
-      raise ShEx::ParseError.new(e.message, lineno: e.lineno, token: e.token)
+      raise ShEx::ParseError, e.message, e.backtrace
     end
 
     private

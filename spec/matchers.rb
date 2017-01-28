@@ -37,9 +37,9 @@ RSpec::Matchers.define :generate do |expected, options = {}|
     @input = input
     begin
       case
-      when [ShEx::ParseError, ShEx::StructureError, ArgumentError].include?(expected)
+      when [ShEx::ParseError, ShEx::StructureError, ArgumentError, StandardError].include?(expected)
         begin
-          parser(options).call(input)
+           @actual = parser(options).call(input)
           false
         rescue expected
           true
@@ -60,8 +60,22 @@ RSpec::Matchers.define :generate do |expected, options = {}|
       raise
     end
   end
-  
+
   failure_message do |input|
+    "Input        : #{@input}\n" +
+    case expected
+    when String
+      "Expected     : #{expected}\n"
+    else
+      "Expected     : #{expected.inspect}\n" +
+      "Expected(sxp): #{SXP::Generator.string(expected.to_sxp_bin)}\n"
+    end +
+    "Actual       : #{actual.inspect}\n" +
+    "Actual(sxp)  : #{SXP::Generator.string(actual.to_sxp_bin)}\n" +
+    (options[:logger] ? "Trace     :\n#{options[:logger].to_s}" : "")
+  end
+
+  failure_message_when_negated do |input|
     "Input        : #{@input}\n" +
     case expected
     when String

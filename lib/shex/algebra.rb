@@ -11,7 +11,6 @@ module ShEx
     autoload :Annotation, 'shex/algebra/annotation'
     autoload :EachOf, 'shex/algebra/each_of'
     autoload :External, 'shex/algebra/external'
-    autoload :Inclusion, 'shex/algebra/inclusion'
     autoload :Not, 'shex/algebra/not'
     autoload :NodeConstraint, 'shex/algebra/node_constraint'
     autoload :OneOf, 'shex/algebra/one_of'
@@ -20,7 +19,6 @@ module ShEx
     autoload :Schema, 'shex/algebra/schema'
     autoload :SemAct, 'shex/algebra/semact'
     autoload :ShapeExpression, 'shex/algebra/shape_expression'
-    autoload :ShapeRef, 'shex/algebra/shape_ref'
     autoload :Shape, 'shex/algebra/shape'
     autoload :Start, 'shex/algebra/start'
     autoload :Stem, 'shex/algebra/stem'
@@ -50,7 +48,6 @@ module ShEx
       klass = case operator['type']
       when 'Annotation'       then Annotation
       when 'EachOf'           then EachOf
-      when 'Inclusion'        then Inclusion
       when 'NodeConstraint'   then NodeConstraint
       when 'OneOf'            then OneOf
       when 'Schema'           then Schema
@@ -60,7 +57,6 @@ module ShEx
       when 'ShapeExternal'    then External
       when 'ShapeNot'         then Not
       when 'ShapeOr'          then Or
-      when 'ShapeRef'         then ShapeRef
       when 'Stem'             then Stem
       when 'StemRange'        then StemRange
       when 'TripleConstraint' then TripleConstraint
