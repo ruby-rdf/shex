@@ -10,8 +10,7 @@ group :development, :test do
   gem 'ebnf',       github: "gkellogg/ebnf",        branch: "develop"
   gem 'linkeddata', github: "ruby-rdf/linkeddata",  branch: "develop"
   gem 'sxp',        github: "dryruby/sxp.rb",       branch: "develop"
-  #gem 'simplecov',  require: false
-  gem 'simplecov',  github: 'colszowka/simplecov'
+  gem 'simplecov',  require: false
   gem 'coveralls',  require: false
   gem 'earl-report'
 end
