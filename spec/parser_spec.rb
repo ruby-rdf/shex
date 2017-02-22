@@ -1135,6 +1135,59 @@ describe ShEx::Parser do
     end
   end
 
+  context "Examples" do
+    {
+      "labra" => {
+        shexc: %(
+          <R> IRI
+          <T> { <p> @<R> }
+        ),
+        sxp: %{(schema
+                (shapes
+                 (nodeConstraint (id <R>) iri)
+                 (shape (id <T>) (tripleConstraint (predicate <p>) <R>))))},
+        shexj: %({
+          "@context": "https://shexspec.github.io/context.jsonld",
+          "type": "Schema",
+          "shapes": [
+            {
+              "id": "R",
+              "type": "NodeConstraint",
+              "nodeKind": "iri"
+            },
+            {
+              "id": "T",
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "p",
+                "valueExpr": "R"
+              }
+            }
+          ]
+        })
+      }
+    }.each do |name, params|
+      it "#{name} (shexc)" do
+        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), logger: RDF::Spec.logger)
+      end
+
+      if params[:shexj]
+        it "#{name} (shexj)" do
+          # Get rid of prefix & base
+          sxp_source = params[:sxp].dup.gsub(/^        /m, '').split("\n").reject {|l| l =~ /\((prefix|base)/}.join("\n")
+          expect(params[:shexj]).to generate(sxp_source, logger: RDF::Spec.logger, format: :shexj)
+        end
+
+        it "#{name} generates shexj from shexc" do
+          expression = ShEx.parse(params[:shexc])
+          hash = expression.to_h
+          expect(hash).to produce(JSON.parse(params[:shexj]), logger: RDF::Spec.logger)
+        end
+      end
+    end
+  end
+
   describe "NegativeSyntax" do
     {
       "1valA.shex" => {
