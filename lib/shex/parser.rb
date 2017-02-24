@@ -143,7 +143,7 @@ module ShEx
            'MINEXCLUSIVE',
            'MAXINCLUSIVE',
            'MAXEXCLUSIVE'  then input[:numericRange] = token.value.downcase.to_sym
-         when 'NOT'           then input[:not] = token.value.downcase.to_sym
+      when 'NOT'           then input[:not] = token.value.downcase.to_sym
       when 'PATTERN'       then input[:pattern] = token.value.downcase.to_sym
       when 'START'         then input[:start] = token.value.downcase.to_sym
       else
@@ -184,7 +184,7 @@ module ShEx
     # [5]     notStartAction        ::= start | shapeExprDecl
     # [6]     start                 ::= "start" '=' shapeExpression
     production(:start) do |input, data, callback|
-      input[:start] = data[:shapeExpression]
+      input[:start] = Array(data[:shapeExpression]).first || data[:shape]
     end
     # [7]     startActions          ::= codeDecl+
 
@@ -193,9 +193,9 @@ module ShEx
     # [9]     shapeExprDecl         ::= shapeLabel (shapeExpression|"EXTERNAL")
     production(:shapeExprDecl) do |input, data, callback|
       id = Array(data[:shapeLabel]).first
-      expression = case data[:shapeExpression]
+      expression = case Array(data[:shapeExpression]).first
       when Algebra::NodeConstraint, Algebra::Or, Algebra::And, Algebra::Not, Algebra::Shape, RDF::Resource
-        data[:shapeExpression]
+        Array(data[:shapeExpression]).first
       else
         data[:external] ? Algebra::External.new() : Algebra::Shape.new()
       end
@@ -204,13 +204,36 @@ module ShEx
       (input[:shapes] ||= []) << expression
     end
 
-    # [10]    shapeExpression       ::= shapeOr
-    # [11]    inlineShapeExpression ::= inlineShapeOr
+    # [10]    shapeExpression  ::= shapeAtomNoRef shapeOr?
+    #                            | "NOT" (shapeAtomNoRef | shapeRef) shapeOr?
+    #                            | shapeRef shapeOr
+    production(:shapeExpression) do |input, data, callback|
+      expression = Array(data[:shapeExpression]).first || data[:shape]
+      expression = Algebra::Not.new(expression) if data[:not]
+      (input[:shapeExpression] ||= []) << expression
+    end
 
-    # [12]    shapeOr               ::= shapeAnd ("OR" shapeAnd)*
-    production(:shapeOr) do |input, data, callback|
+    # [11]    inlineShapeExpression ::= inlineShapeOr
+    # [12]    shapeOr               ::= shapeOrA | shapeOrB shapeOrA?
+    # [12a]   shapeOrA              ::= ("OR" shapeAnd)+
+    start_production(:shapeOrA) do |input, data, callback|
+      data[:shapeExpression] = input.delete(:shapeExpression)
+      data[:shapeExpression] ||=  Array(input.delete(:shape)) if input[:shape]
+      data[:shapeExpression] = [Algebra::Not.new(*data[:shapeExpression])] if input.delete(:not)
+    end
+    production(:shapeOrA) do |input, data, callback|
       shape_or(input, data)
     end
+    # [12b]   shapeOrB              ::= ("AND" shapeNot)+
+    start_production(:shapeOrB) do |input, data, callback|
+      data[:shapeExpression] = input.delete(:shapeExpression)
+      data[:shapeExpression] ||=  Array(input.delete(:shape)) if input[:shape]
+      data[:shapeExpression] = [Algebra::Not.new(*data[:shapeExpression])] if input.delete(:not)
+    end
+    production(:shapeOrB) do |input, data, callback|
+      shape_and(input, data)
+    end
+
     # [13]    inlineShapeOr         ::= inlineShapeAnd ("OR" inlineShapeAnd)*
     production(:inlineShapeOr) do |input, data, callback|
       shape_or(input, data)
@@ -222,7 +245,7 @@ module ShEx
       else
         Array(data[:shapeExpression]).first
       end
-      input[:shapeExpression] = expression if expression
+      (input[:shapeExpression] ||= []) << expression if expression
     rescue ArgumentError => e
       error(nil, "Argument Error on OR: #{e.message}")
     end
@@ -262,7 +285,7 @@ module ShEx
     end
     def shape_not(input, data)
       input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
-      expression = data[:shapeExpression]
+      expression = Array(data[:shapeExpression]).first
       expression = Algebra::Not.new(expression) if data[:not]
       #error(nil, "Expected an atom for NOT") unless expression
       (input[:shapeExpression] ||= []) << expression if expression
@@ -276,6 +299,15 @@ module ShEx
     production(:shapeAtom) do |input, data, callback|
       shape_atom(input, data)
     end
+
+    # [18a]   shapeAtomNoRef        ::= nodeConstraint shapeOrRef?
+    #                                 | shapeDefinition
+    #                                 | "(" shapeExpression ")"
+    #                                 | '.'  # no constraint
+    production(:shapeAtomNoRef) do |input, data, callback|
+      shape_atom(input, data)
+    end
+
     # [19]    inlineShapeAtom       ::= nodeConstraint inlineShapeOrRef?
     #                                 | inlineShapeOrRef nodeConstraint?
     #                                 | "(" shapeExpression ")"
@@ -285,7 +317,7 @@ module ShEx
     end
     def shape_atom(input, data)
       constraint = data[:nodeConstraint]
-      shape = data[:shapeOrRef] || data[:shapeExpression]
+      shape = data[:shapeOrRef] || Array(data[:shapeExpression]).first || data[:shape]
       input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
 
       expression = [constraint, shape].compact
@@ -295,27 +327,30 @@ module ShEx
       else        Algebra::And.new(*expression, {})
       end
 
-      input[:shapeExpression] = expression if expression
+      (input[:shapeExpression] ||= []) << expression if expression
     end
     private :shape_atom
 
-    # [20]    shapeOrRef            ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel | shapeDefinition
+    # [20]    shapeOrRef            ::= shapeDefinition | shapeRef
     production(:shapeOrRef) do |input, data, callback|
       shape_or_ref(input, data)
     end
-    # [21]    inlineShapeOrRef      ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel | inlineShapeDefinition
+    # [21]    inlineShapeOrRef      ::= inlineShapeDefinition | shapeRef
     production(:inlineShapeOrRef) do |input, data, callback|
       shape_or_ref(input, data)
     end
     def shape_or_ref(input, data)
       input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
-      if data[:shape] || Array(data[:shapeLabel]).first
-        input[:shapeOrRef] = data[:shape] || Array(data[:shapeLabel]).first
-      end
+      input[:shapeOrRef] = data[:shape] if data[:shape]
     rescue ArgumentError => e
       error(nil, "Argument Error on ShapeOrRef: #{e.message}")
     end
     private :shape_or_ref
+
+    # [00]    shapeRef              ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel
+    production(:shapeRef) do |input, data, callback|
+      input[:shape] = Array(data[:shapeLabel]).first
+    end
 
     # [22]    nodeConstraint        ::= "LITERAL" xsFacet*
     #                                 | nonLiteralKind stringFacet*
@@ -462,7 +497,7 @@ module ShEx
       attrs = [
         (:inverse if data[:inverse] || data[:not]),
         [:predicate, Array(data[:predicate]).first],
-        data[:shapeExpression],
+        Array(data[:shapeExpression]).first,
         ([:min, cardinality[:min]] if cardinality[:min]),
         ([:max, cardinality[:max]] if cardinality[:max])
       ].compact

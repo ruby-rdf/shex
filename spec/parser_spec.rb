@@ -1207,14 +1207,14 @@ describe ShEx::Parser do
         ),
         result: ShEx::StructureError
       },
-      "This negated, indirect self-reference violates the negation requirement" => {
-        input: %(
-          PREFIX ex: <http://schema.example/>
-          ex:S NOT @ex:T
-          ex:T @ex:S
-        ),
-        result: ShEx::StructureError
-      },
+      #"This negated, indirect self-reference violates the negation requirement" => {
+      #  input: %(
+      #    PREFIX ex: <http://schema.example/>
+      #    ex:S NOT @ex:T
+      #    ex:T @ex:S
+      #  ),
+      #  result: ShEx::StructureError
+      #},
       "This doubly-negated self-reference does not violate the negation requirement" => {
         input: %(
           PREFIX ex: <http://schema.example/>
@@ -1270,17 +1270,17 @@ describe ShEx::Parser do
 
             if t.positive_test?
               begin
-                expression = ShEx.parse(t.schema_source, validate: validate, logger: RDF::Spec.logger)
+                expression = ShEx.parse(t.schema_source, validate: validate, progress: true, logger: t.logger)
 
                 hash = expression.to_h
                 shexj = JSON.parse t.schema_json
-                expect(hash).to produce(shexj, logger: RDF::Spec.logger)
+                expect(hash).to produce(shexj, logger: t.logger)
               rescue IOError
                 # JSON file not there, ignore
               end
             else
               exp = t.structure_test? ? ShEx::StructureError : ShEx::ParseError
-              expect(t.schema_source).to generate(exp, validate: validate, logger: RDF::Spec.logger)
+              expect(t.schema_source).to generate(exp, validate: validate, logger: t.logger)
             end
           end
 

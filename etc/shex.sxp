@@ -1,6 +1,8 @@
 (
  (pass (alt (plus (range " \t\r\n")) (seq "#" (star (range "^\r\n")))))
  (rule _empty "0" (seq))
+ (rule shapeRef "00" (alt ATPNAME_LN ATPNAME_NS _shapeRef_1))
+ (rule _shapeRef_1 "00.1" (seq "@" shapeLabel))
  (rule shexDoc "1" (seq _shexDoc_1 _shexDoc_2))
  (rule _shexDoc_1 "1.1" (cleanup star) (alt _empty _shexDoc_3))
  (rule _shexDoc_2 "1.2" (cleanup opt) (alt _empty _shexDoc_4))
@@ -20,12 +22,26 @@
  (rule statement "8" (alt directive notStartAction))
  (rule shapeExprDecl "9" (seq shapeLabel _shapeExprDecl_1))
  (rule _shapeExprDecl_1 "9.1" (alt shapeExpression "EXTERNAL"))
- (rule shapeExpression "10" (seq shapeOr))
+ (rule shapeExpression "10"
+  (alt _shapeExpression_1 _shapeExpression_2 _shapeExpression_3))
+ (rule _shapeExpression_1 "10.1" (seq shapeAtomNoRef _shapeExpression_4))
+ (rule _shapeExpression_2 "10.2" (seq "NOT" _shapeExpression_5 _shapeExpression_6))
+ (rule _shapeExpression_3 "10.3" (seq shapeRef shapeOr))
+ (rule _shapeExpression_4 "10.4" (cleanup opt) (alt _empty shapeOr))
+ (rule _shapeExpression_5 "10.5" (alt shapeAtomNoRef shapeRef))
+ (rule _shapeExpression_6 "10.6" (cleanup opt) (alt _empty shapeOr))
  (rule inlineShapeExpression "11" (seq inlineShapeOr))
- (rule shapeOr "12" (seq shapeAnd _shapeOr_1))
- (rule _shapeOr_1 "12.1" (cleanup star) (alt _empty _shapeOr_3))
- (rule _shapeOr_2 "12.2" (seq "OR" shapeAnd))
- (rule _shapeOr_3 "12.3" (cleanup merge) (seq _shapeOr_2 _shapeOr_1))
+ (rule _shapeOrB_3 "12b.3" (cleanup merge) (seq _shapeOrB_1 _shapeOrB_2))
+ (rule shapeOr "12" (alt shapeOrA _shapeOr_1))
+ (rule shapeOrA "12a" (cleanup plus) (seq _shapeOrA_1 _shapeOrA_2))
+ (rule _shapeOrA_2 "12a.2" (cleanup star) (alt _empty _shapeOrA_3))
+ (rule _shapeOrA_3 "12a.3" (cleanup merge) (seq _shapeOrA_1 _shapeOrA_2))
+ (rule _shapeOrA_1 "12a.1" (seq "OR" shapeAnd))
+ (rule shapeOrB "12b" (cleanup plus) (seq _shapeOrB_1 _shapeOrB_2))
+ (rule _shapeOrB_2 "12b.2" (cleanup star) (alt _empty _shapeOrB_3))
+ (rule _shapeOrB_1 "12b.1" (seq "AND" shapeNot))
+ (rule _shapeOr_1 "12.1" (seq shapeOrB _shapeOr_2))
+ (rule _shapeOr_2 "12.2" (cleanup opt) (alt _empty shapeOrA))
  (rule inlineShapeOr "13" (seq inlineShapeAnd _inlineShapeOr_1))
  (rule literal "13t" (alt rdfLiteral numericLiteral booleanLiteral))
  (rule _inlineShapeOr_1 "13.1" (cleanup star) (alt _empty _inlineShapeOr_3))
@@ -46,12 +62,17 @@
  (rule _shapeNot_1 "16.1" (cleanup opt) (alt _empty "NOT"))
  (rule inlineShapeNot "17" (seq _inlineShapeNot_1 inlineShapeAtom))
  (rule _inlineShapeNot_1 "17.1" (cleanup opt) (alt _empty "NOT"))
- (rule shapeAtom "18" (alt _shapeAtom_1 shapeOrRef _shapeAtom_2 "."))
  (terminal IRIREF "18t"
   (seq "<"
    (range
     "^#x00-#x20<>\"{}|^`\\] | UCHAR)* '>' /* #x00=NULL #01-#x1F=control codes #x20=space */"
    )) )
+ (rule shapeAtom "18" (alt _shapeAtom_1 shapeOrRef _shapeAtom_2 "."))
+ (rule shapeAtomNoRef "18a"
+  (alt _shapeAtomNoRef_1 shapeDefinition _shapeAtomNoRef_2 "."))
+ (rule _shapeAtomNoRef_1 "18a.1" (seq nodeConstraint _shapeAtomNoRef_3))
+ (rule _shapeAtomNoRef_3 "18a.3" (cleanup opt) (alt _empty shapeOrRef))
+ (rule _shapeAtomNoRef_2 "18a.2" (seq "(" shapeExpression ")"))
  (rule _shapeAtom_1 "18.1" (seq nodeConstraint _shapeAtom_3))
  (rule _shapeAtom_2 "18.2" (seq "(" shapeExpression ")"))
  (rule _shapeAtom_3 "18.3" (cleanup opt) (alt _empty shapeOrRef))
@@ -63,18 +84,15 @@
  (rule _inlineShapeAtom_3 "19.3" (seq "(" shapeExpression ")"))
  (rule _inlineShapeAtom_4 "19.4" (cleanup opt) (alt _empty inlineShapeOrRef))
  (rule _inlineShapeAtom_5 "19.5" (cleanup opt) (alt _empty nodeConstraint))
- (rule shapeOrRef "20" (alt ATPNAME_LN ATPNAME_NS _shapeOrRef_1 shapeDefinition))
  (terminal DECIMAL "20t" (seq (opt (range "+-")) (star (range "0-9")) "." (plus (range "0-9"))))
- (rule _shapeOrRef_1 "20.1" (seq "@" shapeLabel))
+ (rule shapeOrRef "20" (alt shapeDefinition shapeRef))
  (terminal DOUBLE "21t"
   (seq
    (opt (range "+-"))
    (alt
     (seq (plus (range "0-9")) "." (star (range "0-9")) EXPONENT)
     (seq (opt ".") (plus (range "0-9")) EXPONENT)) ))
- (rule inlineShapeOrRef "21"
-  (alt ATPNAME_LN ATPNAME_NS _inlineShapeOrRef_1 inlineShapeDefinition))
- (rule _inlineShapeOrRef_1 "21.1" (seq "@" shapeLabel))
+ (rule inlineShapeOrRef "21" (alt inlineShapeDefinition shapeRef))
  (rule nodeConstraint "22"
   (alt _nodeConstraint_1 _nodeConstraint_2 _nodeConstraint_3 _nodeConstraint_4
    _nodeConstraint_5 ))
@@ -99,9 +117,9 @@
  (rule _stringFacet_1 "25.1" (seq stringLength INTEGER))
  (rule _stringFacet_2 "25.2" (seq "PATTERN" string))
  (rule _stringFacet_3 "25.3" (seq "~" string))
+ (rule stringLength "26" (alt "LENGTH" "MINLENGTH" "MAXLENGTH"))
  (terminal UCHAR "26t"
   (alt (seq "\\u" HEX HEX HEX HEX) (seq "\\U" HEX HEX HEX HEX HEX HEX HEX HEX)))
- (rule stringLength "26" (alt "LENGTH" "MINLENGTH" "MAXLENGTH"))
  (rule numericFacet "27" (alt _numericFacet_1 _numericFacet_2))
  (rule _numericFacet_1 "27.1" (seq numericRange _numericFacet_3))
  (rule _numericFacet_2 "27.2" (seq numericLength INTEGER))
@@ -205,10 +223,10 @@
  (terminal RDF_TYPE "60" (seq "a"))
  (terminal ATPNAME_NS "61" (seq "@" (opt PN_PREFIX) ":"))
  (terminal ATPNAME_LN "62" (seq "@" PNAME_NS PN_LOCAL))
- (rule rdfLiteral "129s" (seq string _rdfLiteral_1))
  (rule _rdfLiteral_3 "129s.3" (seq "^^" datatype))
  (rule _rdfLiteral_2 "129s.2" (alt LANGTAG _rdfLiteral_3))
  (rule _rdfLiteral_1 "129s.1" (cleanup opt) (alt _empty _rdfLiteral_2))
+ (rule rdfLiteral "129s" (seq string _rdfLiteral_1))
  (rule booleanLiteral "134s" (alt "true" "false"))
  (rule string "135s"
   (alt STRING_LITERAL1 STRING_LITERAL_LONG1 STRING_LITERAL2 STRING_LITERAL_LONG2))

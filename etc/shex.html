@@ -87,7 +87,9 @@
       <td><code>shapeExpression</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-shapeOr">shapeOr</a>
+        <a href="#grammar-production-shapeAtomNoRef">shapeAtomNoRef</a> <a href="#grammar-production-shapeOr">shapeOr</a><code>?</code> 
+        <code>|</code> "<code class="grammar-literal">NOT</code>" <code>(</code> <a href="#grammar-production-shapeAtomNoRef">shapeAtomNoRef</a> <code>|</code> <a href="#grammar-production-shapeRef">shapeRef</a><code>)</code>  <a href="#grammar-production-shapeOr">shapeOr</a><code>?</code> 
+        <code>|</code> <a href="#grammar-production-shapeRef">shapeRef</a> <a href="#grammar-production-shapeOr">shapeOr</a>
       </td>
     </tr>
     <tr id='grammar-production-inlineShapeExpression'>
@@ -103,8 +105,24 @@
       <td><code>shapeOr</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-shapeAnd">shapeAnd</a>
-        ("<code class="grammar-literal">OR</code>" <a href="#grammar-production-shapeAnd">shapeAnd</a>)<code>*</code>
+        <a href="#grammar-production-shapeOrA">shapeOrA</a>
+        <code>|</code> <a href="#grammar-production-shapeOrB">shapeOrB</a> <a href="#grammar-production-shapeOrA">shapeOrA</a><code>?</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-shapeOrA'>
+      <td>[12a]</td>
+      <td><code>shapeOrA</code></td>
+      <td>::=</td>
+      <td>
+        ("<code class="grammar-literal">OR</code>" <a href="#grammar-production-shapeAnd">shapeAnd</a>)<code>+</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-shapeOrB'>
+      <td>[12b]</td>
+      <td><code>shapeOrB</code></td>
+      <td>::=</td>
+      <td>
+        ("<code class="grammar-literal">AND</code>" <a href="#grammar-production-shapeNot">shapeNot</a>)<code>+</code>
       </td>
     </tr>
     <tr id='grammar-production-inlineShapeOr'>
@@ -163,6 +181,17 @@
         <code>|</code> "<code class="grammar-literal">.</code>"
       </td>
     </tr>
+    <tr id='grammar-production-shapeAtomNoRef'>
+      <td>[18a]</td>
+      <td><code>shapeAtomNoRef</code></td>
+      <td>::=</td>
+      <td>
+        <a href="#grammar-production-nodeConstraint">nodeConstraint</a> <a href="#grammar-production-shapeOrRef">shapeOrRef</a><code>?</code> 
+        <code>|</code> <a href="#grammar-production-shapeDefinition">shapeDefinition</a>
+        <code>|</code> "<code class="grammar-literal">(</code>" <a href="#grammar-production-shapeExpression">shapeExpression</a> "<code class="grammar-literal">)</code>"
+        <code>|</code> "<code class="grammar-literal">.</code>"
+      </td>
+    </tr>
     <tr id='grammar-production-inlineShapeAtom'>
       <td>[19]</td>
       <td><code>inlineShapeAtom</code></td>
@@ -179,10 +208,8 @@
       <td><code>shapeOrRef</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-ATPNAME_LN">ATPNAME_LN</a>
-        <code>|</code> <a href="#grammar-production-ATPNAME_NS">ATPNAME_NS</a>
-        <code>|</code> "<code class="grammar-literal">@</code>" <a href="#grammar-production-shapeLabel">shapeLabel</a>
-        <code>|</code> <a href="#grammar-production-shapeDefinition">shapeDefinition</a>
+        <a href="#grammar-production-shapeDefinition">shapeDefinition</a>
+        <code>|</code> <a href="#grammar-production-shapeRef">shapeRef</a>
       </td>
     </tr>
     <tr id='grammar-production-inlineShapeOrRef'>
@@ -190,10 +217,18 @@
       <td><code>inlineShapeOrRef</code></td>
       <td>::=</td>
       <td>
+        <a href="#grammar-production-inlineShapeDefinition">inlineShapeDefinition</a>
+        <code>|</code> <a href="#grammar-production-shapeRef">shapeRef</a>
+      </td>
+    </tr>
+    <tr id='grammar-production-shapeRef'>
+      <td>[00]</td>
+      <td><code>shapeRef</code></td>
+      <td>::=</td>
+      <td>
         <a href="#grammar-production-ATPNAME_LN">ATPNAME_LN</a>
         <code>|</code> <a href="#grammar-production-ATPNAME_NS">ATPNAME_NS</a>
         <code>|</code> "<code class="grammar-literal">@</code>" <a href="#grammar-production-shapeLabel">shapeLabel</a>
-        <code>|</code> <a href="#grammar-production-inlineShapeDefinition">inlineShapeDefinition</a>
       </td>
     </tr>
     <tr id='grammar-production-nodeConstraint'>

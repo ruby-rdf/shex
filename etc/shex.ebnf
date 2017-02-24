@@ -82,15 +82,19 @@
 
 [5]     notStartAction        ::= start | shapeExprDecl
 # "START" easier for parser than "start"
-[6]     start                 ::= "START" '=' shapeExpression
+[6]     start                 ::= "START" '=' "NOT"? (shapeAtomNoRef | shapeRef) shapeOr?
 [7]     startActions          ::= codeDecl+
 
 [8]     statement             ::= directive | notStartAction
 
 [9]     shapeExprDecl         ::= shapeLabel (shapeExpression|"EXTERNAL")
-[10]    shapeExpression       ::= shapeOr
+[10]    shapeExpression       ::= shapeAtomNoRef shapeOr?
+                                | "NOT" (shapeAtomNoRef | shapeRef) shapeOr?
+                                | shapeRef shapeOr
 [11]    inlineShapeExpression ::= inlineShapeOr
-[12]    shapeOr               ::= shapeAnd ("OR" shapeAnd)*
+[12]    shapeOr               ::= shapeOrA | shapeOrB shapeOrA?
+[12a]   shapeOrA              ::= ("OR" shapeAnd)+
+[12b]   shapeOrB              ::= ("AND" shapeNot)+
 [13]    inlineShapeOr         ::= inlineShapeAnd ("OR" inlineShapeAnd)*
 [14]    shapeAnd              ::= shapeNot ("AND" shapeNot)*
 [15]    inlineShapeAnd        ::= inlineShapeNot ("AND" inlineShapeNot)*
@@ -100,13 +104,18 @@
                                 | shapeOrRef
                                 | "(" shapeExpression ")"
                                 | '.'  # no constraint
+[18a]   shapeAtomNoRef        ::= nodeConstraint shapeOrRef?
+                                | shapeDefinition
+                                | "(" shapeExpression ")"
+                                | '.'  # no constraint
 [19]    inlineShapeAtom       ::= nodeConstraint inlineShapeOrRef?
                                 | inlineShapeOrRef nodeConstraint?
                                 | "(" shapeExpression ")"
                                 | '.'  # no constraint
 
-[20]    shapeOrRef            ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel | shapeDefinition
-[21]    inlineShapeOrRef      ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel | inlineShapeDefinition
+[20]    shapeOrRef            ::= shapeDefinition | shapeRef
+[21]    inlineShapeOrRef      ::= inlineShapeDefinition | shapeRef
+[00]    shapeRef              ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel
 
 [22]    nodeConstraint        ::= "LITERAL" xsFacet*
                                 | nonLiteralKind stringFacet*

@@ -1,6 +1,30 @@
 (
- (rule _empty "0" (first _eps) (seq))
+ (rule shapeRef "00"
+  (first "@" ATPNAME_LN ATPNAME_NS)
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL "BNODE"
+   "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH"
+   "NONLITERAL" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "START"
+   "TOTALDIGITS" "[" _eof "|" "}" "~" )
+  (alt ATPNAME_LN ATPNAME_NS _shapeRef_1))
  (pass (alt (plus (range " \t\r\n")) (seq "#" (star (range "^\r\n")))))
+ (rule _empty "0" (first _eps) (seq))
+ (rule _shapeRef_1 "00.1"
+  (first "@")
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL "BNODE"
+   "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH"
+   "NONLITERAL" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "START"
+   "TOTALDIGITS" "[" _eof "|" "}" "~" )
+  (seq "@" shapeLabel))
+ (rule _shapeRef_2 "00.2"
+  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
+  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BASE" BLANK_NODE_LABEL "BNODE"
+   "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH"
+   "NONLITERAL" "OR" "PATTERN" PNAME_LN PNAME_NS "PREFIX" REPEAT_RANGE "START"
+   "TOTALDIGITS" "[" _eof "|" "}" "~" )
+  (seq shapeLabel))
  (rule shexDoc "1"
   (start #t)
   (first "%" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START" _eps)
@@ -151,6 +175,67 @@
    "NONLITERAL" "NOT" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "{" "~" )
   (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
    _eof )
+  (alt _shapeExpression_1 _shapeExpression_2 _shapeExpression_3))
+ (rule _shapeExpression_10 "10.10"
+  (first "AND" "OR" _eps)
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (seq _shapeExpression_6))
+ (rule _shapeExpression_1 "10.1"
+  (first "(" "." "BNODE" "CLOSED" "EXTRA" "FRACTIONDIGITS" "IRI" IRIREF
+   "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE"
+   "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "PATTERN" PNAME_LN PNAME_NS
+   "TOTALDIGITS" "[" "{" "~" )
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (seq shapeAtomNoRef _shapeExpression_4))
+ (rule _shapeExpression_2 "10.2"
+  (first "NOT")
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (seq "NOT" _shapeExpression_5 _shapeExpression_6))
+ (rule _shapeExpression_3 "10.3"
+  (first "@" ATPNAME_LN ATPNAME_NS)
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (seq shapeRef shapeOr))
+ (rule _shapeExpression_4 "10.4"
+  (first "AND" "OR" _eps)
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (cleanup opt)
+  (alt _empty shapeOr))
+ (rule _shapeExpression_5 "10.5"
+  (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH"
+   "NONLITERAL" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "{" "~" )
+  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" "START" _eof )
+  (alt shapeAtomNoRef shapeRef))
+ (rule _shapeExpression_6 "10.6"
+  (first "AND" "OR" _eps)
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (cleanup opt)
+  (alt _empty shapeOr))
+ (rule _shapeExpression_7 "10.7"
+  (first "AND" "OR" _eps)
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (seq _shapeExpression_4))
+ (rule _shapeExpression_8 "10.8"
+  (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH"
+   "NONLITERAL" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "{" "~" )
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (seq _shapeExpression_5 _shapeExpression_6))
+ (rule _shapeExpression_9 "10.9"
+  (first "AND" "OR")
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
   (seq shapeOr))
  (rule inlineShapeExpression "11"
   (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
@@ -159,42 +244,68 @@
    "NONLITERAL" "NOT" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "{" "~" )
   (follow "%" ")" "*" "+" "//" ";" "?" REPEAT_RANGE "|" "}")
   (seq inlineShapeOr))
- (rule shapeOr "12"
-  (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
-   "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
-   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH"
-   "NONLITERAL" "NOT" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "{" "~" )
-  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
-   _eof )
-  (seq shapeAnd _shapeOr_1))
- (rule _shapeOr_1 "12.1"
+ (rule _shapeOrA_5 "12a.5"
   (first "OR" _eps)
   (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
    _eof )
+  (seq _shapeOrA_2))
+ (rule _shapeOrB_3 "12b.3"
+  (first "AND")
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS "PREFIX"
+   "START" _eof )
+  (cleanup merge)
+  (seq _shapeOrB_1 _shapeOrB_2))
+ (rule _shapeOrB_2 "12b.2"
+  (first "AND" _eps)
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS "PREFIX"
+   "START" _eof )
   (cleanup star)
-  (alt _empty _shapeOr_3))
- (rule _shapeOr_2 "12.2"
+  (alt _empty _shapeOrB_3))
+ (rule shapeOrB "12b"
+  (first "AND")
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS "PREFIX"
+   "START" _eof )
+  (cleanup plus)
+  (seq _shapeOrB_1 _shapeOrB_2))
+ (rule _shapeOrA_1 "12a.1"
   (first "OR")
   (follow ")" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS "PREFIX"
    "START" _eof )
   (seq "OR" shapeAnd))
- (rule _shapeOr_3 "12.3"
+ (rule _shapeOrA_3 "12a.3"
   (first "OR")
   (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
    _eof )
   (cleanup merge)
-  (seq _shapeOr_2 _shapeOr_1))
- (rule _shapeOr_4 "12.4"
+  (seq _shapeOrA_1 _shapeOrA_2))
+ (rule _shapeOrA_2 "12a.2"
   (first "OR" _eps)
   (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
    _eof )
-  (seq _shapeOr_1))
- (rule _shapeOr_5 "12.5"
+  (cleanup star)
+  (alt _empty _shapeOrA_3))
+ (rule shapeOrA "12a"
+  (first "OR")
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (cleanup plus)
+  (seq _shapeOrA_1 _shapeOrA_2))
+ (rule shapeOr "12"
+  (first "AND" "OR")
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (alt shapeOrA _shapeOr_1))
+ (rule _shapeOrA_4 "12a.4"
   (first "OR" _eps)
   (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
    _eof )
-  (seq _shapeOr_1))
- (rule _shapeOr_6 "12.6"
+  (seq _shapeOrA_2))
+ (rule _shapeOrB_1 "12b.1"
+  (first "AND")
+  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" "START" _eof )
+  (seq "AND" shapeNot))
+ (rule _shapeOrA_6 "12a.6"
   (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
    "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
    "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH"
@@ -202,6 +313,40 @@
   (follow ")" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS "PREFIX"
    "START" _eof )
   (seq shapeAnd))
+ (rule _shapeOrB_4 "12b.4"
+  (first "AND" _eps)
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS "PREFIX"
+   "START" _eof )
+  (seq _shapeOrB_2))
+ (rule _shapeOrB_5 "12b.5"
+  (first "AND" _eps)
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS "PREFIX"
+   "START" _eof )
+  (seq _shapeOrB_2))
+ (rule _shapeOrB_6 "12b.6"
+  (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH"
+   "NONLITERAL" "NOT" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "{" "~" )
+  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" "START" _eof )
+  (seq shapeNot))
+ (rule _shapeOr_1 "12.1"
+  (first "AND")
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (seq shapeOrB _shapeOr_2))
+ (rule _shapeOr_2 "12.2"
+  (first "OR" _eps)
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (cleanup opt)
+  (alt _empty shapeOrA))
+ (rule _shapeOr_3 "12.3"
+  (first "OR" _eps)
+  (follow ")" "BASE" BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS "PREFIX" "START"
+   _eof )
+  (seq _shapeOr_2))
  (rule inlineShapeOr "13"
   (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
    "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
@@ -325,6 +470,14 @@
    "NONLITERAL" "NOT" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "{" "~" )
   (follow "%" ")" "*" "+" "//" ";" "?" "AND" "OR" REPEAT_RANGE "|" "}")
   (seq inlineShapeNot))
+ (rule shapeNot "16"
+  (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH"
+   "NONLITERAL" "NOT" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "{" "~" )
+  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" "START" _eof )
+  (seq _shapeNot_1 shapeAtom))
  (rule numericLiteral "16t"
   (first DECIMAL DOUBLE INTEGER)
   (follow "%" ")" "*" "+" "." "//" ";" "?" "@" "AND" ATPNAME_LN ATPNAME_NS
@@ -335,14 +488,6 @@
    STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "TOTALDIGITS" "]" _eof "false"
    "true" "{" "|" "}" "~" )
   (alt INTEGER DECIMAL DOUBLE))
- (rule shapeNot "16"
-  (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
-   "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
-   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH"
-   "NONLITERAL" "NOT" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "{" "~" )
-  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
-   "PREFIX" "START" _eof )
-  (seq _shapeNot_1 shapeAtom))
  (rule _shapeNot_1 "16.1"
   (first "NOT" _eps)
   (follow "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
@@ -386,6 +531,50 @@
    (range
     "^#x00-#x20<>\"{}|^`\\] | UCHAR)* '>' /* #x00=NULL #01-#x1F=control codes #x20=space */"
    )) )
+ (rule _shapeAtomNoRef_1 "18a.1"
+  (first "BNODE" "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL"
+   "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE"
+   "MINLENGTH" "NONLITERAL" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "~" )
+  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" "START" _eof )
+  (seq nodeConstraint _shapeAtomNoRef_3))
+ (rule _shapeAtomNoRef_3 "18a.3"
+  (first "@" ATPNAME_LN ATPNAME_NS "CLOSED" "EXTRA" _eps "{")
+  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" "START" _eof )
+  (cleanup opt)
+  (alt _empty shapeOrRef))
+ (rule _shapeAtomNoRef_2 "18a.2"
+  (first "(")
+  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" "START" _eof )
+  (seq "(" shapeExpression ")"))
+ (rule _shapeAtomNoRef_5 "18a.5"
+  (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
+   "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
+   "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH"
+   "NONLITERAL" "NOT" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "{" "~" )
+  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" "START" _eof )
+  (seq shapeExpression ")"))
+ (rule _shapeAtomNoRef_4 "18a.4"
+  (first "@" ATPNAME_LN ATPNAME_NS "CLOSED" "EXTRA" _eps "{")
+  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" "START" _eof )
+  (seq _shapeAtomNoRef_3))
+ (rule _shapeAtomNoRef_6 "18a.6"
+  (first ")")
+  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" "START" _eof )
+  (seq ")"))
+ (rule shapeAtomNoRef "18a"
+  (first "(" "." "BNODE" "CLOSED" "EXTRA" "FRACTIONDIGITS" "IRI" IRIREF
+   "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE"
+   "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "PATTERN" PNAME_LN PNAME_NS
+   "TOTALDIGITS" "[" "{" "~" )
+  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
+   "PREFIX" "START" _eof )
+  (alt _shapeAtomNoRef_1 shapeDefinition _shapeAtomNoRef_2 "."))
  (rule shapeAtom "18"
   (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
    "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
@@ -430,7 +619,6 @@
   (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
    "PREFIX" "START" _eof )
   (seq ")"))
- (terminal INTEGER "19t" (seq (opt (range "+-")) (plus (range "0-9"))))
  (rule inlineShapeAtom "19"
   (first "(" "." "@" ATPNAME_LN ATPNAME_NS "BNODE" "CLOSED" "EXTRA"
    "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE"
@@ -438,6 +626,7 @@
    "NONLITERAL" "PATTERN" PNAME_LN PNAME_NS "TOTALDIGITS" "[" "{" "~" )
   (follow "%" ")" "*" "+" "//" ";" "?" "AND" "OR" REPEAT_RANGE "|" "}")
   (alt _inlineShapeAtom_1 _inlineShapeAtom_2 _inlineShapeAtom_3 "."))
+ (terminal INTEGER "19t" (seq (opt (range "+-")) (plus (range "0-9"))))
  (rule _inlineShapeAtom_1 "19.1"
   (first "BNODE" "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL"
    "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE"
@@ -491,45 +680,21 @@
   (first "@" ATPNAME_LN ATPNAME_NS "CLOSED" "EXTRA" "{")
   (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
    "PREFIX" "START" _eof )
-  (alt ATPNAME_LN ATPNAME_NS _shapeOrRef_1 shapeDefinition))
+  (alt shapeDefinition shapeRef))
  (terminal DECIMAL "20t" (seq (opt (range "+-")) (star (range "0-9")) "." (plus (range "0-9"))))
- (rule _shapeOrRef_1 "20.1"
-  (first "@")
-  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
-   "PREFIX" "START" _eof )
-  (seq "@" shapeLabel))
- (rule _shapeOrRef_2 "20.2"
-  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
-  (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
-   "PREFIX" "START" _eof )
-  (seq shapeLabel))
- (rule inlineShapeOrRef "21"
-  (first "@" ATPNAME_LN ATPNAME_NS "CLOSED" "EXTRA" "{")
-  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BNODE" "FRACTIONDIGITS" "IRI"
-   IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
-   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "OR" "PATTERN"
-   PNAME_LN PNAME_NS REPEAT_RANGE "TOTALDIGITS" "[" "|" "}" "~" )
-  (alt ATPNAME_LN ATPNAME_NS _inlineShapeOrRef_1 inlineShapeDefinition))
  (terminal DOUBLE "21t"
   (seq
    (opt (range "+-"))
    (alt
     (seq (plus (range "0-9")) "." (star (range "0-9")) EXPONENT)
     (seq (opt ".") (plus (range "0-9")) EXPONENT)) ))
- (rule _inlineShapeOrRef_1 "21.1"
-  (first "@")
+ (rule inlineShapeOrRef "21"
+  (first "@" ATPNAME_LN ATPNAME_NS "CLOSED" "EXTRA" "{")
   (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BNODE" "FRACTIONDIGITS" "IRI"
    IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
    "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "OR" "PATTERN"
    PNAME_LN PNAME_NS REPEAT_RANGE "TOTALDIGITS" "[" "|" "}" "~" )
-  (seq "@" shapeLabel))
- (rule _inlineShapeOrRef_2 "21.2"
-  (first BLANK_NODE_LABEL IRIREF PNAME_LN PNAME_NS)
-  (follow "%" ")" "*" "+" "//" ";" "?" "AND" "BNODE" "FRACTIONDIGITS" "IRI"
-   IRIREF "LENGTH" "LITERAL" "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH"
-   "MINEXCLUSIVE" "MININCLUSIVE" "MINLENGTH" "NONLITERAL" "OR" "PATTERN"
-   PNAME_LN PNAME_NS REPEAT_RANGE "TOTALDIGITS" "[" "|" "}" "~" )
-  (seq shapeLabel))
+  (alt inlineShapeDefinition shapeRef))
  (rule nodeConstraint "22"
   (first "BNODE" "FRACTIONDIGITS" "IRI" IRIREF "LENGTH" "LITERAL"
    "MAXEXCLUSIVE" "MAXINCLUSIVE" "MAXLENGTH" "MINEXCLUSIVE" "MININCLUSIVE"
@@ -869,16 +1034,16 @@
    "PREFIX" "START" _eof )
   (seq _shapeDefinition_1 "{" _shapeDefinition_2 "}" _shapeDefinition_3
    semanticActions ))
- (rule _shapeDefinition_1 "30.1"
-  (first "CLOSED" "EXTRA" _eps)
-  (follow "{")
-  (cleanup star)
-  (alt _empty _shapeDefinition_5))
  (rule _shapeDefinition_10 "30.10"
   (first "$" "&" "(" IRIREF PNAME_LN PNAME_NS RDF_TYPE "^" "}")
   (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
    "PREFIX" "START" _eof )
   (seq _shapeDefinition_2 "}" _shapeDefinition_3 semanticActions))
+ (rule _shapeDefinition_1 "30.1"
+  (first "CLOSED" "EXTRA" _eps)
+  (follow "{")
+  (cleanup star)
+  (alt _empty _shapeDefinition_5))
  (rule _shapeDefinition_11 "30.11"
   (first "}")
   (follow ")" "AND" "BASE" BLANK_NODE_LABEL IRIREF "OR" PNAME_LN PNAME_NS
@@ -1503,13 +1668,6 @@
    STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "TOTALDIGITS" "]" _eof "false"
    "true" "{" "|" "}" "~" )
   (seq "^^" datatype))
- (rule _rdfLiteral_2 "129s.2"
-  (first LANGTAG "^^")
-  (follow "%" ")" "." "//" ";" "AND" "BASE" BLANK_NODE_LABEL DECIMAL DOUBLE
-   INTEGER IRIREF "OR" PNAME_LN PNAME_NS "PREFIX" "START" STRING_LITERAL1
-   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" _eof "false"
-   "true" "|" "}" )
-  (alt LANGTAG _rdfLiteral_3))
  (rule _rdfLiteral_4 "129s.4"
   (first LANGTAG "^^" _eps)
   (follow "%" ")" "." "//" ";" "AND" "BASE" BLANK_NODE_LABEL DECIMAL DOUBLE
@@ -1534,6 +1692,13 @@
    STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" _eof "false"
    "true" "|" "}" )
   (seq string _rdfLiteral_1))
+ (rule _rdfLiteral_2 "129s.2"
+  (first LANGTAG "^^")
+  (follow "%" ")" "." "//" ";" "AND" "BASE" BLANK_NODE_LABEL DECIMAL DOUBLE
+   INTEGER IRIREF "OR" PNAME_LN PNAME_NS "PREFIX" "START" STRING_LITERAL1
+   STRING_LITERAL2 STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 "]" _eof "false"
+   "true" "|" "}" )
+  (alt LANGTAG _rdfLiteral_3))
  (rule booleanLiteral "134s"
   (first "false" "true")
   (follow "%" ")" "." "//" ";" "AND" "BASE" BLANK_NODE_LABEL DECIMAL DOUBLE
