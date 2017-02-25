@@ -1116,7 +1116,7 @@ describe ShEx::Parser do
       },
     }.each do |name, params|
       it "#{name} (shexc)" do
-        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), logger: RDF::Spec.logger)
+        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), progress: true, logger: RDF::Spec.logger)
       end
 
       if params[:shexj]
