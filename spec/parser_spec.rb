@@ -1264,6 +1264,8 @@ describe ShEx::Parser do
               validate = false # Has self-included shape
             when 'openopen1dotOr1dotclose'
               pending("Our grammar allows nested bracketedTripleExpr")
+            when '1datatypeRef1'
+              pending "sync with litNodeType and shapeRef change"
             end
 
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]

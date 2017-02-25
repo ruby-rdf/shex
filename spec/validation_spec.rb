@@ -458,6 +458,11 @@ describe ShEx::Algebra do
             pending "greedy"
           when '1val1DECIMAL_00'
             pending "Turtle reader ensures numeric literals start with a sign or digit, not '.'."
+          when 'float-1E0_fail', 'float-pINF_fail', 'double-pINF_fail',
+              'boolean-0_fail', 'boolean-1_fail'
+            pending "difference of opinion on literal validitity"
+          when '1datatypeRef1_fail-datatype', '1datatypeRef1_fail-reflexiveRef'
+            pending "sync with litNodeType and shapeRef change"
           end
           t.debug = [
             "info: #{t.inspect}",
@@ -481,6 +486,11 @@ describe ShEx::Algebra do
             pending "greedy"
           when '1val1DECIMAL_00'
             pending "Turtle reader ensures numeric literals start with a sign or digit, not '.'."
+          when 'float-1E0_fail', 'float-pINF_fail', 'double-pINF_fail',
+              'boolean-0_fail', 'boolean-1_fail'
+            pending "difference of opinion on literal validitity"
+          when '1datatypeRef1_fail-datatype', '1datatypeRef1_fail-reflexiveRef'
+            pending "sync with litNodeType and shapeRef change"
           end
           t.debug = [
             "info: #{t.inspect}",

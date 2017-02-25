@@ -58,7 +58,7 @@ module ShEx::Algebra
       return true unless dt
 
       not_satisfied "Node was #{value.inspect}, expected datatype #{dt}", depth: depth unless
-        value.is_a?(RDF::Literal) && value.datatype == RDF::URI(dt)
+        value.is_a?(RDF::Literal) && value.datatype == RDF::URI(dt) && value.valid?
       status "right datatype: #{value}: #{dt}", depth: depth
       true
     end
