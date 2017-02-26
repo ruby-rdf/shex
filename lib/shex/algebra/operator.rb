@@ -269,7 +269,7 @@ module ShEx::Algebra
         case k
         when /length|pattern|clusive|digits/   then operands << [k.to_sym, RDF::Literal(v)]
         when 'id'                              then id = iri(v, options)
-        when 'min', 'max'                      then operands << [k.to_sym, v]
+        when 'min', 'max'                      then operands << [k.to_sym, (v == 'INF' ? '*' : v)]
         when 'inverse', 'closed'               then operands << k.to_sym
         when 'nodeKind'                        then operands << v.to_sym
         when 'object'                          then operands << value(v, options)
@@ -360,7 +360,7 @@ module ShEx::Algebra
                :maxexclusive,
                :totaldigits,
                :fractiondigits  then obj[op.first.to_s] = op.last.object
-          when :min, :max       then obj[op.first.to_s] = op.last
+          when :min, :max       then obj[op.first.to_s] = op.last == '*' ? 'INF' : op.last
           when :predicate       then obj[op.first.to_s] = op.last.to_s
           when :base, :prefix
             # Ignore base and prefix
