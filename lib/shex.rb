@@ -71,11 +71,11 @@ module ShEx
   # @param (see ShEx::Algebra::Schema#execute)
   # @return (see ShEx::Algebra::Schema#execute)
   # @raise (see ShEx::Algebra::Schema#execute)
-  def self.execute(expression, queryable, focus, shape, format: 'shexc', **options)
+  def self.execute(expression, queryable, map, format: 'shexc', **options)
     shex = self.parse(expression, options.merge(format: format))
     queryable = queryable || RDF::Graph.new
 
-    shex.execute(focus, queryable, {focus => shape}, options)
+    shex.execute(queryable, map, options)
   end
 
   ##
@@ -89,11 +89,11 @@ module ShEx
   # @param (see ShEx::Algebra::Schema#satisfies?)
   # @return (see ShEx::Algebra::Schema#satisfies?)
   # @raise (see ShEx::Algebra::Schema#satisfies?)
-  def self.satisfies?(expression, queryable, focus, shape, format: 'shexc', **options)
+  def self.satisfies?(expression, queryable, map, format: 'shexc', **options)
     shex = self.parse(expression, options.merge(format: format))
     queryable = queryable || RDF::Graph.new
 
-    shex.satisfies?(focus, queryable, {focus => shape}, options)
+    shex.satisfies?(queryable, map, options)
   end
 
   ##

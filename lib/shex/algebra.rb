@@ -61,7 +61,7 @@ module ShEx
       when 'StemRange'        then StemRange
       when 'TripleConstraint' then TripleConstraint
       when 'Wildcard'         then StemRange
-      else raise ArgumentError, "unknown type #{operator['type']}"
+      else raise ArgumentError, "unknown type #{operator['type'].inspect}"
       end
 
       klass.from_shexj(operator, options)

@@ -36,19 +36,22 @@ module ShEx::Algebra
     ##
     # Match on schema. Finds appropriate shape for node, and matches that shape.
     #
-    # @param [RDF::Term] focus
     # @param [RDF::Queryable] graph
-    # @param [Hash{RDF::Resource => RDF::Resource}] map
+    # @param [Hash{RDF::Term => <RDF::Resource>}, Array<Array(RDF::Term, RDF::Resource)>] map
+    #   A set of (`term`, `resource`) pairs where `term` is a node within `graph`, and `resource` identifies a shape
+    # @param [Array<RDF::Term>] *focus
+    # 	One or more nodes within `graph` for which to run the start expression.
     # @param [Array<Schema, String>] shapeExterns ([])
     #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
     # @return [Operand] Returns operand graph annotated with satisfied and unsatisfied operations.
     # @param [Hash{Symbol => Object}] options
     # @option options [String] :base_uri (for resolving focus)
     # @raise [ShEx::NotSatisfied] along with operand graph described for return
-    def execute(focus, graph, map, shapeExterns: [], depth: 0, **options)
+    def execute(graph, map, focus: [], shapeExterns: [], depth: 0, **options)
       @graph, @shapes_entered = graph, {}
       @external_schemas = shapeExterns
-      focus = value(focus, options)
+      @extensions = {}
+      focus = Array(focus).map {|f| value(f, options)}
 
       logger = options[:logger] || @options[:logger]
       each_descendant do |op|
@@ -57,7 +60,6 @@ module ShEx::Algebra
       end
 
       # Initialize Extensions
-      @extensions = {}
       each_descendant do |op|
         next unless op.is_a?(SemAct)
         name = op.operands.first.to_s
@@ -67,11 +69,24 @@ module ShEx::Algebra
       end
 
       # If `n` is a Blank Node, we won't find it through normal matching, find an equivalent node in the graph having the same id
-      graph_focus = graph.enum_term.detect {|t| t.node? && t.id == focus.id} if focus.is_a?(RDF::Node)
-      graph_focus ||= focus
-
-      # Make sure they're URIs
-      @map = (map || {}).inject({}) {|memo, (k,v)| memo.merge(value(k) => iri(v))}
+      @map = case map
+      when Hash
+        map.inject({}) do |memo, (node, shapes)|
+          gnode = graph.enum_term.detect {|t| t.node? && t.id == node.id} if node.is_a?(RDF::Node)
+          node = gnode if gnode
+          memo.merge(node => Array(shapes))
+        end
+      when Array
+        map.inject({}) do |memo, (node, shape)|
+          gnode = graph.enum_term.detect {|t| t.node? && t.id == node.id} if node.is_a?(RDF::Node)
+          node = gnode if gnode
+          (memo[node] ||= []).concat(Array(shape))
+          memo
+        end
+      when nil then {}
+      else
+        structure_error "Unrecognized shape map: #{map.inspect}"
+      end
 
       # First, evaluate semantic acts
       semantic_actions.all? do |op|
@@ -81,8 +96,16 @@ module ShEx::Algebra
       # Keep a new Schema, specifically for recording actions
       satisfied_schema = Schema.new
       # Next run any start expression
-      if start
-        satisfied_schema.operands << start.satisfies?(focus, depth: depth + 1)
+      if !focus.empty?
+        if start
+          # FIXME: where does focus node come from? For now, run against all nodes in the map
+          focus.each do |node|
+            node = graph.enum_term.detect {|t| t.node? && t.id == node.id} if node.is_a?(RDF::Node)
+            start.satisfies?(node, depth: depth + 1)
+          end
+        else
+          structure_error "Focus nodes with no start"
+        end
       end
 
       # Add shape result(s)
@@ -90,9 +113,11 @@ module ShEx::Algebra
       satisfied_schema.operands << [:shapes, satisfied_shapes] unless shapes.empty?
 
       # Match against all shapes associated with the ids for focus
-      Array(@map[focus]).each do |id|
-        enter_shape(id, focus) do |shape|
-          satisfied_shapes[id] = shape.satisfies?(graph_focus, depth: depth + 1)
+      @map.each do |node, shapes|
+        shapes.each do |id|
+          enter_shape(id, node) do |shape|
+            satisfied_shapes[id] = shape.satisfies?(node, depth: depth + 1)
+          end
         end
       end
       status "schema satisfied", depth: depth
@@ -105,16 +130,12 @@ module ShEx::Algebra
     ##
     # Match on schema. Finds appropriate shape for node, and matches that shape.
     #
-    # @param [RDF::Resource] focus
-    # @param [RDF::Queryable] graph
-    # @param [Hash{RDF::Resource => RDF::Resource}] map
-    # @param [Array<Schema, String>] shapeExterns ([])
-    #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
+    # @param (see ShEx::Algebra::Schema#execute)
     # @param [Hash{Symbol => Object}] options
     # @option options [String] :base_uri
     # @return [Boolean]
-    def satisfies?(focus, graph, map, shapeExterns: [], **options)
-      execute(focus, graph, map, options.merge(shapeExterns: shapeExterns))
+    def satisfies?(graph, map, **options)
+      execute(graph, map, **options)
     rescue ShEx::NotSatisfied
       false
     end

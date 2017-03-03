@@ -90,24 +90,20 @@ RSpec::Matchers.define :generate do |expected, options = {}|
   end
 end
 
-RSpec::Matchers.define :satisfy do |graph, data, focus, shape: nil, map: nil, expected: nil, logger: nil, **options|
+RSpec::Matchers.define :satisfy do |graph, data, map, focus: focus, expected: nil, logger: nil, **options|
   match do |input|
-    focus = RDF::Literal(focus['@value'],
-                         datatype: focus['@type'],
-                         language: focus['@language']) if focus.is_a?(Hash)
-    map ||= {focus => shape} if shape
 
     case
     when [ShEx::NotSatisfied, ShEx::StructureError].include?(expected)
       begin
-        input.execute(focus, graph, map, logger: logger, **options)
+        input.execute(graph, map, focus: focus, logger: logger, **options)
         false
       rescue expected
         true
       end
     else
       begin
-        input.execute(focus, graph, map, logger: logger, **options)
+        input.execute(graph, map, focus: focus, logger: logger, **options)
       rescue ShEx::NotSatisfied => e
         @exception = e
         false
@@ -119,7 +115,6 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape: nil, map: nil, ex
     (expected == ShEx::NotSatisfied ? "Shape matched" : "Shape did not match: #{@exception && @exception.message}\n") +
     #"Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
     "Data      : #{data}\n" +
-    "Shape     : #{shape}\n" +
     "Focus     : #{focus}\n" +
     "Results   : #{SXP::Generator.string(@exception.expression.to_sxp_bin) if @exception && @exception.expression}" +
     (logger ? "Trace     :\n#{logger.to_s}" : "")
@@ -129,7 +124,6 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape: nil, map: nil, ex
     "Shape matched\n" +
     #"Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
     "Data      : #{data}\n" +
-    "Shape     : #{shape}\n" +
     "Focus     : #{focus}\n" +
     (logger ? "Trace     :\n#{logger.to_s}" : "")
   end

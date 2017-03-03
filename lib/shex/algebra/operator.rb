@@ -517,10 +517,10 @@ module ShEx::Algebra
       case value
       when Hash
         # Either a value object or a node reference
-        if value['uri']
-          iri(value['uri'], options)
-        elsif value['value']
-          RDF::Literal(value['value'], datatype: value['type'], language: value['language'])
+        if value['uri'] || value['@id']
+          iri(value['uri'] || value['@id'], options)
+        elsif value['value'] || value['@value']
+          RDF::Literal(value['value'] || value['@value'], datatype: value['type'] || value['@type'], language: value['language'] || value['@language'])
         else
           ShEx::Algebra.from_shexj(value, options)
         end
