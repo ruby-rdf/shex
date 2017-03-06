@@ -90,10 +90,10 @@
  (rule litNodeConstraint "24"
   (alt _litNodeConstraint_1 _litNodeConstraint_2 _litNodeConstraint_3
    _litNodeConstraint_4 ))
- (rule _litNodeConstraint_1 "24.1" (seq "LITERAL" _litNodeConstraint_5))
  (rule _litNodeConstraint_10 "24.10"
   (cleanup merge)
   (seq xsFacet _litNodeConstraint_9))
+ (rule _litNodeConstraint_1 "24.1" (seq "LITERAL" _litNodeConstraint_5))
  (rule _litNodeConstraint_11 "24.11" (cleanup star) (alt _empty _litNodeConstraint_12))
  (rule _litNodeConstraint_12 "24.12"
   (cleanup merge)
@@ -134,10 +134,8 @@
  (rule _stringFacet_3 "28.3" (seq "~" string))
  (rule stringLength "29" (alt "LENGTH" "MINLENGTH" "MAXLENGTH"))
  (rule numericFacet "30" (alt _numericFacet_1 _numericFacet_2))
- (rule _numericFacet_1 "30.1" (seq numericRange _numericFacet_3))
+ (rule _numericFacet_1 "30.1" (seq numericRange numericLiteral))
  (rule _numericFacet_2 "30.2" (seq numericLength INTEGER))
- (rule _numericFacet_3 "30.3" (alt numericLiteral _numericFacet_4))
- (rule _numericFacet_4 "30.4" (seq string "^^" datatype))
  (rule numericRange "31"
   (alt "MININCLUSIVE" "MINEXCLUSIVE" "MAXINCLUSIVE" "MAXEXCLUSIVE"))
  (rule numericLength "32" (alt "TOTALDIGITS" "FRACTIONDIGITS"))
