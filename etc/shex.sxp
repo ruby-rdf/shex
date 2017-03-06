@@ -1,6 +1,10 @@
 (
- (pass (alt (plus (range " \t\r\n")) (seq "#" (star (range "^\r\n")))))
  (rule _empty "0" (seq))
+ (pass (alt (plus (range " \t\r\n")) (seq "#" (star (range "^\r\n")))))
+ (terminal PATTERN "XX"
+  (seq "/"
+   (alt (range "^#x2f#x5C#xA#xD") (seq "\\" (range "tbnrf\\/")) UCHAR) "/"
+   (star (range "smixq"))) )
  (rule shexDoc "1" (seq _shexDoc_1 _shexDoc_2))
  (rule _shexDoc_1 "1.1" (cleanup star) (alt _empty _shexDoc_3))
  (rule _shexDoc_2 "1.2" (cleanup opt) (alt _empty _shexDoc_4))
@@ -32,7 +36,6 @@
  (rule _shapeExpression_5 "10.5" (alt shapeAtomNoRef shapeRef))
  (rule _shapeExpression_6 "10.6" (cleanup opt) (alt _empty shapeOr))
  (rule inlineShapeExpression "11" (seq inlineShapeOr))
- (rule shapeOr "12" (alt shapeOrA _shapeOr_1))
  (rule shapeOrA "12a" (cleanup plus) (seq _shapeOrA_1 _shapeOrA_2))
  (rule _shapeOrA_2 "12a.2" (cleanup star) (alt _empty _shapeOrA_3))
  (rule _shapeOrA_3 "12a.3" (cleanup merge) (seq _shapeOrA_1 _shapeOrA_2))
@@ -40,6 +43,7 @@
  (rule shapeOrB "12b" (cleanup plus) (seq _shapeOrB_1 _shapeOrB_2))
  (rule _shapeOrB_2 "12b.2" (cleanup star) (alt _empty _shapeOrB_3))
  (rule _shapeOrB_3 "12b.3" (cleanup merge) (seq _shapeOrB_1 _shapeOrB_2))
+ (rule shapeOr "12" (alt shapeOrA _shapeOr_1))
  (rule _shapeOrB_1 "12b.1" (seq "AND" shapeNot))
  (rule _shapeOr_1 "12.1" (seq shapeOrB _shapeOr_2))
  (rule _shapeOr_2 "12.2" (cleanup opt) (alt _empty shapeOrA))
@@ -131,7 +135,7 @@
  (rule stringFacet "28" (alt _stringFacet_1 _stringFacet_2 _stringFacet_3))
  (rule _stringFacet_1 "28.1" (seq stringLength INTEGER))
  (rule _stringFacet_2 "28.2" (seq "PATTERN" string))
- (rule _stringFacet_3 "28.3" (seq "~" string))
+ (rule _stringFacet_3 "28.3" (seq "~" PATTERN))
  (rule stringLength "29" (alt "LENGTH" "MINLENGTH" "MAXLENGTH"))
  (rule numericFacet "30" (alt _numericFacet_1 _numericFacet_2))
  (rule _numericFacet_1 "30.1" (seq numericRange numericLiteral))

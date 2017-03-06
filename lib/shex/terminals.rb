@@ -73,6 +73,9 @@ module ShEx
     # 86
     STRING_LITERAL_LONG2 = /"""(?:(?:"|"")?(?:[^"\\]|#{ECHAR}|#{UCHAR}))*"""/m.freeze
 
+    # XX
+    PATTERN              =  %r(/(?:[^\/\\\n\r]| \\[tbnrf\\/] |#{UCHAR})+/[smixq]*).freeze
+
     # 68
     CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*%#{WS}*\}/m.freeze
     # 70

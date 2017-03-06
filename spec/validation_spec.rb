@@ -50,11 +50,22 @@ describe ShEx::Algebra do
           {focus: "issue2", shape: "http://schema.example/IssueShape", result: ShEx::NotSatisfied},
         ]
       },
-      "String Facets Example 2" => {
+      "String Facets Example 2 (original)" => {
         schema: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy PATTERN "genUser[0-9]+"}),
         data: %(
           <issue6> ex:submittedBy _:genUser218 .
           <issue7> ex:submittedBy _:genContact817 .
+        ),
+        expected: [
+          {focus: "issue6", shape: "http://schema.example/IssueShape", result: true},
+          {focus: "issue7", shape: "http://schema.example/IssueShape", result: ShEx::NotSatisfied},
+        ]
+      },
+      "String Facets Example 2" => {
+        schema: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy ~ /genUser[0-9]+/i}),
+        data: %(
+          <issue6> ex:submittedBy _:genuser218 .
+          <issue7> ex:submittedBy _:gencontact817 .
         ),
         expected: [
           {focus: "issue6", shape: "http://schema.example/IssueShape", result: true},

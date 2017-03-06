@@ -1859,7 +1859,7 @@ module ShEx::Meta
       "PATTERN" => ["PATTERN", :string],
     },
     :_stringFacet_3 => {
-      "~" => ["~", :string],
+      "~" => ["~", :PATTERN],
     },
     :stringLength => {
       "LENGTH" => ["LENGTH"],
@@ -2055,6 +2055,7 @@ module ShEx::Meta
     "NONLITERAL",
     "NOT",
     "OR",
+    :PATTERN,
     "PATTERN",
     :PNAME_LN,
     :PNAME_NS,
@@ -4193,10 +4194,7 @@ module ShEx::Meta
       :STRING_LITERAL2,
       :STRING_LITERAL_LONG2],
     :_stringFacet_6 => [
-      :STRING_LITERAL1,
-      :STRING_LITERAL_LONG1,
-      :STRING_LITERAL2,
-      :STRING_LITERAL_LONG2],
+      :PATTERN],
     :stringLength => [
       "LENGTH",
       "MINLENGTH",

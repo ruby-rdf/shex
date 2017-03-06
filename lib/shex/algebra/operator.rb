@@ -267,12 +267,16 @@ module ShEx::Algebra
 
       operator.each do |k, v|
         case k
-        when /length|pattern|clusive|digits/   then operands << [k.to_sym, RDF::Literal(v)]
+        when /length|clusive|digits/           then operands << [k.to_sym, RDF::Literal(v)]
         when 'id'                              then id = iri(v, options)
+        when 'flags'                            then ; # consumed in pattern below
         when 'min', 'max'                      then operands << [k.to_sym, (v == 'unbounded' ? '*' : v)]
         when 'inverse', 'closed'               then operands << k.to_sym
         when 'nodeKind'                        then operands << v.to_sym
         when 'object'                          then operands << value(v, options)
+        when 'pattern'
+          # Include flags as well
+          operands << [:pattern, RDF::Literal(v), operator['flags']].compact
         when 'start'
           if v.is_a?(String)
             operands << Start.new(iri(v, options))
@@ -345,11 +349,12 @@ module ShEx::Algebra
         when Array
           # First element should be a symbol
           case sym = op.first
-          when :datatype,
-               :pattern         then obj[op.first.to_s] = op.last.to_s
+          when :datatype        then obj['datatype'] = op.last.to_s
           when :exclusions      then obj['exclusions'] = Array(op[1..-1]).map {|v| serialize_value(v)}
           when :extra           then (obj['extra'] ||= []).concat Array(op[1..-1]).map(&:to_s)
-            # FIXME Shapes should be an array, not a hash
+          when :pattern
+            obj['pattern'] = op[1]
+            obj['flags'] = op[2] if op[2]
           when :shapes          then obj['shapes'] = Array(op[1..-1]).map {|v| v.to_h}
           when :minlength,
                :maxlength,

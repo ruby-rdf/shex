@@ -68,11 +68,20 @@ module ShEx::Algebra
     # Checks all length/minlength/maxlength/pattern facets against the string representation of the value.
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
+    # @todo using the XPath regexp engine supports additional flags "s" and "q"
     def satisfies_string_facet?(value, depth: 0)
       length    = op_fetch(:length)
       minlength = op_fetch(:minlength)
       maxlength = op_fetch(:maxlength)
-      pattern   = op_fetch(:pattern)
+      pat = (operands.detect {|op| op.is_a?(Array) && op[0] == :pattern} || [])
+      pattern = pat[1]
+      flags = if pat[2]
+        f = 0
+        f |= Regexp::EXTENDED   if pat[2].include?("x")
+        f |= Regexp::IGNORECASE if pat[2].include?("i")
+        f |= Regexp::MULTILINE  if pat[2].include?("m")
+        f
+      end
 
       return true if (length || minlength || maxlength || pattern).nil?
 
@@ -87,7 +96,7 @@ module ShEx::Algebra
       not_satisfied "Node #{v_s.inspect} length > #{maxlength}", depth: depth if
         maxlength && v_s.length > maxlength.to_i
       not_satisfied "Node #{v_s.inspect} does not match #{pattern}", depth: depth if
-        pattern && !Regexp.new(pattern).match(v_s)
+        pat && !Regexp.new(pattern, flags).match(v_s)
       status "right string facet: #{value}", depth: depth
       true
     end

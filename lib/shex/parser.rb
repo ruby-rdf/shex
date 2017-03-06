@@ -114,6 +114,9 @@ module ShEx
     terminal(:STRING_LITERAL2,      STRING_LITERAL2, unescape: true) do |prod, token, input|
       input[:string] = token.value[1..-2]
     end
+    terminal(:PATTERN,      PATTERN, unescape: true) do |prod, token, input|
+      input[:string] = token.value
+    end
     terminal(:RDF_TYPE,             RDF_TYPE) do |prod, token, input|
       input[:iri] = (a = RDF.type.dup; a.lexical = 'a'; a)
     end
@@ -401,8 +404,19 @@ module ShEx
         end
         [data[:stringLength], data[:literal]]
       elsif data[:pattern]
-        [:pattern, data[:string]]
+        [:pattern, data[:string], data[:flags]].compact
       end
+    end
+
+    # | '~' PATTERN
+    # Parse as "/pattern/flags"
+    production(:_stringFacet_3) do |input, data, callback|
+      re = data[:string]
+      unless re =~ %r(^/[^.]*/[smixq]*$)
+        error(nil, "#{re.inspect} regular expression must be in the form /pattern/flags?", production: :stringFacet)
+      end
+      _, pattern, flags = re.split('/')
+      input[:pattern], input[:string], input[:flags] = true, pattern, flags
     end
 
     # [29]    stringLength          ::= "LENGTH" | "MINLENGTH" | "MAXLENGTH"

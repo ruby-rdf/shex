@@ -129,7 +129,7 @@ describe ShEx::Parser do
            (id <http://schema.example/IssueShape>)
            (tripleConstraint (predicate <http://schema.example/submittedBy>) (nodeConstraint (minlength 10))))))}
       },
-      "String Facets Example 2" => {
+      "String Facets Example 2 (original)" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy PATTERN "genUser[0-9]+"}),
         shexj: %({
           "@context": "https://shexspec.github.io/context.jsonld",
@@ -156,6 +156,35 @@ describe ShEx::Parser do
            (id <http://schema.example/IssueShape>)
            (tripleConstraint (predicate <http://schema.example/submittedBy>)
             (nodeConstraint (pattern "genUser[0-9]+"))))))}
+      },
+      "String Facets Example 2" => {
+        shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy ~/genUser[0-9]+/i}),
+        shexj: %({
+          "@context": "https://shexspec.github.io/context.jsonld",
+          "type": "Schema",
+          "shapes": [
+            {
+              "id": "http://schema.example/IssueShape",
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://schema.example/submittedBy",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "pattern": "genUser[0-9]+",
+                  "flags": "i"
+                }
+              }
+            }
+          ]
+        }),
+        sxp: %{(schema
+         (prefix (("ex" <http://schema.example/>)))
+         (shapes
+          (shape
+           (id <http://schema.example/IssueShape>)
+           (tripleConstraint (predicate <http://schema.example/submittedBy>)
+            (nodeConstraint (pattern "genUser[0-9]+" "i"))))))}
       },
       "Numeric Facets Example 1" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:confirmations MININCLUSIVE 1}),

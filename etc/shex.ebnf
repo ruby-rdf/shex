@@ -130,7 +130,7 @@
 [27]    xsFacet               ::= stringFacet | numericFacet
 [28]    stringFacet           ::= stringLength INTEGER
                                 | "PATTERN" string
-                                | '~' string  # shortcut for "PATTERN"
+                                | '~' PATTERN  # shortcut for "PATTERN"
 [29]    stringLength          ::= "LENGTH" | "MINLENGTH" | "MAXLENGTH"
 [30]    numericFacet          ::= numericRange numericLiteral
                                 | numericLength INTEGER
@@ -213,6 +213,7 @@
 [84]    STRING_LITERAL2       ::= '"' ([^#x22#x5C#xA#xD] | ECHAR | UCHAR)* '"' /* #x22=" #x5C=\ #xA=new line #xD=carriage return */
 [85]    STRING_LITERAL_LONG1  ::= "'''" (("'" | "''")? ([^\'\\] | ECHAR | UCHAR))* "'''"
 [86]    STRING_LITERAL_LONG2  ::= '"""' (('"' | '""')? ([^\"\\] | ECHAR | UCHAR))* '"""'
+[XX]    PATTERN               ::= "/" ([^#x2f#x5C#xA#xD] | '\\' [tbnrf\\/] | UCHAR)+ "/" [smixq]*
 [87]    UCHAR                 ::= '\\u' HEX HEX HEX HEX
                                 | '\\U' HEX HEX HEX HEX HEX HEX HEX HEX
 [88]    ECHAR                 ::= '\\' [tbnrf\\\"\']

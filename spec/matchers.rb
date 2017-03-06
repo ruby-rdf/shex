@@ -90,7 +90,7 @@ RSpec::Matchers.define :generate do |expected, options = {}|
   end
 end
 
-RSpec::Matchers.define :satisfy do |graph, data, map, focus: focus, expected: nil, logger: nil, **options|
+RSpec::Matchers.define :satisfy do |graph, data, map, focus: nil, expected: nil, logger: nil, **options|
   match do |input|
 
     case
