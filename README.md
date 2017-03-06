@@ -109,19 +109,19 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
                     ]
                   }
                 ],
-                "min": 1, "max": "INF"
+                "min": 1, "max": "unbounded"
               },
               {
                 "type": "TripleConstraint",
                 "predicate": "http://usefulinc.com/ns/doap#category",
                 "valueExpr": {"type": "NodeConstraint", "nodeKind": "iri"},
-                "min": 0, "max": "INF"
+                "min": 0, "max": "unbounded"
               },
               {
                 "type": "TripleConstraint",
                 "predicate": "http://usefulinc.com/ns/doap#developer",
                 "valueExpr": {"type": "NodeConstraint", "nodeKind": "iri"},
-                "min": 1, "max": "INF"
+                "min": 1, "max": "unbounded"
               },
               {
                 "type": "TripleConstraint",
