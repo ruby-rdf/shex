@@ -34,7 +34,7 @@ describe ShEx::Parser do
       "0" => {
         shexc: %(<http://a.example/S1> {}),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -48,7 +48,7 @@ describe ShEx::Parser do
       "Node Kind Example 1" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:state IRI}),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -78,7 +78,7 @@ describe ShEx::Parser do
           ex:IssueShape {ex:submittedOn xsd:dateTime}
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -108,7 +108,7 @@ describe ShEx::Parser do
           PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
           ex:IssueShape {ex:submittedBy MINLENGTH 10}),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -132,7 +132,7 @@ describe ShEx::Parser do
       "String Facets Example 2 (original)" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy PATTERN "genUser[0-9]+"}),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -160,7 +160,7 @@ describe ShEx::Parser do
       "String Facets Example 2" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy ~/genUser[0-9]+/i}),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -189,7 +189,7 @@ describe ShEx::Parser do
       "Numeric Facets Example 1" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:confirmations MININCLUSIVE 1}),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -214,7 +214,7 @@ describe ShEx::Parser do
       "Values Constraint Example 1" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:NoActionIssueShape {ex:state [ ex:Resolved ex:Rejected ]}),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -257,7 +257,7 @@ describe ShEx::Parser do
             }
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -305,7 +305,7 @@ describe ShEx::Parser do
             }
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -353,7 +353,7 @@ describe ShEx::Parser do
           }
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type":"Schema",
           "shapes": [
             {
@@ -394,7 +394,7 @@ describe ShEx::Parser do
       "Double Negated reference" => {
         shexc: %(PREFIX ex: <http://schema.example/#> ex:S NOT (IRI OR NOT @ex:S)),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -430,7 +430,7 @@ describe ShEx::Parser do
           }
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -469,7 +469,7 @@ describe ShEx::Parser do
           }
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -507,7 +507,7 @@ describe ShEx::Parser do
           ex:IntConstraint xsd:integer
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -528,7 +528,7 @@ describe ShEx::Parser do
       "Validation Example 2" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:UserShape {ex:shoeSize .}),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -554,7 +554,7 @@ describe ShEx::Parser do
           ex:UserShape EXTRA a {a [ex:Teacher]}
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -595,7 +595,7 @@ describe ShEx::Parser do
           }
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {
@@ -651,7 +651,7 @@ describe ShEx::Parser do
           }
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
            { "id": "http://schema.example/IssueShape",
@@ -682,7 +682,7 @@ describe ShEx::Parser do
       "Recursion Example" => {
         shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:related @ex:IssueShape*}),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
            { "id": "http://schema.example/IssueShape",
@@ -711,7 +711,7 @@ describe ShEx::Parser do
           }
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
            { "id": "http://schema.example/TestResultsShape",
@@ -767,7 +767,7 @@ describe ShEx::Parser do
           }
         ),
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
            { "id": "http://schema.example/IssueShape",
@@ -1176,7 +1176,7 @@ describe ShEx::Parser do
                  (nodeConstraint (id <R>) iri)
                  (shape (id <T>) (tripleConstraint (predicate <p>) <R>))))},
         shexj: %({
-          "@context": "https://shexspec.github.io/context.jsonld",
+          "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
           "shapes": [
             {

@@ -1,13 +1,13 @@
 # -*- encoding: utf-8 -*-
 # frozen_string_literal: true
-# This file generated automatically from https://shexspec.github.io/context.jsonld
+# This file generated automatically from http://shex.io/context.jsonld
 require 'json/ld'
 class JSON::LD::Context
-  add_preloaded("https://shexspec.github.io/context.jsonld") do
+  add_preloaded("http://shex.io/context.jsonld") do
     new(term_definitions: {
       "Annotation" => TermDefinition.new("Annotation", id: "http://shex.io/ns/shex#Annotation", simple: true),
+      "Cardinality" => TermDefinition.new("Cardinality", id: "http://shex.io/ns/shex#Cardinality", simple: true),
       "EachOf" => TermDefinition.new("EachOf", id: "http://shex.io/ns/shex#EachOf", simple: true),
-      "Inclusion" => TermDefinition.new("Inclusion", id: "http://shex.io/ns/shex#Inclusion", simple: true),
       "NodeConstraint" => TermDefinition.new("NodeConstraint", id: "http://shex.io/ns/shex#NodeConstraint", simple: true),
       "NodeKind" => TermDefinition.new("NodeKind", id: "http://shex.io/ns/shex#NodeKind", simple: true),
       "OneOf" => TermDefinition.new("OneOf", id: "http://shex.io/ns/shex#OneOf", simple: true),
@@ -19,7 +19,6 @@ class JSON::LD::Context
       "ShapeExternal" => TermDefinition.new("ShapeExternal", id: "http://shex.io/ns/shex#ShapeExternal", simple: true),
       "ShapeNot" => TermDefinition.new("ShapeNot", id: "http://shex.io/ns/shex#ShapeNot", simple: true),
       "ShapeOr" => TermDefinition.new("ShapeOr", id: "http://shex.io/ns/shex#ShapeOr", simple: true),
-      "ShapeRef" => TermDefinition.new("ShapeRef", id: "http://shex.io/ns/shex#ShapeRef", simple: true),
       "Stem" => TermDefinition.new("Stem", id: "http://shex.io/ns/shex#Stem", simple: true),
       "StemRange" => TermDefinition.new("StemRange", id: "http://shex.io/ns/shex#StemRange", simple: true),
       "TripleConstraint" => TermDefinition.new("TripleConstraint", id: "http://shex.io/ns/shex#TripleConstraint", simple: true),
@@ -37,14 +36,13 @@ class JSON::LD::Context
       "expressions" => TermDefinition.new("expressions", id: "http://shex.io/ns/shex#expressions", type_mapping: "@id", container_mapping: "@list"),
       "extra" => TermDefinition.new("extra", id: "http://shex.io/ns/shex#extra", type_mapping: "@id"),
       "fractiondigits" => TermDefinition.new("fractiondigits", id: "http://shex.io/ns/shex#fractiondigits", type_mapping: "http://www.w3.org/2001/XMLSchema#integer"),
-      "include" => TermDefinition.new("include", id: "http://shex.io/ns/shex#include", type_mapping: "@id"),
+      "id" => TermDefinition.new("id", id: "@id", simple: true),
       "inverse" => TermDefinition.new("inverse", id: "http://shex.io/ns/shex#inverse", type_mapping: "http://www.w3.org/2001/XMLSchema#boolean"),
       "iri" => TermDefinition.new("iri", id: "http://shex.io/ns/shex#iri", simple: true),
-      "id" => TermDefinition.new("id", id: "@id", simple: true),
       "language" => TermDefinition.new("language", id: "@language", simple: true),
       "length" => TermDefinition.new("length", id: "http://shex.io/ns/shex#length", type_mapping: "http://www.w3.org/2001/XMLSchema#integer"),
       "literal" => TermDefinition.new("literal", id: "http://shex.io/ns/shex#literal", simple: true),
-      "max" => TermDefinition.new("max", id: "http://shex.io/ns/shex#max"),
+      "max" => TermDefinition.new("max", id: "http://shex.io/ns/shex#max", type_mapping: "@vocab"),
       "maxexclusive" => TermDefinition.new("maxexclusive", id: "http://shex.io/ns/shex#maxexclusive", type_mapping: "http://www.w3.org/2001/XMLSchema#integer"),
       "maxinclusive" => TermDefinition.new("maxinclusive", id: "http://shex.io/ns/shex#maxinclusive", type_mapping: "http://www.w3.org/2001/XMLSchema#integer"),
       "maxlength" => TermDefinition.new("maxlength", id: "http://shex.io/ns/shex#maxlength", type_mapping: "http://www.w3.org/2001/XMLSchema#integer"),
@@ -61,7 +59,6 @@ class JSON::LD::Context
       "predicate" => TermDefinition.new("predicate", id: "http://shex.io/ns/shex#predicate", type_mapping: "@id"),
       "rdf" => TermDefinition.new("rdf", id: "http://www.w3.org/1999/02/22-rdf-syntax-ns#", simple: true),
       "rdfs" => TermDefinition.new("rdfs", id: "http://www.w3.org/2000/01/rdf-schema#", simple: true),
-      "reference" => TermDefinition.new("reference", id: "http://shex.io/ns/shex#reference", type_mapping: "@id"),
       "semActs" => TermDefinition.new("semActs", id: "http://shex.io/ns/shex#semActs", type_mapping: "@id", container_mapping: "@list"),
       "shapeExpr" => TermDefinition.new("shapeExpr", id: "http://shex.io/ns/shex#shapeExpr", type_mapping: "@id"),
       "shapeExprs" => TermDefinition.new("shapeExprs", id: "http://shex.io/ns/shex#shapeExprs", type_mapping: "@id", container_mapping: "@list"),
@@ -73,6 +70,7 @@ class JSON::LD::Context
       "stringFacet" => TermDefinition.new("stringFacet", id: "http://shex.io/ns/shex#stringFacet"),
       "totaldigits" => TermDefinition.new("totaldigits", id: "http://shex.io/ns/shex#totaldigits", type_mapping: "http://www.w3.org/2001/XMLSchema#integer"),
       "type" => TermDefinition.new("type", id: "@type", simple: true),
+      "unbounded" => TermDefinition.new("unbounded", id: "http://shex.io/ns/shex#unbounded", simple: true),
       "uri" => TermDefinition.new("uri", id: "@id", simple: true),
       "value" => TermDefinition.new("value", id: "@value", simple: true),
       "valueExpr" => TermDefinition.new("valueExpr", id: "http://shex.io/ns/shex#valueExpr", type_mapping: "@id"),
