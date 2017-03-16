@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 module ShEx::Algebra
   ##
   class NodeConstraint < Operator
@@ -74,14 +75,16 @@ module ShEx::Algebra
       minlength = op_fetch(:minlength)
       maxlength = op_fetch(:maxlength)
       pat = (operands.detect {|op| op.is_a?(Array) && op[0] == :pattern} || [])
-      pattern = pat[1]
-      flags = if pat[2]
-        f = 0
-        f |= Regexp::EXTENDED   if pat[2].include?("x")
-        f |= Regexp::IGNORECASE if pat[2].include?("i")
-        f |= Regexp::MULTILINE  if pat[2].include?("m")
-        f
+      pattern = if pat[1]
+        pat[1].to_s.gsub(ShEx::Terminals::UCHAR) do
+          [($1 || $2).hex].pack('U*')
+        end
       end
+
+      flags = 0
+      flags |= Regexp::EXTENDED   if pat[2].to_s.include?("x")
+      flags |= Regexp::IGNORECASE if pat[2].to_s.include?("i")
+      flags |= Regexp::MULTILINE  if pat[2].to_s.include?("m")
 
       return true if (length || minlength || maxlength || pattern).nil?
 
@@ -89,6 +92,7 @@ module ShEx::Algebra
       when RDF::Node then value.id
       else value.to_s
       end
+
       not_satisfied "Node #{v_s.inspect} length not #{length}", depth: depth if
         length && v_s.length != length.to_i
       not_satisfied"Node #{v_s.inspect} length < #{minlength}", depth: depth if
@@ -96,7 +100,7 @@ module ShEx::Algebra
       not_satisfied "Node #{v_s.inspect} length > #{maxlength}", depth: depth if
         maxlength && v_s.length > maxlength.to_i
       not_satisfied "Node #{v_s.inspect} does not match #{pattern}", depth: depth if
-        pat && !Regexp.new(pattern, flags).match(v_s)
+        pattern && !Regexp.new(pattern, flags).match(v_s)
       status "right string facet: #{value}", depth: depth
       true
     end

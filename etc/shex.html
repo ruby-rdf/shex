@@ -281,8 +281,7 @@
       <td>::=</td>
       <td>
         <a href="#grammar-production-stringLength">stringLength</a> <a href="#grammar-production-INTEGER">INTEGER</a>
-        <code>|</code> "<code class="grammar-literal">PATTERN</code>" <a href="#grammar-production-string">string</a>
-        <code>|</code> "<code class="grammar-literal">~</code>" <a href="#grammar-production-PATTERN">PATTERN</a>
+        <code>|</code> <a href="#grammar-production-REGEXP">REGEXP</a>
       </td>
     </tr>
     <tr id='grammar-production-stringLength'>
@@ -803,13 +802,13 @@
         <code>(</code> ('<code class="grammar-literal">"</code>' <code>|</code> '<code class="grammar-literal">""</code>')<code>?</code>  <code>[</code> <code class="grammar-literal">^"\]</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">ECHAR</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">UCHAR))*</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">'"""'</code><code>]</code> <code>)</code>
       </td>
     </tr>
-    <tr id='grammar-production-PATTERN'>
+    <tr id='grammar-production-REGEXP'>
       <td>[XX]</td>
-      <td><code>PATTERN</code></td>
+      <td><code>REGEXP</code></td>
       <td>::=</td>
       <td>
         "<code class="grammar-literal">/</code>"
-        <code>(</code> <code>[</code> <code class="grammar-literal">^</code><code class="grammar-char-escape">#x2f</code><code class="grammar-char-escape">#x5C</code><code class="grammar-char-escape">#xA</code><code class="grammar-char-escape">#xD</code><code>]</code>  <code>|</code> "<code class="grammar-literal">\</code>" <code>[</code> <code class="grammar-literal">tbnrf\/</code><code>]</code>  <code>|</code> <a href="#grammar-production-UCHAR">UCHAR</a><code>)</code> 
+        (<code>[</code> <code class="grammar-literal">^</code><code class="grammar-char-escape">#x2f</code><code>]</code>  <code>|</code> "<code class="grammar-literal">\</code>" <code>[</code> <code class="grammar-literal">.?*+{}()|^$</code><code class="grammar-char-escape">#x5B</code><code class="grammar-char-escape">#x5D</code><code>]</code>  <code>|</code> <a href="#grammar-production-UCHAR">UCHAR</a>)<code>+</code> 
         "<code class="grammar-literal">/</code>"
         (<code>[</code> <code class="grammar-literal">smixq</code><code>]</code> )<code>*</code>
       </td>

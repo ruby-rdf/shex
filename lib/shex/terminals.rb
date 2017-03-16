@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 require 'ebnf/ll1/lexer'
 
 module ShEx
@@ -16,7 +17,9 @@ module ShEx
     IRI_RANGE        = Regexp.compile("[[^<>\"{}|^`\\\\]&&[^\\x00-\\x20]]").freeze
 
     # 87
-    UCHAR                = EBNF::LL1::Lexer::UCHAR
+    UCHAR4               = /\\u([0-9A-Fa-f]{4,4})/.freeze
+    UCHAR8               = /\\U([0-9A-Fa-f]{8,8})/.freeze
+    UCHAR                = Regexp.union(UCHAR4, UCHAR8).freeze
     # 95
     PERCENT              = /%\h\h/.freeze
     # 97
@@ -74,7 +77,7 @@ module ShEx
     STRING_LITERAL_LONG2 = /"""(?:(?:"|"")?(?:[^"\\]|#{ECHAR}|#{UCHAR}))*"""/m.freeze
 
     # XX
-    PATTERN              =  %r(/(?:[^\/\\\n\r]| \\[tbnrf\\/] |#{UCHAR})+/[smixq]*).freeze
+    REGEXP              =  %r(/(?:[^/\\\n\r]|\\[nrt\\|.?*+(){}$-\[\]^/]|#{UCHAR})+/[smix]*).freeze
 
     # 68
     CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*%#{WS}*\}/m.freeze
@@ -84,10 +87,10 @@ module ShEx
     # String terminals, mixed case sensitivity
     STR_EXPR = %r(true|false
                  |\^\^|\/\/
-                 |[\(\)\{\}\[\],\.;\=\-\~!\|\&\@\$\?\+\*\%\^\/a]|
+                 |[\(\)\{\}\[\],\.;\=\-\~!\|\&\@\$\?\+\*\%\^a]|
                  (?i:OR|AND|NOT
                    |BASE|PREFIX
-                   |IRI|BNODE|NONLITERAL|PATTERN
+                   |IRI|BNODE|NONLITERAL
                    |MINLENGTH|MAXLENGTH|LENGTH
                    |MAXINCLUSIVE|MAXEXCLUSIVE
                    |MININCLUSIVE|MINEXCLUSIVE
@@ -98,7 +101,7 @@ module ShEx
               )x.freeze
 
     # Map terminals to canonical form
-    STR_MAP = %w{OR AND NOT BASE PREFIX IRI BNODE NONLITERAL PATTERN
+    STR_MAP = %w{OR AND NOT BASE PREFIX IRI BNODE NONLITERAL
       MINLENGTH MAXLENGTH LENGTH MININCLUSIVE MAXINCLUSIVE MINEXCLUSIVE MAXEXCLUSIVE
       TOTALDIGITS FRACTIONDIGITS START EXTERNAL CLOSED EXTRA LITERAL}.
     inject({}) do |memo, t|

@@ -130,7 +130,7 @@ describe ShEx::Parser do
            (tripleConstraint (predicate <http://schema.example/submittedBy>) (nodeConstraint (minlength 10))))))}
       },
       "String Facets Example 2 (original)" => {
-        shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy PATTERN "genUser[0-9]+"}),
+        shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy /genUser[0-9]+/i}),
         shexj: %({
           "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
@@ -143,7 +143,7 @@ describe ShEx::Parser do
                 "predicate": "http://schema.example/submittedBy",
                 "valueExpr": {
                   "type": "NodeConstraint",
-                  "pattern": "genUser[0-9]+"
+                  "pattern": "genUser[0-9]+", "flags": "i"
                 }
               }
             }
@@ -155,10 +155,10 @@ describe ShEx::Parser do
           (shape
            (id <http://schema.example/IssueShape>)
            (tripleConstraint (predicate <http://schema.example/submittedBy>)
-            (nodeConstraint (pattern "genUser[0-9]+"))))))}
+            (nodeConstraint (pattern "genUser[0-9]+" "i"))))))}
       },
       "String Facets Example 2" => {
-        shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy ~/genUser[0-9]+/i}),
+        shexc: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy /genUser[0-9]+/i}),
         shexj: %({
           "@context": "http://shex.io/context.jsonld",
           "type": "Schema",
@@ -839,7 +839,7 @@ describe ShEx::Parser do
               ^ex:related @<IssueShape>*            
           }
 
-          <UserShape> PATTERN "^http:/example.org/.*" {                     
+          <UserShape> /^http:\\/example\\.org\\/\\.*/ {                     
               (                                   
                  foaf:name xsd:string             
                |                                  
@@ -853,10 +853,10 @@ describe ShEx::Parser do
               foaf:phone IRI*;          
               foaf:mbox IRI             
           } AND {
-              ( foaf:phone PATTERN "^tel:\\\\+33"; 
-                foaf:mbox PATTERN "\\\\.fr$" )?;
-              ( foaf:phone PATTERN "^tel:\\\\+44"; 
-                foaf:mbox PATTERN "\\\\.uk$")?
+              ( foaf:phone /^tel:\\+33/; 
+                foaf:mbox /\\.fr$/ )?;
+              ( foaf:phone /^tel:\\+44/; 
+                foaf:mbox /\\.uk$/)?
           }
         ),
         sxp: %{(schema
@@ -893,58 +893,57 @@ describe ShEx::Parser do
             (tripleConstraint inverse
              (predicate <http://schema.example/related>) <IssueShape>
              (min 0)
-             (max "*")) )
-            )
-           (and
-            (id <UserShape>)
-             (nodeConstraint (pattern "^http:/example.org/.*"))
-             (shape
-              (eachOf
-               (oneOf
-                (tripleConstraint
-                 (predicate <http://xmlns.com/foaf/name>)
-                 (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>)))
-                (eachOf
-                 (tripleConstraint
-                  (predicate <http://xmlns.com/foaf/givenName>)
-                  (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>))
-                  (min 1)
-                  (max "*"))
-                 (tripleConstraint
-                  (predicate <http://xmlns.com/foaf/familyName>)
-                  (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>)))
-                ))
-               (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint iri))) ))
-           (and
-            (id <EmployeeShape>)
-             (shape
+             (max "*")) ))
+          (and
+           (id <UserShape>)
+           (nodeConstraint (pattern "^http:/example\\\\.org/\\\\.*"))
+           (shape
+            (eachOf
+             (oneOf
+              (tripleConstraint
+               (predicate <http://xmlns.com/foaf/name>)
+               (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>)))
               (eachOf
                (tripleConstraint
-                (predicate <http://xmlns.com/foaf/phone>)
-                (nodeConstraint iri)
-                (min 0)
+                (predicate <http://xmlns.com/foaf/givenName>)
+                (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>))
+                (min 1)
                 (max "*"))
                (tripleConstraint
-                (predicate <http://xmlns.com/foaf/mbox>)
-                (nodeConstraint iri))) )
-             (shape
-              (eachOf
-               (eachOf
-                (tripleConstraint
-                 (predicate <http://xmlns.com/foaf/phone>)
-                 (nodeConstraint (pattern "^tel:\\\\+33")))
-                (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint (pattern "\\\\.fr$")))
-                (min 0)
-                (max 1))
-               (eachOf
-                (tripleConstraint
-                 (predicate <http://xmlns.com/foaf/phone>)
-                 (nodeConstraint (pattern "^tel:\\\\+44")))
-                (tripleConstraint
-                 (predicate <http://xmlns.com/foaf/mbox>)
-                 (nodeConstraint (pattern "\\\\.uk$")))
-                (min 0)
-                (max 1)) )) )) )}
+                (predicate <http://xmlns.com/foaf/familyName>)
+                (nodeConstraint (datatype <http://www.w3.org/2001/XMLSchema#string>)))
+              ))
+             (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint iri))) ))
+          (and
+           (id <EmployeeShape>)
+           (shape
+            (eachOf
+             (tripleConstraint
+              (predicate <http://xmlns.com/foaf/phone>)
+              (nodeConstraint iri)
+              (min 0)
+              (max "*"))
+             (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint iri))) )
+           (shape
+            (eachOf
+             (eachOf
+              (tripleConstraint
+               (predicate <http://xmlns.com/foaf/phone>)
+               (nodeConstraint (pattern "^tel:\\\\+33")))
+              (tripleConstraint
+               (predicate <http://xmlns.com/foaf/mbox>)
+               (nodeConstraint (pattern "\\\\.fr$")))
+              (min 0)
+              (max 1))
+             (eachOf
+              (tripleConstraint
+               (predicate <http://xmlns.com/foaf/phone>)
+               (nodeConstraint (pattern "^tel:\\\\+44")))
+              (tripleConstraint
+               (predicate <http://xmlns.com/foaf/mbox>)
+               (nodeConstraint (pattern "\\\\.uk$")))
+              (min 0)
+              (max 1)) )) )) )}
       },
       "Closed shape expression" => {
         shexc: %(
@@ -963,7 +962,7 @@ describe ShEx::Parser do
           }
 
           <UserShape> {
-              a PATTERN "http://example.org/User#.*"
+              a /http:\\/\\/example\\.org\\/User#\\.*/
           }
         ),
         sxp: %{(schema
@@ -989,7 +988,7 @@ describe ShEx::Parser do
              (min 0)
              (max "*")) ) )
           (shape (id <UserShape>)
-           (tripleConstraint (predicate a) (nodeConstraint (pattern "http://example.org/User#.*"))))))}
+           (tripleConstraint (predicate a) (nodeConstraint (pattern "http://example\\\\.org/User#\\\\.*"))))))}
       },
       "Closed shape expression with EXTRA modifier" => {
         shexc: %(
@@ -1069,7 +1068,7 @@ describe ShEx::Parser do
           # ShEx schema
 
           <EmployeeShape>
-          PATTERN "^http:/example.org/.*"
+          /^http:\\/example\\.org\\/\\.*/
 
           CLOSED {        
               foaf:phone IRI*;          
@@ -1079,10 +1078,10 @@ describe ShEx::Parser do
           AND 
 
           CLOSED {
-            ( foaf:phone PATTERN "^tel:\\\\+33"; 
-              foaf:mbox PATTERN "\\\\.fr$" )?;
-            ( foaf:phone PATTERN "^tel:\\\\+44"; 
-              foaf:mbox PATTERN "\\\\.uk$")?
+            ( foaf:phone /^tel:\\+33/; 
+              foaf:mbox /\\.fr$/ )?;
+            ( foaf:phone /^tel:\\+44/; 
+              foaf:mbox /\\.uk$/)?
           }
         ),
         sxp: %{(schema
@@ -1090,7 +1089,7 @@ describe ShEx::Parser do
          (shapes
           (and
            (id <EmployeeShape>)
-           (nodeConstraint (pattern "^http:/example.org/.*"))
+           (nodeConstraint (pattern "^http:/example\\\\.org/\\\\.*"))
            (shape closed
             (eachOf
              (tripleConstraint (predicate <http://xmlns.com/foaf/phone>) (nodeConstraint iri) (min 0) (max "*"))
@@ -1295,6 +1294,13 @@ describe ShEx::Parser do
               pending("Our grammar allows nested bracketedTripleExpr")
             when '1datatypeRef1'
               pending "sync with litNodeType and shapeRef change"
+            when '1literalPattern_with_ECHAR_escape_1'
+              pending "detect bad REGEXP escape sequences"
+            when '1literalPattern_with_UTF8_boundaries',
+                 '1literalPattern_with_REGEXP_escapes_bare',
+                 '1literalPattern_with_REGEXP_escapes_as_bare',
+                 '1literalPattern_with_REGEXP_bare_as_escapes'
+              pending "ShExJ representation of Regexp using escaping"
             end
 
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]

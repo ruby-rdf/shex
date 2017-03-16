@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 require 'ebnf'
 require 'ebnf/ll1/parser'
 require 'shex/meta'
@@ -114,8 +115,8 @@ module ShEx
     terminal(:STRING_LITERAL2,      STRING_LITERAL2, unescape: true) do |prod, token, input|
       input[:string] = token.value[1..-2]
     end
-    terminal(:PATTERN,      PATTERN, unescape: true) do |prod, token, input|
-      input[:string] = token.value
+    terminal(:REGEXP,               REGEXP) do |prod, token, input|
+      input[:regexp] = token.value
     end
     terminal(:RDF_TYPE,             RDF_TYPE) do |prod, token, input|
       input[:iri] = (a = RDF.type.dup; a.lexical = 'a'; a)
@@ -147,7 +148,6 @@ module ShEx
            'MAXINCLUSIVE',
            'MAXEXCLUSIVE'  then input[:numericRange] = token.value.downcase.to_sym
       when 'NOT'           then input[:not] = token.value.downcase.to_sym
-      when 'PATTERN'       then input[:pattern] = token.value.downcase.to_sym
       when 'START'         then input[:start] = token.value.downcase.to_sym
       else
         #raise "Unexpected MC terminal: #{token.inspect}"
@@ -394,8 +394,7 @@ module ShEx
 
     # [27]    xsFacet               ::= stringFacet | numericFacet
     # [28]    stringFacet           ::= stringLength INTEGER
-    #                                 | "PATTERN" string
-    #                                 | '~' string  # shortcut for "PATTERN"
+    #                                 | REGEXP
     production(:stringFacet) do |input, data, callback|
       input[:stringFacet] ||= []
       input[:stringFacet] << if data[:stringLength]
@@ -403,20 +402,27 @@ module ShEx
           error(nil, "#{data[:stringLength]} constraint may only be used once in a Node Constraint", production: :stringFacet)
         end
         [data[:stringLength], data[:literal]]
-      elsif data[:pattern]
-        [:pattern, data[:string], data[:flags]].compact
+      elsif re = data[:regexp]
+        unless re =~ %r(^/(.*)/([smix]*)$)
+          error(nil, "#{re.inspect} regular expression must be in the form /pattern/flags?", production: :stringFacet)
+        end
+        flags = $2 unless $2.to_s.empty?
+        pattern = ""
+        $1.gsub('\\/', "/").each_codepoint do |u|
+          pattern << case u
+            when (0x00..0xFF)        # ASCII 7-bit
+              u.chr
+            when (0x100..0xFFFF)      # Unicode BMP
+              RDF::NTriples::Writer::escape_utf16(u)
+            when (0x10000..0x10FFFF) # Unicode
+              RDF::NTriples::Writer.escape_utf32(u)
+            else
+              raise ArgumentError.new("expected a Unicode codepoint in (0x00..0x10FFFF), but got 0x#{u.to_s(16)}")
+          end
+        end
+        pattern.force_encoding(Encoding::UTF_8)
+        [:pattern, pattern, flags].compact
       end
-    end
-
-    # | '~' PATTERN
-    # Parse as "/pattern/flags"
-    production(:_stringFacet_3) do |input, data, callback|
-      re = data[:string]
-      unless re =~ %r(^/[^.]*/[smixq]*$)
-        error(nil, "#{re.inspect} regular expression must be in the form /pattern/flags?", production: :stringFacet)
-      end
-      _, pattern, flags = re.split('/')
-      input[:pattern], input[:string], input[:flags] = true, pattern, flags
     end
 
     # [29]    stringLength          ::= "LENGTH" | "MINLENGTH" | "MAXLENGTH"
