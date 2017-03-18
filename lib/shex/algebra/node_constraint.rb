@@ -75,11 +75,7 @@ module ShEx::Algebra
       minlength = op_fetch(:minlength)
       maxlength = op_fetch(:maxlength)
       pat = (operands.detect {|op| op.is_a?(Array) && op[0] == :pattern} || [])
-      pattern = if pat[1]
-        pat[1].to_s.gsub(ShEx::Terminals::UCHAR) do
-          [($1 || $2).hex].pack('U*')
-        end
-      end
+      pattern = pat[1]
 
       flags = 0
       flags |= Regexp::EXTENDED   if pat[2].to_s.include?("x")

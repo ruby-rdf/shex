@@ -466,8 +466,9 @@ describe ShEx::Algebra do
             pending "difference of opinion on literal validitity"
           when '1datatypeRef1_fail-datatype', '1datatypeRef1_fail-reflexiveRef'
             pending "sync with litNodeType and shapeRef change"
-          when '1literalPattern_with_UTF8_boundaries_pass', '1literalPattern_with_UTF8_boundaries_fail'
-            pending "invalid byte sequence in UTF-8"
+          when '1literalPattern_with_all_punctuation_pass',
+               '1literalPattern_with_all_punctuation_fail'
+            pending "empty char-class"
           when '1literalPattern_with_REGEXP_escapes_escaped_pass',
                '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes',
                '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes_bare'
@@ -506,6 +507,9 @@ describe ShEx::Algebra do
             pending "difference of opinion on literal validitity"
           when '1datatypeRef1_fail-datatype', '1datatypeRef1_fail-reflexiveRef'
             pending "sync with litNodeType and shapeRef change"
+          when '1literalPattern_with_all_punctuation_pass',
+               '1literalPattern_with_all_punctuation_fail'
+            pending "empty char-class"
           when '1literalPattern_with_REGEXP_escapes_escaped_pass',
                '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes',
                '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes_bare'

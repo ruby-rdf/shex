@@ -1290,17 +1290,16 @@ describe ShEx::Parser do
             case t.name
             when '_all', 'kitchenSink'
               validate = false # Has self-included shape
+            when '1ShapeProductionCollision'
+              pending "undetected self reference"
             when 'openopen1dotOr1dotclose'
               pending("Our grammar allows nested bracketedTripleExpr")
             when '1datatypeRef1'
               pending "sync with litNodeType and shapeRef change"
-            when '1literalPattern_with_ECHAR_escape_1'
+            when '1literalPattern_with_ECHAR_escape_1',
+                 '1literalPattern_with_REGEXP_bare_as_escapes',
+                 '1literalPattern_with_REGEXP_escapes_escaped'
               pending "detect bad REGEXP escape sequences"
-            when '1literalPattern_with_UTF8_boundaries',
-                 '1literalPattern_with_REGEXP_escapes_bare',
-                 '1literalPattern_with_REGEXP_escapes_as_bare',
-                 '1literalPattern_with_REGEXP_bare_as_escapes'
-              pending "ShExJ representation of Regexp using escaping"
             end
 
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]

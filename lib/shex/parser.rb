@@ -407,20 +407,15 @@ module ShEx
           error(nil, "#{re.inspect} regular expression must be in the form /pattern/flags?", production: :stringFacet)
         end
         flags = $2 unless $2.to_s.empty?
-        pattern = ""
-        $1.gsub('\\/', "/").each_codepoint do |u|
-          pattern << case u
-            when (0x00..0xFF)        # ASCII 7-bit
-              u.chr
-            when (0x100..0xFFFF)      # Unicode BMP
-              RDF::NTriples::Writer::escape_utf16(u)
-            when (0x10000..0x10FFFF) # Unicode
-              RDF::NTriples::Writer.escape_utf32(u)
-            else
-              raise ArgumentError.new("expected a Unicode codepoint in (0x00..0x10FFFF), but got 0x#{u.to_s(16)}")
-          end
+        pattern = $1.gsub('\\/', '/').gsub(UCHAR) do
+          [($1 || $2).hex].pack('U*')
+        end.force_encoding(Encoding::UTF_8)
+
+        # Any other escaped character is a syntax error
+        if pattern.match(%r([^\\]\\[^nrt/\\|\.?*+\[\]\(\){}$#x2D#x5B#x5D#x5E-]))
+          error(nil, "Regexp contains illegal escape: #{pattern.inspect}", production: :stringFacet)
         end
-        pattern.force_encoding(Encoding::UTF_8)
+
         [:pattern, pattern, flags].compact
       end
     end
