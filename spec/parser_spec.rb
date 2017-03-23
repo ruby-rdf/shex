@@ -1298,7 +1298,9 @@ describe ShEx::Parser do
               pending "sync with litNodeType and shapeRef change"
             when '1literalPattern_with_ECHAR_escape_1',
                  '1literalPattern_with_REGEXP_bare_as_escapes',
-                 '1literalPattern_with_REGEXP_escapes_escaped'
+                 '1literalPattern_with_REGEXP_escapes_escaped',
+                 '1literalPattern_with_all_punctuation',
+                 '1literalPattern_with_REGEXP_escapes_as_bare'
               pending "detect bad REGEXP escape sequences"
             end
 
