@@ -43,12 +43,12 @@ module ShEx::Algebra
     # 	One or more nodes within `graph` for which to run the start expression.
     # @param [Array<Schema, String>] shapeExterns ([])
     #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
-    # @return [Operand] Returns operand graph annotated with satisfied and unsatisfied operations.
+    # @return [Hash{RDF::Term => Array<ShapeResult>}] Returns _ShapeResults_, a hash of graph nodes to the results of their associated shapes
     # @param [Hash{Symbol => Object}] options
     # @option options [String] :base_uri (for resolving focus)
-    # @raise [ShEx::NotSatisfied] along with operand graph described for return
+    # @raise [ShEx::NotSatisfied] along with individual shape results
     def execute(graph, map, focus: [], shapeExterns: [], depth: 0, **options)
-      @graph, @shapes_entered = graph, {}
+      @graph, @shapes_entered, results = graph, {}, {}
       @external_schemas = shapeExterns
       @extensions = {}
       focus = Array(focus).map {|f| value(f, options)}
@@ -93,35 +93,50 @@ module ShEx::Algebra
         op.satisfies?([], depth: depth + 1)
       end
 
-      # Keep a new Schema, specifically for recording actions
-      satisfied_schema = Schema.new
       # Next run any start expression
       if !focus.empty?
         if start
-          # FIXME: where does focus node come from? For now, run against all nodes in the map
           focus.each do |node|
             node = graph.enum_term.detect {|t| t.node? && t.id == node.id} if node.is_a?(RDF::Node)
-            start.satisfies?(node, depth: depth + 1)
+            sr = ShapeResult.new(RDF::URI("http://shex.io/ns/Start"))
+            (results[node] ||= []) << sr
+            begin
+              sr.expression = start.satisfies?(node, depth: depth + 1)
+              sr.result = true
+            rescue ShEx::NotSatisfied => e
+              sr.expression = e.expression
+              sr.result = false
+            end
           end
         else
           structure_error "Focus nodes with no start"
         end
       end
 
-      # Add shape result(s)
-      satisfied_shapes = {}
-      satisfied_schema.operands << [:shapes, satisfied_shapes] unless shapes.empty?
-
       # Match against all shapes associated with the ids for focus
       @map.each do |node, shapes|
+        results[node] ||= []
         shapes.each do |id|
           enter_shape(id, node) do |shape|
-            satisfied_shapes[id] = shape.satisfies?(node, depth: depth + 1)
+            sr = ShapeResult.new(id)
+            results[node] << sr
+            begin
+              sr.expression = shape.satisfies?(node, depth: depth + 1)
+              sr.result = true
+            rescue ShEx::NotSatisfied => e
+              sr.expression = e.expression
+              sr.result = false
+            end
           end
         end
       end
-      status "schema satisfied", depth: depth
-      satisfied_schema
+
+      if results.values.flatten.all? {|sr| sr.result}
+        status "schema satisfied", depth: depth
+        results
+      else
+        raise ShEx::NotSatisfied.new("Graph does not conform to schema", expression: results)
+      end
     ensure
       # Close Semantic Action extensions
       @extensions.values.each {|ext| ext.close(schema: self, depth: depth, **options)}
@@ -217,6 +232,43 @@ module ShEx::Algebra
         end
       end
       super
+    end
+  end
+
+  # A shape result
+  class ShapeResult
+    # The label of the shape within the schema, or a URI indicating a start shape
+    # @return [RDF::Resource]
+    attr_reader :label
+
+    # Does the node conform to the shape
+    # @return [Boolean]
+    attr_accessor :result
+
+    # The annotated {Operator} indicating processing results
+    # @return [ShEx::Algebra::Operator]
+    attr_accessor :expression
+
+    # Holds the result of processing a shape
+    # @param [RDF::Resource] label
+    # @return [ShapeResult]
+    def initialize(label)
+      @label = label
+    end
+
+    # The SXP of {#expression}
+    # @return [String]
+    def message
+      SXP::Generator.string(expression.to_sxp_bin)
+    end
+
+    ##
+    # Returns the binary S-Expression (SXP) representation of this result.
+    #
+    # @return [Array]
+    # @see    https://en.wikipedia.org/wiki/S-expression
+    def to_sxp_bin
+      [:ShapeResult, label, result, expression].map(&:to_sxp_bin)
     end
   end
 end

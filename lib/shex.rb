@@ -129,14 +129,14 @@ module ShEx
   class NotSatisfied < Error
     ##
     # The expression which was not satified
-    # @return [ShEx::Satisfiable]
+    # @return [ShEx::Algebra::ShapeExpression]
     attr_reader :expression
 
     ##
     # Initializes a new parser error instance.
     #
-    # @param  [String, #to_s]          message
-    # @param  [Satisfiable]            expression (self)
+    # @param  [String, #to_s]                   message
+    # @param  [ShEx::Algebra::ShapeExpression]  expression
     def initialize(message, expression: self)
       @expression = expression
       super(message.to_s)
@@ -157,8 +157,8 @@ module ShEx
     ##
     # Initializes a new parser error instance.
     #
-    # @param  [String, #to_s]          message
-    # @param  [Satisfiable]            expression (self)
+    # @param  [String, #to_s]                   message
+    # @param  [ShEx::Algebra::TripleExpression] expression
     def initialize(message, expression: self)
       @expression = expression
       super(message.to_s)

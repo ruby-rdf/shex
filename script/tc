@@ -46,20 +46,17 @@ def run_tc(t, options)
 
     puts "\nsxp: " + SXP::Generator.string(schema.to_sxp_bin) if options[:verbose]
 
-    focus = if t.focus.is_a?(Hash)
-      RDF::Literal(t.focus['@value'],
-                   datatype: t.focus['@type'],
-                   language: t.focus['@language'])
-    elsif t.focus.to_s.start_with?('_:')
-      RDF::Node.intern(t.focus[2..-1])
+    focus = ShEx::Algebra::Operator.value(t.focus, base_uri: t.base)
+    map = if t.shape
+      {focus => ShEx::Algebra::Operator.iri(t.shape, base_uri: t.base)}
     else
-      RDF::URI(t.focus)
+      {}
     end
-    map = {focus => t.shape} if t.shape
+    focus = nil unless map.empty?
 
     if t.positive_test?
       if t.validation_test?
-        r = schema.execute(focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
+        r = schema.execute(t.graph, map, focus: focus, logger: t.logger, shapeExterns: t.shapeExterns)
         puts "\nresult: " + SXP::Generator.string(r.to_sxp_bin) if options[:verbose]
         result = "passed"
       else
@@ -67,7 +64,7 @@ def run_tc(t, options)
       end
     else
       if t.validation_test?
-        r = schema.execute(focus, t.graph, map, logger: t.logger, shapeExterns: t.shapeExterns)
+        r = schema.execute(t.graph, map, focus: focus, logger: t.logger, shapeExterns: t.shapeExterns)
         puts "\nresult: " + SXP::Generator.string(r.to_sxp_bin) if options[:verbose]
         result = "failed"
       else

@@ -28,7 +28,8 @@ describe ShEx do
 
   describe ".execute" do
     specify do
-      expect(described_class.execute(input, nil, {RDF::URI("http://example/foo") => RDF::URI("http://a.example/S1")})).to be_a(ShEx::Algebra::Schema)
+      expect(described_class.execute(input, nil, {RDF::URI("http://example/foo") => RDF::URI("http://a.example/S1")})).to be_a(Hash)
+      expect(described_class.execute(input, nil, {RDF::URI("http://example/foo") => RDF::URI("http://a.example/S1")}).values.flatten).to all(be_a(ShEx::Algebra::ShapeResult))
     end
   end
 
