@@ -239,7 +239,7 @@ module ShEx::Algebra
   class ShapeResult
     # The label of the shape within the schema, or a URI indicating a start shape
     # @return [RDF::Resource]
-    attr_reader :label
+    attr_reader :shape
 
     # Does the node conform to the shape
     # @return [Boolean]
@@ -252,13 +252,13 @@ module ShEx::Algebra
     # Holds the result of processing a shape
     # @param [RDF::Resource] label
     # @return [ShapeResult]
-    def initialize(label)
-      @label = label
+    def initialize(shape)
+      @shape = shape
     end
 
     # The SXP of {#expression}
     # @return [String]
-    def message
+    def reason
       SXP::Generator.string(expression.to_sxp_bin)
     end
 
@@ -268,7 +268,7 @@ module ShEx::Algebra
     # @return [Array]
     # @see    https://en.wikipedia.org/wiki/S-expression
     def to_sxp_bin
-      [:ShapeResult, label, result, expression].map(&:to_sxp_bin)
+      [:ShapeResult, shape, result, expression].map(&:to_sxp_bin)
     end
   end
 end

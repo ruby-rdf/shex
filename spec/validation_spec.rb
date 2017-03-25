@@ -483,7 +483,11 @@ describe ShEx::Algebra do
           expected = t.positive_test? || ShEx::NotSatisfied
           schema = ShEx.parse(t.schema_source, validate: true, base_uri: t.base)
           focus = ShEx::Algebra::Operator.value(t.focus, base_uri: t.base)
-          map = if t.shape
+          map = if t.map
+            t.shape_map.inject({}) do |memo, (k,v)|
+              memo.merge(ShEx::Algebra::Operator.value(k, base_uri: t.base) => ShEx::Algebra::Operator.iri(v, base_uri: t.base))
+            end
+          elsif t.shape
             {focus => ShEx::Algebra::Operator.iri(t.shape, base_uri: t.base)}
           else
             {}
@@ -492,6 +496,7 @@ describe ShEx::Algebra do
           expect(schema).to satisfy(t.graph, t.data_source, map,
                                     focus: focus,
                                     expected: expected,
+                                    results: t.results,
                                     logger: t.logger,
                                     base_uri: t.base,
                                     shapeExterns: t.shapeExterns)
@@ -526,7 +531,11 @@ describe ShEx::Algebra do
           schema = ShEx.parse(t.schema_json, format: :shexj, validate: true, base_uri: t.base)
           t.debug << "shexc(2): #{SXP::Generator.string(schema.to_sxp_bin)}"
           focus = ShEx::Algebra::Operator.value(t.focus, base_uri: t.base)
-          map = if t.shape
+          map = if t.map
+            t.shape_map.inject({}) do |memo, (k,v)|
+              memo.merge(ShEx::Algebra::Operator.value(k, base_uri: t.base) => ShEx::Algebra::Operator.iri(v, base_uri: t.base))
+            end
+          elsif t.shape
             {focus => ShEx::Algebra::Operator.iri(t.shape, base_uri: t.base)}
           else
             {}
@@ -535,6 +544,7 @@ describe ShEx::Algebra do
           expect(schema).to satisfy(t.graph, t.data_source, map,
                                     focus: focus,
                                     expected: expected,
+                                    results: t.results,
                                     logger: t.logger,
                                     base_uri: t.base,
                                     shapeExterns: t.shapeExterns)
