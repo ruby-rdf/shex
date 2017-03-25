@@ -76,6 +76,15 @@ module ShEx
     # 86
     STRING_LITERAL_LONG2 = /"""(?:(?:"|"")?(?:[^"\\]|#{ECHAR}|#{UCHAR}))*"""/m.freeze
 
+    # 83l
+    LANG_STRING_LITERAL1      = /'(?:[^\'\\\n\r]|#{ECHAR}|#{UCHAR})*'#{LANGTAG}/.freeze
+    # 84l
+    LANG_STRING_LITERAL2      = /"(?:[^\"\\\n\r]|#{ECHAR}|#{UCHAR})*"#{LANGTAG}/.freeze
+    # 85l
+    LANG_STRING_LITERAL_LONG1 = /'''(?:(?:'|'')?(?:[^'\\]|#{ECHAR}|#{UCHAR}))*'''#{LANGTAG}/m.freeze
+    # 86l
+    LANG_STRING_LITERAL_LONG2 = /"""(?:(?:"|"")?(?:[^"\\]|#{ECHAR}|#{UCHAR}))*"""#{LANGTAG}/m.freeze
+
     # XX
     REGEXP              =  %r(/(?:[^/\\\n\r]|\\[nrt\\|.?*+(){}$-\[\]^/]|#{UCHAR})+/[smix]*).freeze
 

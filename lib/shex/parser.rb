@@ -103,6 +103,18 @@ module ShEx
     terminal(:LANGTAG,              LANGTAG) do |prod, token, input|
       input[:language] = token.value[1..-1]
     end
+    terminal(:LANG_STRING_LITERAL_LONG1, LANG_STRING_LITERAL_LONG1, unescape: true) do |prod, token, input|
+      input[:string], _, input[:language] = token.value[3..-1].rpartition("'''@")
+    end
+    terminal(:LANG_STRING_LITERAL_LONG2, LANG_STRING_LITERAL_LONG2, unescape: true) do |prod, token, input|
+      input[:string], _, input[:language] = token.value[3..-1].rpartition('"""@')
+    end
+    terminal(:LANG_STRING_LITERAL1,      LANG_STRING_LITERAL1, unescape: true) do |prod, token, input|
+      input[:string], _, input[:language] = token.value[1..-1].rpartition("'@")
+    end
+    terminal(:LANG_STRING_LITERAL2,      LANG_STRING_LITERAL2, unescape: true) do |prod, token, input|
+      input[:string], _, input[:language] = token.value[1..-1].rpartition('"@')
+    end
     terminal(:STRING_LITERAL_LONG1, STRING_LITERAL_LONG1, unescape: true) do |prod, token, input|
       input[:string] = token.value[3..-4]
     end
@@ -538,12 +550,21 @@ module ShEx
     # [48]    senseFlags             ::= '^'
     # [49]    valueSet              ::= '[' valueSetValue* ']'
 
-    # [50]    valueSetValue         ::= iriRange | literal
+    # [50]    valueSetValue         ::= (iriRange | literalRange | languageRange) | '.' (exclusion)+
     production(:valueSetValue) do |input, data, callback|
-      (input[:valueSetValue] ||= []) << Algebra::Value.new(data[:iriRange] || data[:literal])
+      exclusions = data[:exclusion].unshift(:exclusions) if data[:exclusion]
+      range = data[:iriRange] || data[:literalRange] || data[:languageRange]
+      range ||= Algebra::StemRange.new(:wildcard, exclusions)
+      (input[:valueSetValue] ||= []) << Algebra::Value.new(range)
     end
 
-    # [51]    iriRange              ::= iri ('~' exclusion*)? | '.' exclusion+
+    # [51]    exclusion             ::= '-' (iri | literal | LANGTAG) '~'?
+    production(:exclusion) do |input, data, callback|
+      val = data[:iri] || data[:literal] || data[:language]
+      (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::Stem.new(val) : val)
+    end
+
+    # [51i]    iriRange              ::= iri ('~' exclusion*)?
     production(:iriRange) do |input, data, callback|
       exclusions = data[:exclusion].unshift(:exclusions) if data[:exclusion]
       input[:iriRange] = if data[:pattern] && exclusions
@@ -557,9 +578,50 @@ module ShEx
       end
     end
 
-    # [52]    exclusion             ::= '-' iri '~'?
-    production(:exclusion) do |input, data, callback|
-      (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::Stem.new(data[:iri]) : data[:iri])
+    # [52i]    iriExclusion             ::= '-' iri '~'?
+    production(:iriExclusion) do |input, data, callback|
+      val = data[:iri]
+      (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::Stem.new(val) : val)
+    end
+
+    # [51l]    literalRange              ::= literal ('~' literalExclusion*)?
+    production(:literalRange) do |input, data, callback|
+      exclusions = data[:exclusion].unshift(:exclusions) if data[:exclusion]
+      input[:literalRange] = if data[:pattern] && exclusions
+        Algebra::StemRange.new(data[:literal], exclusions)
+      elsif data[:pattern]
+        Algebra::Stem.new(data[:literal])
+      elsif data[:dot]
+        Algebra::StemRange.new(:wildcard, exclusions)
+      else
+        data[:literal]
+      end
+    end
+
+    # [52l]    literalExclusion             ::= '-' literal '~'?
+    production(:literalExclusion) do |input, data, callback|
+      val = data[:literal]
+      (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::Stem.new(val) : val)
+    end
+
+    # [51g]    languageRange              ::= LANGTAG ('~' languageExclusion*)?
+    production(:languageRange) do |input, data, callback|
+      exclusions = data[:exclusion].unshift(:exclusions) if data[:exclusion]
+      input[:languageRange] = if data[:pattern] && exclusions
+        Algebra::StemRange.new(data[:language], exclusions)
+      elsif data[:pattern]
+        Algebra::Stem.new(data[:language])
+      elsif data[:dot]
+        Algebra::StemRange.new(:wildcard, exclusions)
+      else
+        data[:language]
+      end
+    end
+
+    # [52g]    languageExclusion             ::= '-' literal '~'?
+    production(:languageExclusion) do |input, data, callback|
+      val = data[:language]
+      (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::Stem.new(val) : val)
     end
 
     # [53]     include               ::= '&' shapeLabel
@@ -598,7 +660,7 @@ module ShEx
     end
 
     # [61]   numericLiteral        ::= INTEGER | DECIMAL | DOUBLE
-    # [62]  rdfLiteral            ::= string (LANGTAG | '^^' datatype)?
+    # [62]  rdfLiteral            ::= langString | string ('^^' datatype)?
     production(:rdfLiteral) do |input, data, callback|
       input[:literal] = literal(data[:string], data)
     end
