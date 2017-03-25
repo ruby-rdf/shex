@@ -614,7 +614,7 @@ describe ShEx::Parser do
                         "predicate": "http://xmlns.com/foaf/0.1/givenName",
                         "valueExpr":
                           { "type": "NodeConstraint", "nodeKind": "literal" },
-                        "min": 1, "max": "unbounded"  },
+                        "min": 1, "max": -1  },
                       { "type": "TripleConstraint",
                         "predicate": "http://xmlns.com/foaf/0.1/familyName",
                         "valueExpr":
@@ -691,7 +691,7 @@ describe ShEx::Parser do
             { "type": "TripleConstraint",
               "predicate": "http://schema.example/related",
               "valueExpr": "http://schema.example/IssueShape",
-              "min": 0, "max": "unbounded"
+              "min": 0, "max": -1
             } } ] }),
         sxp: %{(schema
          (prefix (("ex" <http://schema.example/>)))
@@ -726,7 +726,7 @@ describe ShEx::Parser do
                       {"value": "a"},
                       {"value": "b"},
                       {"value": "c"}
-                    ] }, "min": 1, "max": "unbounded" },
+                    ] }, "min": 1, "max": -1 },
                 { "type": "TripleConstraint",
                   "predicate": "http://schema.example/val",
                   "valueExpr":
@@ -735,7 +735,7 @@ describe ShEx::Parser do
                       {"value": "b"},
                       {"value": "c"},
                       {"value": "d"}
-                    ] }, "min": 1, "max": "unbounded" }
+                    ] }, "min": 1, "max": -1 }
               ] } } ] }),
         sxp: %{(schema
          (prefix (("ex" <http://schema.example/>)))

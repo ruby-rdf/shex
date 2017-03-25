@@ -70,7 +70,7 @@
               }
             ],
             "min": 1,
-            "max": "unbounded"
+            "max": -1
           },
           {
             "type": "TripleConstraint",
@@ -80,7 +80,7 @@
               "nodeKind": "iri"
             },
             "min": 0,
-            "max": "unbounded"
+            "max": -1
           },
           {
             "type": "TripleConstraint",
@@ -90,7 +90,7 @@
               "nodeKind": "iri"
             },
             "min": 1,
-            "max": "unbounded"
+            "max": -1
           },
           {
             "type": "TripleConstraint",
