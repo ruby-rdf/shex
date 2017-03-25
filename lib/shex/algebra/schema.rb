@@ -98,7 +98,7 @@ module ShEx::Algebra
         if start
           focus.each do |node|
             node = graph.enum_term.detect {|t| t.node? && t.id == node.id} if node.is_a?(RDF::Node)
-            sr = ShapeResult.new(RDF::URI("http://shex.io/ns/Start"))
+            sr = ShapeResult.new(RDF::URI("http://www.w3.org/ns/shex#Start"))
             (results[node] ||= []) << sr
             begin
               sr.expression = start.satisfies?(node, depth: depth + 1)

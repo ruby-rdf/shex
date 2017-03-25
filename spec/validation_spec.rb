@@ -546,7 +546,7 @@ describe ShEx::Algebra do
           let(:shexr) {@@shexr ||= ShEx.open(SHEXR)}
           specify "#{t.name} validates against ShExR.shex", shexr: true do
             graph = RDF::Graph.new {|g| g << JSON::LD::Reader.new(t.schema_json, base_uri: t.base)}
-            focus = graph.first_subject(predicate: RDF.type, object: RDF::URI("http://shex.io/ns/shex#Schema"))
+            focus = graph.first_subject(predicate: RDF.type, object: RDF::URI("http://www.w3.org/ns/shex#Schema"))
             expect(focus).to be_a(RDF::Resource)
             t.logger.level = Logger::DEBUG
             expect(shexr).to satisfy(graph, t.schema_json, {}, focus: focus, logger: t.logger)
