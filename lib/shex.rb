@@ -11,7 +11,7 @@ module ShEx
   autoload :VERSION,    'shex/version'
 
   # Location of the ShEx JSON-LD context
-  CONTEXT = "http://shex.io/context.jsonld"
+  CONTEXT = "http://www.w3.org/ns/shex.jsonld"
 
   # Extensions defined in this gem
   EXTENSIONS = %w{test}

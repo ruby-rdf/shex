@@ -65,7 +65,7 @@ task context: "lib/shex/shex_context.rb"
 file "lib/shex/shex_context.rb" do
   require 'json/ld'
   File.open("lib/shex/shex_context.rb", "w") do |f|
-    c = JSON::LD::Context.new().parse("http://shex.io/context.jsonld")
+    c = JSON::LD::Context.new().parse("http://www.w3.org/ns/shex.jsonld")
     f.write c.to_rb
   end
 end

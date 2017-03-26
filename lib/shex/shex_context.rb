@@ -1,12 +1,15 @@
 # -*- encoding: utf-8 -*-
 # frozen_string_literal: true
-# This file generated automatically from http://shex.io/context.jsonld
+# This file generated automatically from http://www.w3.org/ns/shex.jsonld
 require 'json/ld'
 class JSON::LD::Context
-  add_preloaded("http://shex.io/context.jsonld") do
+  add_preloaded("http://www.w3.org/ns/shex.jsonld") do
     new(term_definitions: {
       "Annotation" => TermDefinition.new("Annotation", id: "http://www.w3.org/ns/shex#Annotation", simple: true),
       "EachOf" => TermDefinition.new("EachOf", id: "http://www.w3.org/ns/shex#EachOf", simple: true),
+      "IriStem" => TermDefinition.new("IriStem", id: "http://www.w3.org/ns/shex#IriStem", simple: true),
+      "LanguageStem" => TermDefinition.new("LanguageStem", id: "http://www.w3.org/ns/shex#LanguageStem", simple: true),
+      "LiteralStem" => TermDefinition.new("LiteralStem", id: "http://www.w3.org/ns/shex#LiteralStem", simple: true),
       "NodeConstraint" => TermDefinition.new("NodeConstraint", id: "http://www.w3.org/ns/shex#NodeConstraint", simple: true),
       "NodeKind" => TermDefinition.new("NodeKind", id: "http://www.w3.org/ns/shex#NodeKind", simple: true),
       "OneOf" => TermDefinition.new("OneOf", id: "http://www.w3.org/ns/shex#OneOf", simple: true),

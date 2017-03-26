@@ -126,7 +126,7 @@ describe ShEx::Algebra do
           <issue10> foaf:mbox <mailto:engineering-2112@a.example> .
         ),
         expected: [
-          {focus: "issue8", shape: "http://schema.example/EmployeeShape", result: true},
+          {focus: "issue8", shape: "http://schema.example/EmployeeShape", result: ShEx::NotSatisfied},
           {focus: "issue9", shape: "http://schema.example/EmployeeShape", result: true},
           {focus: "issue10", shape: "http://schema.example/EmployeeShape", result: ShEx::NotSatisfied},
         ]

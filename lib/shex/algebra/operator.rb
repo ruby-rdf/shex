@@ -295,7 +295,7 @@ module ShEx::Algebra
           end
         when 'stem', 'name'
           # Value may be :wildcard for stem
-          operands << (v.is_a?(Symbol) ? v : iri(v, options))
+          operands << (v.is_a?(Symbol) ? v : value(v, options))
         when 'predicate' then operands << [:predicate, iri(v, options)]
         when 'extra', 'datatype'
           v = [v] unless v.is_a?(Array)
@@ -303,7 +303,7 @@ module ShEx::Algebra
         when 'exclusions'
           v = [v] unless v.is_a?(Array)
           operands << v.map do |op|
-            op.is_a?(Hash) ?
+            op.is_a?(Hash) && op.has_key?('type') ?
               ShEx::Algebra.from_shexj(op, options) :
               value(op, options)
           end.unshift(:exclusions)
@@ -383,7 +383,7 @@ module ShEx::Algebra
           end
         when RDF::Value
           case self
-          when Stem, StemRange  then obj['stem'] = op.to_s
+          when Stem, StemRange  then obj['stem'] = serialize_value(op)
           when SemAct           then obj[op.is_a?(RDF::URI) ? 'name' : 'code'] = op.to_s
           when TripleConstraint then obj['valueExpr'] = op.to_s
           when Shape            then obj['expression'] = op.to_s
@@ -546,6 +546,8 @@ module ShEx::Algebra
           merge(value.has_language? ? {'language' => value.language.to_s} : {})
         when RDF::Resource
           value.to_s
+        when String
+          {'value' => value}
         else value.to_h
       end
     end
