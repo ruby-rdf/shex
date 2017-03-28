@@ -20,34 +20,34 @@ module ShEx
     UCHAR4               = /\\u([0-9A-Fa-f]{4,4})/.freeze
     UCHAR8               = /\\U([0-9A-Fa-f]{8,8})/.freeze
     UCHAR                = Regexp.union(UCHAR4, UCHAR8).freeze
-    # 95
+    # 171s
     PERCENT              = /%\h\h/.freeze
-    # 97
+    # 173s
     PN_LOCAL_ESC         = /\\[_~\.\-\!$\&'\(\)\*\+,;=\/\?\#@%]/.freeze
-    # 94
+    # 170s
     PLX                  = /#{PERCENT}|#{PN_LOCAL_ESC}/.freeze.freeze
-    # 89
+    # 164s
     PN_CHARS_BASE        = /[A-Za-z]|#{U_CHARS1}/.freeze
-    # 90
+    # 165s
     PN_CHARS_U           = /_|#{PN_CHARS_BASE}/.freeze
-    # 91
+    # 167s
     PN_CHARS             = /[\d-]|#{PN_CHARS_U}|#{U_CHARS2}/.freeze
     PN_LOCAL_BODY        = /(?:(?:\.|:|#{PN_CHARS}|#{PLX})*(?:#{PN_CHARS}|:|#{PLX}))?/.freeze
     PN_CHARS_BODY        = /(?:(?:\.|#{PN_CHARS})*#{PN_CHARS})?/.freeze
-    # 92
+    # 168s
     PN_PREFIX            = /#{PN_CHARS_BASE}#{PN_CHARS_BODY}/.freeze
-    # 93
+    # 169s
     PN_LOCAL             = /(?:[\d|]|#{PN_CHARS_U}|#{PLX})#{PN_LOCAL_BODY}/.freeze
-    # 82
+    # 155s
     EXPONENT             = /[eE][+-]?\d+/
-    # 88
+    # 160s
     ECHAR                = /\\[tbnrf\\"']/
 
     WS                   = /(?:\s|(?:#[^\n\r]*))+/m.freeze
 
-    # 71
+    # 69
     RDF_TYPE             = /a/.freeze
-    # 72
+    # 18t
     IRIREF               = /<(?:#{IRI_RANGE}|#{UCHAR})*>/.freeze
     # 73
     PNAME_NS             = /#{PN_PREFIX}?:/.freeze

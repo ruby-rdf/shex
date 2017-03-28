@@ -391,6 +391,15 @@
         <code>|</code> <a href="#grammar-production-include">include</a>
       </td>
     </tr>
+    <tr id='grammar-production-productionLabel'>
+      <td>[43a]</td>
+      <td><code>productionLabel</code></td>
+      <td>::=</td>
+      <td>
+        "<code class="grammar-literal">$</code>"
+        <code>(</code> <a href="#grammar-production-iri">iri</a> <code>|</code> <a href="#grammar-production-blankNode">blankNode</a><code>)</code>
+      </td>
+    </tr>
     <tr id='grammar-production-bracketedTripleExpr'>
       <td>[44]</td>
       <td><code>bracketedTripleExpr</code></td>
@@ -404,17 +413,8 @@
         <a href="#grammar-production-semanticActions">semanticActions</a>
       </td>
     </tr>
-    <tr id='grammar-production-productionLabel'>
-      <td>[45]</td>
-      <td><code>productionLabel</code></td>
-      <td>::=</td>
-      <td>
-        "<code class="grammar-literal">$</code>"
-        <code>(</code> <a href="#grammar-production-iri">iri</a> <code>|</code> <a href="#grammar-production-blankNode">blankNode</a><code>)</code>
-      </td>
-    </tr>
     <tr id='grammar-production-tripleConstraint'>
-      <td>[46]</td>
+      <td>[45]</td>
       <td><code>tripleConstraint</code></td>
       <td>::=</td>
       <td>
@@ -427,7 +427,7 @@
       </td>
     </tr>
     <tr id='grammar-production-cardinality'>
-      <td>[47]</td>
+      <td>[46]</td>
       <td><code>cardinality</code></td>
       <td>::=</td>
       <td>
@@ -438,7 +438,7 @@
       </td>
     </tr>
     <tr id='grammar-production-senseFlags'>
-      <td>[48]</td>
+      <td>[47]</td>
       <td><code>senseFlags</code></td>
       <td>::=</td>
       <td>
@@ -446,7 +446,7 @@
       </td>
     </tr>
     <tr id='grammar-production-valueSet'>
-      <td>[49]</td>
+      <td>[48]</td>
       <td><code>valueSet</code></td>
       <td>::=</td>
       <td>
@@ -456,16 +456,18 @@
       </td>
     </tr>
     <tr id='grammar-production-valueSetValue'>
-      <td>[50]</td>
+      <td>[49]</td>
       <td><code>valueSetValue</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-iriRange">iriRange</a> <code>|</code> <a href="#grammar-production-literalRange">literalRange</a> <code>|</code> <a href="#grammar-production-languageRange">languageRange</a>
+        <a href="#grammar-production-iriRange">iriRange</a>
+        <code>|</code> <a href="#grammar-production-literalRange">literalRange</a>
+        <code>|</code> <a href="#grammar-production-languageRange">languageRange</a>
         <code>|</code> "<code class="grammar-literal">.</code>" <a href="#grammar-production-exclusion">exclusion</a><code>+</code>
       </td>
     </tr>
     <tr id='grammar-production-exclusion'>
-      <td>[51]</td>
+      <td>[50]</td>
       <td><code>exclusion</code></td>
       <td>::=</td>
       <td>
@@ -475,7 +477,7 @@
       </td>
     </tr>
     <tr id='grammar-production-iriRange'>
-      <td>[51i]</td>
+      <td>[51]</td>
       <td><code>iriRange</code></td>
       <td>::=</td>
       <td>
@@ -484,7 +486,7 @@
       </td>
     </tr>
     <tr id='grammar-production-iriExclusion'>
-      <td>[52i]</td>
+      <td>[52]</td>
       <td><code>iriExclusion</code></td>
       <td>::=</td>
       <td>
@@ -494,7 +496,7 @@
       </td>
     </tr>
     <tr id='grammar-production-literalRange'>
-      <td>[51l]</td>
+      <td>[53]</td>
       <td><code>literalRange</code></td>
       <td>::=</td>
       <td>
@@ -503,7 +505,7 @@
       </td>
     </tr>
     <tr id='grammar-production-literalExclusion'>
-      <td>[52l]</td>
+      <td>[54]</td>
       <td><code>literalExclusion</code></td>
       <td>::=</td>
       <td>
@@ -513,7 +515,7 @@
       </td>
     </tr>
     <tr id='grammar-production-languageRange'>
-      <td>[51g]</td>
+      <td>[55]</td>
       <td><code>languageRange</code></td>
       <td>::=</td>
       <td>
@@ -522,7 +524,7 @@
       </td>
     </tr>
     <tr id='grammar-production-languageExclusion'>
-      <td>[52g]</td>
+      <td>[56]</td>
       <td><code>languageExclusion</code></td>
       <td>::=</td>
       <td>
@@ -532,7 +534,7 @@
       </td>
     </tr>
     <tr id='grammar-production-include'>
-      <td>[53]</td>
+      <td>[57]</td>
       <td><code>include</code></td>
       <td>::=</td>
       <td>
@@ -541,7 +543,7 @@
       </td>
     </tr>
     <tr id='grammar-production-annotation'>
-      <td>[54]</td>
+      <td>[58]</td>
       <td><code>annotation</code></td>
       <td>::=</td>
       <td>
@@ -551,7 +553,7 @@
       </td>
     </tr>
     <tr id='grammar-production-semanticActions'>
-      <td>[55]</td>
+      <td>[59]</td>
       <td><code>semanticActions</code></td>
       <td>::=</td>
       <td>
@@ -559,7 +561,7 @@
       </td>
     </tr>
     <tr id='grammar-production-codeDecl'>
-      <td>[56]</td>
+      <td>[60]</td>
       <td><code>codeDecl</code></td>
       <td>::=</td>
       <td>
@@ -569,7 +571,7 @@
       </td>
     </tr>
     <tr id='grammar-production-literal'>
-      <td>[57]</td>
+      <td>[13t]</td>
       <td><code>literal</code></td>
       <td>::=</td>
       <td>
@@ -579,7 +581,7 @@
       </td>
     </tr>
     <tr id='grammar-production-predicate'>
-      <td>[58]</td>
+      <td>[61]</td>
       <td><code>predicate</code></td>
       <td>::=</td>
       <td>
@@ -588,7 +590,7 @@
       </td>
     </tr>
     <tr id='grammar-production-datatype'>
-      <td>[59]</td>
+      <td>[62]</td>
       <td><code>datatype</code></td>
       <td>::=</td>
       <td>
@@ -596,7 +598,7 @@
       </td>
     </tr>
     <tr id='grammar-production-shapeLabel'>
-      <td>[60]</td>
+      <td>[63]</td>
       <td><code>shapeLabel</code></td>
       <td>::=</td>
       <td>
@@ -605,7 +607,7 @@
       </td>
     </tr>
     <tr id='grammar-production-numericLiteral'>
-      <td>[61]</td>
+      <td>[16t]</td>
       <td><code>numericLiteral</code></td>
       <td>::=</td>
       <td>
@@ -615,7 +617,7 @@
       </td>
     </tr>
     <tr id='grammar-production-rdfLiteral'>
-      <td>[62]</td>
+      <td>[129s]</td>
       <td><code>rdfLiteral</code></td>
       <td>::=</td>
       <td>
@@ -624,7 +626,7 @@
       </td>
     </tr>
     <tr id='grammar-production-booleanLiteral'>
-      <td>[63]</td>
+      <td>[134s]</td>
       <td><code>booleanLiteral</code></td>
       <td>::=</td>
       <td>
@@ -633,7 +635,7 @@
       </td>
     </tr>
     <tr id='grammar-production-string'>
-      <td>[64]</td>
+      <td>[135s]</td>
       <td><code>string</code></td>
       <td>::=</td>
       <td>
@@ -644,7 +646,7 @@
       </td>
     </tr>
     <tr id='grammar-production-langString'>
-      <td>[64l]</td>
+      <td>[66]</td>
       <td><code>langString</code></td>
       <td>::=</td>
       <td>
@@ -655,7 +657,7 @@
       </td>
     </tr>
     <tr id='grammar-production-iri'>
-      <td>[65]</td>
+      <td>[136s]</td>
       <td><code>iri</code></td>
       <td>::=</td>
       <td>
@@ -664,7 +666,7 @@
       </td>
     </tr>
     <tr id='grammar-production-prefixedName'>
-      <td>[66]</td>
+      <td>[137s]</td>
       <td><code>prefixedName</code></td>
       <td>::=</td>
       <td>
@@ -673,24 +675,15 @@
       </td>
     </tr>
     <tr id='grammar-production-blankNode'>
-      <td>[67]</td>
+      <td>[138s]</td>
       <td><code>blankNode</code></td>
       <td>::=</td>
       <td>
         <a href="#grammar-production-BLANK_NODE_LABEL">BLANK_NODE_LABEL</a>
       </td>
     </tr>
-    <tr id='grammar-production-includeSet'>
-      <td>[68]</td>
-      <td><code>includeSet</code></td>
-      <td>::=</td>
-      <td>
-        "<code class="grammar-literal">&</code>"
-        <a href="#grammar-production-shapeLabel">shapeLabel</a><code>+</code>
-      </td>
-    </tr>
     <tr id='grammar-production-CODE'>
-      <td>[69]</td>
+      <td>[67]</td>
       <td><code>CODE</code></td>
       <td>::=</td>
       <td>
@@ -699,7 +692,7 @@
       </td>
     </tr>
     <tr id='grammar-production-REPEAT_RANGE'>
-      <td>[70]</td>
+      <td>[68]</td>
       <td><code>REPEAT_RANGE</code></td>
       <td>::=</td>
       <td>
@@ -710,7 +703,7 @@
       </td>
     </tr>
     <tr id='grammar-production-RDF_TYPE'>
-      <td>[71]</td>
+      <td>[69]</td>
       <td><code>RDF_TYPE</code></td>
       <td>::=</td>
       <td>
@@ -718,7 +711,7 @@
       </td>
     </tr>
     <tr id='grammar-production-IRIREF'>
-      <td>[72]</td>
+      <td>[18t]</td>
       <td><code>IRIREF</code></td>
       <td>::=</td>
       <td>
@@ -727,7 +720,7 @@
       </td>
     </tr>
     <tr id='grammar-production-PNAME_NS'>
-      <td>[73]</td>
+      <td>[140s]</td>
       <td><code>PNAME_NS</code></td>
       <td>::=</td>
       <td>
@@ -736,7 +729,7 @@
       </td>
     </tr>
     <tr id='grammar-production-PNAME_LN'>
-      <td>[74]</td>
+      <td>[141s]</td>
       <td><code>PNAME_LN</code></td>
       <td>::=</td>
       <td>
@@ -745,7 +738,7 @@
       </td>
     </tr>
     <tr id='grammar-production-ATPNAME_NS'>
-      <td>[75]</td>
+      <td>[70]</td>
       <td><code>ATPNAME_NS</code></td>
       <td>::=</td>
       <td>
@@ -755,7 +748,7 @@
       </td>
     </tr>
     <tr id='grammar-production-ATPNAME_LN'>
-      <td>[76]</td>
+      <td>[71]</td>
       <td><code>ATPNAME_LN</code></td>
       <td>::=</td>
       <td>
@@ -764,8 +757,19 @@
         <a href="#grammar-production-PN_LOCAL">PN_LOCAL</a>
       </td>
     </tr>
+    <tr id='grammar-production-REGEXP'>
+      <td>[72]</td>
+      <td><code>REGEXP</code></td>
+      <td>::=</td>
+      <td>
+        "<code class="grammar-literal">/</code>"
+        (<code>[</code> <code class="grammar-literal">^/\</code><code class="grammar-char-escape">#x0A</code><code class="grammar-char-escape">#x0D</code><code>]</code>  <code>|</code> "<code class="grammar-literal">\</code>" <code>[</code> <code class="grammar-literal">nrt\|.?*+(){}$-[]^/</code><code>]</code>  <code>|</code> <a href="#grammar-production-UCHAR">UCHAR</a>)<code>+</code> 
+        "<code class="grammar-literal">/</code>"
+        (<code>[</code> <code class="grammar-literal">smix</code><code>]</code> )<code>*</code>
+      </td>
+    </tr>
     <tr id='grammar-production-BLANK_NODE_LABEL'>
-      <td>[77]</td>
+      <td>[142s]</td>
       <td><code>BLANK_NODE_LABEL</code></td>
       <td>::=</td>
       <td>
@@ -775,7 +779,7 @@
       </td>
     </tr>
     <tr id='grammar-production-LANGTAG'>
-      <td>[78]</td>
+      <td>[145s]</td>
       <td><code>LANGTAG</code></td>
       <td>::=</td>
       <td>
@@ -785,7 +789,7 @@
       </td>
     </tr>
     <tr id='grammar-production-INTEGER'>
-      <td>[79]</td>
+      <td>[19t]</td>
       <td><code>INTEGER</code></td>
       <td>::=</td>
       <td>
@@ -794,7 +798,7 @@
       </td>
     </tr>
     <tr id='grammar-production-DECIMAL'>
-      <td>[80]</td>
+      <td>[20t]</td>
       <td><code>DECIMAL</code></td>
       <td>::=</td>
       <td>
@@ -805,7 +809,7 @@
       </td>
     </tr>
     <tr id='grammar-production-DOUBLE'>
-      <td>[81]</td>
+      <td>[21t]</td>
       <td><code>DOUBLE</code></td>
       <td>::=</td>
       <td>
@@ -814,7 +818,7 @@
       </td>
     </tr>
     <tr id='grammar-production-EXPONENT'>
-      <td>[82]</td>
+      <td>[155s]</td>
       <td><code>EXPONENT</code></td>
       <td>::=</td>
       <td>
@@ -824,7 +828,7 @@
       </td>
     </tr>
     <tr id='grammar-production-STRING_LITERAL1'>
-      <td>[83]</td>
+      <td>[156s]</td>
       <td><code>STRING_LITERAL1</code></td>
       <td>::=</td>
       <td>
@@ -834,7 +838,7 @@
       </td>
     </tr>
     <tr id='grammar-production-STRING_LITERAL2'>
-      <td>[84]</td>
+      <td>[157s]</td>
       <td><code>STRING_LITERAL2</code></td>
       <td>::=</td>
       <td>
@@ -844,7 +848,7 @@
       </td>
     </tr>
     <tr id='grammar-production-STRING_LITERAL_LONG1'>
-      <td>[85]</td>
+      <td>[158s]</td>
       <td><code>STRING_LITERAL_LONG1</code></td>
       <td>::=</td>
       <td>
@@ -853,7 +857,7 @@
       </td>
     </tr>
     <tr id='grammar-production-STRING_LITERAL_LONG2'>
-      <td>[86]</td>
+      <td>[159s]</td>
       <td><code>STRING_LITERAL_LONG2</code></td>
       <td>::=</td>
       <td>
@@ -862,7 +866,7 @@
       </td>
     </tr>
     <tr id='grammar-production-LANG_STRING_LITERAL1'>
-      <td>[83l]</td>
+      <td>[73]</td>
       <td><code>LANG_STRING_LITERAL1</code></td>
       <td>::=</td>
       <td>
@@ -873,7 +877,7 @@
       </td>
     </tr>
     <tr id='grammar-production-LANG_STRING_LITERAL2'>
-      <td>[84l]</td>
+      <td>[74]</td>
       <td><code>LANG_STRING_LITERAL2</code></td>
       <td>::=</td>
       <td>
@@ -884,7 +888,7 @@
       </td>
     </tr>
     <tr id='grammar-production-LANG_STRING_LITERAL_LONG1'>
-      <td>[85l]</td>
+      <td>[75]</td>
       <td><code>LANG_STRING_LITERAL_LONG1</code></td>
       <td>::=</td>
       <td>
@@ -893,7 +897,7 @@
       </td>
     </tr>
     <tr id='grammar-production-LANG_STRING_LITERAL_LONG2'>
-      <td>[86l]</td>
+      <td>[76]</td>
       <td><code>LANG_STRING_LITERAL_LONG2</code></td>
       <td>::=</td>
       <td>
@@ -901,19 +905,8 @@
         <code>(</code> ('<code class="grammar-literal">"</code>' <code>|</code> '<code class="grammar-literal">""</code>')<code>?</code>  <code>[</code> <code class="grammar-literal">^"\]</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">ECHAR</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">UCHAR))*</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">'"""'</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">LANGTAG</code><code>]</code> <code>)</code>
       </td>
     </tr>
-    <tr id='grammar-production-REGEXP'>
-      <td>[XX]</td>
-      <td><code>REGEXP</code></td>
-      <td>::=</td>
-      <td>
-        "<code class="grammar-literal">/</code>"
-        (<code>[</code> <code class="grammar-literal">^/\</code><code class="grammar-char-escape">#x0A</code><code class="grammar-char-escape">#x0D</code><code>]</code>  <code>|</code> "<code class="grammar-literal">\</code>" <code>[</code> <code class="grammar-literal">nrt\|.?*+(){}$-[]^/</code><code>]</code>  <code>|</code> <a href="#grammar-production-UCHAR">UCHAR</a>)<code>+</code> 
-        "<code class="grammar-literal">/</code>"
-        (<code>[</code> <code class="grammar-literal">smix</code><code>]</code> )<code>*</code>
-      </td>
-    </tr>
     <tr id='grammar-production-UCHAR'>
-      <td>[87]</td>
+      <td>[26t]</td>
       <td><code>UCHAR</code></td>
       <td>::=</td>
       <td>
@@ -922,7 +915,7 @@
       </td>
     </tr>
     <tr id='grammar-production-ECHAR'>
-      <td>[88]</td>
+      <td>[160s]</td>
       <td><code>ECHAR</code></td>
       <td>::=</td>
       <td>
@@ -931,7 +924,7 @@
       </td>
     </tr>
     <tr id='grammar-production-PN_CHARS_BASE'>
-      <td>[89]</td>
+      <td>[164s]</td>
       <td><code>PN_CHARS_BASE</code></td>
       <td>::=</td>
       <td>
@@ -952,7 +945,7 @@
       </td>
     </tr>
     <tr id='grammar-production-PN_CHARS_U'>
-      <td>[90]</td>
+      <td>[165s]</td>
       <td><code>PN_CHARS_U</code></td>
       <td>::=</td>
       <td>
@@ -961,7 +954,7 @@
       </td>
     </tr>
     <tr id='grammar-production-PN_CHARS'>
-      <td>[91]</td>
+      <td>[167s]</td>
       <td><code>PN_CHARS</code></td>
       <td>::=</td>
       <td>
@@ -974,7 +967,7 @@
       </td>
     </tr>
     <tr id='grammar-production-PN_PREFIX'>
-      <td>[92]</td>
+      <td>[168s]</td>
       <td><code>PN_PREFIX</code></td>
       <td>::=</td>
       <td>
@@ -983,7 +976,7 @@
       </td>
     </tr>
     <tr id='grammar-production-PN_LOCAL'>
-      <td>[93]</td>
+      <td>[169s]</td>
       <td><code>PN_LOCAL</code></td>
       <td>::=</td>
       <td>
@@ -992,7 +985,7 @@
       </td>
     </tr>
     <tr id='grammar-production-PLX'>
-      <td>[94]</td>
+      <td>[170s]</td>
       <td><code>PLX</code></td>
       <td>::=</td>
       <td>
@@ -1001,7 +994,7 @@
       </td>
     </tr>
     <tr id='grammar-production-PERCENT'>
-      <td>[95]</td>
+      <td>[171s]</td>
       <td><code>PERCENT</code></td>
       <td>::=</td>
       <td>
@@ -1011,7 +1004,7 @@
       </td>
     </tr>
     <tr id='grammar-production-HEX'>
-      <td>[96]</td>
+      <td>[172s]</td>
       <td><code>HEX</code></td>
       <td>::=</td>
       <td>
@@ -1021,7 +1014,7 @@
       </td>
     </tr>
     <tr id='grammar-production-PN_LOCAL_ESC'>
-      <td>[97]</td>
+      <td>[173s]</td>
       <td><code>PN_LOCAL_ESC</code></td>
       <td>::=</td>
       <td>

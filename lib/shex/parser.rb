@@ -505,6 +505,11 @@ module ShEx
       (input[:tripleExpression] ||= []) << expression if expression
     end
 
+    # [43a]    productionLabel       ::= '$' (iri | blankNode)
+    production(:productionLabel) do |input, data, callback|
+      input[:productionLabel] = data[:iri] || data[:blankNode]
+    end
+
     # [44]    bracketedTripleExpr   ::= '(' oneOfTripleExpr ')' cardinality? annotation* semanticActions
     production(:bracketedTripleExpr) do |input, data, callback|
       # XXX cardinality? annotation* semanticActions
@@ -525,12 +530,7 @@ module ShEx
       input[:tripleExpression] = expression
     end
 
-    # [45]    productionLabel       ::= '$' (iri | blankNode)
-    production(:productionLabel) do |input, data, callback|
-      input[:productionLabel] = data[:iri] || data[:blankNode]
-    end
-
-    # [46]    tripleConstraint      ::= senseFlags? predicate shapeExpression cardinality? annotation* semanticActions
+    # [45]    tripleConstraint      ::= senseFlags? predicate shapeExpression cardinality? annotation* semanticActions
     production(:tripleConstraint) do |input, data, callback|
       cardinality = data.fetch(:cardinality, {})
       attrs = [
@@ -546,11 +546,11 @@ module ShEx
       input[:tripleExpression] = Algebra::TripleConstraint.new(*attrs, {}) unless attrs.empty?
     end
 
-    # [47]    cardinality            ::= '*' | '+' | '?' | REPEAT_RANGE
-    # [48]    senseFlags             ::= '^'
-    # [49]    valueSet              ::= '[' valueSetValue* ']'
+    # [46]    cardinality            ::= '*' | '+' | '?' | REPEAT_RANGE
+    # [47]    senseFlags             ::= '^'
+    # [48]    valueSet              ::= '[' valueSetValue* ']'
 
-    # [50]    valueSetValue         ::= (iriRange | literalRange | languageRange) | '.' (exclusion)+
+    # [49]    valueSetValue         ::= iriRange | literalRange | languageRange | '.' exclusion+
     production(:valueSetValue) do |input, data, callback|
       range = data[:iriRange] || data[:literalRange] || data[:languageRange]
       if !range
@@ -576,7 +576,7 @@ module ShEx
       (input[:valueSetValue] ||= []) << Algebra::Value.new(range)
     end
 
-    # [51]    exclusion             ::= '-' (iri | literal | LANGTAG) '~'?
+    # [50]    exclusion             ::= '-' (iri | literal | LANGTAG) '~'?
     production(:exclusion) do |input, data, callback|
       (input[:exclusion] ||= []) << if data[:pattern]
         case
@@ -589,7 +589,7 @@ module ShEx
       end
     end
 
-    # [51i]    iriRange              ::= iri ('~' iriExclusion*)?
+    # [51]    iriRange              ::= iri ('~' iriExclusion*)?
     production(:iriRange) do |input, data, callback|
       exclusions = data[:exclusion].unshift(:exclusions) if data[:exclusion]
       input[:iriRange] = if data[:pattern] && exclusions
@@ -603,13 +603,13 @@ module ShEx
       end
     end
 
-    # [52i]    iriExclusion             ::= '-' iri '~'?
+    # [52]    iriExclusion             ::= '-' iri '~'?
     production(:iriExclusion) do |input, data, callback|
       val = data[:iri]
       (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::IriStem.new(val) : val)
     end
 
-    # [51l]    literalRange              ::= literal ('~' literalExclusion*)?
+    # [53]    literalRange              ::= literal ('~' literalExclusion*)?
     production(:literalRange) do |input, data, callback|
       exclusions = data[:exclusion].unshift(:exclusions) if data[:exclusion]
       input[:literalRange] = if data[:pattern] && exclusions
@@ -623,13 +623,13 @@ module ShEx
       end
     end
 
-    # [52l]    literalExclusion             ::= '-' literal '~'?
+    # [54]    literalExclusion             ::= '-' literal '~'?
     production(:literalExclusion) do |input, data, callback|
       val = data[:literal]
       (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::LiteralStem.new(val) : val)
     end
 
-    # [51g]    languageRange              ::= LANGTAG ('~' languageExclusion*)?
+    # [55]    languageRange              ::= LANGTAG ('~' languageExclusion*)?
     production(:languageRange) do |input, data, callback|
       exclusions = data[:exclusion].unshift(:exclusions) if data[:exclusion]
       input[:languageRange] = if data[:pattern] && exclusions
@@ -643,64 +643,61 @@ module ShEx
       end
     end
 
-    # [52g]    languageExclusion             ::= '-' literal '~'?
+    # [56]    languageExclusion             ::= '-' literal '~'?
     production(:languageExclusion) do |input, data, callback|
       val = data[:language]
       (input[:exclusion] ||= []) << (data[:pattern] ? Algebra::LanguageStem.new(val) : val)
     end
 
-    # [53]     include               ::= '&' shapeLabel
+    # [57]     include               ::= '&' shapeLabel
     production(:include) do |input, data, callback|
       input[:tripleExpression] = data[:shapeLabel].first
     end
 
-    # [54]    annotation            ::= '//' predicate (iri | literal)
+    # [58]    annotation            ::= '//' predicate (iri | literal)
     production(:annotation) do |input, data, callback|
       annotation = Algebra::Annotation.new([:predicate, data[:predicate].first], (data[:iri] || data[:literal]))
       (input[:annotation] ||= []) << annotation
     end
 
-    # [55]    semanticActions       ::= codeDecl*
+    # [59]    semanticActions       ::= codeDecl*
 
-    # [56]    codeDecl              ::= '%' iri (CODE | "%")
+    # [60]    codeDecl              ::= '%' iri (CODE | "%")
     production(:codeDecl) do |input, data, callback|
       (input[:codeDecl] ||= []) <<  Algebra::SemAct.new(*[data[:iri], data[:code]].compact, {})
     end
 
-    # [57]   literal               ::= rdfLiteral | numericLiteral | booleanLiteral
+    # [13t]   literal               ::= rdfLiteral | numericLiteral | booleanLiteral
 
-    # [58]    predicate             ::= iri | RDF_TYPE
+    # [61]    predicate             ::= iri | RDF_TYPE
     production(:predicate) do |input, data, callback|
       (input[:predicate] ||= []) << data[:iri]
     end
 
-    # [59]    datatype              ::= iri
+    # [62]    datatype              ::= iri
     production(:datatype) do |input, data, callback|
       input[:datatype] = data[:iri]
     end
 
-    # [60]    shapeLabel            ::= iri | blankNode
+    # [63]    shapeLabel            ::= iri | blankNode
     production(:shapeLabel) do |input, data, callback|
       (input[:shapeLabel] ||= []) << (data[:iri] || data[:blankNode])
     end
 
-    # [61]   numericLiteral        ::= INTEGER | DECIMAL | DOUBLE
-    # [62]  rdfLiteral            ::= langString | string ('^^' datatype)?
+    # [16t]   numericLiteral        ::= INTEGER | DECIMAL | DOUBLE
+    # [129s]  rdfLiteral            ::= langString | string ('^^' datatype)?
     production(:rdfLiteral) do |input, data, callback|
       input[:literal] = literal(data[:string], data)
     end
 
-    # [63]  booleanLiteral        ::= 'true' | 'false'
-    # [64]  string                ::= STRING_LITERAL1 | STRING_LITERAL_LONG1
+    # [134s]  booleanLiteral        ::= 'true' | 'false'
+    # [135s]  string                ::= STRING_LITERAL1 | STRING_LITERAL_LONG1
     #                                 | STRING_LITERAL2 | STRING_LITERAL_LONG2
-    # [65]  iri                   ::= IRIREF | prefixedName
-    # [66]  prefixedName          ::= PNAME_LN | PNAME_NS
-    # [67]  blankNode             ::= BLANK_NODE_LABEL
-
-    # [68]     include               ::= '&' shapeLabel
-    production(:include) do |input, data, callback|
-      input[:tripleExpression] = data[:shapeLabel].first
-    end
+    # [66]   langString            ::= LANG_STRING_LITERAL1 | LANG_STRING_LITERAL_LONG1
+    #                                | LANG_STRING_LITERAL2 | LANG_STRING_LITERAL_LONG2
+    # [136s]  iri                   ::= IRIREF | prefixedName
+    # [1372]  prefixedName          ::= PNAME_LN | PNAME_NS
+    # [138s]  blankNode             ::= BLANK_NODE_LABEL
 
     ##
     # Initializes a new parser instance.
