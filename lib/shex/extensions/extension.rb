@@ -2,7 +2,7 @@ $:.unshift(File.expand_path("../..", __FILE__))
 require 'sparql/algebra'
 
 ##
-# Abstract class of ShEx [Extension](https://shexspec.github.io/spec/#semantic-actions) extensions.
+# Abstract class of ShEx [Extension](http://shex.io/shex-semantics/#semantic-actions) extensions.
 #
 # Extensions are registered automatically when they are required by subclassing this class.
 #
@@ -33,7 +33,7 @@ require 'sparql/algebra'
 #
 # Subclasses **must** define at least `visit`.
 #
-# @see https://shexspec.github.io/spec/#semantic-actions
+# @see http://shex.io/shex-semantics/#semantic-actions
 class ShEx::Extension
   extend ::Enumerable
 

@@ -1,7 +1,7 @@
 ##
 # A ShEx runtime for RDF.rb.
 #
-# @see https://shexspec.github.io/spec/#shexc
+# @see http://shex.io/shex-semantics/#shexc
 module ShEx
   autoload :Algebra,    'shex/algebra'
   autoload :Meta,       'shex/meta'

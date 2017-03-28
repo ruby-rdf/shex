@@ -99,7 +99,7 @@
               "type": "NodeConstraint",
               "values": [
                 {
-                  "uri": "https://shexspec.github.io/spec/"
+                  "uri": "http://shex.io/shex-semantics/"
                 }
               ]
             }

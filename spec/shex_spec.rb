@@ -75,7 +75,7 @@ describe ShEx do
          (nodeConstraint iri)
          (min 1) (max "*"))
         (tripleConstraint (predicate <http://usefulinc.com/ns/doap#implements>)
-         (nodeConstraint (value <https://shexspec.github.io/spec/>))) ))))}.gsub(/^    /m, '')
+         (nodeConstraint (value <http://shex.io/shex-semantics/>))) ))))}.gsub(/^    /m, '')
     }
 
     it "parses doap.shex" do
