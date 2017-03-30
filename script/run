@@ -80,18 +80,24 @@ options = {}
 opts.each do |opt, arg|
   case opt
   when '--base'         then options[:base_uri] = arg
-  when '--debug'        then
+  when '--debug'
     logger = Logger.new(STDERR)
     logger.level = Logger::DEBUG
     logger.formatter = lambda {|severity, datetime, progname, msg| "#{severity} #{msg}\n"}
     options[:logger] = logger
+    options[:debug] = true
   when '--execute'      then options[:shex] = arg
   when '--focus'        then options[:focus] = arg
   when '--shape'        then options[:shape] = arg
   when '--shex'
     options[:shex] = RDF::Util::File.open_file(arg).read
     options[:format] = :shexj if arg.end_with?(".json")
-  when '--progress'     then options[:debug] ||= 2
+  when '--progress'
+    logger = Logger.new(STDERR)
+    logger.level = Logger::INFO
+    logger.formatter = lambda {|severity, datetime, progname, msg| "#{severity} #{msg}\n"}
+    options[:logger] = logger
+    options[:progress] = true
   when '--to-json'      then options[:to_json] = true
   when '--to-sxp'       then options[:to_sxp] = true
   when '--validate'     then options[:validate] = true

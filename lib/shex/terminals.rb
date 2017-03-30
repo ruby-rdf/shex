@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 require 'ebnf/ll1/lexer'
 
 module ShEx
@@ -15,8 +16,10 @@ module ShEx
     U_CHARS2         = Regexp.compile("\\u00B7|[\\u0300-\\u036F]|[\\u203F-\\u2040]").freeze
     IRI_RANGE        = Regexp.compile("[[^<>\"{}|^`\\\\]&&[^\\x00-\\x20]]").freeze
 
-    # 26t
-    UCHAR                = EBNF::LL1::Lexer::UCHAR
+    # 87
+    UCHAR4               = /\\u([0-9A-Fa-f]{4,4})/.freeze
+    UCHAR8               = /\\U([0-9A-Fa-f]{8,8})/.freeze
+    UCHAR                = Regexp.union(UCHAR4, UCHAR8).freeze
     # 171s
     PERCENT              = /%\h\h/.freeze
     # 173s
@@ -42,49 +45,61 @@ module ShEx
 
     WS                   = /(?:\s|(?:#[^\n\r]*))+/m.freeze
 
-    # 60
+    # 69
     RDF_TYPE             = /a/.freeze
     # 18t
     IRIREF               = /<(?:#{IRI_RANGE}|#{UCHAR})*>/.freeze
-    # 140s
+    # 73
     PNAME_NS             = /#{PN_PREFIX}?:/.freeze
-    # 141s
+    # 74
     PNAME_LN             = /#{PNAME_NS}#{PN_LOCAL}/.freeze
-    # 61
+    # 75
     ATPNAME_NS           = /@#{WS}*#{PN_PREFIX}?:/m.freeze
-    # 62
+    # 76
     ATPNAME_LN           = /@#{WS}*#{PNAME_NS}#{PN_LOCAL}/m.freeze
-    # 142s
+    # 77
     BLANK_NODE_LABEL     = /_:(?:\d|#{PN_CHARS_U})(?:(?:#{PN_CHARS}|\.)*#{PN_CHARS})?/.freeze
-    # 145s
+    # 78
     LANGTAG              = /@[a-zA-Z]+(?:-[a-zA-Z0-9]+)*/.freeze
-    # 19t
+    # 79
     INTEGER              = /[+-]?\d+/.freeze
-    # 20t
+    # 80
     DECIMAL              = /[+-]?(?:\d*\.\d+)/.freeze
-    # 21t
+    # 81
     DOUBLE               = /[+-]?(?:\d+\.\d*#{EXPONENT}|\.?\d+#{EXPONENT})/.freeze
-    # 156s
+    # 83
     STRING_LITERAL1      = /'(?:[^\'\\\n\r]|#{ECHAR}|#{UCHAR})*'/.freeze
-    # 157s
+    # 84
     STRING_LITERAL2      = /"(?:[^\"\\\n\r]|#{ECHAR}|#{UCHAR})*"/.freeze
-    # 158s
+    # 85
     STRING_LITERAL_LONG1 = /'''(?:(?:'|'')?(?:[^'\\]|#{ECHAR}|#{UCHAR}))*'''/m.freeze
-    # 159s
+    # 86
     STRING_LITERAL_LONG2 = /"""(?:(?:"|"")?(?:[^"\\]|#{ECHAR}|#{UCHAR}))*"""/m.freeze
 
-    # 29
+    # 83l
+    LANG_STRING_LITERAL1      = /'(?:[^\'\\\n\r]|#{ECHAR}|#{UCHAR})*'#{LANGTAG}/.freeze
+    # 84l
+    LANG_STRING_LITERAL2      = /"(?:[^\"\\\n\r]|#{ECHAR}|#{UCHAR})*"#{LANGTAG}/.freeze
+    # 85l
+    LANG_STRING_LITERAL_LONG1 = /'''(?:(?:'|'')?(?:[^'\\]|#{ECHAR}|#{UCHAR}))*'''#{LANGTAG}/m.freeze
+    # 86l
+    LANG_STRING_LITERAL_LONG2 = /"""(?:(?:"|"")?(?:[^"\\]|#{ECHAR}|#{UCHAR}))*"""#{LANGTAG}/m.freeze
+
+    # XX
+    REGEXP              =  %r(/(?:[^/\\\n\r]|\\[nrt\\|.?*+(){}$-\[\]^/]|#{UCHAR})+/[smix]*).freeze
+
+    # 68
     CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*%#{WS}*\}/m.freeze
-    # 30
+    # 70
     REPEAT_RANGE         = /\{\s*#{INTEGER}(?:,#{WS}*(?:#{INTEGER}|\*)?)?#{WS}*\}/.freeze
 
     # String terminals, mixed case sensitivity
     STR_EXPR = %r(true|false
                  |\^\^|\/\/
-                 |[\(\)\{\}\[\],\.;\=\-\~!\|\&\@\$\?\+\*\%\^\/a]|
+                 |[\(\)\{\}\[\],\.;\=\-\~!\|\&\@\$\?\+\*\%\^a]|
                  (?i:OR|AND|NOT
                    |BASE|PREFIX
-                   |IRI|BNODE|NONLITERAL|PATTERN
+                   |IRI|BNODE|NONLITERAL
                    |MINLENGTH|MAXLENGTH|LENGTH
                    |MAXINCLUSIVE|MAXEXCLUSIVE
                    |MININCLUSIVE|MINEXCLUSIVE
@@ -95,7 +110,7 @@ module ShEx
               )x.freeze
 
     # Map terminals to canonical form
-    STR_MAP = %w{OR AND NOT BASE PREFIX IRI BNODE NONLITERAL PATTERN
+    STR_MAP = %w{OR AND NOT BASE PREFIX IRI BNODE NONLITERAL
       MINLENGTH MAXLENGTH LENGTH MININCLUSIVE MAXINCLUSIVE MINEXCLUSIVE MAXEXCLUSIVE
       TOTALDIGITS FRACTIONDIGITS START EXTERNAL CLOSED EXTRA LITERAL}.
     inject({}) do |memo, t|

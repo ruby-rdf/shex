@@ -82,113 +82,137 @@
 
 [5]     notStartAction        ::= start | shapeExprDecl
 # "START" easier for parser than "start"
-[6]     start                 ::= "START" '=' shapeExpression
+[6]     start                 ::= "START" '=' "NOT"? (shapeAtomNoRef | shapeRef) shapeOr?
 [7]     startActions          ::= codeDecl+
 
 [8]     statement             ::= directive | notStartAction
 
 [9]     shapeExprDecl         ::= shapeLabel (shapeExpression|"EXTERNAL")
-[10]    shapeExpression       ::= shapeOr
+[10]    shapeExpression       ::= shapeAtomNoRef shapeOr?
+                                | "NOT" (shapeAtomNoRef | shapeRef) shapeOr?
+                                | shapeRef shapeOr
 [11]    inlineShapeExpression ::= inlineShapeOr
-[12]    shapeOr               ::= shapeAnd ("OR" shapeAnd)*
+# [12]    shapeOr               ::= shapeAnd ("OR" shapeAnd)*
+[12]    shapeOr               ::= shapeOrA | shapeOrB shapeOrA?
+[12a]   shapeOrA              ::= ("OR" shapeAnd)+
+[12b]   shapeOrB              ::= ("AND" shapeNot)+
 [13]    inlineShapeOr         ::= inlineShapeAnd ("OR" inlineShapeAnd)*
 [14]    shapeAnd              ::= shapeNot ("AND" shapeNot)*
 [15]    inlineShapeAnd        ::= inlineShapeNot ("AND" inlineShapeNot)*
 [16]    shapeNot              ::= "NOT"? shapeAtom
 [17]    inlineShapeNot        ::= "NOT"? inlineShapeAtom
-[18]    shapeAtom             ::= nodeConstraint shapeOrRef?
-                                | shapeOrRef
+[18]    shapeAtom             ::= nonLitNodeConstraint shapeOrRef?
+                                | litNodeConstraint
+                                | shapeOrRef nonLitNodeConstraint?
                                 | "(" shapeExpression ")"
                                 | '.'  # no constraint
-[19]    inlineShapeAtom       ::= nodeConstraint inlineShapeOrRef?
-                                | inlineShapeOrRef nodeConstraint?
+[19]    shapeAtomNoRef        ::= nonLitNodeConstraint shapeOrRef?
+                                | litNodeConstraint
+                                | shapeDefinition nonLitNodeConstraint?
+                                | "(" shapeExpression ")"
+                                | '.'  # no constraint
+[20]    inlineShapeAtom       ::= nonLitNodeConstraint inlineShapeOrRef?
+                                | litNodeConstraint
+                                | inlineShapeOrRef nonLitNodeConstraint?
                                 | "(" shapeExpression ")"
                                 | '.'  # no constraint
 
-[20]    shapeOrRef            ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel | shapeDefinition
-[21]    inlineShapeOrRef      ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel | inlineShapeDefinition
+[21]    shapeOrRef            ::= shapeDefinition | shapeRef
+[22]    inlineShapeOrRef      ::= inlineShapeDefinition | shapeRef
+[23]    shapeRef              ::= ATPNAME_LN | ATPNAME_NS | '@' shapeLabel
 
-[22]    nodeConstraint        ::= "LITERAL" xsFacet*
-                                | nonLiteralKind stringFacet*
+[24]    litNodeConstraint     ::= "LITERAL" xsFacet*
                                 | datatype xsFacet*
                                 | valueSet xsFacet*
-                                | xsFacet+
-[23]    nonLiteralKind        ::= "IRI" | "BNODE" | "NONLITERAL"
-[24]    xsFacet               ::= stringFacet | numericFacet
-[25]    stringFacet           ::= stringLength INTEGER
-                                | "PATTERN" string
-                                | '~' string  # shortcut for "PATTERN"
-[26]    stringLength          ::= "LENGTH" | "MINLENGTH" | "MAXLENGTH"
-[27]    numericFacet          ::= numericRange (numericLiteral | string '^^' datatype )
+                                | numericFacet+
+[25]    nonLitNodeConstraint  ::= nonLiteralKind stringFacet*
+                                | stringFacet+
+[26]    nonLiteralKind        ::= "IRI" | "BNODE" | "NONLITERAL"
+[27]    xsFacet               ::= stringFacet | numericFacet
+[28]    stringFacet           ::= stringLength INTEGER
+                                | REGEXP
+[29]    stringLength          ::= "LENGTH" | "MINLENGTH" | "MAXLENGTH"
+[30]    numericFacet          ::= numericRange numericLiteral
                                 | numericLength INTEGER
-[28]    numericRange          ::= "MININCLUSIVE" | "MINEXCLUSIVE" | "MAXINCLUSIVE" | "MAXEXCLUSIVE"
-[29]    numericLength         ::= "TOTALDIGITS" | "FRACTIONDIGITS"
+[31]    numericRange          ::= "MININCLUSIVE" | "MINEXCLUSIVE" | "MAXINCLUSIVE" | "MAXEXCLUSIVE"
+[32]    numericLength         ::= "TOTALDIGITS" | "FRACTIONDIGITS"
 
-[30]    shapeDefinition       ::= (extraPropertySet | "CLOSED")* '{' tripleExpression? '}' annotation* semanticActions
-[31]    inlineShapeDefinition ::= (extraPropertySet | "CLOSED")* '{' tripleExpression? '}'
-[32]    extraPropertySet      ::= "EXTRA" predicate+
+[33]    shapeDefinition       ::= (includeSet | extraPropertySet | "CLOSED")* '{' tripleExpression? '}' annotation* semanticActions
+[34]    inlineShapeDefinition ::= (includeSet | extraPropertySet | "CLOSED")* '{' tripleExpression? '}'
+[35]    extraPropertySet      ::= "EXTRA" predicate+
 
-[33]    tripleExpression      ::= oneOfTripleExpr
+[36]    tripleExpression      ::= oneOfTripleExpr
 
 # First/First Conflicts on "&", "$", "(", "^", :RDF_TYPE , :IRIREF, :PNAME_LN and :PNAME_NS 
-#[34]    oneOfTripleExpr      ::= groupTripleExpr | multiElementOneOf
-#[35]    multiElementOneOf    ::= groupTripleExpr ('|' groupTripleExpr)+
-#[36]    innerTripleExpr       ::= multiElementGroup | multiElementOneOf
-[34]    oneOfTripleExpr      ::= groupTripleExpr ('|' groupTripleExpr)*
+#[37]    oneOfTripleExpr      ::= groupTripleExpr | multiElementOneOf
+#[38]    multiElementOneOf    ::= groupTripleExpr ('|' groupTripleExpr)+
+#[39]    innerTripleExpr       ::= multiElementGroup | multiElementOneOf
+[37]    oneOfTripleExpr      ::= groupTripleExpr ('|' groupTripleExpr)*
 
 # First/First Conflicts on "&", "$", "(", "^", :RDF_TYPE , :IRIREF, :PNAME_LN and :PNAME_NS 
 # First/Follow Conflict on ";"
-#[37]    groupTripleExpr       ::= singleElementGroup | multiElementGroup
-#[38]    singleElementGroup    ::= unaryTripleExpr ';'?
-#[39]    multiElementGroup     ::= unaryTripleExpr (';' unaryTripleExpr)+ ';'?
-[37]    groupTripleExpr       ::= unaryTripleExpr (';' unaryTripleExpr?)*
+#[40]    groupTripleExpr       ::= singleElementGroup | multiElementGroup
+#[41]    singleElementGroup    ::= unaryTripleExpr ';'?
+#[42]    multiElementGroup     ::= unaryTripleExpr (';' unaryTripleExpr)+ ';'?
+[40]    groupTripleExpr       ::= unaryTripleExpr (';' unaryTripleExpr?)*
 
-[40]    unaryTripleExpr       ::= productionLabel? (tripleConstraint | bracketedTripleExpr) | include
+[43]    unaryTripleExpr       ::= productionLabel? (tripleConstraint | bracketedTripleExpr) | include
+[43a]   productionLabel       ::= '$' (iri | blankNode)
 
 # Use oneOfTripleExpr instead of innerTripleExpr
-#[41]    bracketedTripleExpr   ::= '(' innerTripleExpr ')' cardinality? annotation* semanticActions
-[41]    bracketedTripleExpr   ::= '(' oneOfTripleExpr ')' cardinality? annotation* semanticActions
+#[44]    bracketedTripleExpr   ::= '(' innerTripleExpr ')' cardinality? annotation* semanticActions
+[44]    bracketedTripleExpr   ::= '(' oneOfTripleExpr ')' cardinality? annotation* semanticActions
 
-[42]    productionLabel       ::= '$' (iri | blankNode)
+[45]    tripleConstraint      ::= senseFlags? predicate inlineShapeExpression cardinality? annotation* semanticActions
+[46]    cardinality           ::= '*' | '+' | '?' | REPEAT_RANGE
+[47]    senseFlags            ::= '^'
 
-[43]    tripleConstraint      ::= senseFlags? predicate inlineShapeExpression cardinality? annotation* semanticActions
-[44]    cardinality           ::= '*' | '+' | '?' | REPEAT_RANGE
-[45]    senseFlags            ::= '^'
-[46]    valueSet              ::= '[' valueSetValue* ']'
+[48]    valueSet              ::= '[' valueSetValue* ']'
 
-[47]    valueSetValue         ::= iriRange | literal
-[48]    iriRange              ::= iri ('~' exclusion*)? | '.' exclusion+
-[49]    exclusion             ::= '-' iri '~'?
+[49]    valueSetValue         ::= iriRange | literalRange | languageRange | '.' exclusion+
 
-[50]    include               ::= '&' shapeLabel
+[50]    exclusion             ::= '-' (iri | literal | LANGTAG) '~'?
+[51]    iriRange              ::= iri ('~' iriExclusion*)?
+[52]    iriExclusion          ::= '-' iri '~'?
+[53]    literalRange          ::= literal ('~' literalExclusion*)?
+[54]    literalExclusion      ::= '-' literal '~'?
+[55]    languageRange         ::= LANGTAG ('~' languageExclusion*)?
+[56]    languageExclusion     ::= '-' LANGTAG '~'?
 
-[51]    annotation            ::= '//' predicate (iri | literal)
-[52]    semanticActions       ::= codeDecl*
-[53]    codeDecl              ::= '%' iri (CODE | "%")
+[57]    include               ::= '&' shapeLabel
+
+[58]    annotation            ::= '//' predicate (iri | literal)
+[59]    semanticActions       ::= codeDecl*
+[60]    codeDecl              ::= '%' iri (CODE | "%")
 
 [13t]   literal               ::= rdfLiteral | numericLiteral | booleanLiteral
-[54]    predicate             ::= iri | RDF_TYPE
-[55]    datatype              ::= iri
-[56]    shapeLabel            ::= iri | blankNode
+[61]    predicate             ::= iri | RDF_TYPE
+[62]    datatype              ::= iri
+[63]    shapeLabel            ::= iri | blankNode
 [16t]   numericLiteral        ::= INTEGER | DECIMAL | DOUBLE
-[129s]  rdfLiteral            ::= string (LANGTAG | '^^' datatype)?
+[129s]  rdfLiteral            ::= langString | string ('^^' datatype)?
 [134s]  booleanLiteral        ::= 'true' | 'false'
 [135s]  string                ::= STRING_LITERAL1 | STRING_LITERAL_LONG1
                                 | STRING_LITERAL2 | STRING_LITERAL_LONG2
+[66]   langString            ::= LANG_STRING_LITERAL1 | LANG_STRING_LITERAL_LONG1
+                                | LANG_STRING_LITERAL2 | LANG_STRING_LITERAL_LONG2
 [136s]  iri                   ::= IRIREF | prefixedName
 [137s]  prefixedName          ::= PNAME_LN | PNAME_NS
 [138s]  blankNode             ::= BLANK_NODE_LABEL
 
+# Reserved for future use
+#[65]   	includeSet	          ::= "&" (shapeLabel)+
 @terminals
 
-[58]    CODE                  ::= '{' ([^%\\] | '\\' [%\\] | UCHAR)* '%' '}'
-[59]    REPEAT_RANGE          ::= '{' INTEGER (',' (INTEGER | '*')?)? '}'
-[60]    RDF_TYPE              ::= 'a'
+[67]    CODE                  ::= '{' ([^%\\] | '\\' [%\\] | UCHAR)* '%' '}'
+[68]    REPEAT_RANGE          ::= '{' INTEGER (',' (INTEGER | '*')?)? '}'
+[69]    RDF_TYPE              ::= 'a'
 [18t]   IRIREF                ::= '<' ([^#x00-#x20<>\"{}|^`\\] | UCHAR)* '>' /* #x00=NULL #01-#x1F=control codes #x20=space */
 [140s]  PNAME_NS              ::= PN_PREFIX? ':'
 [141s]  PNAME_LN              ::= PNAME_NS PN_LOCAL
-[61]    ATPNAME_NS            ::= '@' PN_PREFIX? ':'
-[62]    ATPNAME_LN            ::= '@' PNAME_NS PN_LOCAL
+[70]    ATPNAME_NS            ::= '@' PN_PREFIX? ':'
+[71]    ATPNAME_LN            ::= '@' PNAME_NS PN_LOCAL
+[72]    REGEXP                ::= '/' ([^/\\\n\r] | '\\' [nrt\\|.?*+(){}$-\[\]^/] | UCHAR)+ '/' [smix]*
 
 [142s]  BLANK_NODE_LABEL      ::= '_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)?
 [145s]  LANGTAG               ::= '@' [a-zA-Z]+ ('-' [a-zA-Z0-9]+)*
@@ -200,6 +224,10 @@
 [157s]  STRING_LITERAL2       ::= '"' ([^#x22#x5C#xA#xD] | ECHAR | UCHAR)* '"' /* #x22=" #x5C=\ #xA=new line #xD=carriage return */
 [158s]  STRING_LITERAL_LONG1  ::= "'''" (("'" | "''")? ([^\'\\] | ECHAR | UCHAR))* "'''"
 [159s]  STRING_LITERAL_LONG2  ::= '"""' (('"' | '""')? ([^\"\\] | ECHAR | UCHAR))* '"""'
+[73]   LANG_STRING_LITERAL1       ::= "'" ([^#x27#x5C#xA#xD] | ECHAR | UCHAR)* "'"  LANGTAG
+[74]   LANG_STRING_LITERAL2       ::= '"' ([^#x22#x5C#xA#xD] | ECHAR | UCHAR)* '"' LANGTAG
+[75]   LANG_STRING_LITERAL_LONG1  ::= "'''" (("'" | "''")? ([^\'\\] | ECHAR | UCHAR))* "'''" LANGTAG
+[76]   LANG_STRING_LITERAL_LONG2  ::= '"""' (('"' | '""')? ([^\"\\] | ECHAR | UCHAR))* '"""' LANGTAG
 [26t]   UCHAR                 ::= '\\u' HEX HEX HEX HEX
                                 | '\\U' HEX HEX HEX HEX HEX HEX HEX HEX
 [160s]  ECHAR                 ::= '\\' [tbnrf\\\"\']
@@ -211,16 +239,12 @@
                                 | [#x10000-#xEFFFF]
 [165s]  PN_CHARS_U            ::= PN_CHARS_BASE | '_'
 [167s]  PN_CHARS              ::= PN_CHARS_U | '-' | [0-9]
-                                | [#x00B7] | [#x0300-#x036F] | [#x203F-#x2040]
+                              | [#x00B7] | [#x0300-#x036F] | [#x203F-#x2040]
 [168s]  PN_PREFIX             ::= PN_CHARS_BASE ((PN_CHARS | '.')* PN_CHARS)?
 [169s]  PN_LOCAL              ::= (PN_CHARS_U | ':' | [0-9] | PLX) ((PN_CHARS | '.' | ':' | PLX)* (PN_CHARS | ':' | PLX))?
 [170s]  PLX                   ::= PERCENT | PN_LOCAL_ESC
 [171s]  PERCENT               ::= '%' HEX HEX
 [172s]  HEX                   ::= [0-9] | [A-F] | [a-f]
 [173s]  PN_LOCAL_ESC          ::= '\\' ('_' | '~' | '.' | '-' | '!' | '$' | '&' | "'" | '(' | ')' | '*' | '+' | ',' | ';' | '=' | '/' | '?' | '#' | '@' | '%')
-
-# @pass is not a rule, but a declaration
-#@pass ::= [ \t\r\n]+
-#        | "#" [^\r\n]*
 
 @pass [ \t\r\n]+ | "#" [^\r\n]*

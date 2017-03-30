@@ -267,12 +267,16 @@ module ShEx::Algebra
 
       operator.each do |k, v|
         case k
-        when /length|pattern|clusive|digits/   then operands << [k.to_sym, RDF::Literal(v)]
+        when /length|clusive|digits/           then operands << [k.to_sym, RDF::Literal(v)]
         when 'id'                              then id = iri(v, options)
-        when 'min', 'max'                      then operands << [k.to_sym, v]
+        when 'flags'                            then ; # consumed in pattern below
+        when 'min', 'max'                      then operands << [k.to_sym, (v == -1 ? '*' : v)]
         when 'inverse', 'closed'               then operands << k.to_sym
         when 'nodeKind'                        then operands << v.to_sym
         when 'object'                          then operands << value(v, options)
+        when 'pattern'
+          # Include flags as well
+          operands << [:pattern, RDF::Literal(v), operator['flags']].compact
         when 'start'
           if v.is_a?(String)
             operands << Start.new(iri(v, options))
@@ -291,7 +295,7 @@ module ShEx::Algebra
           end
         when 'stem', 'name'
           # Value may be :wildcard for stem
-          operands << (v.is_a?(Symbol) ? v : iri(v, options))
+          operands << (v.is_a?(Symbol) ? v : value(v, options))
         when 'predicate' then operands << [:predicate, iri(v, options)]
         when 'extra', 'datatype'
           v = [v] unless v.is_a?(Array)
@@ -299,7 +303,7 @@ module ShEx::Algebra
         when 'exclusions'
           v = [v] unless v.is_a?(Array)
           operands << v.map do |op|
-            op.is_a?(Hash) ?
+            op.is_a?(Hash) && op.has_key?('type') ?
               ShEx::Algebra.from_shexj(op, options) :
               value(op, options)
           end.unshift(:exclusions)
@@ -345,11 +349,12 @@ module ShEx::Algebra
         when Array
           # First element should be a symbol
           case sym = op.first
-          when :datatype,
-               :pattern         then obj[op.first.to_s] = op.last.to_s
+          when :datatype        then obj['datatype'] = op.last.to_s
           when :exclusions      then obj['exclusions'] = Array(op[1..-1]).map {|v| serialize_value(v)}
           when :extra           then (obj['extra'] ||= []).concat Array(op[1..-1]).map(&:to_s)
-            # FIXME Shapes should be an array, not a hash
+          when :pattern
+            obj['pattern'] = op[1]
+            obj['flags'] = op[2] if op[2]
           when :shapes          then obj['shapes'] = Array(op[1..-1]).map {|v| v.to_h}
           when :minlength,
                :maxlength,
@@ -360,7 +365,7 @@ module ShEx::Algebra
                :maxexclusive,
                :totaldigits,
                :fractiondigits  then obj[op.first.to_s] = op.last.object
-          when :min, :max       then obj[op.first.to_s] = op.last
+          when :min, :max       then obj[op.first.to_s] = op.last == '*' ? -1 : op.last
           when :predicate       then obj[op.first.to_s] = op.last.to_s
           when :base, :prefix
             # Ignore base and prefix
@@ -378,7 +383,7 @@ module ShEx::Algebra
           end
         when RDF::Value
           case self
-          when Stem, StemRange  then obj['stem'] = op.to_s
+          when Stem, StemRange  then obj['stem'] = serialize_value(op)
           when SemAct           then obj[op.is_a?(RDF::URI) ? 'name' : 'code'] = op.to_s
           when TripleConstraint then obj['valueExpr'] = op.to_s
           when Shape            then obj['expression'] = op.to_s
@@ -517,10 +522,10 @@ module ShEx::Algebra
       case value
       when Hash
         # Either a value object or a node reference
-        if value['uri']
-          iri(value['uri'], options)
-        elsif value['value']
-          RDF::Literal(value['value'], datatype: value['type'], language: value['language'])
+        if value['uri'] || value['@id']
+          iri(value['uri'] || value['@id'], options)
+        elsif value['value'] || value['@value']
+          RDF::Literal(value['value'] || value['@value'], datatype: value['type'] || value['@type'], language: value['language'] || value['@language'])
         else
           ShEx::Algebra.from_shexj(value, options)
         end
@@ -541,6 +546,8 @@ module ShEx::Algebra
           merge(value.has_language? ? {'language' => value.language.to_s} : {})
         when RDF::Resource
           value.to_s
+        when String
+          {'value' => value}
         else value.to_h
       end
     end

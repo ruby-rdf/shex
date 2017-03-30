@@ -1,7 +1,7 @@
 ##
 # A ShEx runtime for RDF.rb.
 #
-# @see https://shexspec.github.io/spec/#shexc
+# @see http://shex.io/shex-semantics/#shexc
 module ShEx
   autoload :Algebra,    'shex/algebra'
   autoload :Meta,       'shex/meta'
@@ -11,7 +11,7 @@ module ShEx
   autoload :VERSION,    'shex/version'
 
   # Location of the ShEx JSON-LD context
-  CONTEXT = "https://shexspec.github.io/context.jsonld"
+  CONTEXT = "http://www.w3.org/ns/shex.jsonld"
 
   # Extensions defined in this gem
   EXTENSIONS = %w{test}
@@ -71,11 +71,11 @@ module ShEx
   # @param (see ShEx::Algebra::Schema#execute)
   # @return (see ShEx::Algebra::Schema#execute)
   # @raise (see ShEx::Algebra::Schema#execute)
-  def self.execute(expression, queryable, focus, shape, format: 'shexc', **options)
+  def self.execute(expression, queryable, map, format: 'shexc', **options)
     shex = self.parse(expression, options.merge(format: format))
     queryable = queryable || RDF::Graph.new
 
-    shex.execute(focus, queryable, {focus => shape}, options)
+    shex.execute(queryable, map, options)
   end
 
   ##
@@ -89,11 +89,11 @@ module ShEx
   # @param (see ShEx::Algebra::Schema#satisfies?)
   # @return (see ShEx::Algebra::Schema#satisfies?)
   # @raise (see ShEx::Algebra::Schema#satisfies?)
-  def self.satisfies?(expression, queryable, focus, shape, format: 'shexc', **options)
+  def self.satisfies?(expression, queryable, map, format: 'shexc', **options)
     shex = self.parse(expression, options.merge(format: format))
     queryable = queryable || RDF::Graph.new
 
-    shex.satisfies?(focus, queryable, {focus => shape}, options)
+    shex.satisfies?(queryable, map, options)
   end
 
   ##
@@ -129,14 +129,14 @@ module ShEx
   class NotSatisfied < Error
     ##
     # The expression which was not satified
-    # @return [ShEx::Satisfiable]
+    # @return [ShEx::Algebra::ShapeExpression]
     attr_reader :expression
 
     ##
     # Initializes a new parser error instance.
     #
-    # @param  [String, #to_s]          message
-    # @param  [Satisfiable]            expression (self)
+    # @param  [String, #to_s]                   message
+    # @param  [ShEx::Algebra::ShapeExpression]  expression
     def initialize(message, expression: self)
       @expression = expression
       super(message.to_s)
@@ -157,8 +157,8 @@ module ShEx
     ##
     # Initializes a new parser error instance.
     #
-    # @param  [String, #to_s]          message
-    # @param  [Satisfiable]            expression (self)
+    # @param  [String, #to_s]                   message
+    # @param  [ShEx::Algebra::TripleExpression] expression
     def initialize(message, expression: self)
       @expression = expression
       super(message.to_s)

@@ -19,7 +19,7 @@ module ShEx::Algebra
     # @param  (see ShapeExpression#satisfies?)
     # @return (see ShapeExpression#satisfies?)
     # @raise  (see ShapeExpression#satisfies?)
-    # @see [https://shexspec.github.io/spec/#shape-expression-semantics]
+    # @see [http://shex.io/shex-semantics/#shape-expression-semantics]
     def satisfies?(focus, depth: 0)
       status ""
       op = expressions.last

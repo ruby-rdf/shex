@@ -28,13 +28,14 @@ describe ShEx do
 
   describe ".execute" do
     specify do
-      expect(described_class.execute(input, nil, RDF::URI("http://example/foo"), RDF::URI("http://a.example/S1"))).to be_a(ShEx::Algebra::Schema)
+      expect(described_class.execute(input, nil, {RDF::URI("http://example/foo") => RDF::URI("http://a.example/S1")})).to be_a(Hash)
+      expect(described_class.execute(input, nil, {RDF::URI("http://example/foo") => RDF::URI("http://a.example/S1")}).values.flatten).to all(be_a(ShEx::Algebra::ShapeResult))
     end
   end
 
   describe ".satisfy?" do
     specify do
-      expect(described_class.satisfies?(input, nil, RDF::URI("http://example/foo"), RDF::URI("http://a.example/S1"))).to be_truthy
+      expect(described_class.satisfies?(input, nil, {RDF::URI("http://example/foo") => RDF::URI("http://a.example/S1")})).to be_truthy
     end
   end
 
@@ -74,7 +75,7 @@ describe ShEx do
          (nodeConstraint iri)
          (min 1) (max "*"))
         (tripleConstraint (predicate <http://usefulinc.com/ns/doap#implements>)
-         (nodeConstraint (value <https://shexspec.github.io/spec/>))) ))))}.gsub(/^    /m, '')
+         (nodeConstraint (value <http://shex.io/shex-semantics/>))) ))))}.gsub(/^    /m, '')
     }
 
     it "parses doap.shex" do
@@ -88,12 +89,12 @@ describe ShEx do
 
     it "validates doap.ttl from shexc" do
       schema = ShEx.open(doap_shex)
-      expect(schema).to satisfy(doap_graph, File.read(doap_ttl), doap_subj, shape: doap_shape, logger: RDF::Spec.logger)
+      expect(schema).to satisfy(doap_graph, File.read(doap_ttl), {doap_subj => doap_shape}, logger: RDF::Spec.logger)
     end
 
     it "validates doap.ttl from shexj" do
       schema = ShEx.open(doap_json, format: :shexj)
-      expect(schema).to satisfy(doap_graph, File.read(doap_ttl), doap_subj, shape: doap_shape, logger: RDF::Spec.logger)
+      expect(schema).to satisfy(doap_graph, File.read(doap_ttl), {doap_subj => doap_shape}, logger: RDF::Spec.logger)
     end
   end
 end

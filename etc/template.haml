@@ -67,7 +67,7 @@
         Ruby ShEx gem test results
       %p
         This document reports conformance for for
-        %a{property: "doap:name", href: "https://shexspec.github.io/spec/"}="Shape Expressions Language"
+        %a{property: "doap:name", href: "http://shex.io/shex-semantics/"}="Shape Expressions Language"
       %dl
         - subjects.each_with_index do |subject, index|
           - subject_refs[subject['@id']] = "subj_#{index}"
@@ -125,7 +125,7 @@
         Individual Test Results
       - tests['entries'].sort_by {|m| m['title'].to_s.downcase}.each do |manifest|
         - test_cases = manifest['entries']
-        %section{id: manifest['rdfs:label'], typeof: manifest['@type'].join(" "), resource: manifest['@id']}
+        %section{id: manifest['rdfs:comment'], typeof: manifest['@type'].join(" "), resource: manifest['@id']}
           %h2{property: "rdfs:comment mf:name"}<=(manifest['rdfs:comment'])
           - Array(manifest['description']).each do |desc|
             %p{property: "rdfs:comment"}<

@@ -53,7 +53,9 @@
       <td>
         "<code class="grammar-literal">START</code>"
         "<code class="grammar-literal">=</code>"
-        <a href="#grammar-production-shapeExpression">shapeExpression</a>
+        "<code class="grammar-literal">NOT</code>"<code>?</code> 
+        <code>(</code> <a href="#grammar-production-shapeAtomNoRef">shapeAtomNoRef</a> <code>|</code> <a href="#grammar-production-shapeRef">shapeRef</a><code>)</code> 
+        <a href="#grammar-production-shapeOr">shapeOr</a><code>?</code>
       </td>
     </tr>
     <tr id='grammar-production-startActions'>
@@ -87,7 +89,9 @@
       <td><code>shapeExpression</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-shapeOr">shapeOr</a>
+        <a href="#grammar-production-shapeAtomNoRef">shapeAtomNoRef</a> <a href="#grammar-production-shapeOr">shapeOr</a><code>?</code> 
+        <code>|</code> "<code class="grammar-literal">NOT</code>" <code>(</code> <a href="#grammar-production-shapeAtomNoRef">shapeAtomNoRef</a> <code>|</code> <a href="#grammar-production-shapeRef">shapeRef</a><code>)</code>  <a href="#grammar-production-shapeOr">shapeOr</a><code>?</code> 
+        <code>|</code> <a href="#grammar-production-shapeRef">shapeRef</a> <a href="#grammar-production-shapeOr">shapeOr</a>
       </td>
     </tr>
     <tr id='grammar-production-inlineShapeExpression'>
@@ -103,8 +107,24 @@
       <td><code>shapeOr</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-shapeAnd">shapeAnd</a>
-        ("<code class="grammar-literal">OR</code>" <a href="#grammar-production-shapeAnd">shapeAnd</a>)<code>*</code>
+        <a href="#grammar-production-shapeOrA">shapeOrA</a>
+        <code>|</code> <a href="#grammar-production-shapeOrB">shapeOrB</a> <a href="#grammar-production-shapeOrA">shapeOrA</a><code>?</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-shapeOrA'>
+      <td>[12a]</td>
+      <td><code>shapeOrA</code></td>
+      <td>::=</td>
+      <td>
+        ("<code class="grammar-literal">OR</code>" <a href="#grammar-production-shapeAnd">shapeAnd</a>)<code>+</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-shapeOrB'>
+      <td>[12b]</td>
+      <td><code>shapeOrB</code></td>
+      <td>::=</td>
+      <td>
+        ("<code class="grammar-literal">AND</code>" <a href="#grammar-production-shapeNot">shapeNot</a>)<code>+</code>
       </td>
     </tr>
     <tr id='grammar-production-inlineShapeOr'>
@@ -157,59 +177,87 @@
       <td><code>shapeAtom</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-nodeConstraint">nodeConstraint</a> <a href="#grammar-production-shapeOrRef">shapeOrRef</a><code>?</code> 
-        <code>|</code> <a href="#grammar-production-shapeOrRef">shapeOrRef</a>
+        <a href="#grammar-production-nonLitNodeConstraint">nonLitNodeConstraint</a> <a href="#grammar-production-shapeOrRef">shapeOrRef</a><code>?</code> 
+        <code>|</code> <a href="#grammar-production-litNodeConstraint">litNodeConstraint</a>
+        <code>|</code> <a href="#grammar-production-shapeOrRef">shapeOrRef</a> <a href="#grammar-production-nonLitNodeConstraint">nonLitNodeConstraint</a><code>?</code> 
+        <code>|</code> "<code class="grammar-literal">(</code>" <a href="#grammar-production-shapeExpression">shapeExpression</a> "<code class="grammar-literal">)</code>"
+        <code>|</code> "<code class="grammar-literal">.</code>"
+      </td>
+    </tr>
+    <tr id='grammar-production-shapeAtomNoRef'>
+      <td>[19]</td>
+      <td><code>shapeAtomNoRef</code></td>
+      <td>::=</td>
+      <td>
+        <a href="#grammar-production-nonLitNodeConstraint">nonLitNodeConstraint</a> <a href="#grammar-production-shapeOrRef">shapeOrRef</a><code>?</code> 
+        <code>|</code> <a href="#grammar-production-litNodeConstraint">litNodeConstraint</a>
+        <code>|</code> <a href="#grammar-production-shapeDefinition">shapeDefinition</a> <a href="#grammar-production-nonLitNodeConstraint">nonLitNodeConstraint</a><code>?</code> 
         <code>|</code> "<code class="grammar-literal">(</code>" <a href="#grammar-production-shapeExpression">shapeExpression</a> "<code class="grammar-literal">)</code>"
         <code>|</code> "<code class="grammar-literal">.</code>"
       </td>
     </tr>
     <tr id='grammar-production-inlineShapeAtom'>
-      <td>[19]</td>
+      <td>[20]</td>
       <td><code>inlineShapeAtom</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-nodeConstraint">nodeConstraint</a> <a href="#grammar-production-inlineShapeOrRef">inlineShapeOrRef</a><code>?</code> 
-        <code>|</code> <a href="#grammar-production-inlineShapeOrRef">inlineShapeOrRef</a> <a href="#grammar-production-nodeConstraint">nodeConstraint</a><code>?</code> 
+        <a href="#grammar-production-nonLitNodeConstraint">nonLitNodeConstraint</a> <a href="#grammar-production-inlineShapeOrRef">inlineShapeOrRef</a><code>?</code> 
+        <code>|</code> <a href="#grammar-production-litNodeConstraint">litNodeConstraint</a>
+        <code>|</code> <a href="#grammar-production-inlineShapeOrRef">inlineShapeOrRef</a> <a href="#grammar-production-nonLitNodeConstraint">nonLitNodeConstraint</a><code>?</code> 
         <code>|</code> "<code class="grammar-literal">(</code>" <a href="#grammar-production-shapeExpression">shapeExpression</a> "<code class="grammar-literal">)</code>"
         <code>|</code> "<code class="grammar-literal">.</code>"
       </td>
     </tr>
     <tr id='grammar-production-shapeOrRef'>
-      <td>[20]</td>
+      <td>[21]</td>
       <td><code>shapeOrRef</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-ATPNAME_LN">ATPNAME_LN</a>
-        <code>|</code> <a href="#grammar-production-ATPNAME_NS">ATPNAME_NS</a>
-        <code>|</code> "<code class="grammar-literal">@</code>" <a href="#grammar-production-shapeLabel">shapeLabel</a>
-        <code>|</code> <a href="#grammar-production-shapeDefinition">shapeDefinition</a>
+        <a href="#grammar-production-shapeDefinition">shapeDefinition</a>
+        <code>|</code> <a href="#grammar-production-shapeRef">shapeRef</a>
       </td>
     </tr>
     <tr id='grammar-production-inlineShapeOrRef'>
-      <td>[21]</td>
+      <td>[22]</td>
       <td><code>inlineShapeOrRef</code></td>
+      <td>::=</td>
+      <td>
+        <a href="#grammar-production-inlineShapeDefinition">inlineShapeDefinition</a>
+        <code>|</code> <a href="#grammar-production-shapeRef">shapeRef</a>
+      </td>
+    </tr>
+    <tr id='grammar-production-shapeRef'>
+      <td>[23]</td>
+      <td><code>shapeRef</code></td>
       <td>::=</td>
       <td>
         <a href="#grammar-production-ATPNAME_LN">ATPNAME_LN</a>
         <code>|</code> <a href="#grammar-production-ATPNAME_NS">ATPNAME_NS</a>
         <code>|</code> "<code class="grammar-literal">@</code>" <a href="#grammar-production-shapeLabel">shapeLabel</a>
-        <code>|</code> <a href="#grammar-production-inlineShapeDefinition">inlineShapeDefinition</a>
       </td>
     </tr>
-    <tr id='grammar-production-nodeConstraint'>
-      <td>[22]</td>
-      <td><code>nodeConstraint</code></td>
+    <tr id='grammar-production-litNodeConstraint'>
+      <td>[24]</td>
+      <td><code>litNodeConstraint</code></td>
       <td>::=</td>
       <td>
         "<code class="grammar-literal">LITERAL</code>" <a href="#grammar-production-xsFacet">xsFacet</a><code>*</code> 
-        <code>|</code> <a href="#grammar-production-nonLiteralKind">nonLiteralKind</a> <a href="#grammar-production-stringFacet">stringFacet</a><code>*</code> 
         <code>|</code> <a href="#grammar-production-datatype">datatype</a> <a href="#grammar-production-xsFacet">xsFacet</a><code>*</code> 
         <code>|</code> <a href="#grammar-production-valueSet">valueSet</a> <a href="#grammar-production-xsFacet">xsFacet</a><code>*</code> 
-        <code>|</code> <a href="#grammar-production-xsFacet">xsFacet</a><code>+</code>
+        <code>|</code> <a href="#grammar-production-numericFacet">numericFacet</a><code>+</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-nonLitNodeConstraint'>
+      <td>[25]</td>
+      <td><code>nonLitNodeConstraint</code></td>
+      <td>::=</td>
+      <td>
+        <a href="#grammar-production-nonLiteralKind">nonLiteralKind</a> <a href="#grammar-production-stringFacet">stringFacet</a><code>*</code> 
+        <code>|</code> <a href="#grammar-production-stringFacet">stringFacet</a><code>+</code>
       </td>
     </tr>
     <tr id='grammar-production-nonLiteralKind'>
-      <td>[23]</td>
+      <td>[26]</td>
       <td><code>nonLiteralKind</code></td>
       <td>::=</td>
       <td>
@@ -219,7 +267,7 @@
       </td>
     </tr>
     <tr id='grammar-production-xsFacet'>
-      <td>[24]</td>
+      <td>[27]</td>
       <td><code>xsFacet</code></td>
       <td>::=</td>
       <td>
@@ -228,17 +276,16 @@
       </td>
     </tr>
     <tr id='grammar-production-stringFacet'>
-      <td>[25]</td>
+      <td>[28]</td>
       <td><code>stringFacet</code></td>
       <td>::=</td>
       <td>
         <a href="#grammar-production-stringLength">stringLength</a> <a href="#grammar-production-INTEGER">INTEGER</a>
-        <code>|</code> "<code class="grammar-literal">PATTERN</code>" <a href="#grammar-production-string">string</a>
-        <code>|</code> "<code class="grammar-literal">~</code>" <a href="#grammar-production-string">string</a>
+        <code>|</code> <a href="#grammar-production-REGEXP">REGEXP</a>
       </td>
     </tr>
     <tr id='grammar-production-stringLength'>
-      <td>[26]</td>
+      <td>[29]</td>
       <td><code>stringLength</code></td>
       <td>::=</td>
       <td>
@@ -248,16 +295,16 @@
       </td>
     </tr>
     <tr id='grammar-production-numericFacet'>
-      <td>[27]</td>
+      <td>[30]</td>
       <td><code>numericFacet</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-numericRange">numericRange</a> <code>(</code> <a href="#grammar-production-numericLiteral">numericLiteral</a> <code>|</code> <a href="#grammar-production-string">string</a> "<code class="grammar-literal">^^</code>" <a href="#grammar-production-datatype">datatype</a><code>)</code> 
+        <a href="#grammar-production-numericRange">numericRange</a> <a href="#grammar-production-numericLiteral">numericLiteral</a>
         <code>|</code> <a href="#grammar-production-numericLength">numericLength</a> <a href="#grammar-production-INTEGER">INTEGER</a>
       </td>
     </tr>
     <tr id='grammar-production-numericRange'>
-      <td>[28]</td>
+      <td>[31]</td>
       <td><code>numericRange</code></td>
       <td>::=</td>
       <td>
@@ -268,7 +315,7 @@
       </td>
     </tr>
     <tr id='grammar-production-numericLength'>
-      <td>[29]</td>
+      <td>[32]</td>
       <td><code>numericLength</code></td>
       <td>::=</td>
       <td>
@@ -277,11 +324,11 @@
       </td>
     </tr>
     <tr id='grammar-production-shapeDefinition'>
-      <td>[30]</td>
+      <td>[33]</td>
       <td><code>shapeDefinition</code></td>
       <td>::=</td>
       <td>
-        (<a href="#grammar-production-extraPropertySet">extraPropertySet</a> <code>|</code> "<code class="grammar-literal">CLOSED</code>")<code>*</code> 
+        (<a href="#grammar-production-includeSet">includeSet</a> <code>|</code> <a href="#grammar-production-extraPropertySet">extraPropertySet</a> <code>|</code> "<code class="grammar-literal">CLOSED</code>")<code>*</code> 
         "<code class="grammar-literal">{</code>"
         <a href="#grammar-production-tripleExpression">tripleExpression</a><code>?</code> 
         "<code class="grammar-literal">}</code>"
@@ -290,18 +337,18 @@
       </td>
     </tr>
     <tr id='grammar-production-inlineShapeDefinition'>
-      <td>[31]</td>
+      <td>[34]</td>
       <td><code>inlineShapeDefinition</code></td>
       <td>::=</td>
       <td>
-        (<a href="#grammar-production-extraPropertySet">extraPropertySet</a> <code>|</code> "<code class="grammar-literal">CLOSED</code>")<code>*</code> 
+        (<a href="#grammar-production-includeSet">includeSet</a> <code>|</code> <a href="#grammar-production-extraPropertySet">extraPropertySet</a> <code>|</code> "<code class="grammar-literal">CLOSED</code>")<code>*</code> 
         "<code class="grammar-literal">{</code>"
         <a href="#grammar-production-tripleExpression">tripleExpression</a><code>?</code> 
         "<code class="grammar-literal">}</code>"
       </td>
     </tr>
     <tr id='grammar-production-extraPropertySet'>
-      <td>[32]</td>
+      <td>[35]</td>
       <td><code>extraPropertySet</code></td>
       <td>::=</td>
       <td>
@@ -310,7 +357,7 @@
       </td>
     </tr>
     <tr id='grammar-production-tripleExpression'>
-      <td>[33]</td>
+      <td>[36]</td>
       <td><code>tripleExpression</code></td>
       <td>::=</td>
       <td>
@@ -318,7 +365,7 @@
       </td>
     </tr>
     <tr id='grammar-production-oneOfTripleExpr'>
-      <td>[34]</td>
+      <td>[37]</td>
       <td><code>oneOfTripleExpr</code></td>
       <td>::=</td>
       <td>
@@ -327,7 +374,7 @@
       </td>
     </tr>
     <tr id='grammar-production-groupTripleExpr'>
-      <td>[37]</td>
+      <td>[40]</td>
       <td><code>groupTripleExpr</code></td>
       <td>::=</td>
       <td>
@@ -336,7 +383,7 @@
       </td>
     </tr>
     <tr id='grammar-production-unaryTripleExpr'>
-      <td>[40]</td>
+      <td>[43]</td>
       <td><code>unaryTripleExpr</code></td>
       <td>::=</td>
       <td>
@@ -344,8 +391,17 @@
         <code>|</code> <a href="#grammar-production-include">include</a>
       </td>
     </tr>
+    <tr id='grammar-production-productionLabel'>
+      <td>[43a]</td>
+      <td><code>productionLabel</code></td>
+      <td>::=</td>
+      <td>
+        "<code class="grammar-literal">$</code>"
+        <code>(</code> <a href="#grammar-production-iri">iri</a> <code>|</code> <a href="#grammar-production-blankNode">blankNode</a><code>)</code>
+      </td>
+    </tr>
     <tr id='grammar-production-bracketedTripleExpr'>
-      <td>[41]</td>
+      <td>[44]</td>
       <td><code>bracketedTripleExpr</code></td>
       <td>::=</td>
       <td>
@@ -357,17 +413,8 @@
         <a href="#grammar-production-semanticActions">semanticActions</a>
       </td>
     </tr>
-    <tr id='grammar-production-productionLabel'>
-      <td>[42]</td>
-      <td><code>productionLabel</code></td>
-      <td>::=</td>
-      <td>
-        "<code class="grammar-literal">$</code>"
-        <code>(</code> <a href="#grammar-production-iri">iri</a> <code>|</code> <a href="#grammar-production-blankNode">blankNode</a><code>)</code>
-      </td>
-    </tr>
     <tr id='grammar-production-tripleConstraint'>
-      <td>[43]</td>
+      <td>[45]</td>
       <td><code>tripleConstraint</code></td>
       <td>::=</td>
       <td>
@@ -380,7 +427,7 @@
       </td>
     </tr>
     <tr id='grammar-production-cardinality'>
-      <td>[44]</td>
+      <td>[46]</td>
       <td><code>cardinality</code></td>
       <td>::=</td>
       <td>
@@ -391,7 +438,7 @@
       </td>
     </tr>
     <tr id='grammar-production-senseFlags'>
-      <td>[45]</td>
+      <td>[47]</td>
       <td><code>senseFlags</code></td>
       <td>::=</td>
       <td>
@@ -399,7 +446,7 @@
       </td>
     </tr>
     <tr id='grammar-production-valueSet'>
-      <td>[46]</td>
+      <td>[48]</td>
       <td><code>valueSet</code></td>
       <td>::=</td>
       <td>
@@ -409,26 +456,38 @@
       </td>
     </tr>
     <tr id='grammar-production-valueSetValue'>
-      <td>[47]</td>
+      <td>[49]</td>
       <td><code>valueSetValue</code></td>
       <td>::=</td>
       <td>
         <a href="#grammar-production-iriRange">iriRange</a>
-        <code>|</code> <a href="#grammar-production-literal">literal</a>
-      </td>
-    </tr>
-    <tr id='grammar-production-iriRange'>
-      <td>[48]</td>
-      <td><code>iriRange</code></td>
-      <td>::=</td>
-      <td>
-        <a href="#grammar-production-iri">iri</a> ("<code class="grammar-literal">~</code>" <a href="#grammar-production-exclusion">exclusion</a><code>*</code> )<code>?</code> 
+        <code>|</code> <a href="#grammar-production-literalRange">literalRange</a>
+        <code>|</code> <a href="#grammar-production-languageRange">languageRange</a>
         <code>|</code> "<code class="grammar-literal">.</code>" <a href="#grammar-production-exclusion">exclusion</a><code>+</code>
       </td>
     </tr>
     <tr id='grammar-production-exclusion'>
-      <td>[49]</td>
+      <td>[50]</td>
       <td><code>exclusion</code></td>
+      <td>::=</td>
+      <td>
+        "<code class="grammar-literal">-</code>"
+        <code>(</code> <a href="#grammar-production-iri">iri</a> <code>|</code> <a href="#grammar-production-literal">literal</a> <code>|</code> <a href="#grammar-production-LANGTAG">LANGTAG</a><code>)</code> 
+        "<code class="grammar-literal">~</code>"<code>?</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-iriRange'>
+      <td>[51]</td>
+      <td><code>iriRange</code></td>
+      <td>::=</td>
+      <td>
+        <a href="#grammar-production-iri">iri</a>
+        ("<code class="grammar-literal">~</code>" <a href="#grammar-production-iriExclusion">iriExclusion</a><code>*</code> )<code>?</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-iriExclusion'>
+      <td>[52]</td>
+      <td><code>iriExclusion</code></td>
       <td>::=</td>
       <td>
         "<code class="grammar-literal">-</code>"
@@ -436,8 +495,46 @@
         "<code class="grammar-literal">~</code>"<code>?</code>
       </td>
     </tr>
+    <tr id='grammar-production-literalRange'>
+      <td>[53]</td>
+      <td><code>literalRange</code></td>
+      <td>::=</td>
+      <td>
+        <a href="#grammar-production-literal">literal</a>
+        ("<code class="grammar-literal">~</code>" <a href="#grammar-production-literalExclusion">literalExclusion</a><code>*</code> )<code>?</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-literalExclusion'>
+      <td>[54]</td>
+      <td><code>literalExclusion</code></td>
+      <td>::=</td>
+      <td>
+        "<code class="grammar-literal">-</code>"
+        <a href="#grammar-production-literal">literal</a>
+        "<code class="grammar-literal">~</code>"<code>?</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-languageRange'>
+      <td>[55]</td>
+      <td><code>languageRange</code></td>
+      <td>::=</td>
+      <td>
+        <a href="#grammar-production-LANGTAG">LANGTAG</a>
+        ("<code class="grammar-literal">~</code>" <a href="#grammar-production-languageExclusion">languageExclusion</a><code>*</code> )<code>?</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-languageExclusion'>
+      <td>[56]</td>
+      <td><code>languageExclusion</code></td>
+      <td>::=</td>
+      <td>
+        "<code class="grammar-literal">-</code>"
+        <a href="#grammar-production-LANGTAG">LANGTAG</a>
+        "<code class="grammar-literal">~</code>"<code>?</code>
+      </td>
+    </tr>
     <tr id='grammar-production-include'>
-      <td>[50]</td>
+      <td>[57]</td>
       <td><code>include</code></td>
       <td>::=</td>
       <td>
@@ -446,7 +543,7 @@
       </td>
     </tr>
     <tr id='grammar-production-annotation'>
-      <td>[51]</td>
+      <td>[58]</td>
       <td><code>annotation</code></td>
       <td>::=</td>
       <td>
@@ -456,7 +553,7 @@
       </td>
     </tr>
     <tr id='grammar-production-semanticActions'>
-      <td>[52]</td>
+      <td>[59]</td>
       <td><code>semanticActions</code></td>
       <td>::=</td>
       <td>
@@ -464,7 +561,7 @@
       </td>
     </tr>
     <tr id='grammar-production-codeDecl'>
-      <td>[53]</td>
+      <td>[60]</td>
       <td><code>codeDecl</code></td>
       <td>::=</td>
       <td>
@@ -484,7 +581,7 @@
       </td>
     </tr>
     <tr id='grammar-production-predicate'>
-      <td>[54]</td>
+      <td>[61]</td>
       <td><code>predicate</code></td>
       <td>::=</td>
       <td>
@@ -493,7 +590,7 @@
       </td>
     </tr>
     <tr id='grammar-production-datatype'>
-      <td>[55]</td>
+      <td>[62]</td>
       <td><code>datatype</code></td>
       <td>::=</td>
       <td>
@@ -501,7 +598,7 @@
       </td>
     </tr>
     <tr id='grammar-production-shapeLabel'>
-      <td>[56]</td>
+      <td>[63]</td>
       <td><code>shapeLabel</code></td>
       <td>::=</td>
       <td>
@@ -524,8 +621,8 @@
       <td><code>rdfLiteral</code></td>
       <td>::=</td>
       <td>
-        <a href="#grammar-production-string">string</a>
-        (<a href="#grammar-production-LANGTAG">LANGTAG</a> <code>|</code> "<code class="grammar-literal">^^</code>" <a href="#grammar-production-datatype">datatype</a>)<code>?</code>
+        <a href="#grammar-production-langString">langString</a>
+        <code>|</code> <a href="#grammar-production-string">string</a> ("<code class="grammar-literal">^^</code>" <a href="#grammar-production-datatype">datatype</a>)<code>?</code>
       </td>
     </tr>
     <tr id='grammar-production-booleanLiteral'>
@@ -546,6 +643,17 @@
         <code>|</code> <a href="#grammar-production-STRING_LITERAL_LONG1">STRING_LITERAL_LONG1</a>
         <code>|</code> <a href="#grammar-production-STRING_LITERAL2">STRING_LITERAL2</a>
         <code>|</code> <a href="#grammar-production-STRING_LITERAL_LONG2">STRING_LITERAL_LONG2</a>
+      </td>
+    </tr>
+    <tr id='grammar-production-langString'>
+      <td>[66]</td>
+      <td><code>langString</code></td>
+      <td>::=</td>
+      <td>
+        <a href="#grammar-production-LANG_STRING_LITERAL1">LANG_STRING_LITERAL1</a>
+        <code>|</code> <a href="#grammar-production-LANG_STRING_LITERAL_LONG1">LANG_STRING_LITERAL_LONG1</a>
+        <code>|</code> <a href="#grammar-production-LANG_STRING_LITERAL2">LANG_STRING_LITERAL2</a>
+        <code>|</code> <a href="#grammar-production-LANG_STRING_LITERAL_LONG2">LANG_STRING_LITERAL_LONG2</a>
       </td>
     </tr>
     <tr id='grammar-production-iri'>
@@ -575,7 +683,7 @@
       </td>
     </tr>
     <tr id='grammar-production-CODE'>
-      <td>[58]</td>
+      <td>[67]</td>
       <td><code>CODE</code></td>
       <td>::=</td>
       <td>
@@ -584,7 +692,7 @@
       </td>
     </tr>
     <tr id='grammar-production-REPEAT_RANGE'>
-      <td>[59]</td>
+      <td>[68]</td>
       <td><code>REPEAT_RANGE</code></td>
       <td>::=</td>
       <td>
@@ -595,7 +703,7 @@
       </td>
     </tr>
     <tr id='grammar-production-RDF_TYPE'>
-      <td>[60]</td>
+      <td>[69]</td>
       <td><code>RDF_TYPE</code></td>
       <td>::=</td>
       <td>
@@ -630,7 +738,7 @@
       </td>
     </tr>
     <tr id='grammar-production-ATPNAME_NS'>
-      <td>[61]</td>
+      <td>[70]</td>
       <td><code>ATPNAME_NS</code></td>
       <td>::=</td>
       <td>
@@ -640,13 +748,24 @@
       </td>
     </tr>
     <tr id='grammar-production-ATPNAME_LN'>
-      <td>[62]</td>
+      <td>[71]</td>
       <td><code>ATPNAME_LN</code></td>
       <td>::=</td>
       <td>
         "<code class="grammar-literal">@</code>"
         <a href="#grammar-production-PNAME_NS">PNAME_NS</a>
         <a href="#grammar-production-PN_LOCAL">PN_LOCAL</a>
+      </td>
+    </tr>
+    <tr id='grammar-production-REGEXP'>
+      <td>[72]</td>
+      <td><code>REGEXP</code></td>
+      <td>::=</td>
+      <td>
+        "<code class="grammar-literal">/</code>"
+        (<code>[</code> <code class="grammar-literal">^/\</code><code class="grammar-char-escape">#x0A</code><code class="grammar-char-escape">#x0D</code><code>]</code>  <code>|</code> "<code class="grammar-literal">\</code>" <code>[</code> <code class="grammar-literal">nrt\|.?*+(){}$-[]^/</code><code>]</code>  <code>|</code> <a href="#grammar-production-UCHAR">UCHAR</a>)<code>+</code> 
+        "<code class="grammar-literal">/</code>"
+        (<code>[</code> <code class="grammar-literal">smix</code><code>]</code> )<code>*</code>
       </td>
     </tr>
     <tr id='grammar-production-BLANK_NODE_LABEL'>
@@ -744,6 +863,46 @@
       <td>
         '<code class="grammar-literal">"""</code>'
         <code>(</code> ('<code class="grammar-literal">"</code>' <code>|</code> '<code class="grammar-literal">""</code>')<code>?</code>  <code>[</code> <code class="grammar-literal">^"\]</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">ECHAR</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">UCHAR))*</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">'"""'</code><code>]</code> <code>)</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-LANG_STRING_LITERAL1'>
+      <td>[73]</td>
+      <td><code>LANG_STRING_LITERAL1</code></td>
+      <td>::=</td>
+      <td>
+        "<code class="grammar-literal">'</code>"
+        (<code>[</code> <code class="grammar-literal">^</code><code class="grammar-char-escape">#x27</code><code class="grammar-char-escape">#x5C</code><code class="grammar-char-escape">#xA</code><code class="grammar-char-escape">#xD</code><code>]</code>  <code>|</code> <a href="#grammar-production-ECHAR">ECHAR</a> <code>|</code> <a href="#grammar-production-UCHAR">UCHAR</a>)<code>*</code> 
+        "<code class="grammar-literal">'</code>"
+        <a href="#grammar-production-LANGTAG">LANGTAG</a>
+      </td>
+    </tr>
+    <tr id='grammar-production-LANG_STRING_LITERAL2'>
+      <td>[74]</td>
+      <td><code>LANG_STRING_LITERAL2</code></td>
+      <td>::=</td>
+      <td>
+        '<code class="grammar-literal">"</code>'
+        (<code>[</code> <code class="grammar-literal">^</code><code class="grammar-char-escape">#x22</code><code class="grammar-char-escape">#x5C</code><code class="grammar-char-escape">#xA</code><code class="grammar-char-escape">#xD</code><code>]</code>  <code>|</code> <a href="#grammar-production-ECHAR">ECHAR</a> <code>|</code> <a href="#grammar-production-UCHAR">UCHAR</a>)<code>*</code> 
+        '<code class="grammar-literal">"</code>'
+        <a href="#grammar-production-LANGTAG">LANGTAG</a>
+      </td>
+    </tr>
+    <tr id='grammar-production-LANG_STRING_LITERAL_LONG1'>
+      <td>[75]</td>
+      <td><code>LANG_STRING_LITERAL_LONG1</code></td>
+      <td>::=</td>
+      <td>
+        "<code class="grammar-literal">'''</code>"
+        <code>(</code> ("<code class="grammar-literal">'</code>" <code>|</code> "<code class="grammar-literal">''</code>")<code>?</code>  <code>[</code> <code class="grammar-literal">^'\]</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">ECHAR</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">UCHAR))*</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">"'''"</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">LANGTAG</code><code>]</code> <code>)</code>
+      </td>
+    </tr>
+    <tr id='grammar-production-LANG_STRING_LITERAL_LONG2'>
+      <td>[76]</td>
+      <td><code>LANG_STRING_LITERAL_LONG2</code></td>
+      <td>::=</td>
+      <td>
+        '<code class="grammar-literal">"""</code>'
+        <code>(</code> ('<code class="grammar-literal">"</code>' <code>|</code> '<code class="grammar-literal">""</code>')<code>?</code>  <code>[</code> <code class="grammar-literal">^"\]</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">ECHAR</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">|</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">UCHAR))*</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">'"""'</code><code class="grammar-char-escape">#x20</code><code class="grammar-literal">LANGTAG</code><code>]</code> <code>)</code>
       </td>
     </tr>
     <tr id='grammar-production-UCHAR'>

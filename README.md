@@ -38,7 +38,7 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
         (doap:name;doap:description|dc:title;dc:description)+;
         doap:category*;
         doap:developer IRI;
-        doap:implements    [<https://shexspec.github.io/spec/>]
+        doap:implements    [<http://shex.io/shex-semantics/>]
       }
     )
     graph = RDF::Graph.load("etc/doap.ttl")
@@ -109,26 +109,26 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
                     ]
                   }
                 ],
-                "min": 1, "max": "*"
+                "min": 1, "max": -1
               },
               {
                 "type": "TripleConstraint",
                 "predicate": "http://usefulinc.com/ns/doap#category",
                 "valueExpr": {"type": "NodeConstraint", "nodeKind": "iri"},
-                "min": 0, "max": "*"
+                "min": 0, "max": -1
               },
               {
                 "type": "TripleConstraint",
                 "predicate": "http://usefulinc.com/ns/doap#developer",
                 "valueExpr": {"type": "NodeConstraint", "nodeKind": "iri"},
-                "min": 1, "max": "*"
+                "min": 1, "max": -1
               },
               {
                 "type": "TripleConstraint",
                 "predicate": "http://usefulinc.com/ns/doap#implements",
                 "valueExpr": {
                   "type": "NodeConstraint",
-                  "values": ["https://shexspec.github.io/spec/"]
+                  "values": ["http://shex.io/shex-semantics/"]
                 }
               }
             ]
@@ -143,7 +143,7 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
     # => true
 
 ## Extensions
-ShEx has an extension mechanism using [Semantic Actions](https://shexspec.github.io/spec/#semantic-actions). Extensions may be implemented in Ruby ShEx by sub-classing {ShEx::Extension} and implementing {ShEx::Extension#visit} and possibly {ShEx::Extension#initialize}, {ShEx::Extension#enter}, {ShEx::Extension#exit}, and {ShEx::Extension#close}. The `#visit` method will be called as part of the `#satisfies?` operation.
+ShEx has an extension mechanism using [Semantic Actions](http://shex.io/shex-semantics/#semantic-actions). Extensions may be implemented in Ruby ShEx by sub-classing {ShEx::Extension} and implementing {ShEx::Extension#visit} and possibly {ShEx::Extension#initialize}, {ShEx::Extension#enter}, {ShEx::Extension#exit}, and {ShEx::Extension#close}. The `#visit` method will be called as part of the `#satisfies?` operation.
 
     require 'shex'
     class ShEx::Test < ShEx::Extension("http://shex.io/extensions/Test/")
@@ -179,7 +179,7 @@ The result of parsing either ShExC or ShExJ is the creation of a set of executab
 ## Dependencies
 
 * [Ruby](http://ruby-lang.org/) (>= 2.2.2)
-* [RDF.rb](http://rubygems.org/gems/rdf) (>= 2.2)
+* [RDF.rb](http://rubygems.org/gems/rdf) (~> 2.2)
 
 ## Installation
 
@@ -237,7 +237,7 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
 This is free and unencumbered public domain software. For more information,
 see <http://unlicense.org/> or the accompanying {file:LICENSE} file.
 
-[ShExSpec]:     https://shexspec.github.io/spec/
+[ShExSpec]:     http://shex.io/shex-semantics/
 [RDF]:          http://www.w3.org/RDF/
 [RDF.rb]:       http://rubydoc.info/github/ruby-rdf/rdf
 [EBNF]:         http://rubygems.org/gems/ebnf

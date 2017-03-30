@@ -90,38 +90,43 @@ RSpec::Matchers.define :generate do |expected, options = {}|
   end
 end
 
-RSpec::Matchers.define :satisfy do |graph, data, focus, shape: nil, map: nil, expected: nil, logger: nil, **options|
+RSpec::Matchers.define :satisfy do |graph, data, map, focus: nil, expected: nil, logger: nil, results: nil, **options|
   match do |input|
-    focus = RDF::Literal(focus['@value'],
-                         datatype: focus['@type'],
-                         language: focus['@language']) if focus.is_a?(Hash)
-    map ||= {focus => shape} if shape
+    shape_results = nil
 
-    case
+    res = case
     when [ShEx::NotSatisfied, ShEx::StructureError].include?(expected)
       begin
-        input.execute(focus, graph, map, logger: logger, **options)
+        shape_results = input.execute(graph, map, focus: focus, logger: logger, **options)
         false
-      rescue expected
+      rescue expected => e
+        shape_results = e.expression if e.respond_to?(:expression) && e.expression.is_a?(Hash)
         true
       end
     else
       begin
-        input.execute(focus, graph, map, logger: logger, **options)
+        shape_results = input.execute(graph, map, focus: focus, logger: logger, **options)
       rescue ShEx::NotSatisfied => e
         @exception = e
+        shape_results = e.expression
         false
       end
     end
+
+    @results = (shape_results || {}).inject({}) do |memo, (k, vv)|
+      memo.merge(k.to_s => vv.map {|v| {"shape" => v.shape.to_s, "result" => v.result}})
+    end
+
+    res && (results.nil? || results == @results)
   end
 
   failure_message do |input|
     (expected == ShEx::NotSatisfied ? "Shape matched" : "Shape did not match: #{@exception && @exception.message}\n") +
     #"Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
     "Data      : #{data}\n" +
-    "Shape     : #{shape}\n" +
     "Focus     : #{focus}\n" +
-    "Results   : #{SXP::Generator.string(@exception.expression.to_sxp_bin) if @exception && @exception.expression}" +
+    "Expected  : #{results.inspect if results}\n" +
+    "Results   : #{@results.inspect if @results}\n" +
     (logger ? "Trace     :\n#{logger.to_s}" : "")
   end
 
@@ -129,8 +134,9 @@ RSpec::Matchers.define :satisfy do |graph, data, focus, shape: nil, map: nil, ex
     "Shape matched\n" +
     #"Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
     "Data      : #{data}\n" +
-    "Shape     : #{shape}\n" +
-    "Focus     : #{focus}\n" +
+    "Focus     : #{focus}\n" + +
+    "Expected  : #{results.inspect if results}\n" +
+    "Results   : #{@results.inspect if @results}\n" +
     (logger ? "Trace     :\n#{logger.to_s}" : "")
   end
 end

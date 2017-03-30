@@ -1,5 +1,5 @@
 {
-  "@context": "https://shexspec.github.io/context.jsonld",
+  "@context": "http://www.w3.org/ns/shex.jsonld",
   "type": "Schema",
   "shapes": [
     {
@@ -70,7 +70,7 @@
               }
             ],
             "min": 1,
-            "max": "*"
+            "max": -1
           },
           {
             "type": "TripleConstraint",
@@ -80,7 +80,7 @@
               "nodeKind": "iri"
             },
             "min": 0,
-            "max": "*"
+            "max": -1
           },
           {
             "type": "TripleConstraint",
@@ -90,7 +90,7 @@
               "nodeKind": "iri"
             },
             "min": 1,
-            "max": "*"
+            "max": -1
           },
           {
             "type": "TripleConstraint",
@@ -99,7 +99,7 @@
               "type": "NodeConstraint",
               "values": [
                 {
-                  "uri": "https://shexspec.github.io/spec/"
+                  "uri": "http://shex.io/shex-semantics/"
                 }
               ]
             }

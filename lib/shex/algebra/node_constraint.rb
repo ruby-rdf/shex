@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 module ShEx::Algebra
   ##
   class NodeConstraint < Operator
@@ -58,7 +59,7 @@ module ShEx::Algebra
       return true unless dt
 
       not_satisfied "Node was #{value.inspect}, expected datatype #{dt}", depth: depth unless
-        value.is_a?(RDF::Literal) && value.datatype == RDF::URI(dt)
+        value.is_a?(RDF::Literal) && value.datatype == RDF::URI(dt) && value.valid?
       status "right datatype: #{value}: #{dt}", depth: depth
       true
     end
@@ -68,11 +69,18 @@ module ShEx::Algebra
     # Checks all length/minlength/maxlength/pattern facets against the string representation of the value.
     # @return [Boolean] `true` if satisfied, `false` if it does not apply
     # @raise [ShEx::NotSatisfied] if not satisfied
+    # @todo using the XPath regexp engine supports additional flags "s" and "q"
     def satisfies_string_facet?(value, depth: 0)
       length    = op_fetch(:length)
       minlength = op_fetch(:minlength)
       maxlength = op_fetch(:maxlength)
-      pattern   = op_fetch(:pattern)
+      pat = (operands.detect {|op| op.is_a?(Array) && op[0] == :pattern} || [])
+      pattern = pat[1]
+
+      flags = 0
+      flags |= Regexp::EXTENDED   if pat[2].to_s.include?("x")
+      flags |= Regexp::IGNORECASE if pat[2].to_s.include?("i")
+      flags |= Regexp::MULTILINE  if pat[2].to_s.include?("m")
 
       return true if (length || minlength || maxlength || pattern).nil?
 
@@ -80,6 +88,7 @@ module ShEx::Algebra
       when RDF::Node then value.id
       else value.to_s
       end
+
       not_satisfied "Node #{v_s.inspect} length not #{length}", depth: depth if
         length && v_s.length != length.to_i
       not_satisfied"Node #{v_s.inspect} length < #{minlength}", depth: depth if
@@ -87,7 +96,7 @@ module ShEx::Algebra
       not_satisfied "Node #{v_s.inspect} length > #{maxlength}", depth: depth if
         maxlength && v_s.length > maxlength.to_i
       not_satisfied "Node #{v_s.inspect} does not match #{pattern}", depth: depth if
-        pattern && !Regexp.new(pattern).match(v_s)
+        pattern && !Regexp.new(pattern, flags).match(v_s)
       status "right string facet: #{value}", depth: depth
       true
     end

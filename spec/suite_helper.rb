@@ -67,6 +67,14 @@ module Fixtures
         action.is_a?(Hash) && action["focus"]
       end
 
+      def map
+        action.is_a?(Hash) && action["map"] && base.join(action["map"])
+      end
+
+      def shape_map
+        @shape_map ||= JSON.parse(RDF::Util::File.open_file(map, &:read))
+      end
+
       def graph
         @graph ||= RDF::Graph.load(data, base_uri: base)
       end
@@ -85,6 +93,10 @@ module Fixtures
 
       def turtle_source
         @turtle_source ||= RDF::Util::File.open_file(ttl, &:read)
+      end
+
+      def results
+        @results ||= (JSON.parse(RDF::Util::File.open_file(result, &:read)) if attributes['result'])
       end
 
       def structure_test?

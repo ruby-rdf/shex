@@ -51,10 +51,10 @@ describe ShEx::Algebra do
         ]
       },
       "String Facets Example 2" => {
-        schema: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy PATTERN "genUser[0-9]+"}),
+        schema: %(PREFIX ex: <http://schema.example/> ex:IssueShape {ex:submittedBy /genUser[0-9]+/i}),
         data: %(
-          <issue6> ex:submittedBy _:genUser218 .
-          <issue7> ex:submittedBy _:genContact817 .
+          <issue6> ex:submittedBy _:genuser218 .
+          <issue7> ex:submittedBy _:gencontact817 .
         ),
         expected: [
           {focus: "issue6", shape: "http://schema.example/IssueShape", result: true},
@@ -126,7 +126,7 @@ describe ShEx::Algebra do
           <issue10> foaf:mbox <mailto:engineering-2112@a.example> .
         ),
         expected: [
-          {focus: "issue8", shape: "http://schema.example/EmployeeShape", result: true},
+          {focus: "issue8", shape: "http://schema.example/EmployeeShape", result: ShEx::NotSatisfied},
           {focus: "issue9", shape: "http://schema.example/EmployeeShape", result: true},
           {focus: "issue10", shape: "http://schema.example/EmployeeShape", result: ShEx::NotSatisfied},
         ]
@@ -341,12 +341,11 @@ describe ShEx::Algebra do
           inst:Tester2 ex:role ex:testingRole .
         ),
         expected: [
-          {focus: "http://inst.example/Issue1", shape: "http://schema.example/IssueShape", result: true},
+          {result: true},
         ],
         map: {
           "http://inst.example/Issue1" => "http://schema.example/IssueShape",
-          "http://inst.example/Tester2" => "http://schema.example/TesterShape",
-          "http://inst.example/Testgrammer23" => "http://schema.example/ProgrammerShape"
+          "http://inst.example/Tester2" => "http://schema.example/TesterShape"
         }
       },
       "Recursion Example" => {
@@ -359,7 +358,7 @@ describe ShEx::Algebra do
           inst:Issue3 ex:related inst:Issue1 .
         ),
         expected: [
-          {focus: "http://inst.example/Issue1", shape: "http://schema.example/IssueShape", result: true},
+          {result: true},
         ],
         map: {
           "http://inst.example/Issue1" => "http://schema.example/IssueShape",
@@ -416,7 +415,7 @@ describe ShEx::Algebra do
             ex:department ex:ProgrammingDepartment .
         ),
         expected: [
-          {focus: "http://inst.example/Issue1", shape: "http://schema.example/IssueShape", result: true},
+          {result: true},
         ],
         map: {
           "http://inst.example/Issue1" => "http://schema.example/IssueShape",
@@ -434,11 +433,16 @@ describe ShEx::Algebra do
         )}
         let(:graph) {RDF::Graph.new {|g| RDF::Turtle::Reader.new(decls + params[:data]) {|r| g << r}}}
         params[:expected].each_with_index do |p, ndx|
-          it "#{p[:focus]} (#{p[:result].inspect})" do
+          it "#{p[:focus] || params[:map].inspect} (#{p[:result].inspect})" do
             if graph.empty?
               fail "No triples in graph"
             else
-              expect(schema).to satisfy(graph, params[:data], p[:focus], shape: p[:shape], map: params[:map], expected: p[:result], logger: logger)
+              map = if !params[:map] && p[:focus] && p[:shape]
+                {RDF::URI(p.delete(:focus)) => RDF::URI(p.delete(:shape))}
+              else
+                params[:map].inject({}) {|memo, (k,v)| memo.merge(RDF::URI(k) => Array(v).map {|vv| RDF::URI(vv)})}
+              end
+              expect(schema).to satisfy(graph, params[:data], map, focus: p[:focus], expected: p[:result], logger: logger)
             end
           end
         end
@@ -454,10 +458,21 @@ describe ShEx::Algebra do
       m.entries.each do |t|
         specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?}" do
           case t.name
-          when 'PTstar-greedy-fail', 'nPlus1-greedy_fail'
+          when 'nPlus1', 'PTstar-greedy-fail'
             pending "greedy"
           when '1val1DECIMAL_00'
             pending "Turtle reader ensures numeric literals start with a sign or digit, not '.'."
+          when 'float-1E0_fail', 'boolean-0_fail', 'boolean-1_fail'
+            pending "difference of opinion on literal validitity"
+          when '1datatypeRef1_fail-datatype', '1datatypeRef1_fail-reflexiveRef'
+            pending "sync with litNodeType and shapeRef change"
+          when '1literalPattern_with_all_punctuation_pass',
+               '1literalPattern_with_all_punctuation_fail'
+            pending "empty char-class"
+          when '1literalPattern_with_REGEXP_escapes_escaped_pass',
+               '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes',
+               '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes_bare'
+            skip "invalid multibyte character"
           end
           t.debug = [
             "info: #{t.inspect}",
@@ -467,9 +482,21 @@ describe ShEx::Algebra do
           ]
           expected = t.positive_test? || ShEx::NotSatisfied
           schema = ShEx.parse(t.schema_source, validate: true, base_uri: t.base)
-          expect(schema).to satisfy(t.graph, t.data_source, t.focus,
-                                    shape: t.shape,
+          focus = ShEx::Algebra::Operator.value(t.focus, base_uri: t.base)
+          map = if t.map
+            t.shape_map.inject({}) do |memo, (k,v)|
+              memo.merge(ShEx::Algebra::Operator.value(k, base_uri: t.base) => ShEx::Algebra::Operator.iri(v, base_uri: t.base))
+            end
+          elsif t.shape
+            {focus => ShEx::Algebra::Operator.iri(t.shape, base_uri: t.base)}
+          else
+            {}
+          end
+          focus = nil unless map.empty?
+          expect(schema).to satisfy(t.graph, t.data_source, map,
+                                    focus: focus,
                                     expected: expected,
+                                    results: t.results,
                                     logger: t.logger,
                                     base_uri: t.base,
                                     shapeExterns: t.shapeExterns)
@@ -481,6 +508,17 @@ describe ShEx::Algebra do
             pending "greedy"
           when '1val1DECIMAL_00'
             pending "Turtle reader ensures numeric literals start with a sign or digit, not '.'."
+          when 'float-1E0_fail', 'boolean-0_fail', 'boolean-1_fail'
+            pending "difference of opinion on literal validitity"
+          when '1datatypeRef1_fail-datatype', '1datatypeRef1_fail-reflexiveRef'
+            pending "sync with litNodeType and shapeRef change"
+          when '1literalPattern_with_all_punctuation_pass',
+               '1literalPattern_with_all_punctuation_fail'
+            pending "empty char-class"
+          when '1literalPattern_with_REGEXP_escapes_escaped_pass',
+               '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes',
+               '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes_bare'
+            pending "invalid multibyte character"
           end
           t.debug = [
             "info: #{t.inspect}",
@@ -492,9 +530,21 @@ describe ShEx::Algebra do
           expected = t.positive_test? || ShEx::NotSatisfied
           schema = ShEx.parse(t.schema_json, format: :shexj, validate: true, base_uri: t.base)
           t.debug << "shexc(2): #{SXP::Generator.string(schema.to_sxp_bin)}"
-          expect(schema).to satisfy(t.graph, t.data_source, t.focus,
-                                    shape: t.shape,
+          focus = ShEx::Algebra::Operator.value(t.focus, base_uri: t.base)
+          map = if t.map
+            t.shape_map.inject({}) do |memo, (k,v)|
+              memo.merge(ShEx::Algebra::Operator.value(k, base_uri: t.base) => ShEx::Algebra::Operator.iri(v, base_uri: t.base))
+            end
+          elsif t.shape
+            {focus => ShEx::Algebra::Operator.iri(t.shape, base_uri: t.base)}
+          else
+            {}
+          end
+          focus = nil unless map.empty?
+          expect(schema).to satisfy(t.graph, t.data_source, map,
+                                    focus: focus,
                                     expected: expected,
+                                    results: t.results,
                                     logger: t.logger,
                                     base_uri: t.base,
                                     shapeExterns: t.shapeExterns)
@@ -506,10 +556,10 @@ describe ShEx::Algebra do
           let(:shexr) {@@shexr ||= ShEx.open(SHEXR)}
           specify "#{t.name} validates against ShExR.shex", shexr: true do
             graph = RDF::Graph.new {|g| g << JSON::LD::Reader.new(t.schema_json, base_uri: t.base)}
-            focus = graph.first_subject(predicate: RDF.type, object: RDF::URI("http://shex.io/ns/shex#Schema"))
+            focus = graph.first_subject(predicate: RDF.type, object: RDF::URI("http://www.w3.org/ns/shex#Schema"))
             expect(focus).to be_a(RDF::Resource)
             t.logger.level = Logger::DEBUG
-            expect(shexr).to satisfy(graph, t.schema_json, focus, logger: t.logger)
+            expect(shexr).to satisfy(graph, t.schema_json, {}, focus: focus, logger: t.logger)
           end
         end
       end

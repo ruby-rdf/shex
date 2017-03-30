@@ -16,5 +16,5 @@ PREFIX dc:    <http://purl.org/dc/terms/>
   doap:developer  IRI+;
 
   # For our purposes, it MUST implement the ShEx specification.
-  doap:implements [<https://shexspec.github.io/spec/>]
+  doap:implements [<http://shex.io/shex-semantics/>]
 }

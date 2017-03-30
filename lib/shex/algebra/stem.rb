@@ -8,7 +8,7 @@ module ShEx::Algebra
     # @param (see Operator#from_shexj)
     # @return [Operator]
     def self.from_shexj(operator, options = {})
-      raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == "Stem"
+      raise ArgumentError unless operator.is_a?(Hash) && %w(IriStem LiteralStem LanguageStem).include?(operator['type'])
       raise ArgumentError, "missing stem in #{operator.inspect}" unless operator.has_key?('stem')
       super
     end
@@ -29,7 +29,51 @@ module ShEx::Algebra
 
     def json_type
       # FIXME: This is funky, due to oddities in normative shexj
-      parent.is_a?(Value) ? 'StemRange' : 'Stem'
+      t = self.class.name.split('::').last
+      parent.is_a?(Value) ? "#{t}Range" : t
+    end
+  end
+
+  class IriStem < Stem
+    NAME = :iriStem
+
+    # (see Stem#match?)
+    def match?(value, depth: 0)
+      if value.iri?
+        super
+      else
+        status "not matched #{value.inspect} if wrong type", depth: depth
+        false
+      end
+    end
+  end
+
+  class LiteralStem < Stem
+    NAME = :literalStem
+
+    # (see Stem#match?)
+    def match?(value, depth: 0)
+      if value.literal?
+        super
+      else
+        status "not matched #{value.inspect} if wrong type", depth: depth
+        false
+      end
+    end
+  end
+
+  class LanguageStem < Stem
+    NAME = :languageStem
+
+    # (see Stem#match?)
+    def match?(value, depth: 0)
+      if value.literal? && value.language.to_s.start_with?(operands.first)
+        status "matched #{value}", depth: depth
+        true
+      else
+        status "not matched #{value}", depth: depth
+        false
+      end
     end
   end
 end
