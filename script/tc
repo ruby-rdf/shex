@@ -47,7 +47,11 @@ def run_tc(t, options)
     puts "\nsxp: " + SXP::Generator.string(schema.to_sxp_bin) if options[:verbose]
 
     focus = ShEx::Algebra::Operator.value(t.focus, base_uri: t.base)
-    map = if t.shape
+    map = if t.map
+      t.shape_map.inject({}) do |memo, (k,v)|
+        memo.merge(ShEx::Algebra::Operator.value(k, base_uri: t.base) => ShEx::Algebra::Operator.iri(v, base_uri: t.base))
+      end
+    elsif t.shape
       {focus => ShEx::Algebra::Operator.iri(t.shape, base_uri: t.base)}
     else
       {}
