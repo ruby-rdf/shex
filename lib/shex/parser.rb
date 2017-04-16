@@ -463,11 +463,11 @@ module ShEx
       expression = data[:tripleExpression]
       attrs = Array(data[:extraPropertySet])
       attrs << :closed if data[:closed]
-      attrs << expression
+      attrs << expression if expression
       attrs += Array(data[:annotation])
       attrs += Array(data[:codeDecl])
 
-      input[:shape] = Algebra::Shape.new(*attrs, {}) if expression
+      input[:shape] = Algebra::Shape.new(*attrs, {})
     end
     private :shape_definition
 
