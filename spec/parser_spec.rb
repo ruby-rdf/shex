@@ -1085,29 +1085,29 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
-         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/>)))
-         (shapes
-          (and
-           (id <EmployeeShape>)
-           (nodeConstraint (pattern "^http:/example\\\\.org/\\\\.*"))
-           (shape closed
-            (eachOf
-             (tripleConstraint (predicate <http://xmlns.com/foaf/phone>) (nodeConstraint iri) (min 0) (max "*"))
-             (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint iri))))
-           (shape closed
-            (eachOf
-             (eachOf
-              (tripleConstraint (predicate <http://xmlns.com/foaf/phone>)
-               (nodeConstraint (pattern "^tel:\\\\+33")))
-              (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint (pattern "\\\\.fr$")))
-              (min 0)
-              (max 1))
-             (eachOf
-              (tripleConstraint (predicate <http://xmlns.com/foaf/phone>)
-               (nodeConstraint (pattern "^tel:\\\\+44")))
-              (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint (pattern "\\\\.uk$")))
-              (min 0)
-              (max 1)) ) )) ))}
+ (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/>)))
+ (shapes
+  (and
+   (id <EmployeeShape>)
+    (nodeConstraint (pattern "^http:/example\\\\.org/\\\\.*"))
+    (shape closed
+     (eachOf
+       (predicate <http://xmlns.com/foaf/phone>)
+      (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint iri))) ))
+   (shape closed
+    (eachOf
+     (eachOf
+       (predicate <http://xmlns.com/foaf/phone>)
+       (nodeConstraint (pattern "^tel:\\\\+33")))
+       (predicate <http://xmlns.com/foaf/mbox>)
+      (min 0)
+      (max 1))
+     (eachOf
+       (predicate <http://xmlns.com/foaf/phone>)
+       (nodeConstraint (pattern "^tel:\\\\+44")))
+       (predicate <http://xmlns.com/foaf/mbox>)
+      (min 0)
+      (max 1)) )) )) )}
       },
       "Negated triple expression" => {
         shexc: %(
@@ -1302,6 +1302,8 @@ describe ShEx::Parser do
                  '1literalPattern_with_all_punctuation',
                  '1literalPattern_with_REGEXP_escapes_as_bare'
               pending "detect bad REGEXP escape sequences"
+            when 'FocusIRI2groupBnodeNested2groupIRIRef'
+              pending 'Retaining nested AND'
             end
 
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]

@@ -277,8 +277,10 @@ module ShEx
     def shape_and(input, data)
       input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
       expressions = Array(data[:shapeExpression]).inject([]) do |memo, expr|
-        memo.concat(expr.is_a?(Algebra::And) ? expr.operands : [expr])
+        #memo.concat(expr.is_a?(Algebra::And) ? expr.operands : [expr])
+        memo.concat([expr])
       end
+
       expression = if expressions.length > 1
         Algebra::And.new(*expressions, {})
       else
