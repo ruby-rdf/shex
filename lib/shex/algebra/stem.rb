@@ -30,7 +30,7 @@ module ShEx::Algebra
     def json_type
       # FIXME: This is funky, due to oddities in normative shexj
       t = self.class.name.split('::').last
-      parent.is_a?(Value) ? "#{t}Range" : t
+      #parent.is_a?(Value) ? "#{t}Range" : t
     end
   end
 

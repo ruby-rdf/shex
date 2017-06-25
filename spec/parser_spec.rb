@@ -270,7 +270,7 @@ describe ShEx::Parser do
                   "type": "NodeConstraint",
                   "values": [
                     {"value": "N/A"},
-                    { "type": "IriStemRange", "stem": "mailto:engineering-" },
+                    { "type": "IriStem", "stem": "mailto:engineering-" },
                     { "type": "IriStemRange", "stem": "mailto:sales-",
                       "exclusions": [
                         { "type": "IriStem", "stem": "mailto:sales-contacts" },
@@ -1089,23 +1089,34 @@ describe ShEx::Parser do
  (shapes
   (and
    (id <EmployeeShape>)
+   (and
     (nodeConstraint (pattern "^http:/example\\\\.org/\\\\.*"))
     (shape closed
      (eachOf
+      (tripleConstraint
        (predicate <http://xmlns.com/foaf/phone>)
+       (nodeConstraint iri)
+       (min 0)
+       (max "*"))
       (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint iri))) ))
    (shape closed
     (eachOf
      (eachOf
+      (tripleConstraint
        (predicate <http://xmlns.com/foaf/phone>)
        (nodeConstraint (pattern "^tel:\\\\+33")))
+      (tripleConstraint
        (predicate <http://xmlns.com/foaf/mbox>)
+       (nodeConstraint (pattern "\\\\.fr$")))
       (min 0)
       (max 1))
      (eachOf
+      (tripleConstraint
        (predicate <http://xmlns.com/foaf/phone>)
        (nodeConstraint (pattern "^tel:\\\\+44")))
+      (tripleConstraint
        (predicate <http://xmlns.com/foaf/mbox>)
+       (nodeConstraint (pattern "\\\\.uk$")))
       (min 0)
       (max 1)) )) )) )}
       },
