@@ -8,7 +8,7 @@ module ShEx::Algebra
     def match?(value, depth: 0)
       status "", depth: depth
       if case expr = operands.first
-        when RDF::Literal then value.lanuage == expr.to_sym
+        when RDF::Literal then value.language == expr.to_s.to_sym
         else false
         end
         status "matched #{value}", depth: depth

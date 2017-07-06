@@ -14,7 +14,7 @@ module ShEx::Algebra
       status "", depth: depth
       if case expr = operands.first
         when RDF::Value then value.eql?(expr)
-        when Stem, StemRange then expr.match?(value, depth: depth + 1)
+        when Language, Stem, StemRange then expr.match?(value, depth: depth + 1)
         else false
         end
         status "matched #{value}", depth: depth
