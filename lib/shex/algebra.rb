@@ -13,6 +13,7 @@ module ShEx
     autoload :External,         'shex/algebra/external'
     autoload :IriStem,          'shex/algebra/stem'
     autoload :IriStemRange,     'shex/algebra/stem_range'
+    autoload :Language,         'shex/algebra/language'
     autoload :LanguageStem,     'shex/algebra/stem'
     autoload :LanguageStemRange,'shex/algebra/stem_range'
     autoload :LiteralStem,      'shex/algebra/stem'
@@ -56,6 +57,7 @@ module ShEx
       when 'EachOf'             then EachOf
       when 'IriStem'            then IriStem
       when 'IriStemRange'       then IriStemRange
+      when 'Language'           then Language
       when 'LanguageStem'       then LanguageStem
       when 'LanguageStemRange'  then LanguageStemRange
       when 'LiteralStem'        then LiteralStem

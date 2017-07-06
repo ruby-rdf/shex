@@ -641,7 +641,7 @@ module ShEx
       elsif data[:dot]
         Algebra::LanguageStemRange.new(:wildcard, exclusions)
       else
-        data[:language]
+        Algebra::Language.new(data[:language])
       end
     end
 

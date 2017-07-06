@@ -1153,6 +1153,50 @@ describe ShEx::Parser do
              (min 0)
              (max 1)) ))))}
       },
+      "Language Stems" => {
+        shexc: %(
+          PREFIX my: <http://my.example/>
+
+          my:IssueShape {
+           my:status [@en~ @fr];
+          }
+        ),
+        sxp: %{(schema
+         (prefix (("my" <http://my.example/>)))
+         (shapes
+          (shape
+           (id <http://my.example/IssueShape>)
+           (tripleConstraint
+            (predicate <http://my.example/status>)
+            (nodeConstraint (value (languageStem "en")) (value (language "fr")))) )) )},
+        shexj: %({
+          "@context": "http://www.w3.org/ns/shex.jsonld",
+          "type": "Schema",
+          "shapes": [
+            {
+              "id": "http://my.example/IssueShape",
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://my.example/status",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "values": [
+                    {
+                      "type": "LanguageStem",
+                      "stem": "en"
+                    },
+                    {
+                      "type": "Language",
+                      "languageTag": "fr"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        })
+      },
     }.each do |name, params|
       it "#{name} (shexc)" do
         expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), progress: true, logger: RDF::Spec.logger)

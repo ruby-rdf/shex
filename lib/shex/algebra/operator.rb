@@ -269,11 +269,12 @@ module ShEx::Algebra
         case k
         when /length|clusive|digits/           then operands << [k.to_sym, RDF::Literal(v)]
         when 'id'                              then id = iri(v, options)
-        when 'flags'                            then ; # consumed in pattern below
+        when 'flags'                           then ; # consumed in pattern below
         when 'min', 'max'                      then operands << [k.to_sym, (v == -1 ? '*' : v)]
         when 'inverse', 'closed'               then operands << k.to_sym
         when 'nodeKind'                        then operands << v.to_sym
         when 'object'                          then operands << value(v, options)
+        when 'languageTag'                     then operands << v
         when 'pattern'
           # Include flags as well
           operands << [:pattern, RDF::Literal(v), operator['flags']].compact
@@ -408,6 +409,7 @@ module ShEx::Algebra
           when EachOf, OneOf    then (obj['expressions'] ||= []) << op.to_s
           when And, Or          then (obj['shapeExprs'] ||= []) << op.to_s
           when Not              then obj['shapeExpr'] = op.to_s
+          when Language         then obj['languageTag'] = op.to_s
           else
             raise "How to serialize Value #{op.inspect} to json for #{self}"
           end
