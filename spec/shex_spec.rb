@@ -44,13 +44,15 @@ describe ShEx do
     let(:doap_json) {File.expand_path("../../etc/doap.json", __FILE__)}
     let(:doap_ttl) {File.expand_path("../../etc/doap.ttl", __FILE__)}
     let(:doap_subj) {RDF::URI("http://rubygems.org/gems/shex")}
-    let(:doap_shape) {RDF::URI("TestShape")}
+    let(:doap_shape) {RDF::URI("http://rubygems.org/gems/shex/DOAP")}
     let(:doap_graph) {RDF::Graph.load(doap_ttl)}
     let(:doap_sxp) {%{(schema
+     (base <http://rubygems.org/gems/shex/>)
      (prefix (("doap" <http://usefulinc.com/ns/doap#>) ("dc" <http://purl.org/dc/terms/>)))
+     (start <http://rubygems.org/gems/shex/DOAP>)
      (shapes
       (shape
-       (id <TestShape>)
+       (id <http://rubygems.org/gems/shex/DOAP>)
        (extra a)
        (eachOf
         (tripleConstraint
@@ -59,30 +61,40 @@ describe ShEx do
         (oneOf
          (eachOf
           (tripleConstraint
-            (predicate <http://usefulinc.com/ns/doap#name>)
-            (nodeConstraint literal))
+           (predicate <http://usefulinc.com/ns/doap#name>)
+           (nodeConstraint literal))
           (tripleConstraint
            (predicate <http://usefulinc.com/ns/doap#description>)
            (nodeConstraint literal)) )
          (eachOf
-          (tripleConstraint (predicate <http://purl.org/dc/terms/title>) (nodeConstraint literal))
-          (tripleConstraint (predicate <http://purl.org/dc/terms/description>) (nodeConstraint literal)))
-         (min 1) (max "*"))
-        (tripleConstraint (predicate <http://usefulinc.com/ns/doap#category>)
+          (tripleConstraint
+           (predicate <http://purl.org/dc/terms/title>)
+           (nodeConstraint literal))
+          (tripleConstraint
+           (predicate <http://purl.org/dc/terms/description>)
+           (nodeConstraint literal)) )
+         (min 1)
+         (max "*"))
+        (tripleConstraint
+         (predicate <http://usefulinc.com/ns/doap#category>)
          (nodeConstraint iri)
-         (min 0) (max "*"))
-        (tripleConstraint (predicate <http://usefulinc.com/ns/doap#developer>)
+         (min 0)
+         (max "*"))
+        (tripleConstraint
+         (predicate <http://usefulinc.com/ns/doap#developer>)
          (nodeConstraint iri)
-         (min 1) (max "*"))
-        (tripleConstraint (predicate <http://usefulinc.com/ns/doap#implements>)
-         (nodeConstraint (value <http://shex.io/shex-semantics/>))) ))))}.gsub(/^    /m, '')
+         (min 1)
+         (max "*"))
+        (tripleConstraint
+         (predicate <http://usefulinc.com/ns/doap#implements>)
+         (nodeConstraint (value <http://shex.io/shex-semantics/>))) )) ))}.gsub(/^    /m, '')
     }
 
     it "parses doap.shex" do
       expect(File.read(doap_shex)).to generate(doap_sxp)
     end
 
-    it "parses doap.json" do
+    it "parses doap.json", skip: "base not in ShExJ" do
       sxp = doap_sxp.split("\n").reject {|l| l =~ /\(prefix/}.join("\n")
       expect(File.read(doap_json)).to generate(sxp, format: :shexj)
     end

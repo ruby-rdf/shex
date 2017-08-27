@@ -3,6 +3,7 @@
 #
 # @see http://shex.io/shex-semantics/#shexc
 module ShEx
+  require               'shex/format'
   autoload :Algebra,    'shex/algebra'
   autoload :Meta,       'shex/meta'
   autoload :Parser,     'shex/parser'

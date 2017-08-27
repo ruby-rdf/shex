@@ -164,6 +164,20 @@ The `#initialize` method is called when {ShEx::Algebra::Schema#execute} starts a
 
 To make sure your extension is found, make sure to require it before the shape is executed.
 
+## Command Line
+When the `linkeddata` gem is installed, RDF.rb includes a `rdf` executable which acts as a wrapper to perform a number of different
+operations on RDF files, including ShEx. The commands specific to ShEx is 
+
+* `shex`: Validate repository given shape
+
+Using this command requires either a `shex-input` where the ShEx schema is URI encoded, or `shex`, which references a URI or file path to the schema. Other required options are `shape` and `focus`.
+
+Example usage:
+
+    rdf shex https://raw.githubusercontent.com/ruby-rdf/shex/develop/etc/doap.ttl \
+      --schema https://raw.githubusercontent.com/ruby-rdf/shex/develop/etc/doap.shex \
+      --focus http://rubygems.org/gems/shex
+
 ## Documentation
 
 <http://rubydoc.info/github/ruby-rdf/shex>
