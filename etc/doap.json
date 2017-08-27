@@ -1,10 +1,11 @@
 {
   "@context": "http://www.w3.org/ns/shex.jsonld",
   "type": "Schema",
+  "start": "http://rubygems.org/gems/shex/DOAP",
   "shapes": [
     {
+      "id": "http://rubygems.org/gems/shex/DOAP",
       "type": "Shape",
-      "id": "TestShape",
       "extra": [
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
       ],
@@ -17,9 +18,7 @@
             "valueExpr": {
               "type": "NodeConstraint",
               "values": [
-                {
-                  "uri": "http://usefulinc.com/ns/doap#Project"
-                }
+                "http://usefulinc.com/ns/doap#Project"
               ]
             }
           },
@@ -98,9 +97,7 @@
             "valueExpr": {
               "type": "NodeConstraint",
               "values": [
-                {
-                  "uri": "http://shex.io/shex-semantics/"
-                }
+                "http://shex.io/shex-semantics/"
               ]
             }
           }
@@ -109,4 +106,3 @@
     }
   ]
 }
-

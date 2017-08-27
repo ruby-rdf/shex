@@ -1,0 +1,5 @@
+PREFIX my: <http://my.example/>
+
+my:IssueShape {
+ my:status [@en~ @fr];
+}

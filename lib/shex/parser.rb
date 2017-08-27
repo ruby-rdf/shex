@@ -277,8 +277,10 @@ module ShEx
     def shape_and(input, data)
       input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
       expressions = Array(data[:shapeExpression]).inject([]) do |memo, expr|
-        memo.concat(expr.is_a?(Algebra::And) ? expr.operands : [expr])
+        #memo.concat(expr.is_a?(Algebra::And) ? expr.operands : [expr])
+        memo.concat([expr])
       end
+
       expression = if expressions.length > 1
         Algebra::And.new(*expressions, {})
       else
@@ -463,11 +465,11 @@ module ShEx
       expression = data[:tripleExpression]
       attrs = Array(data[:extraPropertySet])
       attrs << :closed if data[:closed]
-      attrs << expression
+      attrs << expression if expression
       attrs += Array(data[:annotation])
       attrs += Array(data[:codeDecl])
 
-      input[:shape] = Algebra::Shape.new(*attrs, {}) if expression
+      input[:shape] = Algebra::Shape.new(*attrs, {})
     end
     private :shape_definition
 
@@ -639,7 +641,7 @@ module ShEx
       elsif data[:dot]
         Algebra::LanguageStemRange.new(:wildcard, exclusions)
       else
-        data[:language]
+        Algebra::Language.new(data[:language])
       end
     end
 

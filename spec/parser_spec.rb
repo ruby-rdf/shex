@@ -270,7 +270,7 @@ describe ShEx::Parser do
                   "type": "NodeConstraint",
                   "values": [
                     {"value": "N/A"},
-                    { "type": "IriStemRange", "stem": "mailto:engineering-" },
+                    { "type": "IriStem", "stem": "mailto:engineering-" },
                     { "type": "IriStemRange", "stem": "mailto:sales-",
                       "exclusions": [
                         { "type": "IriStem", "stem": "mailto:sales-contacts" },
@@ -1085,29 +1085,40 @@ describe ShEx::Parser do
           }
         ),
         sxp: %{(schema
-         (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/>)))
-         (shapes
-          (and
-           (id <EmployeeShape>)
-           (nodeConstraint (pattern "^http:/example\\\\.org/\\\\.*"))
-           (shape closed
-            (eachOf
-             (tripleConstraint (predicate <http://xmlns.com/foaf/phone>) (nodeConstraint iri) (min 0) (max "*"))
-             (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint iri))))
-           (shape closed
-            (eachOf
-             (eachOf
-              (tripleConstraint (predicate <http://xmlns.com/foaf/phone>)
-               (nodeConstraint (pattern "^tel:\\\\+33")))
-              (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint (pattern "\\\\.fr$")))
-              (min 0)
-              (max 1))
-             (eachOf
-              (tripleConstraint (predicate <http://xmlns.com/foaf/phone>)
-               (nodeConstraint (pattern "^tel:\\\\+44")))
-              (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint (pattern "\\\\.uk$")))
-              (min 0)
-              (max 1)) ) )) ))}
+ (prefix (("ex" <http://schema.example/>) ("foaf" <http://xmlns.com/foaf/>)))
+ (shapes
+  (and
+   (id <EmployeeShape>)
+   (and
+    (nodeConstraint (pattern "^http:/example\\\\.org/\\\\.*"))
+    (shape closed
+     (eachOf
+      (tripleConstraint
+       (predicate <http://xmlns.com/foaf/phone>)
+       (nodeConstraint iri)
+       (min 0)
+       (max "*"))
+      (tripleConstraint (predicate <http://xmlns.com/foaf/mbox>) (nodeConstraint iri))) ))
+   (shape closed
+    (eachOf
+     (eachOf
+      (tripleConstraint
+       (predicate <http://xmlns.com/foaf/phone>)
+       (nodeConstraint (pattern "^tel:\\\\+33")))
+      (tripleConstraint
+       (predicate <http://xmlns.com/foaf/mbox>)
+       (nodeConstraint (pattern "\\\\.fr$")))
+      (min 0)
+      (max 1))
+     (eachOf
+      (tripleConstraint
+       (predicate <http://xmlns.com/foaf/phone>)
+       (nodeConstraint (pattern "^tel:\\\\+44")))
+      (tripleConstraint
+       (predicate <http://xmlns.com/foaf/mbox>)
+       (nodeConstraint (pattern "\\\\.uk$")))
+      (min 0)
+      (max 1)) )) )) )}
       },
       "Negated triple expression" => {
         shexc: %(
@@ -1141,6 +1152,50 @@ describe ShEx::Parser do
              (tripleConstraint (predicate <http://schema.example/r>) (nodeConstraint iri))
              (min 0)
              (max 1)) ))))}
+      },
+      "Language Stems" => {
+        shexc: %(
+          PREFIX my: <http://my.example/>
+
+          my:IssueShape {
+           my:status [@en~ @fr];
+          }
+        ),
+        sxp: %{(schema
+         (prefix (("my" <http://my.example/>)))
+         (shapes
+          (shape
+           (id <http://my.example/IssueShape>)
+           (tripleConstraint
+            (predicate <http://my.example/status>)
+            (nodeConstraint (value (languageStem "en")) (value (language "fr")))) )) )},
+        shexj: %({
+          "@context": "http://www.w3.org/ns/shex.jsonld",
+          "type": "Schema",
+          "shapes": [
+            {
+              "id": "http://my.example/IssueShape",
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://my.example/status",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "values": [
+                    {
+                      "type": "LanguageStem",
+                      "stem": "en"
+                    },
+                    {
+                      "type": "Language",
+                      "languageTag": "fr"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        })
       },
     }.each do |name, params|
       it "#{name} (shexc)" do
@@ -1302,6 +1357,8 @@ describe ShEx::Parser do
                  '1literalPattern_with_all_punctuation',
                  '1literalPattern_with_REGEXP_escapes_as_bare'
               pending "detect bad REGEXP escape sequences"
+            when 'FocusIRI2groupBnodeNested2groupIRIRef'
+              pending 'Retaining nested AND'
             end
 
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]

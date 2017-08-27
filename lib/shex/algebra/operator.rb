@@ -269,11 +269,12 @@ module ShEx::Algebra
         case k
         when /length|clusive|digits/           then operands << [k.to_sym, RDF::Literal(v)]
         when 'id'                              then id = iri(v, options)
-        when 'flags'                            then ; # consumed in pattern below
+        when 'flags'                           then ; # consumed in pattern below
         when 'min', 'max'                      then operands << [k.to_sym, (v == -1 ? '*' : v)]
         when 'inverse', 'closed'               then operands << k.to_sym
         when 'nodeKind'                        then operands << v.to_sym
         when 'object'                          then operands << value(v, options)
+        when 'languageTag'                     then operands << v
         when 'pattern'
           # Include flags as well
           operands << [:pattern, RDF::Literal(v), operator['flags']].compact
@@ -295,7 +296,11 @@ module ShEx::Algebra
           end
         when 'stem', 'name'
           # Value may be :wildcard for stem
-          operands << (v.is_a?(Symbol) ? v : value(v, options))
+          if [IriStem, IriStemRange, SemAct].include?(self)
+            operands << (v.is_a?(Symbol) ? v : value(v, options))
+          else
+            operands << v
+          end
         when 'predicate' then operands << [:predicate, iri(v, options)]
         when 'extra', 'datatype'
           v = [v] unless v.is_a?(Array)
@@ -303,9 +308,13 @@ module ShEx::Algebra
         when 'exclusions'
           v = [v] unless v.is_a?(Array)
           operands << v.map do |op|
-            op.is_a?(Hash) && op.has_key?('type') ?
-              ShEx::Algebra.from_shexj(op, options) :
+            if op.is_a?(Hash) && op.has_key?('type')
+              ShEx::Algebra.from_shexj(op, options)
+            elsif [IriStem, IriStemRange].include?(self)
               value(op, options)
+            else
+              RDF::Literal(op)
+            end
           end.unshift(:exclusions)
         when 'semActs', 'startActs', 'annotations'
           v = [v] unless v.is_a?(Array)
@@ -350,7 +359,13 @@ module ShEx::Algebra
           # First element should be a symbol
           case sym = op.first
           when :datatype        then obj['datatype'] = op.last.to_s
-          when :exclusions      then obj['exclusions'] = Array(op[1..-1]).map {|v| serialize_value(v)}
+          when :exclusions
+            obj['exclusions'] = Array(op[1..-1]).map do |v|
+              case v
+              when Operator then v.to_h
+              else v.to_s
+              end
+            end
           when :extra           then (obj['extra'] ||= []).concat Array(op[1..-1]).map(&:to_s)
           when :pattern
             obj['pattern'] = op[1]
@@ -383,13 +398,18 @@ module ShEx::Algebra
           end
         when RDF::Value
           case self
-          when Stem, StemRange  then obj['stem'] = serialize_value(op)
+          when Stem, StemRange
+            obj['stem'] =  case op
+            when Operator then op.to_h
+            else op.to_s
+            end
           when SemAct           then obj[op.is_a?(RDF::URI) ? 'name' : 'code'] = op.to_s
           when TripleConstraint then obj['valueExpr'] = op.to_s
           when Shape            then obj['expression'] = op.to_s
           when EachOf, OneOf    then (obj['expressions'] ||= []) << op.to_s
           when And, Or          then (obj['shapeExprs'] ||= []) << op.to_s
           when Not              then obj['shapeExpr'] = op.to_s
+          when Language         then obj['languageTag'] = op.to_s
           else
             raise "How to serialize Value #{op.inspect} to json for #{self}"
           end

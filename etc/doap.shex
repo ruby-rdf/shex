@@ -1,6 +1,10 @@
+BASE <http://rubygems.org/gems/shex/>
 PREFIX doap:  <http://usefulinc.com/ns/doap#>
 PREFIX dc:    <http://purl.org/dc/terms/>
-<TestShape> EXTRA a {
+
+start=@<DOAP>
+
+<DOAP> EXTRA a {
   a [doap:Project];
 
   # May have either or both of doap:name/doap:description or dc:title/dc:description
