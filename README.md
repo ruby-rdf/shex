@@ -8,6 +8,7 @@ This is a pure-Ruby library for working with the [Shape Expressions Language][Sh
 [![Build Status](https://travis-ci.org/ruby-rdf/shex.png?branch=master)](http://travis-ci.org/ruby-rdf/shex)
 [![Coverage Status](https://coveralls.io/repos/ruby-rdf/shex/badge.svg)](https://coveralls.io/r/ruby-rdf/shex)
 [![Join the chat at https://gitter.im/ruby-rdf/rdf](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ruby-rdf/rdf?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![DOI](https://zenodo.org/badge/74419330.svg)](https://zenodo.org/badge/latestdoi/74419330)
 
 ## Features
 
@@ -193,7 +194,7 @@ The result of parsing either ShExC or ShExJ is the creation of a set of executab
 ## Dependencies
 
 * [Ruby](http://ruby-lang.org/) (>= 2.2.2)
-* [RDF.rb](http://rubygems.org/gems/rdf) (~> 2.2)
+* [RDF.rb](http://rubygems.org/gems/rdf) (~> 3.0)
 
 ## Installation
 
