@@ -33,13 +33,13 @@ module ShEx
   # @raise  (see ShEx::Parser#parse)
   def self.parse(expression, format: 'shexc', **options)
     case format.to_s
-    when 'shexc' then Parser.new(expression, options).parse
+    when 'shexc' then Parser.new(expression, **options).parse
     when 'shexj'
       expression = expression.read if expression.respond_to?(:read)
-      Algebra.from_shexj(JSON.parse(expression), options)
+      Algebra.from_shexj(JSON.parse(expression), **options)
     when 'sxp'
       expression = expression.read if expression.respond_to?(:read)
-      Algebra.from_sxp(expression, options)
+      Algebra.from_sxp(expression, **options)
     else raise "Unknown expression format: #{format.inspect}"
     end
   end
@@ -56,8 +56,8 @@ module ShEx
   # @return (see ShEx::Parser#parse)
   # @raise  (see ShEx::Parser#parse)
   def self.open(filename, format: 'shexc', **options, &block)
-    RDF::Util::File.open_file(filename, options) do |file|
-      self.parse(file, options.merge(format: format))
+    RDF::Util::File.open_file(filename, **options) do |file|
+      self.parse(file, format: format, **options)
     end
   end
 
@@ -73,10 +73,10 @@ module ShEx
   # @return (see ShEx::Algebra::Schema#execute)
   # @raise (see ShEx::Algebra::Schema#execute)
   def self.execute(expression, queryable, map, format: 'shexc', **options)
-    shex = self.parse(expression, options.merge(format: format))
+    shex = self.parse(expression, format: format, **options)
     queryable = queryable || RDF::Graph.new
 
-    shex.execute(queryable, map, options)
+    shex.execute(queryable, map, **options)
   end
 
   ##
@@ -91,10 +91,10 @@ module ShEx
   # @return (see ShEx::Algebra::Schema#satisfies?)
   # @raise (see ShEx::Algebra::Schema#satisfies?)
   def self.satisfies?(expression, queryable, map, format: 'shexc', **options)
-    shex = self.parse(expression, options.merge(format: format))
+    shex = self.parse(expression, format: format, **options)
     queryable = queryable || RDF::Graph.new
 
-    shex.satisfies?(queryable, map, options)
+    shex.satisfies?(queryable, map, **options)
   end
 
   ##
@@ -116,7 +116,7 @@ module ShEx
     # @param  [String, #to_s]          message
     # @param  [Hash{Symbol => Object}] options
     # @option options [Integer]        :code (422)
-    def initialize(message, options = {})
+    def initialize(message, **options)
       @code = options.fetch(:status_code, 422)
       super(message.to_s)
     end

@@ -19,7 +19,7 @@ module ShEx::Algebra
     # Creates an operator instance from a parsed ShExJ representation
     # @param (see Operator#from_shexj)
     # @return [Operator]
-    def self.from_shexj(operator, options = {})
+    def self.from_shexj(operator, **options)
       raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == "Schema"
       super
     end
@@ -51,7 +51,7 @@ module ShEx::Algebra
       @graph, @shapes_entered, results = graph, {}, {}
       @external_schemas = shapeExterns
       @extensions = {}
-      focus = Array(focus).map {|f| value(f, options)}
+      focus = Array(focus).map {|f| value(f, **options)}
 
       logger = options[:logger] || @options[:logger]
       each_descendant do |op|

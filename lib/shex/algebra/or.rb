@@ -19,7 +19,7 @@ module ShEx::Algebra
     # Creates an operator instance from a parsed ShExJ representation
     # @param (see Operator#from_shexj)
     # @return [Operator]
-    def self.from_shexj(operator, options = {})
+    def self.from_shexj(operator, **options)
       raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == 'ShapeOr'
       raise ArgumentError, "missing shapeExprs in #{operator.inspect}" unless operator.is_a?(Hash) && operator.has_key?('shapeExprs')
       super

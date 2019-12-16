@@ -1,7 +1,5 @@
 language: ruby
-bundler_args: --without debug
 script: "bundle exec rspec spec"
-before_install: "gem update --system"
 # Handle git submodules yourself
 git:
     submodules: false
@@ -9,22 +7,17 @@ git:
 before_install:
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
-  - 'gem update --system --conservative || (gem i "rubygems-update:~>2.7" --no-document && update_rubygems)'
-  - 'gem update bundler --conservative'
 env:
   - CI=true
 rvm:
-  - 2.2
-  - 2.3
   - 2.4
   - 2.5
   - 2.6
-  - jruby-9
-  - rbx-3
+  - 2.7
+  - jruby
 cache: bundler
 sudo: false
 matrix:
   allow_failures:
-    - rvm: jruby-9
-    - rvm: rbx-3
+    - rvm: jruby
 dist: trusty

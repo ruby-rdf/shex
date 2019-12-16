@@ -8,14 +8,14 @@ JSON_STATE = JSON::State.new(
    array_nl:      "\n"
  )
 
- def parser(options = {})
+ def parser(**options)
    @debug = options[:progress] ? 2 : (options[:quiet] ? false : [])
    Proc.new do |input|
      case options[:format]
      when :shexj
        ShEx::Algebra.from_shexj(JSON.parse input)
      else
-       parser = ShEx::Parser.new(input, {debug: @debug}.merge(options))
+       parser = ShEx::Parser.new(input, debug: @debug, **options)
        options[:production] ? parser.parse(options[:production]) : parser.parse
      end
    end
@@ -32,26 +32,26 @@ JSON_STATE = JSON::State.new(
    end
  end
 
-RSpec::Matchers.define :generate do |expected, options = {}|
+RSpec::Matchers.define :generate do |expected, **options|
   match do |input|
     @input = input
     begin
       case
       when [ShEx::ParseError, ShEx::StructureError, ArgumentError, StandardError].include?(expected)
         begin
-           @actual = parser(options).call(input)
+           @actual = parser(**options).call(input)
           false
         rescue expected
           true
         end
       when expected.is_a?(Regexp)
-        @actual = parser(options).call(input)
+        @actual = parser(**options).call(input)
         expected.match(@actual.to_sxp)
       when expected.is_a?(String)
-        @actual = parser(options).call(input)
+        @actual = parser(**options).call(input)
         normalize(@actual.to_sxp) == normalize(expected)
       else
-        @actual = parser(options).call(input)
+        @actual = parser(**options).call(input)
         @actual == expected
       end
     rescue

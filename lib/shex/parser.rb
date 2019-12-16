@@ -178,7 +178,7 @@ module ShEx
       expressions << Algebra::Start.new(data[:start]) if data[:start]
       expressions << data[:shapes].unshift(:shapes) if data[:shapes]
 
-      input[:schema] = Algebra::Schema.new(*expressions, options)
+      input[:schema] = Algebra::Schema.new(*expressions, **options)
       self
     end
 
@@ -730,7 +730,7 @@ module ShEx
     # @raise [ShEx::NotSatisfied] if not satisfied
     # @raise [ShEx::ParseError] when a syntax error is detected
     # @raise [ShEx::StructureError, ArgumentError] on structural problems with schema
-    def initialize(input = nil, options = {}, &block)
+    def initialize(input = nil, **options, &block)
       @input = case input
       when IO, StringIO then input.read
       else input.to_s.dup
@@ -778,10 +778,13 @@ module ShEx
     # @see http://www.w3.org/TR/sparql11-query/#sparqlAlgebra
     # @see http://axel.deri.ie/sparqltutorial/ESWC2007_SPARQL_Tutorial_unit2b.pdf
     def parse(prod = START)
-      ll1_parse(@input, prod.to_sym, @options.merge(branch: BRANCH,
-                                                    first: FIRST,
-                                                    follow: FOLLOW,
-                                                    whitespace: WS)
+      ll1_parse(@input,
+        prod.to_sym,
+        branch: BRANCH,
+        first: FIRST,
+        follow: FOLLOW,
+        whitespace: WS,
+        **@options
       ) do |context, *data|
         case context
         when :trace
@@ -929,7 +932,7 @@ module ShEx
     end
 
     # Create a literal
-    def literal(value, options = {})
+    def literal(value, **options)
       options = options.dup
       # Internal representation is to not use xsd:string, although it could arguably go the other way.
       options.delete(:datatype) if options[:datatype] == RDF::XSD.string

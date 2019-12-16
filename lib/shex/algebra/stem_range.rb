@@ -7,7 +7,7 @@ module ShEx::Algebra
     # Creates an operator instance from a parsed ShExJ representation
     # @param (see Operator#from_shexj)
     # @return [Operator]
-    def self.from_shexj(operator, options = {})
+    def self.from_shexj(operator, **options)
       raise ArgumentError unless operator.is_a?(Hash) && %w(IriStemRange LiteralStemRange LanguageStemRange).include?(operator['type'])
       raise ArgumentError, "missing stem in #{operator.inspect}" unless operator.has_key?('stem')
 
@@ -21,11 +21,11 @@ module ShEx::Algebra
         # Remove "Range" from type
         case operator['type']
         when 'IriStemRange'
-          IriStem.from_shexj(operator.merge('type' => 'IriStem'), options)
+          IriStem.from_shexj(operator.merge('type' => 'IriStem'), **options)
         when 'LiteralStemRange'
-          LiteralStem.from_shexj(operator.merge('type' => 'LiteralStem'), options)
+          LiteralStem.from_shexj(operator.merge('type' => 'LiteralStem'), **options)
         when 'LanguageStemRange'
-          LanguageStem.from_shexj(operator.merge('type' => 'LanguageStem'), options)
+          LanguageStem.from_shexj(operator.merge('type' => 'LanguageStem'), **options)
         end
       end
     end

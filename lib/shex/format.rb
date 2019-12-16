@@ -25,7 +25,7 @@ module ShEx
           description: "Validate repository given shape",
           help: "shex [--shape Resource] [--focus Resource] [--schema-input STRING] [--schema STRING] file",
           parse: true,
-          lambda: -> (argv, options) do
+          lambda: -> (argv, **options) do
             options[:schema_input] ||= case options[:schema]
             when IO, StringIO then options[:schema]
             else RDF::Util::File.open_file(options[:schema]) {|f| f.read}
@@ -44,7 +44,7 @@ module ShEx
               shape = options.delete(:shape)
               map = shape ? {focus => shape} : {}
               begin
-                res = shex.execute(RDF::CLI.repository, map, options.merge(focus: focus))
+                res = shex.execute(RDF::CLI.repository, map, focus: focus, **options)
                 options[:messages][:shex] = {
                   result: ["Satisfied shape."],
                   detail: [SXP::Generator.string(res.to_sxp_bin)]

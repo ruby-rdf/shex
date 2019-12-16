@@ -11,7 +11,7 @@ rescue LoadError
 end
 require 'getoptlong'
 
-def run(graph, options = {})
+def run(graph, **options)
   if options[:verbose]
     STDERR.puts "target graph:\n#{graph.dump(:ttl, standard_prefixes: true)}\n"
     STDERR.puts "shex:\n#{options[:shex]}\n"
@@ -21,7 +21,7 @@ def run(graph, options = {})
     STDERR.puts ("\nshex:\n" + options[:shex]) 
   end
 
-  shex =  ShEx.parse(options[:shex], options)
+  shex =  ShEx.parse(options[:shex], **options)
 
   STDERR.puts ("\nSXP:\n" + SXP::Generator.string(shex.to_sxp_bin)) if options[:verbose]
 
@@ -33,7 +33,7 @@ def run(graph, options = {})
     focus = options.delete(:focus)
     shape = options.delete(:shape)
     map = {focus => shape} if shape
-    res = shex.execute(focus, graph, map, options)
+    res = shex.execute(focus, graph, map, **options)
     puts SXP::Generator.string(res.to_sxp_bin)
   end
 rescue ShEx::NotSatisfied => e
@@ -108,7 +108,7 @@ end
 
 raise "No expression defined" unless options[:shex]
 if ARGV.empty?
-  run(RDF::Graph.new, options)
+  run(RDF::Graph.new, **options)
 else
   ARGV.each do |test_file|
     puts "shex #{test_file}"

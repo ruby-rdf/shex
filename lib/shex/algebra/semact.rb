@@ -7,7 +7,7 @@ module ShEx::Algebra
     # Creates an operator instance from a parsed ShExJ representation
     # @param (see Operator#from_shexj)
     # @return [Operator]
-    def self.from_shexj(operator, options = {})
+    def self.from_shexj(operator, **options)
       raise ArgumentError unless operator.is_a?(Hash) && operator['type'] == "SemAct"
       raise ArgumentError, "missing name in #{operator.inspect}" unless operator.has_key?('name')
       code = operator.delete('code')
