@@ -50,7 +50,7 @@ module ShEx
     # @option options [RDF::URI] :base
     # @option options [Hash{String => RDF::URI}] :prefixes
     # @return [Operator]
-    def self.from_shexj(operator, options = {})
+    def self.from_shexj(operator, **options)
       raise ArgumentError unless operator.is_a?(Hash)
       klass = case operator['type']
       when 'Annotation'         then Annotation
@@ -76,7 +76,7 @@ module ShEx
       else raise ArgumentError, "unknown type #{operator['type'].inspect}"
       end
 
-      klass.from_shexj(operator, options)
+      klass.from_shexj(operator, **options)
     end
   end
 end

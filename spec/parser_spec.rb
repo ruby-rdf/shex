@@ -1342,6 +1342,9 @@ describe ShEx::Parser do
         m.entries.each do |t|
           specify "#{t.name} – #{t.comment || dir}#{' (negative)' if t.negative_test?}" do
             validate = true
+            if t.trait.include?('Import')
+              skip 'support for IMPORT'
+            end
             case t.name
             when '_all', 'kitchenSink'
               validate = false # Has self-included shape
@@ -1349,8 +1352,8 @@ describe ShEx::Parser do
               pending "undetected self reference"
             when 'openopen1dotOr1dotclose'
               pending("Our grammar allows nested bracketedTripleExpr")
-            when '1datatypeRef1'
-              pending "sync with litNodeType and shapeRef change"
+            #when '1datatypeRef1'
+            #  pending "sync with litNodeType and shapeRef change"
             when '1literalPattern_with_ECHAR_escape_1',
                  '1literalPattern_with_REGEXP_bare_as_escapes',
                  '1literalPattern_with_REGEXP_escapes_escaped',
@@ -1359,6 +1362,8 @@ describe ShEx::Parser do
               pending "detect bad REGEXP escape sequences"
             when 'FocusIRI2groupBnodeNested2groupIRIRef'
               pending 'Retaining nested AND'
+            when '1datatypeRef1'
+              pending 'missing file??' if dir == 'negativeSyntax'
             end
 
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
@@ -1381,12 +1386,15 @@ describe ShEx::Parser do
 
           # Run with rspec --tag isomorphic
           # This tests the tests, not the implementation
-          specify "#{t.name} – json isomorphic to turtle", isomorphic: true do
-            g1 = RDF::Graph.new {|g| g << JSON::LD::Reader.new(t.schema_json, base_uri: t.base)}
-            g2 = RDF::Graph.new {|g| g << RDF::Turtle::Reader.new(t.turtle_source, base_uri: t.base)}
-            expect(g1).not_to be_empty
-            expect(g1).to be_equivalent_graph(g2)
-          end if t.ttl
+          #specify "#{t.name} – json isomorphic to turtle", isomorphic: true do
+          #  if t.trait.include?('Import')
+          #    pending 'support for IMPORT'
+          #  end
+          #  g1 = RDF::Graph.new {|g| g << JSON::LD::Reader.new(t.schema_json, base_uri: t.base)}
+          #  g2 = RDF::Graph.new {|g| g << RDF::Turtle::Reader.new(t.turtle_source, base_uri: t.base)}
+          #  expect(g1).not_to be_empty
+          #  expect(g1).to be_equivalent_graph(g2)
+          #end if t.ttl
         end
       end
     end

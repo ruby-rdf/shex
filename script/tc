@@ -28,7 +28,7 @@ def earl_preamble(options)
 )
 end
 
-def run_tc(t, options)
+def run_tc(t, **options)
   STDERR.write "run #{t.name}" unless options[:quiet]
   result = "untested"
 

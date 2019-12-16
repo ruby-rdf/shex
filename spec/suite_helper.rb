@@ -67,6 +67,10 @@ module Fixtures
         action.is_a?(Hash) && action["focus"]
       end
 
+      def trait
+        Array(attributes["trait"])
+      end
+
       def map
         action.is_a?(Hash) && action["map"] && base.join(action["map"])
       end
