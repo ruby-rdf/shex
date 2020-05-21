@@ -5,7 +5,7 @@ require 'sxp'
 module ShEx
   # Based on the SPARQL Algebra, operators for executing a patch
   #
-  # @author [Gregg Kellogg](http://greggkellogg.net/)
+  # @author [Gregg Kellogg](https://greggkellogg.net/)
   module Algebra
     autoload :And,              'shex/algebra/and'
     autoload :Annotation,       'shex/algebra/annotation'

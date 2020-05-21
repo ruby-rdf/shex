@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name               = 'shex'
-  gem.homepage           = 'http://ruby-rdf.github.com/shex'
+  gem.homepage           = 'https://ruby-rdf.github.com/shex'
   gem.license            = 'Unlicense'
   gem.summary            = 'Implementation of Shape Expressions (ShEx) for RDF.rb'
   gem.description        = 'Implements ShExC and ShEx JSON.'

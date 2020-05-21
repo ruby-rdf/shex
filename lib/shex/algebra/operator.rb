@@ -244,7 +244,7 @@ module ShEx::Algebra
     # @return [String]
     def to_sxp
       begin
-        require 'sxp' # @see http://rubygems.org/gems/sxp
+        require 'sxp' # @see https://rubygems.org/gems/sxp
       rescue LoadError
         abort "SPARQL::Algebra::Operator#to_sxp requires the SXP gem (hint: `gem install sxp')."
       end
@@ -593,7 +593,6 @@ module ShEx::Algebra
 
     ##
     # Enumerate via depth-first recursive descent over operands, yielding each operator
-    # @param [Integer] depth incrementeded for each depth of operator, and provided to block if Arity is 2
     # @yield operator
     # @yieldparam [Object] operator
     # @return [Enumerator]

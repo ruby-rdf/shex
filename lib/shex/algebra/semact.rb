@@ -18,13 +18,14 @@ module ShEx::Algebra
     ##
     # Called on entry
     #
-    # @param [String] code
-    # @param [Array<RDF::Statement>] arcs_in available statements to be matched having `focus` as an object
-    # @param [Array<RDF::Statement>] arcs_out available statements to be matched having `focus` as a subject
-    # @param [Integer] depth for logging
-    # @param [Hash{Symbol => Object}] options
-    #   Other, operand-specific options
-    # @return [Boolean] Returning `false` results in {ShEx::NotSatisfied} exception
+    # @overload enter(code, arcs_in, arcs_out, logging)
+    #   @param [String] code
+    #   @param [Array<RDF::Statement>] arcs_in available statements to be matched having `focus` as an object
+    #   @param [Array<RDF::Statement>] arcs_out available statements to be matched having `focus` as a subject
+    #   @param [Integer] depth for logging
+    #   @param [Hash{Symbol => Object}] options
+    #     Other, operand-specific options
+    #   @return [Boolean] Returning `false` results in {ShEx::NotSatisfied} exception
     def enter(**options)
       if implementation = schema.extensions[operands.first.to_s]
         implementation.enter(code: operands[0], expression: parent, **options)
@@ -67,7 +68,6 @@ module ShEx::Algebra
     # @param [String] code
     # @param [Array<RDF::Statement>] matched statements matched by this expression
     # @param [Array<RDF::Statement>] unmatched statements considered, but not matched by this expression
-    # @param [ShEx::Algebra::TripleExpression] expression containing this semantic act
     # @param [Integer] depth for logging
     # @param [Hash{Symbol => Object}] options
     #   Other, operand-specific options

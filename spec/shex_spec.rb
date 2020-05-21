@@ -43,16 +43,16 @@ describe ShEx do
     let(:doap_shex) {File.expand_path("../../etc/doap.shex", __FILE__)}
     let(:doap_json) {File.expand_path("../../etc/doap.json", __FILE__)}
     let(:doap_ttl) {File.expand_path("../../etc/doap.ttl", __FILE__)}
-    let(:doap_subj) {RDF::URI("http://rubygems.org/gems/shex")}
-    let(:doap_shape) {RDF::URI("http://rubygems.org/gems/shex/DOAP")}
+    let(:doap_subj) {RDF::URI("https://rubygems.org/gems/shex")}
+    let(:doap_shape) {RDF::URI("https://rubygems.org/gems/shex/DOAP")}
     let(:doap_graph) {RDF::Graph.load(doap_ttl)}
     let(:doap_sxp) {%{(schema
-     (base <http://rubygems.org/gems/shex/>)
+     (base <https://rubygems.org/gems/shex/>)
      (prefix (("doap" <http://usefulinc.com/ns/doap#>) ("dc" <http://purl.org/dc/terms/>)))
-     (start <http://rubygems.org/gems/shex/DOAP>)
+     (start <https://rubygems.org/gems/shex/DOAP>)
      (shapes
       (shape
-       (id <http://rubygems.org/gems/shex/DOAP>)
+       (id <https://rubygems.org/gems/shex/DOAP>)
        (extra a)
        (eachOf
         (tripleConstraint

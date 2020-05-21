@@ -10,21 +10,21 @@ require 'shex'
 require 'suite_helper'
 require 'getoptlong'
 
-ASSERTOR = "http://greggkellogg.net/foaf#me"
+ASSERTOR = "https://greggkellogg.net/foaf#me"
 RUN_TIME = Time.now
 TEST_BASE = 'https://raw.githubusercontent.com/shexSpec/shexTest/master/'
 
 def earl_preamble(options)
   options[:output].write File.read(File.expand_path("../../etc/doap.ttl", __FILE__))
   options[:output].puts %(
-<> foaf:primaryTopic <http://rubygems.org/gems/shex> ;
+<> foaf:primaryTopic <https://rubygems.org/gems/shex> ;
   dc:issued "#{RUN_TIME.xmlschema}"^^xsd:dateTime ;
   foaf:maker <#{ASSERTOR}> .
 
 <#{ASSERTOR}> a foaf:Person, earl:Assertor;
   foaf:name "Gregg Kellogg";
   foaf:title "Implementor";
-  foaf:homepage <http://greggkellogg.net/> .
+  foaf:homepage <https://greggkellogg.net/> .
 )
 end
 
@@ -104,7 +104,7 @@ def run_tc(t, **options)
     options[:output].puts %{
 [ a earl:Assertion;
   earl:assertedBy <#{ASSERTOR}>;
-  earl:subject <http://rubygems.org/gems/shex>;
+  earl:subject <https://rubygems.org/gems/shex>;
   earl:test <#{test}>;
   earl:result [
     a earl:TestResult;

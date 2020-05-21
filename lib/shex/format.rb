@@ -10,8 +10,6 @@ module ShEx
   #     RDF::Format.for(file_name:      "etc/foaf.shex")
   #     RDF::Format.for(file_extension: "shex")
   #     RDF::Format.for(content_type:   "application/shex")
-  #
-  # @see http://www.w3.org/TR/ldpatch/
   class Format < RDF::Format
     content_type     'application/shex', extension: :shex
     content_encoding 'utf-8'

@@ -39,7 +39,7 @@ module ShEx::Algebra
     # @param [RDF::Queryable] graph
     # @param [Hash{RDF::Term => <RDF::Resource>}, Array<Array(RDF::Term, RDF::Resource)>] map
     #   A set of (`term`, `resource`) pairs where `term` is a node within `graph`, and `resource` identifies a shape
-    # @param [Array<RDF::Term>] *focus
+    # @param [Array<RDF::Term>] focus ([])
     # 	One or more nodes within `graph` for which to run the start expression.
     # @param [Array<Schema, String>] shapeExterns ([])
     #   One or more schemas, or paths to ShEx schema resources used for finding external shapes.
@@ -250,7 +250,7 @@ module ShEx::Algebra
     attr_accessor :expression
 
     # Holds the result of processing a shape
-    # @param [RDF::Resource] label
+    # @param [RDF::Resource] shape
     # @return [ShapeResult]
     def initialize(shape)
       @shape = shape

@@ -2,10 +2,10 @@
 
 This is a pure-Ruby library for working with the [Shape Expressions Language][ShExSpec] to validate the shape of [RDF][] graphs.
 
-<http://ruby-rdf.github.com/shex>
+<https://ruby-rdf.github.com/shex>
 
-[![Gem Version](https://badge.fury.io/rb/shex.png)](http://badge.fury.io/rb/shex)
-[![Build Status](https://travis-ci.org/ruby-rdf/shex.png?branch=master)](http://travis-ci.org/ruby-rdf/shex)
+[![Gem Version](https://badge.fury.io/rb/shex.png)](https://badge.fury.io/rb/shex)
+[![Build Status](https://travis-ci.org/ruby-rdf/shex.png?branch=master)](https://travis-ci.org/ruby-rdf/shex)
 [![Coverage Status](https://coveralls.io/repos/ruby-rdf/shex/badge.svg)](https://coveralls.io/r/ruby-rdf/shex)
 [![Join the chat at https://gitter.im/ruby-rdf/rdf](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ruby-rdf/rdf?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![DOI](https://zenodo.org/badge/74419330.svg)](https://zenodo.org/badge/latestdoi/74419330)
@@ -14,13 +14,13 @@ This is a pure-Ruby library for working with the [Shape Expressions Language][Sh
 
 * 100% pure Ruby with minimal dependencies and no bloat.
 * Fully compatible with [ShEx][ShExSpec] specifications.
-* 100% free and unencumbered [public domain](http://unlicense.org/) software.
+* 100% free and unencumbered [public domain](https://unlicense.org/) software.
 
 ## Description
 
 The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
 
-* `ShEx::Parser` parses ShExC and ShExJ formatted documents generating executable operators which can be serialized as [S-Expressions](http://en.wikipedia.org/wiki/S-expression).
+* `ShEx::Parser` parses ShExC and ShExJ formatted documents generating executable operators which can be serialized as [S-Expressions](https://en.wikipedia.org/wiki/S-expression).
 * `ShEx::Algebra` executes operators against Any `RDF::Graph`, including compliant [RDF.rb][].
 * [Implementation Report](file.earl.html)
 
@@ -45,9 +45,9 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
     graph = RDF::Graph.load("etc/doap.ttl")
     schema = ShEx.parse(shexc)
     map = {
-      "http://rubygems.org/gems/shex" => "TestShape"
+      "https://rubygems.org/gems/shex" => "TestShape"
     }
-    schema.satisfies?("http://rubygems.org/gems/shex", graph, map)
+    schema.satisfies?("https://rubygems.org/gems/shex", graph, map)
     # => true
 ### Validating a node using ShExJ
 
@@ -139,8 +139,8 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
     })
     graph = RDF::Graph.load("etc/doap.ttl")
     schema = ShEx.parse(shexj, format: :shexj)
-    map = {"http://rubygems.org/gems/shex" => "TestShape"}
-    schema.satisfies?("http://rubygems.org/gems/shex", graph, map)
+    map = {"https://rubygems.org/gems/shex" => "TestShape"}
+    schema.satisfies?("https://rubygems.org/gems/shex", graph, map)
     # => true
 
 ## Extensions
@@ -177,11 +177,11 @@ Example usage:
 
     rdf shex https://raw.githubusercontent.com/ruby-rdf/shex/develop/etc/doap.ttl \
       --schema https://raw.githubusercontent.com/ruby-rdf/shex/develop/etc/doap.shex \
-      --focus http://rubygems.org/gems/shex
+      --focus https://rubygems.org/gems/shex
 
 ## Documentation
 
-<http://rubydoc.info/github/ruby-rdf/shex>
+<https://rubydoc.info/github/ruby-rdf/shex>
 
 
 ## Implementation Notes
@@ -193,12 +193,12 @@ The result of parsing either ShExC or ShExJ is the creation of a set of executab
 
 ## Dependencies
 
-* [Ruby](http://ruby-lang.org/) (>= 2.4)
-* [RDF.rb](http://rubygems.org/gems/rdf) (~> 3.1)
+* [Ruby](https://ruby-lang.org/) (>= 2.4)
+* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.1)
 
 ## Installation
 
-The recommended installation method is via [RubyGems](http://rubygems.org/).
+The recommended installation method is via [RubyGems](https://rubygems.org/).
 To install the latest official release of RDF.rb, do:
 
     % [sudo] gem install shex
@@ -212,21 +212,21 @@ To get a local working copy of the development repository, do:
 Alternatively, download the latest development version as a tarball as
 follows:
 
-    % wget http://github.com/ruby-rdf/shex/tarball/master
+    % wget https://github.com/ruby-rdf/shex/tarball/master
 
 ## Resources
 
-* <http://rubydoc.info/github/ruby-rdf/shex>
-* <http://github.com/ruby-rdf/shex>
-* <http://rubygems.org/gems/shex>
+* <https://rubydoc.info/github/ruby-rdf/shex>
+* <https://github.com/ruby-rdf/shex>
+* <https://rubygems.org/gems/shex>
 
 ## Mailing List
 
-* <http://lists.w3.org/Archives/Public/public-rdf-ruby/>
+* <https://lists.w3.org/Archives/Public/public-rdf-ruby/>
 
 ## Author
 
-* [Gregg Kellogg](http://github.com/gkellogg) - <http://greggkellogg.net/>
+* [Gregg Kellogg](https://github.com/gkellogg) - <https://greggkellogg.net/>
 
 ## Contributing
 
@@ -250,9 +250,9 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
 ## License
 
 This is free and unencumbered public domain software. For more information,
-see <http://unlicense.org/> or the accompanying {file:LICENSE} file.
+see <https://unlicense.org/> or the accompanying {file:LICENSE} file.
 
-[ShExSpec]:     http://shex.io/shex-semantics/
-[RDF]:          http://www.w3.org/RDF/
-[RDF.rb]:       http://rubydoc.info/github/ruby-rdf/rdf
-[EBNF]:         http://rubygems.org/gems/ebnf
+[ShExSpec]:     https://shex.io/shex-semantics/
+[RDF]:          https://www.w3.org/RDF/
+[RDF.rb]:       https://rubydoc.info/github/ruby-rdf/rdf
+[EBNF]:         https://rubygems.org/gems/ebnf
