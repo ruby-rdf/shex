@@ -661,12 +661,12 @@ module ShEx::Algebra
       self
     end
 
-  protected
-    def dup
-      operands = @operands.map {|o| o.dup rescue o}
-      self.class.new(*operands, id: @id)
-    end
+  def dup
+    operands = @operands.map {|o| o.dup rescue o}
+    self.class.new(*operands, id: @id)
+  end
 
+  protected
     ##
     # A unary operator.
     #
