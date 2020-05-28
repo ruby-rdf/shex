@@ -1,10 +1,10 @@
 {
   "@context": "http://www.w3.org/ns/shex.jsonld",
   "type": "Schema",
-  "start": "http://rubygems.org/gems/shex/DOAP",
+  "start": "https://rubygems.org/gems/shex/DOAP",
   "shapes": [
     {
-      "id": "http://rubygems.org/gems/shex/DOAP",
+      "id": "https://rubygems.org/gems/shex/DOAP",
       "type": "Shape",
       "extra": [
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"

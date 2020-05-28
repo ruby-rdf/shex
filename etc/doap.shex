@@ -1,4 +1,4 @@
-BASE <http://rubygems.org/gems/shex/>
+BASE <https://rubygems.org/gems/shex/>
 PREFIX doap:  <http://usefulinc.com/ns/doap#>
 PREFIX dc:    <http://purl.org/dc/terms/>
 
