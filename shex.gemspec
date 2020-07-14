@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name               = 'shex'
-  gem.homepage           = 'http://ruby-rdf.github.com/shex'
+  gem.homepage           = 'https://ruby-rdf.github.com/shex'
   gem.license            = 'Unlicense'
   gem.summary            = 'Implementation of Shape Expressions (ShEx) for RDF.rb'
   gem.description        = 'Implements ShExC and ShEx JSON.'
@@ -24,7 +24,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'rdf',         '~> 3.1'
   gem.add_runtime_dependency     'json-ld',     '~> 3.1'
   gem.add_runtime_dependency     'json-ld-preloaded','~> 3.1'
-  gem.add_runtime_dependency     'ebnf',        '~> 1.2'
+  gem.add_runtime_dependency     'ebnf',        '~> 2.0'
   gem.add_runtime_dependency     'sxp',         '~> 1.1'
   gem.add_runtime_dependency     'rdf-xsd',     '~> 3.1'
   gem.add_runtime_dependency     'sparql',      '~> 3.1'

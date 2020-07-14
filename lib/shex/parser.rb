@@ -8,7 +8,7 @@ module ShEx
   # A parser for the ShEx grammar.
   #
   # @see https://www.w3.org/2005/01/yacker/uploads/ShEx3?lang=perl&markup=html#productions
-  # @see http://en.wikipedia.org/wiki/LR_parser
+  # @see https://en.wikipedia.org/wiki/LR_parser
   class Parser
     include ShEx::Meta
     include ShEx::Terminals
@@ -37,7 +37,7 @@ module ShEx
     # The internal representation of the result using hierarchy of RDF objects and ShEx::Operator
     # objects.
     # @return [Array]
-    # @see http://sparql.rubyforge.org/algebra
+    # @see https://www.rubydoc.info/github/ruby-rdf/sparql/SPARQL/Algebra
     attr_accessor :result
 
     # Terminals passed to lexer. Order matters!
@@ -775,8 +775,8 @@ module ShEx
     # @return [ShEx::Algebra::Schema] The executable parsed expression.
     # @raise [ShEx::ParseError] when a syntax error is detected
     # @raise [ShEx::StructureError, ArgumentError] on structural problems with schema
-    # @see http://www.w3.org/TR/sparql11-query/#sparqlAlgebra
-    # @see http://axel.deri.ie/sparqltutorial/ESWC2007_SPARQL_Tutorial_unit2b.pdf
+    # @see https://www.w3.org/TR/sparql11-query/#sparqlAlgebra
+    # @see https://axel.deri.ie/sparqltutorial/ESWC2007_SPARQL_Tutorial_unit2b.pdf
     def parse(prod = START)
       ll1_parse(@input,
         prod.to_sym,

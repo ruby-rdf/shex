@@ -1,7 +1,7 @@
 ##
 # A ShEx runtime for RDF.rb.
 #
-# @see http://shex.io/shex-semantics/#shexc
+# @see https://shex.io/shex-semantics/#shexc
 module ShEx
   require               'shex/format'
   autoload :Algebra,    'shex/algebra'
@@ -66,7 +66,7 @@ module ShEx
   #
   # @example executing a ShExC schema
   #   graph = RDF::Graph.load("etc/doap.ttl")
-  #   ShEx.execute('etc/doap.shex', graph, "http://rubygems.org/gems/shex", "")
+  #   ShEx.execute('etc/doap.shex', graph, "https://rubygems.org/gems/shex", "")
   #
   # @param [IO, StringIO, String, #to_s]  expression (ShExC or ShExJ)
   # @param (see ShEx::Algebra::Schema#execute)
@@ -84,7 +84,7 @@ module ShEx
   #
   # @example executing a ShExC schema
   #   graph = RDF::Graph.load("etc/doap.ttl")
-  #   ShEx.execute('etc/doap.shex', graph, "http://rubygems.org/gems/shex", "")
+  #   ShEx.execute('etc/doap.shex', graph, "https://rubygems.org/gems/shex", "")
   #
   # @param [IO, StringIO, String, #to_s]  expression (ShExC or ShExJ)
   # @param (see ShEx::Algebra::Schema#satisfies?)

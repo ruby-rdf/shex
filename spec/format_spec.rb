@@ -31,7 +31,7 @@ describe ShEx::Format do
     let(:ttl) {File.expand_path("../../etc/doap.ttl", __FILE__)}
     let(:schema) {File.expand_path("../../etc/doap.shex", __FILE__)}
     let(:schema_input) {File.read(schema)} # Not encoded, since decode done in option parsing
-    let(:focus) {"http://rubygems.org/gems/shex"}
+    let(:focus) {"https://rubygems.org/gems/shex"}
     let(:messages) {Hash.new}
 
     describe "#shex" do
