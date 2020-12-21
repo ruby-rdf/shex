@@ -1397,7 +1397,7 @@ describe ShEx::Parser do
           #end if t.ttl
         end
       end
-    end
+    end unless ENV['CI']
   end
 
   context "Positive Validation Syntax Tests" do
@@ -1410,5 +1410,5 @@ describe ShEx::Parser do
         expect {ShEx.parse(input)}.not_to raise_error
       end
     end
-  end
+  end unless ENV['CI']
 end
