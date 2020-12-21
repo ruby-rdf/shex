@@ -2,7 +2,10 @@
 
 This is a pure-Ruby library for working with the [Shape Expressions Language][ShExSpec] to validate the shape of [RDF][] graphs.
 
-<https://ruby-rdf.github.com/shex>
+[![Gem Version](https://badge.fury.io/rb/shex.png)](https://badge.fury.io/rb/shex)
+[![Build Status](https://github.com/ruby-rdf/shex/workflows/CI/badge.svg?branch=develop)](https://github.com/ruby-rdf/shex/actions?query=workflow%3ACI)
+[![Coverage Status](https://coveralls.io/repos/ruby-rdf/shex/badge.svg)](https://coveralls.io/github/ruby-rdf/shex)
+[![Gitter chat](https://badges.gitter.im/ruby-rdf/rdf.png)](https://gitter.im/ruby-rdf/rdf)
 
 [![Gem Version](https://badge.fury.io/rb/shex.png)](https://badge.fury.io/rb/shex)
 [![Build Status](https://travis-ci.org/ruby-rdf/shex.png?branch=master)](https://travis-ci.org/ruby-rdf/shex)
@@ -195,6 +198,7 @@ The result of parsing either ShExC or ShExJ is the creation of a set of executab
 
 * [Ruby](https://ruby-lang.org/) (>= 2.4)
 * [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.1)
+* [SPARQL gem](https://rubygems.org/gems/sparql) (~> 3.1)
 
 ## Installation
 
@@ -258,4 +262,6 @@ see <https://unlicense.org/> or the accompanying {file:LICENSE} file.
 [RDF]:          https://www.w3.org/RDF/
 [RDF.rb]:       https://rubydoc.info/github/ruby-rdf/rdf
 [EBNF]:         https://rubygems.org/gems/ebnf
+[YARD]:         https://yardoc.org/
+[YARD-GS]:      https://rubydoc.info/docs/yard/file/docs/GettingStarted.md
 [PDD]:              https://unlicense.org/#unlicensing-contributions

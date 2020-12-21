@@ -4,8 +4,8 @@ module ShEx
   ##
   # ShEx format specification. Note that this format does not define any readers or writers.
   #
-  # @example Obtaining an LD Patch format class
-  #     RDF::Format.for(:shex)           #=> LD::Patch::Format
+  # @example Obtaining an ShEx format class
+  #     RDF::Format.for(:shex)           #=> ShEx::Format
   #     RDF::Format.for("etc/foaf.shex")
   #     RDF::Format.for(file_name:      "etc/foaf.shex")
   #     RDF::Format.for(file_extension: "shex")
