@@ -23,8 +23,8 @@ jobs:
           - 2.5
           - 2.6
           - 2.7
-          - ruby-head
-          - jruby
+          #- ruby-head # net-http-persistent
+          #- jruby # errant Nokogumbo dependency
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
