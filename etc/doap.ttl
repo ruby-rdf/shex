@@ -9,11 +9,11 @@
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 
 <https://rubygems.org/gems/shex> a doap:Project, earl:TestSubject, earl:Software ;
-  doap:name          "ShEx.rb" ;
+  doap:name          "ShEx" ;
   doap:homepage      <https://ruby-rdf.github.com/shex> ;
   doap:license       <https://unlicense.org/1.0/> ;
-  doap:shortdesc     "ShEx is a Shape Expression engine for Ruby."@en ;
-  doap:description   "ShEx is an Shape Expression engine for the RDF.rb library suite."@en ;
+  doap:shortdesc     "ShEx is a Shape Expression engine for Ruby RDF.rb."@en ;
+  doap:description   "ShEx is an Shape Expression engine for the Ruby RDF.rb library suite."@en ;
   doap:created       "2016-12-09"^^xsd:date ;
   doap:programming-language "Ruby" ;
   doap:implements    <http://shex.io/shex-semantics/> ;
@@ -27,8 +27,6 @@
   doap:maintainer    <https://greggkellogg.net/foaf#me> ;
   doap:documenter    <https://greggkellogg.net/foaf#me> ;
   foaf:maker         <https://greggkellogg.net/foaf#me> ;
-  dc:title           "ShEx.rb" ;
-  dc:description     "ShEx is an Shape Expression engine for the RDF.rb library suite."@en ;
   dc:date            "2016-12-09"^^xsd:date ;
   dc:creator         <https://greggkellogg.net/foaf#me> ;
   dc:isPartOf        <https://rubygems.org/gems/rdf> .

@@ -4,7 +4,7 @@ This is a pure-Ruby library for working with the [Shape Expressions Language][Sh
 
 [![Gem Version](https://badge.fury.io/rb/shex.png)](https://badge.fury.io/rb/shex)
 [![Build Status](https://github.com/ruby-rdf/shex/workflows/CI/badge.svg?branch=develop)](https://github.com/ruby-rdf/shex/actions?query=workflow%3ACI)
-[![Coverage Status](https://coveralls.io/repos/ruby-rdf/shex/badge.svg)](https://coveralls.io/github/ruby-rdf/shex)
+[![Coverage Status](https://coveralls.io/repos/ruby-rdf/shex/badge.svg?branch=develop)](https://coveralls.io/github/ruby-rdf/shex?branch=develop)
 [![Gitter chat](https://badges.gitter.im/ruby-rdf/rdf.png)](https://gitter.im/ruby-rdf/rdf)
 [![DOI](https://zenodo.org/badge/74419330.svg)](https://zenodo.org/badge/latestdoi/74419330)
 
