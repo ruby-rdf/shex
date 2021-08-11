@@ -17,9 +17,9 @@ group :development, :test do
   gem 'rdf-spec',           git: "https://github.com/ruby-rdf/rdf-spec",    branch: "develop"
   gem 'sparql',             git: "https://github.com/ruby-rdf/sparql",      branch: "develop"
   gem 'sxp',                git: "https://github.com/dryruby/sxp.rb",       branch: "develop"
-  gem 'simplecov',          platforms: :mri
-  gem 'coveralls',          '~> 0.8', platforms: :mri
   gem 'earl-report'
+  gem 'simplecov',          '~> 0.21',  platforms: :mri
+  gem 'simplecov-lcov',     '~> 0.8',  platforms: :mri
 end
 
 group :debug do
