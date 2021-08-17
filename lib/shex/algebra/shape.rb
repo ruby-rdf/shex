@@ -36,8 +36,8 @@ module ShEx::Algebra
       # neigh(G, n) is the neighbourhood of the node n in the graph G.
       #
       #    neigh(G, n) = arcsOut(G, n) ∪ arcsIn(G, n)
-      arcs_in = schema.graph.query(object: focus).to_a.sort_by(&:to_sxp)
-      arcs_out = schema.graph.query(subject: focus).to_a.sort_by(&:to_sxp)
+      arcs_in = schema.graph.query({object: focus}).to_a.sort_by(&:to_sxp)
+      arcs_out = schema.graph.query({subject: focus}).to_a.sort_by(&:to_sxp)
       neigh = (arcs_in + arcs_out).uniq
 
       # `matched` is the subset of statements which match `expression`.

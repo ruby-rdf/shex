@@ -2,12 +2,10 @@
 
 This is a pure-Ruby library for working with the [Shape Expressions Language][ShExSpec] to validate the shape of [RDF][] graphs.
 
-<https://ruby-rdf.github.com/shex>
-
 [![Gem Version](https://badge.fury.io/rb/shex.png)](https://badge.fury.io/rb/shex)
-[![Build Status](https://travis-ci.org/ruby-rdf/shex.png?branch=master)](https://travis-ci.org/ruby-rdf/shex)
-[![Coverage Status](https://coveralls.io/repos/ruby-rdf/shex/badge.svg)](https://coveralls.io/r/ruby-rdf/shex)
-[![Join the chat at https://gitter.im/ruby-rdf/rdf](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ruby-rdf/rdf?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://github.com/ruby-rdf/shex/workflows/CI/badge.svg?branch=develop)](https://github.com/ruby-rdf/shex/actions?query=workflow%3ACI)
+[![Coverage Status](https://coveralls.io/repos/ruby-rdf/shex/badge.svg?branch=develop)](https://coveralls.io/github/ruby-rdf/shex?branch=develop)
+[![Gitter chat](https://badges.gitter.im/ruby-rdf/rdf.png)](https://gitter.im/ruby-rdf/rdf)
 [![DOI](https://zenodo.org/badge/74419330.svg)](https://zenodo.org/badge/latestdoi/74419330)
 
 ## Features
@@ -18,7 +16,7 @@ This is a pure-Ruby library for working with the [Shape Expressions Language][Sh
 
 ## Description
 
-The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
+The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine version 2.0.
 
 * `ShEx::Parser` parses ShExC and ShExJ formatted documents generating executable operators which can be serialized as [S-Expressions](https://en.wikipedia.org/wiki/S-expression).
 * `ShEx::Algebra` executes operators against Any `RDF::Graph`, including compliant [RDF.rb][].
@@ -195,6 +193,7 @@ The result of parsing either ShExC or ShExJ is the creation of a set of executab
 
 * [Ruby](https://ruby-lang.org/) (>= 2.4)
 * [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.1)
+* [SPARQL gem](https://rubygems.org/gems/sparql) (~> 3.1)
 
 ## Installation
 
@@ -245,14 +244,19 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
   enough, be assured we will eventually add you in there.
 * Do note that in order for us to merge any non-trivial changes (as a rule
   of thumb, additions larger than about 15 lines of code), we need an
-  explicit [public domain dedication][PDD] on record from you.
+  explicit [public domain dedication][PDD] on record from you,
+  which you will be asked to agree to on the first commit to a repo within the organization.
+  Note that the agreement applies to all repos in the [Ruby RDF](https://github.com/ruby-rdf/) organization.
 
 ## License
 
 This is free and unencumbered public domain software. For more information,
 see <https://unlicense.org/> or the accompanying {file:LICENSE} file.
 
-[ShExSpec]:     https://shex.io/shex-semantics/
+[ShExSpec]:     http://shex.io/shex-semantics-20170713/
 [RDF]:          https://www.w3.org/RDF/
 [RDF.rb]:       https://rubydoc.info/github/ruby-rdf/rdf
 [EBNF]:         https://rubygems.org/gems/ebnf
+[YARD]:         https://yardoc.org/
+[YARD-GS]:      https://rubydoc.info/docs/yard/file/docs/GettingStarted.md
+[PDD]:              https://unlicense.org/#unlicensing-contributions

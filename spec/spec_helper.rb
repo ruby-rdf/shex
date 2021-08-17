@@ -4,14 +4,25 @@ require 'rdf/spec'
 require 'rdf/spec/matchers'
 require 'matchers'
 require 'rdf/turtle'
-require 'simplecov'
-require 'coveralls'
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
-  SimpleCov::Formatter::HTMLFormatter,
-  Coveralls::SimpleCov::Formatter
-])
-SimpleCov.start do
-  add_filter "/spec/"
+
+begin
+  require 'simplecov'
+  require 'simplecov-lcov'
+
+  SimpleCov::Formatter::LcovFormatter.config do |config|
+    #Coveralls is coverage by default/lcov. Send info results
+    config.report_with_single_file = true
+    config.single_report_path = 'coverage/lcov.info'
+  end
+
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::LcovFormatter
+  ])
+  SimpleCov.start do
+    add_filter "/spec/"
+  end
+rescue LoadError
 end
 
 require 'shex'

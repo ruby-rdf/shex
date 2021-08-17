@@ -335,7 +335,7 @@ module ShEx::Algebra
         end
       end
 
-      new(*operands, options.merge(id: id))
+      new(*operands, **options.merge(id: id))
     end
 
     def json_type

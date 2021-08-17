@@ -1333,6 +1333,7 @@ describe ShEx::Parser do
     end
   end
 
+  # Restrict to 2.0 tests for now
   require 'suite_helper'
 
   %w(schemas negativeSyntax negativeStructure).each do |dir|
@@ -1362,8 +1363,6 @@ describe ShEx::Parser do
               pending "detect bad REGEXP escape sequences"
             when 'FocusIRI2groupBnodeNested2groupIRIRef'
               pending 'Retaining nested AND'
-            when '1datatypeRef1'
-              pending 'missing file??' if dir == 'negativeSyntax'
             end
 
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
@@ -1397,7 +1396,7 @@ describe ShEx::Parser do
           #end if t.ttl
         end
       end
-    end
+    end unless ENV['CI']
   end
 
   context "Positive Validation Syntax Tests" do
@@ -1407,8 +1406,13 @@ describe ShEx::Parser do
       it file do
         input = File.read File.expand_path("../shexTest/validation/#{file}.shex", __FILE__)
 
+        case file
+        when '__to_add'
+          pending 'something'
+        end
+
         expect {ShEx.parse(input)}.not_to raise_error
       end
     end
-  end
+  end unless ENV['CI']
 end

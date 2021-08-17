@@ -256,7 +256,7 @@ module ShEx
     def shape_or(input, data)
       input.merge!(data.dup.keep_if {|k, v| [:closed, :extraPropertySet, :codeDecl].include?(k)})
       expression = if Array(data[:shapeExpression]).length > 1
-        Algebra::Or.new(*data[:shapeExpression], {})
+        Algebra::Or.new(*data[:shapeExpression])
       else
         Array(data[:shapeExpression]).first
       end
@@ -282,7 +282,7 @@ module ShEx
       end
 
       expression = if expressions.length > 1
-        Algebra::And.new(*expressions, {})
+        Algebra::And.new(*expressions)
       else
         expressions.first
       end
@@ -341,7 +341,7 @@ module ShEx
       expression = case expression.length
       when 0 then nil
       when 1 then expression.first
-      else        Algebra::And.new(*expression, {})
+      else        Algebra::And.new(*expression)
       end
 
       (input[:shapeExpression] ||= []) << expression if expression
@@ -389,7 +389,7 @@ module ShEx
       attrs += Array(data[:numericFacet])
       attrs += Array(data[:stringFacet])
 
-      input[:nodeConstraint] = Algebra::NodeConstraint.new(*attrs.compact, {})
+      input[:nodeConstraint] = Algebra::NodeConstraint.new(*attrs.compact)
     end
 
     # [25]    nonLitNodeConstraint  ::= nonLiteralKind stringFacet*
@@ -401,7 +401,7 @@ module ShEx
       attrs += Array(data[:nonLiteralKind])
       attrs += Array(data[:stringFacet])
 
-      input[:nodeConstraint] = Algebra::NodeConstraint.new(*attrs.compact, {})
+      input[:nodeConstraint] = Algebra::NodeConstraint.new(*attrs.compact)
     end
 
     # [26]    nonLiteralKind        ::= "IRI" | "BNODE" | "NONLITERAL"
@@ -469,7 +469,7 @@ module ShEx
       attrs += Array(data[:annotation])
       attrs += Array(data[:codeDecl])
 
-      input[:shape] = Algebra::Shape.new(*attrs, {})
+      input[:shape] = Algebra::Shape.new(*attrs)
     end
     private :shape_definition
 
@@ -482,7 +482,7 @@ module ShEx
     # [37]    oneOfTripleExpr           ::= groupTripleExpr ('|' groupTripleExpr)*
     production(:oneOfTripleExpr) do |input, data, callback|
       expression = if Array(data[:tripleExpression]).length > 1
-        Algebra::OneOf.new(*data[:tripleExpression], {})
+        Algebra::OneOf.new(*data[:tripleExpression])
       else
         Array(data[:tripleExpression]).first
       end
@@ -492,7 +492,7 @@ module ShEx
     # [40]    groupTripleExpr            ::= unaryTripleExpr (';' unaryTripleExpr?)*
     production(:groupTripleExpr) do |input, data, callback|
       expression = if Array(data[:tripleExpression]).length > 1
-        Algebra::EachOf.new(*data[:tripleExpression], {})
+        Algebra::EachOf.new(*data[:tripleExpression])
       else
         Array(data[:tripleExpression]).first
       end
@@ -545,7 +545,7 @@ module ShEx
       attrs += Array(data[:codeDecl])
       attrs += Array(data[:annotation])
 
-      input[:tripleExpression] = Algebra::TripleConstraint.new(*attrs, {}) unless attrs.empty?
+      input[:tripleExpression] = Algebra::TripleConstraint.new(*attrs) unless attrs.empty?
     end
 
     # [46]    cardinality            ::= '*' | '+' | '?' | REPEAT_RANGE
@@ -666,7 +666,7 @@ module ShEx
 
     # [60]    codeDecl              ::= '%' iri (CODE | "%")
     production(:codeDecl) do |input, data, callback|
-      (input[:codeDecl] ||= []) <<  Algebra::SemAct.new(*[data[:iri], data[:code]].compact, {})
+      (input[:codeDecl] ||= []) <<  Algebra::SemAct.new(*[data[:iri], data[:code]].compact)
     end
 
     # [13t]   literal               ::= rdfLiteral | numericLiteral | booleanLiteral
@@ -941,7 +941,7 @@ module ShEx
         "options: #{options.inspect}, " +
         "validate: #{validate?.inspect}, "
       end
-      RDF::Literal.new(value, options.merge(validate: validate?))
+      RDF::Literal.new(value, **options.merge(validate: validate?))
     end
   end # class Parser
 end # module ShEx
