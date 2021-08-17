@@ -16,7 +16,7 @@ This is a pure-Ruby library for working with the [Shape Expressions Language][Sh
 
 ## Description
 
-The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine.
+The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine version 2.0.
 
 * `ShEx::Parser` parses ShExC and ShExJ formatted documents generating executable operators which can be serialized as [S-Expressions](https://en.wikipedia.org/wiki/S-expression).
 * `ShEx::Algebra` executes operators against Any `RDF::Graph`, including compliant [RDF.rb][].
@@ -253,7 +253,7 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
 This is free and unencumbered public domain software. For more information,
 see <https://unlicense.org/> or the accompanying {file:LICENSE} file.
 
-[ShExSpec]:     https://shex.io/shex-semantics/
+[ShExSpec]:     http://shex.io/shex-semantics-20170713/
 [RDF]:          https://www.w3.org/RDF/
 [RDF.rb]:       https://rubydoc.info/github/ruby-rdf/rdf
 [EBNF]:         https://rubygems.org/gems/ebnf
