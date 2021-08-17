@@ -450,6 +450,7 @@ describe ShEx::Algebra do
     end
   end
 
+  # Restrict to 2.0 tests for now
   require 'suite_helper'
   SHEXR = File.expand_path("../shexTest/doc/ShExR.shex", __FILE__)
   manifest = Fixtures::SuiteTest::BASE + "validation/manifest.jsonld"
