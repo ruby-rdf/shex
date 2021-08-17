@@ -183,7 +183,7 @@ man_graph = RDF::Graph.new
 
     m.entries.each do |tc|
       next unless ARGV.empty? || ARGV.any? {|n| tc.name.match(/#{n}/)}
-      run_tc(tc, options.merge(result_count: result_count))
+      run_tc(tc, result_count: result_count, **options)
     end
   end
 end
