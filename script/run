@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
 require 'rubygems'
-$:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", 'lib')))
+$:.unshift(File.expand_path('../../lib', __FILE__))
 require "bundler/setup"
+require 'logger'
 require 'shex'
 begin
   require 'linkeddata'
@@ -10,6 +11,7 @@ rescue LoadError
   require 'rdf/turtle'
 end
 require 'getoptlong'
+require 'amazing_print'
 
 def run(graph, **options)
   if options[:verbose]
@@ -21,6 +23,16 @@ def run(graph, **options)
     STDERR.puts ("\nshex:\n" + options[:shex]) 
   end
 
+  if options[:parse_only]
+    ShEx::Parser.new.peg_parse(
+        options[:shex],
+        :shexDoc,
+        ShEx::Meta::RULES,
+        whitespace: ShEx::Terminals::WS,
+        **options)
+    return
+  end
+
   shex =  ShEx.parse(options[:shex], **options)
 
   STDERR.puts ("\nSXP:\n" + SXP::Generator.string(shex.to_sxp_bin)) if options[:verbose]
@@ -30,16 +42,15 @@ def run(graph, **options)
   elsif options[:to_json]
     puts shex.to_json(JSON::LD::JSON_STATE)
   else
-    focus = options.delete(:focus)
     shape = options.delete(:shape)
     map = {focus => shape} if shape
-    res = shex.execute(focus, graph, map, **options)
+    res = shex.execute(graph, map, **options)
     puts SXP::Generator.string(res.to_sxp_bin)
   end
 rescue ShEx::NotSatisfied => e
   STDERR.puts e
   STDERR.puts SXP::Generator.string(e.expression.to_sxp_bin)
-rescue 
+rescue
   STDERR.puts $!
   STDERR.puts $!.backtrace
 end
@@ -51,6 +62,7 @@ OPT_ARGS = [
   ["--focus", GetoptLong::REQUIRED_ARGUMENT,          "Starting point"],
   ["--shape", GetoptLong::REQUIRED_ARGUMENT,          "Shape to start with"],
   ["--shex", GetoptLong::REQUIRED_ARGUMENT,           "Location of ShEx document"],
+  ["--parse-only", GetoptLong::NO_ARGUMENT,           "No processing"],
   ["--progress", GetoptLong::NO_ARGUMENT,             "Display parse tree"],
   ["--to-json", GetoptLong::NO_ARGUMENT,              "Generate JSON for schema instead of validating graph"],
   ["--to-sxp", GetoptLong::NO_ARGUMENT,               "Generate SXP for schema instead of validating graph"],
@@ -92,6 +104,7 @@ opts.each do |opt, arg|
   when '--shex'
     options[:shex] = RDF::Util::File.open_file(arg).read
     options[:format] = :shexj if arg.end_with?(".json")
+  when '--parse-only'   then options[:parse_only] = true
   when '--progress'
     logger = Logger.new(STDERR)
     logger.level = Logger::INFO

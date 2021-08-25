@@ -3,6 +3,7 @@ require 'rubygems'
 require "bundler/setup"
 $:.unshift(File.expand_path("../../lib", __FILE__))
 $:.unshift(File.expand_path("../../spec", __FILE__))
+require 'logger'
 require 'rdf'
 require 'rdf/isomorphic'
 require 'rspec'
@@ -33,7 +34,15 @@ def run_tc(t, **options)
   result = "untested"
 
   begin
-    puts t.inspect if options[:verbose]
+    if options[:verbose]
+      puts "\nTestCase: #{t.inspect}"
+      puts "\nSchema Loc:\n" + t.schema
+      puts "\nSchema:\n" + t.schema_source 
+      #puts "\nExpected:\n" + t.expected
+    end
+
+    t.logger.level = options[:level]
+    t.logger.formatter = lambda {|severity, datetime, progname, msg| "%5s %s\n" % [severity, msg]}
 
     validate = case t.name
     when '_all', 'kitchenSink' then false
@@ -95,8 +104,8 @@ def run_tc(t, **options)
     result = "failed"
   end
 
-  if options[:debug]
-    puts "\ndebug: " + t.logger.to_s
+  if options[:level] <= Logger::WARN || options[:verbose]
+    puts "\nlog: " + t.logger.to_s
   end
 
   if options[:earl]
@@ -126,40 +135,49 @@ end
 
 options = {
   output:       STDOUT,
+  level:        Logger::WARN,
   validate:     true,
   verbose:      false,
 }
-suite = "rdfxml"
-opts = GetoptLong.new(
-  ["--debug", GetoptLong::NO_ARGUMENT],
-  ["--earl", GetoptLong::NO_ARGUMENT],
-  ["--help", "-?", GetoptLong::NO_ARGUMENT],
-  ["--mancache", GetoptLong::NO_ARGUMENT],
-  ["--output", "-o", GetoptLong::REQUIRED_ARGUMENT],
-  ["--quiet", "-q", GetoptLong::NO_ARGUMENT],
-  ["--verbose", "-v", GetoptLong::NO_ARGUMENT],
-)
 
-def help(options)
-  puts "Usage: #{$0} [options] [test-number ...]"
-  puts "Options:"
-  puts "      --debug:              Display detailed debug output"
-  puts "      --earl:               Generate EARL report"
-  puts "      --quiet:              Minimal output"
-  puts "      --mancache:           Creates an N-Triples representation of the combined manifests"
-  puts "      --output:             Output to specified file"
-  puts "      --verbose:            Verbose processing"
-  puts "      --help,-?:            This message"
-  exit(0)
+OPT_ARGS = [
+  ["--debug",         GetoptLong::NO_ARGUMENT,       "Debug shape matching"],
+  ["--earl",          GetoptLong::NO_ARGUMENT,       "Generate EARL report"],
+  ["--help", "-?",    GetoptLong::NO_ARGUMENT,       "This message"],
+  ["--mancache",      GetoptLong::NO_ARGUMENT,       "Creates an N-Triples representation of the combined manifests"],
+  ["--output", "-o",  GetoptLong::REQUIRED_ARGUMENT, "Output to specified file"],
+  ["--progress",      GetoptLong::NO_ARGUMENT,       "Display parse tree"],
+  ["--quiet", "-q",   GetoptLong::NO_ARGUMENT,       "Minimal output"],
+  ["--validate",      GetoptLong::NO_ARGUMENT,       "Validate schema document"],
+  ["--verbose",       GetoptLong::NO_ARGUMENT,       "Display details of processing"],
+]
+def usage
+  STDERR.puts %{Usage: #{$0} [options] file ...}
+  width = OPT_ARGS.map do |o|
+    l = o.first.length
+    l += o[1].length + 2 if o[1].is_a?(String)
+    l
+  end.max
+  OPT_ARGS.each do |o|
+    s = "  %-*s  " % [width, (o[1].is_a?(String) ? "#{o[0,2].join(', ')}" : o[0])]
+    s += o.last
+    STDERR.puts s
+  end
+  exit(1)
 end
+
+opts = GetoptLong.new(*OPT_ARGS.map {|o| o[0..-2]})
 
 opts.each do |opt, arg|
   case opt
   when '--earl'     then options[:quiet] = options[:earl] = true
-  when '--debug'    then options[:debug] = true
+  when '--debug'    then options[:level] = Logger::DEBUG
   when '--mancache' then options[:mancache] = true
   when '--output'   then options[:output] = File.open(arg, "w")
-  when '--quiet'    then options[:quiet] = true
+  when '--progress' then options[:level] = Logger::INFO
+  when '--quiet'
+    options[:quiet] = true
+    options[:level] = Logger::FATAL
   when '--verbose'  then options[:verbose] = true
   end
 end

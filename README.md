@@ -18,7 +18,7 @@ This is a pure-Ruby library for working with the [Shape Expressions Language][Sh
 
 The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine version 2.0.
 
-* `ShEx::Parser` parses ShExC and ShExJ formatted documents generating executable operators which can be serialized as [S-Expressions](https://en.wikipedia.org/wiki/S-expression).
+* `ShEx::Parser` parses ShExC and ShExJ formatted documents generating executable operators which can be serialized as [S-Expressions][].
 * `ShEx::Algebra` executes operators against Any `RDF::Graph`, including compliant [RDF.rb][].
 * [Implementation Report](file.earl.html)
 
@@ -183,11 +183,9 @@ Example usage:
 
 
 ## Implementation Notes
-The ShExC parser uses the [EBNF][] gem to generate first, follow and branch tables, and uses the `Parser` and `Lexer` modules to implement the ShExC parser.
+The ShExC parser uses the [EBNF][] gem to generate a [PEG][] parser.
 
-The parser takes branch and follow tables generated from the [ShEx Grammar](file.shex.html) described in the [specification][ShExSpec]. Branch and Follow tables are specified in the generated {ShEx::Meta}.
-
-The result of parsing either ShExC or ShExJ is the creation of a set of executable {ShEx::Algebra} Operators which are directly executed to perform shape validation.
+The parser uses the executable [S-Expressions][] generated from the EBNF ShExC grammar to create a set of executable {ShEx::Algebra} Operators which are directly executed to perform shape validation.
 
 ## Dependencies
 
@@ -260,3 +258,5 @@ see <https://unlicense.org/> or the accompanying {file:LICENSE} file.
 [YARD]:         https://yardoc.org/
 [YARD-GS]:      https://rubydoc.info/docs/yard/file/docs/GettingStarted.md
 [PDD]:              https://unlicense.org/#unlicensing-contributions
+[PEG]:          https://en.wikipedia.org/wiki/Parsing_expression_grammar "Parsing Expression Grammar"
+[S-Expression]: https://en.wikipedia.org/wiki/S-expression
