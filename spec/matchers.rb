@@ -56,8 +56,8 @@ RSpec::Matchers.define :generate do |expected, **options|
       end
     rescue
       @actual = $!.message
-      #false
-      raise
+      options[:logger].info "Backtrace:\n#{$!.backtrace.join("\n")}" if options[:logger]
+      false
     end
   end
 

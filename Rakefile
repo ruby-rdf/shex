@@ -22,31 +22,33 @@ task default: :spec
 RSpec::Core::RakeTask.new(:spec)
 
 desc 'Create versions of ebnf files in etc'
-task etc: %w{etc/shex.sxp etc/shex.html etc/shex.ll1.sxp}
+task etc: %w{etc/shex.sxp etc/shex.html etc/shex.peg.sxp}
 
 desc 'Build first, follow and branch tables'
 task meta: "lib/shex/meta.rb"
 
 file "lib/shex/meta.rb" => "etc/shex.ebnf" do |t|
   sh %{
-    ebnf --ll1 shexDoc --format rb \
+    ebnf --peg --format rb \
+      --input-format native \
       --mod-name ShEx::Meta \
       --output lib/shex/meta.rb \
       etc/shex.ebnf
   }
 end
 
-file "etc/shex.ll1.sxp" => "etc/shex.ebnf" do |t|
+file "etc/shex.peg.sxp" => "etc/shex.ebnf" do |t|
   sh %{
-    ebnf --ll1 shexDoc --format sxp \
-      --output etc/shex.ll1.sxp \
+    ebnf --peg --format sxp \
+      --input-format native \
+      --output etc/shex.peg.sxp \
       etc/shex.ebnf
   }
 end
 
 file "etc/shex.sxp" => "etc/shex.ebnf" do |t|
   sh %{
-    ebnf --bnf --format sxp \
+    ebnf --input-format native --format sxp \
       --output etc/shex.sxp \
       etc/shex.ebnf
   }
@@ -54,7 +56,7 @@ end
 
 file "etc/shex.html" => "etc/shex.ebnf" do |t|
   sh %{
-    ebnf --format html \
+    ebnf --input-format native --format html \
       --output etc/shex.html \
       etc/shex.ebnf
   }

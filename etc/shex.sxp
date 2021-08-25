@@ -1,273 +1,127 @@
 (
- (rule _empty "0" (seq))
- (pass (alt (plus (range " \t\r\n")) (seq "#" (star (range "^\r\n")))))
- (rule shexDoc "1" (seq _shexDoc_1 _shexDoc_2))
- (rule _shexDoc_1 "1.1" (cleanup star) (alt _empty _shexDoc_3))
- (rule _shexDoc_2 "1.2" (cleanup opt) (alt _empty _shexDoc_4))
- (rule _shexDoc_3 "1.3" (cleanup merge) (seq directive _shexDoc_1))
- (rule _shexDoc_4 "1.4" (seq _shexDoc_5 _shexDoc_6))
- (rule _shexDoc_5 "1.5" (alt notStartAction startActions))
- (rule _shexDoc_6 "1.6" (cleanup star) (alt _empty _shexDoc_7))
- (rule _shexDoc_7 "1.7" (cleanup merge) (seq statement _shexDoc_6))
+ (rule shexDoc "1"
+  (seq (star directive) (opt (seq (alt notStartAction startActions) (star statement)))))
  (rule directive "2" (alt baseDecl prefixDecl))
  (rule baseDecl "3" (seq "BASE" IRIREF))
  (rule prefixDecl "4" (seq "PREFIX" PNAME_NS IRIREF))
  (rule notStartAction "5" (alt start shapeExprDecl))
- (rule start "6" (seq "START" "=" _start_1 _start_2 _start_3))
- (rule _start_1 "6.1" (cleanup opt) (alt _empty "NOT"))
- (rule _start_2 "6.2" (alt shapeAtomNoRef shapeRef))
- (rule _start_3 "6.3" (cleanup opt) (alt _empty shapeOr))
- (rule startActions "7" (cleanup plus) (seq codeDecl _startActions_1))
- (rule _startActions_1 "7.1" (cleanup star) (alt _empty _startActions_2))
- (rule _startActions_2 "7.2" (cleanup merge) (seq codeDecl _startActions_1))
+ (rule start "6" (seq "START" "=" (opt "NOT") (alt shapeAtomNoRef shapeRef) (opt shapeOr)))
+ (rule startActions "7" (plus codeDecl))
  (rule statement "8" (alt directive notStartAction))
- (rule shapeExprDecl "9" (seq shapeLabel _shapeExprDecl_1))
- (rule _shapeExprDecl_1 "9.1" (alt shapeExpression "EXTERNAL"))
+ (rule shapeExprDecl "9" (seq shapeExprLabel (alt shapeExpression "EXTERNAL")))
  (rule shapeExpression "10"
-  (alt _shapeExpression_1 _shapeExpression_2 _shapeExpression_3))
- (rule _shapeExpression_1 "10.1" (seq shapeAtomNoRef _shapeExpression_4))
- (rule _shapeExpression_2 "10.2" (seq "NOT" _shapeExpression_5 _shapeExpression_6))
- (rule _shapeExpression_3 "10.3" (seq shapeRef shapeOr))
- (rule _shapeExpression_4 "10.4" (cleanup opt) (alt _empty shapeOr))
- (rule _shapeExpression_5 "10.5" (alt shapeAtomNoRef shapeRef))
- (rule _shapeExpression_6 "10.6" (cleanup opt) (alt _empty shapeOr))
+  (alt
+   (seq (opt "NOT") shapeAtomNoRef (opt shapeOr))
+   (seq "NOT" shapeRef (opt shapeOr))
+   (seq shapeRef shapeOr)) )
  (rule inlineShapeExpression "11" (seq inlineShapeOr))
- (rule _shapeOrB_3 "12b.3" (cleanup merge) (seq _shapeOrB_1 _shapeOrB_2))
- (rule shapeOr "12" (alt shapeOrA _shapeOr_1))
- (rule shapeOrA "12a" (cleanup plus) (seq _shapeOrA_1 _shapeOrA_2))
- (rule _shapeOrA_2 "12a.2" (cleanup star) (alt _empty _shapeOrA_3))
- (rule _shapeOrA_3 "12a.3" (cleanup merge) (seq _shapeOrA_1 _shapeOrA_2))
- (rule _shapeOrA_1 "12a.1" (seq "OR" shapeAnd))
- (rule shapeOrB "12b" (cleanup plus) (seq _shapeOrB_1 _shapeOrB_2))
- (rule _shapeOrB_2 "12b.2" (cleanup star) (alt _empty _shapeOrB_3))
- (rule _shapeOrB_1 "12b.1" (seq "AND" shapeNot))
- (rule _shapeOr_1 "12.1" (seq shapeOrB _shapeOr_2))
- (rule _shapeOr_2 "12.2" (cleanup opt) (alt _empty shapeOrA))
- (rule literal "13t" (alt rdfLiteral numericLiteral booleanLiteral))
- (rule inlineShapeOr "13" (seq inlineShapeAnd _inlineShapeOr_1))
- (rule _inlineShapeOr_1 "13.1" (cleanup star) (alt _empty _inlineShapeOr_3))
- (rule _inlineShapeOr_2 "13.2" (seq "OR" inlineShapeAnd))
- (rule _inlineShapeOr_3 "13.3" (cleanup merge) (seq _inlineShapeOr_2 _inlineShapeOr_1))
- (rule shapeAnd "14" (seq shapeNot _shapeAnd_1))
- (rule _shapeAnd_1 "14.1" (cleanup star) (alt _empty _shapeAnd_3))
- (rule _shapeAnd_2 "14.2" (seq "AND" shapeNot))
- (rule _shapeAnd_3 "14.3" (cleanup merge) (seq _shapeAnd_2 _shapeAnd_1))
- (rule inlineShapeAnd "15" (seq inlineShapeNot _inlineShapeAnd_1))
- (rule _inlineShapeAnd_1 "15.1" (cleanup star) (alt _empty _inlineShapeAnd_3))
- (rule _inlineShapeAnd_2 "15.2" (seq "AND" inlineShapeNot))
- (rule _inlineShapeAnd_3 "15.3"
-  (cleanup merge)
-  (seq _inlineShapeAnd_2 _inlineShapeAnd_1))
- (rule shapeNot "16" (seq _shapeNot_1 shapeAtom))
- (rule numericLiteral "16t" (alt INTEGER DECIMAL DOUBLE))
- (rule _shapeNot_1 "16.1" (cleanup opt) (alt _empty "NOT"))
- (rule inlineShapeNot "17" (seq _inlineShapeNot_1 inlineShapeAtom))
- (rule _inlineShapeNot_1 "17.1" (cleanup opt) (alt _empty "NOT"))
+ (rule shapeOr "12"
+  (alt (plus (seq "OR" shapeAnd)) (seq (plus (seq "AND" shapeNot)) (star (seq "OR" shapeAnd)))))
+ (rule inlineShapeOr "13" (seq inlineShapeAnd (star (seq "OR" inlineShapeAnd))))
+ (rule shapeAnd "14" (seq shapeNot (star (seq "AND" shapeNot))))
+ (rule inlineShapeAnd "15" (seq inlineShapeNot (star (seq "AND" inlineShapeNot))))
+ (rule shapeNot "16" (seq (opt "NOT") shapeAtom))
+ (rule inlineShapeNot "17" (seq (opt "NOT") inlineShapeAtom))
  (rule shapeAtom "18"
-  (alt _shapeAtom_1 litNodeConstraint _shapeAtom_2 _shapeAtom_3 "."))
+  (alt
+   (seq nonLitNodeConstraint (opt shapeOrRef)) litNodeConstraint
+   (seq shapeOrRef (opt nonLitNodeConstraint))
+   (seq "(" shapeExpression ")") "." ))
+ (rule shapeAtomNoRef "19"
+  (alt
+   (seq nonLitNodeConstraint (opt shapeOrRef)) litNodeConstraint
+   (seq shapeDefinition (opt nonLitNodeConstraint))
+   (seq "(" shapeExpression ")") "." ))
+ (rule inlineShapeAtom "20"
+  (alt
+   (seq nonLitNodeConstraint (opt inlineShapeOrRef)) litNodeConstraint
+   (seq inlineShapeOrRef (opt nonLitNodeConstraint))
+   (seq "(" shapeExpression ")") "." ))
+ (rule shapeOrRef "21" (alt shapeDefinition shapeRef))
+ (rule inlineShapeOrRef "22" (alt inlineShapeDefinition shapeRef))
+ (rule shapeRef "23" (alt ATPNAME_LN ATPNAME_NS (seq "@" shapeExprLabel)))
+ (rule litNodeConstraint "24"
+  (alt
+   (seq "LITERAL" (star xsFacet))
+   (seq nonLiteralKind (star stringFacet))
+   (seq datatype (star xsFacet))
+   (seq valueSet (star xsFacet))
+   (plus numericFacet)) )
+ (rule nonLitNodeConstraint "25"
+  (alt (seq nonLiteralKind (star stringFacet)) (plus stringFacet)))
+ (rule nonLiteralKind "26" (alt "IRI" "BNODE" "NONLITERAL"))
+ (rule xsFacet "27" (alt stringFacet numericFacet))
+ (rule stringFacet "28" (alt (seq stringLength INTEGER) REGEXP))
+ (rule stringLength "29" (alt "LENGTH" "MINLENGTH" "MAXLENGTH"))
+ (rule numericFacet "30"
+  (alt (seq numericRange numericLiteral) (seq numericLength INTEGER)))
+ (rule numericRange "31"
+  (alt "MININCLUSIVE" "MINEXCLUSIVE" "MAXINCLUSIVE" "MAXEXCLUSIVE"))
+ (rule numericLength "32" (alt "TOTALDIGITS" "FRACTIONDIGITS"))
+ (rule shapeDefinition "33"
+  (seq
+   (star (alt extraPropertySet "CLOSED")) "{"
+   (opt tripleExpression) "}"
+   (star annotation) semanticActions ))
+ (rule inlineShapeDefinition "34"
+  (seq (star (alt extraPropertySet "CLOSED")) "{" (opt tripleExpression) "}"))
+ (rule extraPropertySet "35" (seq "EXTRA" (plus predicate)))
+ (rule tripleExpression "36" (seq oneOfTripleExpr))
+ (rule oneOfTripleExpr "37" (seq groupTripleExpr (star (seq "|" groupTripleExpr))))
+ (rule groupTripleExpr "40" (seq unaryTripleExpr (star (seq ";" (opt unaryTripleExpr)))))
+ (rule unaryTripleExpr "43"
+  (alt (seq (opt productionLabel) (alt tripleConstraint bracketedTripleExpr)) include))
+ (rule productionLabel "43a" (seq "$" (alt iri blankNode)))
+ (rule bracketedTripleExpr "44"
+  (seq "(" oneOfTripleExpr ")" (opt cardinality) (star annotation) semanticActions))
+ (rule tripleConstraint "45"
+  (seq
+   (opt senseFlags) predicate inlineShapeExpression
+   (opt cardinality)
+   (star annotation) semanticActions ))
+ (rule cardinality "46" (alt "*" "+" "?" REPEAT_RANGE))
+ (rule senseFlags "47" (seq "^"))
+ (rule valueSet "48" (seq "[" (star valueSetValue) "]"))
+ (rule valueSetValue "49"
+  (alt iriRange literalRange languageRange (seq "." (plus exclusion))))
+ (rule exclusion "50" (seq "-" (alt iri literal LANGTAG) (opt "~")))
+ (rule iriRange "51" (seq iri (opt (seq "~" (star iriExclusion)))))
+ (rule iriExclusion "52" (seq "-" iri (opt "~")))
+ (rule literalRange "53" (seq literal (opt (seq "~" (star literalExclusion)))))
+ (rule literalExclusion "54" (seq "-" literal (opt "~")))
+ (rule languageRange "55" (seq LANGTAG (opt (seq "~" (star languageExclusion)))))
+ (rule languageExclusion "56" (seq "-" LANGTAG (opt "~")))
+ (rule include "57" (seq "&" tripleExprLabel))
+ (rule annotation "58" (seq "//" predicate (alt iri literal)))
+ (rule semanticActions "59" (star codeDecl))
+ (rule codeDecl "60" (seq "%" iri (alt CODE "%")))
+ (rule literal "13t" (alt rdfLiteral numericLiteral booleanLiteral))
+ (rule predicate "61" (alt iri RDF_TYPE))
+ (rule datatype "62" (seq iri))
+ (rule shapeExprLabel "63" (alt iri blankNode))
+ (rule tripleExprLabel "64" (alt iri blankNode))
+ (rule numericLiteral "16t" (alt DOUBLE DECIMAL INTEGER))
+ (rule rdfLiteral "65" (alt langString (seq string (opt (seq "^^" datatype)))))
+ (rule booleanLiteral "134s" (alt "true" "false"))
+ (rule string "135s"
+  (alt STRING_LITERAL_LONG1 STRING_LITERAL_LONG2 STRING_LITERAL1 STRING_LITERAL2))
+ (rule langString "66"
+  (alt LANG_STRING_LITERAL1 LANG_STRING_LITERAL_LONG1 LANG_STRING_LITERAL2
+   LANG_STRING_LITERAL_LONG2 ))
+ (rule iri "136s" (alt IRIREF prefixedName))
+ (rule prefixedName "137s" (alt PNAME_LN PNAME_NS))
+ (rule blankNode "138s" (seq BLANK_NODE_LABEL))
+ (terminals _terminals (seq))
+ (terminal CODE "67" (seq "{" (range "^%\\] | '\\'[%\\] | UCHAR)* '%''}'")))
+ (terminal REPEAT_RANGE "68" (seq "{" INTEGER (opt (seq "," (opt (alt INTEGER "*")))) "}"))
+ (terminal RDF_TYPE "69" (seq "a"))
  (terminal IRIREF "18t"
   (seq "<"
    (range
     "^#x00-#x20<>\"{}|^`\\] | UCHAR)* '>' /* #x00=NULL #01-#x1F=control codes #x20=space */"
    )) )
- (rule _shapeAtom_1 "18.1" (seq nonLitNodeConstraint _shapeAtom_4))
- (rule _shapeAtom_2 "18.2" (seq shapeOrRef _shapeAtom_5))
- (rule _shapeAtom_3 "18.3" (seq "(" shapeExpression ")"))
- (rule _shapeAtom_4 "18.4" (cleanup opt) (alt _empty shapeOrRef))
- (rule _shapeAtom_5 "18.5" (cleanup opt) (alt _empty nonLitNodeConstraint))
- (rule shapeAtomNoRef "19"
-  (alt _shapeAtomNoRef_1 litNodeConstraint _shapeAtomNoRef_2 _shapeAtomNoRef_3 "."))
- (terminal INTEGER "19t" (seq (opt (range "+-")) (plus (range "0-9"))))
- (rule _shapeAtomNoRef_1 "19.1" (seq nonLitNodeConstraint _shapeAtomNoRef_4))
- (rule _shapeAtomNoRef_2 "19.2" (seq shapeDefinition _shapeAtomNoRef_5))
- (rule _shapeAtomNoRef_3 "19.3" (seq "(" shapeExpression ")"))
- (rule _shapeAtomNoRef_4 "19.4" (cleanup opt) (alt _empty shapeOrRef))
- (rule _shapeAtomNoRef_5 "19.5" (cleanup opt) (alt _empty nonLitNodeConstraint))
- (terminal DECIMAL "20t" (seq (opt (range "+-")) (star (range "0-9")) "." (plus (range "0-9"))))
- (rule inlineShapeAtom "20"
-  (alt _inlineShapeAtom_1 litNodeConstraint _inlineShapeAtom_2
-   _inlineShapeAtom_3 "." ))
- (rule _inlineShapeAtom_1 "20.1" (seq nonLitNodeConstraint _inlineShapeAtom_4))
- (rule _inlineShapeAtom_2 "20.2" (seq inlineShapeOrRef _inlineShapeAtom_5))
- (rule _inlineShapeAtom_3 "20.3" (seq "(" shapeExpression ")"))
- (rule _inlineShapeAtom_4 "20.4" (cleanup opt) (alt _empty inlineShapeOrRef))
- (rule _inlineShapeAtom_5 "20.5" (cleanup opt) (alt _empty nonLitNodeConstraint))
- (terminal DOUBLE "21t"
-  (seq
-   (opt (range "+-"))
-   (alt
-    (seq (plus (range "0-9")) "." (star (range "0-9")) EXPONENT)
-    (seq (opt ".") (plus (range "0-9")) EXPONENT)) ))
- (rule shapeOrRef "21" (alt shapeDefinition shapeRef))
- (rule inlineShapeOrRef "22" (alt inlineShapeDefinition shapeRef))
- (rule shapeRef "23" (alt ATPNAME_LN ATPNAME_NS _shapeRef_1))
- (rule _shapeRef_1 "23.1" (seq "@" shapeLabel))
- (rule litNodeConstraint "24"
-  (alt _litNodeConstraint_1 _litNodeConstraint_2 _litNodeConstraint_3
-   _litNodeConstraint_4 ))
- (rule _litNodeConstraint_1 "24.1" (seq "LITERAL" _litNodeConstraint_5))
- (rule _litNodeConstraint_10 "24.10"
-  (cleanup merge)
-  (seq xsFacet _litNodeConstraint_9))
- (rule _litNodeConstraint_11 "24.11" (cleanup star) (alt _empty _litNodeConstraint_12))
- (rule _litNodeConstraint_12 "24.12"
-  (cleanup merge)
-  (seq numericFacet _litNodeConstraint_11))
- (rule _litNodeConstraint_2 "24.2" (seq datatype _litNodeConstraint_7))
- (rule _litNodeConstraint_3 "24.3" (seq valueSet _litNodeConstraint_9))
- (rule _litNodeConstraint_4 "24.4"
-  (cleanup plus)
-  (seq numericFacet _litNodeConstraint_11))
- (rule _litNodeConstraint_5 "24.5" (cleanup star) (alt _empty _litNodeConstraint_6))
- (rule _litNodeConstraint_6 "24.6" (cleanup merge) (seq xsFacet _litNodeConstraint_5))
- (rule _litNodeConstraint_7 "24.7" (cleanup star) (alt _empty _litNodeConstraint_8))
- (rule _litNodeConstraint_8 "24.8" (cleanup merge) (seq xsFacet _litNodeConstraint_7))
- (rule _litNodeConstraint_9 "24.9" (cleanup star) (alt _empty _litNodeConstraint_10))
- (rule nonLitNodeConstraint "25"
-  (alt _nonLitNodeConstraint_1 _nonLitNodeConstraint_2))
- (rule _nonLitNodeConstraint_1 "25.1" (seq nonLiteralKind _nonLitNodeConstraint_3))
- (rule _nonLitNodeConstraint_2 "25.2"
-  (cleanup plus)
-  (seq stringFacet _nonLitNodeConstraint_5))
- (rule _nonLitNodeConstraint_3 "25.3"
-  (cleanup star)
-  (alt _empty _nonLitNodeConstraint_4))
- (rule _nonLitNodeConstraint_4 "25.4"
-  (cleanup merge)
-  (seq stringFacet _nonLitNodeConstraint_3))
- (rule _nonLitNodeConstraint_5 "25.5"
-  (cleanup star)
-  (alt _empty _nonLitNodeConstraint_6))
- (rule _nonLitNodeConstraint_6 "25.6"
-  (cleanup merge)
-  (seq stringFacet _nonLitNodeConstraint_5))
- (terminal UCHAR "26t"
-  (alt (seq "\\u" HEX HEX HEX HEX) (seq "\\U" HEX HEX HEX HEX HEX HEX HEX HEX)))
- (rule nonLiteralKind "26" (alt "IRI" "BNODE" "NONLITERAL"))
- (rule xsFacet "27" (alt stringFacet numericFacet))
- (rule stringFacet "28" (alt _stringFacet_1 REGEXP))
- (rule _stringFacet_1 "28.1" (seq stringLength INTEGER))
- (rule stringLength "29" (alt "LENGTH" "MINLENGTH" "MAXLENGTH"))
- (rule numericFacet "30" (alt _numericFacet_1 _numericFacet_2))
- (rule _numericFacet_1 "30.1" (seq numericRange numericLiteral))
- (rule _numericFacet_2 "30.2" (seq numericLength INTEGER))
- (rule numericRange "31"
-  (alt "MININCLUSIVE" "MINEXCLUSIVE" "MAXINCLUSIVE" "MAXEXCLUSIVE"))
- (rule numericLength "32" (alt "TOTALDIGITS" "FRACTIONDIGITS"))
- (rule shapeDefinition "33"
-  (seq _shapeDefinition_1 "{" _shapeDefinition_2 "}" _shapeDefinition_3
-   semanticActions ))
- (rule _shapeDefinition_1 "33.1" (cleanup star) (alt _empty _shapeDefinition_5))
- (rule _shapeDefinition_2 "33.2" (cleanup opt) (alt _empty tripleExpression))
- (rule _shapeDefinition_3 "33.3" (cleanup star) (alt _empty _shapeDefinition_6))
- (rule _shapeDefinition_4 "33.4" (alt includeSet extraPropertySet "CLOSED"))
- (rule _shapeDefinition_5 "33.5"
-  (cleanup merge)
-  (seq _shapeDefinition_4 _shapeDefinition_1))
- (rule _shapeDefinition_6 "33.6" (cleanup merge) (seq annotation _shapeDefinition_3))
- (rule inlineShapeDefinition "34"
-  (seq _inlineShapeDefinition_1 "{" _inlineShapeDefinition_2 "}"))
- (rule _inlineShapeDefinition_1 "34.1"
-  (cleanup star)
-  (alt _empty _inlineShapeDefinition_4))
- (rule _inlineShapeDefinition_2 "34.2" (cleanup opt) (alt _empty tripleExpression))
- (rule _inlineShapeDefinition_3 "34.3" (alt includeSet extraPropertySet "CLOSED"))
- (rule _inlineShapeDefinition_4 "34.4"
-  (cleanup merge)
-  (seq _inlineShapeDefinition_3 _inlineShapeDefinition_1))
- (rule extraPropertySet "35" (seq "EXTRA" _extraPropertySet_1))
- (rule _extraPropertySet_1 "35.1" (cleanup plus) (seq predicate _extraPropertySet_2))
- (rule _extraPropertySet_2 "35.2" (cleanup star) (alt _empty _extraPropertySet_3))
- (rule _extraPropertySet_3 "35.3" (cleanup merge) (seq predicate _extraPropertySet_2))
- (rule tripleExpression "36" (seq oneOfTripleExpr))
- (rule oneOfTripleExpr "37" (seq groupTripleExpr _oneOfTripleExpr_1))
- (rule _oneOfTripleExpr_1 "37.1" (cleanup star) (alt _empty _oneOfTripleExpr_3))
- (rule _oneOfTripleExpr_2 "37.2" (seq "|" groupTripleExpr))
- (rule _oneOfTripleExpr_3 "37.3"
-  (cleanup merge)
-  (seq _oneOfTripleExpr_2 _oneOfTripleExpr_1))
- (rule groupTripleExpr "40" (seq unaryTripleExpr _groupTripleExpr_1))
- (rule _groupTripleExpr_1 "40.1" (cleanup star) (alt _empty _groupTripleExpr_3))
- (rule _groupTripleExpr_2 "40.2" (seq ";" _groupTripleExpr_4))
- (rule _groupTripleExpr_3 "40.3"
-  (cleanup merge)
-  (seq _groupTripleExpr_2 _groupTripleExpr_1))
- (rule _groupTripleExpr_4 "40.4" (cleanup opt) (alt _empty unaryTripleExpr))
- (rule _productionLabel_1 "43a.1" (alt iri blankNode))
- (rule productionLabel "43a" (seq "$" _productionLabel_1))
- (rule unaryTripleExpr "43" (alt _unaryTripleExpr_1 include))
- (rule _unaryTripleExpr_1 "43.1" (seq _unaryTripleExpr_2 _unaryTripleExpr_3))
- (rule _unaryTripleExpr_2 "43.2" (cleanup opt) (alt _empty productionLabel))
- (rule _unaryTripleExpr_3 "43.3" (alt tripleConstraint bracketedTripleExpr))
- (rule bracketedTripleExpr "44"
-  (seq "(" oneOfTripleExpr ")" _bracketedTripleExpr_1 _bracketedTripleExpr_2
-   semanticActions ))
- (rule _bracketedTripleExpr_1 "44.1" (cleanup opt) (alt _empty cardinality))
- (rule _bracketedTripleExpr_2 "44.2"
-  (cleanup star)
-  (alt _empty _bracketedTripleExpr_3))
- (rule _bracketedTripleExpr_3 "44.3"
-  (cleanup merge)
-  (seq annotation _bracketedTripleExpr_2))
- (rule tripleConstraint "45"
-  (seq _tripleConstraint_1 predicate inlineShapeExpression _tripleConstraint_2
-   _tripleConstraint_3 semanticActions ))
- (rule _tripleConstraint_1 "45.1" (cleanup opt) (alt _empty senseFlags))
- (rule _tripleConstraint_2 "45.2" (cleanup opt) (alt _empty cardinality))
- (rule _tripleConstraint_3 "45.3" (cleanup star) (alt _empty _tripleConstraint_4))
- (rule _tripleConstraint_4 "45.4" (cleanup merge) (seq annotation _tripleConstraint_3))
- (rule cardinality "46" (alt "*" "+" "?" REPEAT_RANGE))
- (rule senseFlags "47" (seq "^"))
- (rule valueSet "48" (seq "[" _valueSet_1 "]"))
- (rule _valueSet_1 "48.1" (cleanup star) (alt _empty _valueSet_2))
- (rule _valueSet_2 "48.2" (cleanup merge) (seq valueSetValue _valueSet_1))
- (rule valueSetValue "49" (alt iriRange literalRange languageRange _valueSetValue_1))
- (rule _valueSetValue_1 "49.1" (seq "." _valueSetValue_2))
- (rule _valueSetValue_2 "49.2" (cleanup plus) (seq exclusion _valueSetValue_3))
- (rule _valueSetValue_3 "49.3" (cleanup star) (alt _empty _valueSetValue_4))
- (rule _valueSetValue_4 "49.4" (cleanup merge) (seq exclusion _valueSetValue_3))
- (rule exclusion "50" (seq "-" _exclusion_1 _exclusion_2))
- (rule _exclusion_1 "50.1" (alt iri literal LANGTAG))
- (rule _exclusion_2 "50.2" (cleanup opt) (alt _empty "~"))
- (rule iriRange "51" (seq iri _iriRange_1))
- (rule _iriRange_1 "51.1" (cleanup opt) (alt _empty _iriRange_2))
- (rule _iriRange_2 "51.2" (seq "~" _iriRange_3))
- (rule _iriRange_3 "51.3" (cleanup star) (alt _empty _iriRange_4))
- (rule _iriRange_4 "51.4" (cleanup merge) (seq iriExclusion _iriRange_3))
- (rule iriExclusion "52" (seq "-" iri _iriExclusion_1))
- (rule _iriExclusion_1 "52.1" (cleanup opt) (alt _empty "~"))
- (rule literalRange "53" (seq literal _literalRange_1))
- (rule _literalRange_1 "53.1" (cleanup opt) (alt _empty _literalRange_2))
- (rule _literalRange_2 "53.2" (seq "~" _literalRange_3))
- (rule _literalRange_3 "53.3" (cleanup star) (alt _empty _literalRange_4))
- (rule _literalRange_4 "53.4" (cleanup merge) (seq literalExclusion _literalRange_3))
- (rule literalExclusion "54" (seq "-" literal _literalExclusion_1))
- (rule _literalExclusion_1 "54.1" (cleanup opt) (alt _empty "~"))
- (rule languageRange "55" (seq LANGTAG _languageRange_1))
- (rule _languageRange_1 "55.1" (cleanup opt) (alt _empty _languageRange_2))
- (rule _languageRange_2 "55.2" (seq "~" _languageRange_3))
- (rule _languageRange_3 "55.3" (cleanup star) (alt _empty _languageRange_4))
- (rule _languageRange_4 "55.4"
-  (cleanup merge)
-  (seq languageExclusion _languageRange_3))
- (rule languageExclusion "56" (seq "-" LANGTAG _languageExclusion_1))
- (rule _languageExclusion_1 "56.1" (cleanup opt) (alt _empty "~"))
- (rule include "57" (seq "&" shapeLabel))
- (rule annotation "58" (seq "//" predicate _annotation_1))
- (rule _annotation_1 "58.1" (alt iri literal))
- (rule semanticActions "59" (cleanup star) (alt _empty _semanticActions_1))
- (rule _semanticActions_1 "59.1" (cleanup merge) (seq codeDecl semanticActions))
- (rule codeDecl "60" (seq "%" iri _codeDecl_1))
- (rule _codeDecl_1 "60.1" (alt CODE "%"))
- (rule predicate "61" (alt iri RDF_TYPE))
- (rule datatype "62" (seq iri))
- (rule shapeLabel "63" (alt iri blankNode))
- (rule langString "66"
-  (alt LANG_STRING_LITERAL1 LANG_STRING_LITERAL_LONG1 LANG_STRING_LITERAL2
-   LANG_STRING_LITERAL_LONG2 ))
- (terminal CODE "67" (seq "{" (range "^%\\] | '\\'[%\\] | UCHAR)* '%''}'")))
- (terminal REPEAT_RANGE "68" (seq "{" INTEGER (opt (seq "," (opt (alt INTEGER "*")))) "}"))
- (terminal RDF_TYPE "69" (seq "a"))
+ (terminal PNAME_NS "140s" (seq (opt PN_PREFIX) ":"))
+ (terminal PNAME_LN "141s" (seq PNAME_NS PN_LOCAL))
  (terminal ATPNAME_NS "70" (seq "@" (opt PN_PREFIX) ":"))
  (terminal ATPNAME_LN "71" (seq "@" PNAME_NS PN_LOCAL))
  (terminal REGEXP "72"
@@ -275,31 +129,18 @@
    (plus (alt (range "^/\\\n\r") (seq "\\" (range "nrt\\|.?*+(){}$-[]^/")) UCHAR))
    "/"
    (star (range "smix"))) )
- (terminal LANG_STRING_LITERAL1 "73"
-  (seq "'" (star (alt (range "^#x27#x5C#xA#xD") ECHAR UCHAR)) "'" LANGTAG))
- (terminal LANG_STRING_LITERAL2 "74"
-  (seq "\"" (star (alt (range "^#x22#x5C#xA#xD") ECHAR UCHAR)) "\"" LANGTAG))
- (terminal LANG_STRING_LITERAL_LONG1 "75"
-  (seq "'''" (seq (opt (alt "'" "''")) (range "^'\\] | ECHAR | UCHAR))* \"'''\" LANGTAG"))))
- (terminal LANG_STRING_LITERAL_LONG2 "76"
-  (seq "\"\"\""
-   (seq (opt (alt "\"" "\"\"")) (range "^\"\\] | ECHAR | UCHAR))* '\"\"\"' LANGTAG"))) )
- (rule _rdfLiteral_3 "129s.3" (seq "^^" datatype))
- (rule rdfLiteral "129s" (alt langString _rdfLiteral_1))
- (rule _rdfLiteral_1 "129s.1" (seq string _rdfLiteral_2))
- (rule _rdfLiteral_2 "129s.2" (cleanup opt) (alt _empty _rdfLiteral_3))
- (rule booleanLiteral "134s" (alt "true" "false"))
- (rule string "135s"
-  (alt STRING_LITERAL1 STRING_LITERAL_LONG1 STRING_LITERAL2 STRING_LITERAL_LONG2))
- (rule iri "136s" (alt IRIREF prefixedName))
- (rule prefixedName "137s" (alt PNAME_LN PNAME_NS))
- (rule blankNode "138s" (seq BLANK_NODE_LABEL))
- (terminal PNAME_NS "140s" (seq (opt PN_PREFIX) ":"))
- (terminal PNAME_LN "141s" (seq PNAME_NS PN_LOCAL))
  (terminal BLANK_NODE_LABEL "142s"
   (seq "_:" (alt PN_CHARS_U (range "0-9")) (opt (seq (star (alt PN_CHARS ".")) PN_CHARS))))
  (terminal LANGTAG "145s"
   (seq "@" (plus (range "a-zA-Z")) (star (seq "-" (plus (range "a-zA-Z0-9"))))))
+ (terminal INTEGER "19t" (seq (opt (range "+-")) (plus (range "0-9"))))
+ (terminal DECIMAL "20t" (seq (opt (range "+-")) (star (range "0-9")) "." (plus (range "0-9"))))
+ (terminal DOUBLE "21t"
+  (seq
+   (opt (range "+-"))
+   (alt
+    (seq (plus (range "0-9")) "." (star (range "0-9")) EXPONENT)
+    (seq (opt ".") (plus (range "0-9")) EXPONENT)) ))
  (terminal EXPONENT "155s" (seq (range "eE") (opt (range "+-")) (plus (range "0-9"))))
  (terminal STRING_LITERAL1 "156s"
   (seq "'" (star (alt (range "^#x27#x5C#xA#xD") ECHAR UCHAR)) "'"))
@@ -309,6 +150,17 @@
   (seq "'''" (seq (opt (alt "'" "''")) (range "^'\\] | ECHAR | UCHAR))* \"'''\""))))
  (terminal STRING_LITERAL_LONG2 "159s"
   (seq "\"\"\"" (seq (opt (alt "\"" "\"\"")) (range "^\"\\] | ECHAR | UCHAR))* '\"\"\"'"))))
+ (terminal LANG_STRING_LITERAL1 "73"
+  (seq "'" (star (alt (range "^#x27#x5C#xA#xD") ECHAR UCHAR)) "'" LANGTAG))
+ (terminal LANG_STRING_LITERAL2 "74"
+  (seq "\"" (star (alt (range "^#x22#x5C#xA#xD") ECHAR UCHAR)) "\"" LANGTAG))
+ (terminal LANG_STRING_LITERAL_LONG1 "75"
+  (seq "'''" (seq (opt (alt "'" "''")) (range "^'\\] | ECHAR | UCHAR))* \"'''\" LANGTAG"))))
+ (terminal LANG_STRING_LITERAL_LONG2 "76"
+  (seq "\"\"\""
+   (seq (opt (alt "\"" "\"\"")) (range "^\"\\] | ECHAR | UCHAR))* '\"\"\"' LANGTAG"))) )
+ (terminal UCHAR "26t"
+  (alt (seq "\\u" HEX HEX HEX HEX) (seq "\\U" HEX HEX HEX HEX HEX HEX HEX HEX)))
  (terminal ECHAR "160s" (seq "\\" (range "tbnrf\\\"'")))
  (terminal PN_CHARS_BASE "164s"
   (alt
@@ -345,4 +197,5 @@
  (terminal PN_LOCAL_ESC "173s"
   (seq "\\"
    (alt "_" "~" "." "-" "!" "$" "&" "'" "(" ")" "*" "+" "," ";" "=" "/" "?" "#"
-    "@" "%" )) ))
+    "@" "%" )) )
+ (pass _pass (alt (plus (range " \t\r\n")) (seq "#" (star (range "^\r\n"))))))
