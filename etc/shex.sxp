@@ -1,22 +1,18 @@
 (
  (rule shexDoc "1"
   (seq (star directive) (opt (seq (alt notStartAction startActions) (star statement)))))
- (rule directive "2" (alt baseDecl prefixDecl))
+ (rule directive "2" (alt baseDecl prefixDecl importDecl))
  (rule baseDecl "3" (seq "BASE" IRIREF))
  (rule prefixDecl "4" (seq "PREFIX" PNAME_NS IRIREF))
+ (rule importDecl "4.5" (seq "IMPORT" IRIREF))
  (rule notStartAction "5" (alt start shapeExprDecl))
- (rule start "6" (seq "START" "=" (opt "NOT") (alt shapeAtomNoRef shapeRef) (opt shapeOr)))
+ (rule start "6" (seq "START" "=" inlineShapeExpression))
  (rule startActions "7" (plus codeDecl))
  (rule statement "8" (alt directive notStartAction))
  (rule shapeExprDecl "9" (seq shapeExprLabel (alt shapeExpression "EXTERNAL")))
- (rule shapeExpression "10"
-  (alt
-   (seq (opt "NOT") shapeAtomNoRef (opt shapeOr))
-   (seq "NOT" shapeRef (opt shapeOr))
-   (seq shapeRef shapeOr)) )
+ (rule shapeExpression "10" (seq shapeOr))
  (rule inlineShapeExpression "11" (seq inlineShapeOr))
- (rule shapeOr "12"
-  (alt (plus (seq "OR" shapeAnd)) (seq (plus (seq "AND" shapeNot)) (star (seq "OR" shapeAnd)))))
+ (rule shapeOr "12" (seq shapeAnd (star (seq "OR" shapeAnd))))
  (rule inlineShapeOr "13" (seq inlineShapeAnd (star (seq "OR" inlineShapeAnd))))
  (rule shapeAnd "14" (seq shapeNot (star (seq "AND" shapeNot))))
  (rule inlineShapeAnd "15" (seq inlineShapeNot (star (seq "AND" inlineShapeNot))))
@@ -43,7 +39,6 @@
  (rule litNodeConstraint "24"
   (alt
    (seq "LITERAL" (star xsFacet))
-   (seq nonLiteralKind (star stringFacet))
    (seq datatype (star xsFacet))
    (seq valueSet (star xsFacet))
    (plus numericFacet)) )
@@ -70,10 +65,11 @@
  (rule oneOfTripleExpr "37" (seq groupTripleExpr (star (seq "|" groupTripleExpr))))
  (rule groupTripleExpr "40" (seq unaryTripleExpr (star (seq ";" (opt unaryTripleExpr)))))
  (rule unaryTripleExpr "43"
-  (alt (seq (opt productionLabel) (alt tripleConstraint bracketedTripleExpr)) include))
- (rule productionLabel "43a" (seq "$" (alt iri blankNode)))
+  (alt
+   (seq (opt (seq "$" tripleExprLabel)) (alt tripleConstraint bracketedTripleExpr))
+   include ))
  (rule bracketedTripleExpr "44"
-  (seq "(" oneOfTripleExpr ")" (opt cardinality) (star annotation) semanticActions))
+  (seq "(" tripleExpression ")" (opt cardinality) (star annotation) semanticActions))
  (rule tripleConstraint "45"
   (seq
    (opt senseFlags) predicate inlineShapeExpression
@@ -89,7 +85,10 @@
  (rule iriExclusion "52" (seq "-" iri (opt "~")))
  (rule literalRange "53" (seq literal (opt (seq "~" (star literalExclusion)))))
  (rule literalExclusion "54" (seq "-" literal (opt "~")))
- (rule languageRange "55" (seq LANGTAG (opt (seq "~" (star languageExclusion)))))
+ (rule languageRange "55"
+  (alt
+   (seq LANGTAG (opt (seq "~" (star languageExclusion))))
+   (seq "@" "~" (star languageExclusion))) )
  (rule languageExclusion "56" (seq "-" LANGTAG (opt "~")))
  (rule include "57" (seq "&" tripleExprLabel))
  (rule annotation "58" (seq "//" predicate (alt iri literal)))
