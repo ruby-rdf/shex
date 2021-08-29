@@ -573,9 +573,9 @@ module ShEx
     start_production(:bracketedTripleExpr, as_hash: true)
     production(:bracketedTripleExpr) do |value|
       case expression = value[:tripleExpression]
-      when Algebra::OneOf, Algebra::EachOf
+      when Algebra::TripleExpression
       else
-        error(nil, "Bracketed Expression requires multiple contained expressions", production: :bracketedTripleExpr)
+        error(nil, "Bracketed Expression requires contained triple expression", production: :bracketedTripleExpr)
       end
       cardinality = value[:_bracketedTripleExpr_1] || {}
       attrs = [
