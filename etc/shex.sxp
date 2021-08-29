@@ -197,4 +197,8 @@
   (seq "\\"
    (alt "_" "~" "." "-" "!" "$" "&" "'" "(" ")" "*" "+" "," ";" "=" "/" "?" "#"
     "@" "%" )) )
- (pass _pass (alt (plus (range " \t\r\n")) (seq "#" (star (range "^\r\n"))))))
+ (pass _pass
+  (alt
+   (plus (range " \t\r\n"))
+   (seq "#" (star (range "^\r\n")))
+   (seq "/*" (star (alt (range "^*") (seq "*" (alt (range "^/") "\\/")))) "*/")) ))
