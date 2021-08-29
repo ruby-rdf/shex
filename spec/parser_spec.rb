@@ -1351,8 +1351,6 @@ describe ShEx::Parser do
               validate = false # Has self-included shape
             when '1ShapeProductionCollision'
               pending "undetected self reference"
-            when 'openopen1dotOr1dotclose'
-              pending("Our grammar allows nested bracketedTripleExpr")
             when '1literalPattern_with_ECHAR_escape_1',
                  '1literalPattern_with_REGEXP_bare_as_escapes',
                  '1literalPattern_with_REGEXP_escapes_escaped',

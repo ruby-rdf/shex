@@ -432,6 +432,8 @@ module ShEx::Algebra
           case self
           when And, Or
             (obj['shapeExprs'] ||= []) << op.to_h
+          when Not
+            obj['shapeExpr'] = op.to_h
           else
             obj['valueExpr'] = op.to_h
           end

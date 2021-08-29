@@ -272,7 +272,7 @@ module ShEx
     start_production(:shapeNot, as_hash: true)
     production(:shapeNot) do |value|
       atom = value[:shapeAtom]
-      value[:_shapeNot_1] ? Algebra::Not.new(atom) : atom
+      value[:_shapeNot_1] ? Algebra::Not.new(atom || Algebra::Shape.new()) : atom
     end
     start_production(:_shapeNot_1, insensitive_strings: :lower)
 
@@ -280,7 +280,7 @@ module ShEx
     start_production(:inlineShapeNot, as_hash: true)
     production(:inlineShapeNot) do |value|
       atom = value[:inlineShapeAtom]
-      value[:_inlineShapeNot] ? Algebra::Not.new(atom) : atom
+      value[:_inlineShapeNot_1] ? Algebra::Not.new(atom || Algebra::Shape.new()) : atom
     end
     start_production(:_inlineShapeNot_1, insensitive_strings: :lower)
 
