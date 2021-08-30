@@ -25,7 +25,7 @@ module ShEx::Algebra
     end
 
     # (see Operator#initialize)
-    def initialize(*operands)
+    def initialize(*operands, **options)
       super
       each_descendant do |op|
         # Set schema everywhere

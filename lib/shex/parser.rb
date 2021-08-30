@@ -154,7 +154,7 @@ module ShEx
       operands += semacts
       operands += starts
       operands << expressions.unshift(:shapes) unless expressions.empty?
-      Algebra::Schema.new(*operands, **options)
+      Algebra::Schema.new(*operands, **self.options)
     end
     start_production(:_shexDoc_2, as_hash: true)
     start_production(:_shexDoc_3, as_hash: true)
@@ -179,14 +179,14 @@ module ShEx
     # [4]     importDecl            ::= "IMPORT" IRIREF
     start_production(:importDecl, as_hash: true, insensitive_strings: :lower)
     production(:importDecl) do |value|
-      Algebra::Import.new(value[:IRIREF])
+      Algebra::Import.new(value[:IRIREF], **self.options)
     end
 
     # [5]     notStartAction        ::= start | shapeExprDecl
     # [6]     start                 ::= "START" '=' inlineShapeExpression
     start_production(:start, as_hash: true, insensitive_strings: :lower)
     production(:start) do |value|
-      Algebra::Start.new(value[:inlineShapeExpression])
+      Algebra::Start.new(value[:inlineShapeExpression], **self.options)
     end
 
     # [7]     startActions          ::= codeDecl+
@@ -201,9 +201,9 @@ module ShEx
       when Algebra::NodeConstraint, Algebra::Or, Algebra::And, Algebra::Not, Algebra::Shape, RDF::Resource
         value[:_shapeExprDecl_1]
       when /external/i
-         Algebra::External.new()
+         Algebra::External.new(**options)
       else
-        Algebra::Shape.new()
+        Algebra::Shape.new(**options)
       end
       expression.id = id if id && !expression.is_a?(RDF::Resource)
 
@@ -227,7 +227,7 @@ module ShEx
         value[:shapeAnd]
       else
         lhs = value[:_shapeOr_1].map {|v| v.last[:shapeAnd]}
-        Algebra::Or.new(value[:shapeAnd], *lhs)
+        Algebra::Or.new(value[:shapeAnd], *lhs, **self.options)
       end
     end
     start_production(:_shapeOr_2, insensitive_strings: :lower)
@@ -239,7 +239,7 @@ module ShEx
         value[:inlineShapeAnd]
       else
         lhs = value[:_inlineShapeOr_1].map {|v| v.last[:inlineShapeAnd]}
-        Algebra::Or.new(value[:inlineShapeAnd], *lhs)
+        Algebra::Or.new(value[:inlineShapeAnd], *lhs, **self.options)
       end
     end
     start_production(:_inlineShapeOr_2, insensitive_strings: :lower)
@@ -251,7 +251,7 @@ module ShEx
         value[:shapeNot]
       else
         lhs = value[:_shapeAnd_1].map {|v| v.last[:shapeNot]}
-        Algebra::And.new(value[:shapeNot], *lhs)
+        Algebra::And.new(value[:shapeNot], *lhs, **self.options)
       end
     end
     start_production(:_shapeAnd_2, insensitive_strings: :lower)
@@ -263,7 +263,7 @@ module ShEx
         value[:inlineShapeNot]
       else
         lhs = value[:_inlineShapeAnd_1].map {|v| v.last[:inlineShapeNot]}
-        Algebra::And.new(value[:inlineShapeNot], *lhs)
+        Algebra::And.new(value[:inlineShapeNot], *lhs, **self.options)
       end
     end
     start_production(:_inlineShapeAnd_2, insensitive_strings: :lower)
@@ -272,7 +272,7 @@ module ShEx
     start_production(:shapeNot, as_hash: true)
     production(:shapeNot) do |value|
       atom = value[:shapeAtom]
-      value[:_shapeNot_1] ? Algebra::Not.new(atom || Algebra::Shape.new()) : atom
+      value[:_shapeNot_1] ? Algebra::Not.new(atom || Algebra::Shape.new(**options), **self.options) : atom
     end
     start_production(:_shapeNot_1, insensitive_strings: :lower)
 
@@ -280,7 +280,7 @@ module ShEx
     start_production(:inlineShapeNot, as_hash: true)
     production(:inlineShapeNot) do |value|
       atom = value[:inlineShapeAtom]
-      value[:_inlineShapeNot_1] ? Algebra::Not.new(atom || Algebra::Shape.new()) : atom
+      value[:_inlineShapeNot_1] ? Algebra::Not.new(atom || Algebra::Shape.new(**options), **self.options) : atom
     end
     start_production(:_inlineShapeNot_1, insensitive_strings: :lower)
 
@@ -306,7 +306,7 @@ module ShEx
       case expressions.length
       when 0 then nil
       when 1 then expressions.first
-      else Algebra::And.new(*expressions)
+      else Algebra::And.new(*expressions, **self.options)
       end
     end
     start_production(:_shapeAtom_1, as_hash: true)
@@ -337,7 +337,7 @@ module ShEx
       case expressions.length
       when 0 then nil
       when 1 then expressions.first
-      else Algebra::And.new(*expressions)
+      else Algebra::And.new(*expressions, **self.options)
       end
     end
     start_production(:_shapeAtomNoRef_1, as_hash: true)
@@ -368,7 +368,7 @@ module ShEx
       case expressions.length
       when 0 then nil
       when 1 then expressions.first
-      else Algebra::And.new(*expressions)
+      else Algebra::And.new(*expressions, **self.options)
       end
     end
     start_production(:_inlineShapeAtom_1, as_hash: true)
@@ -394,7 +394,7 @@ module ShEx
       # LITERAL" xsFacet*
       facets = value[:_litNodeConstraint_5]
       validate_facets(facets, :litNodeConstraint)
-      Algebra::NodeConstraint.new(:literal, *facets)
+      Algebra::NodeConstraint.new(:literal, *facets, **self.options)
     end
     start_production(:_litNodeConstraint_2, as_hash: true)
     production(:_litNodeConstraint_2) do |value|
@@ -411,7 +411,7 @@ module ShEx
       end
 
       attrs = [[:datatype, value[:datatype]]] + facets
-      Algebra::NodeConstraint.new(*attrs.compact)
+      Algebra::NodeConstraint.new(*attrs.compact, **self.options)
     end
     start_production(:_litNodeConstraint_3, as_hash: true)
     production(:_litNodeConstraint_3) do |value|
@@ -419,12 +419,12 @@ module ShEx
       facets = value[:_litNodeConstraint_7]
       validate_facets(facets, :litNodeConstraint)
       attrs = value[:valueSet]+ facets
-      Algebra::NodeConstraint.new(*attrs.compact)
+      Algebra::NodeConstraint.new(*attrs.compact, **self.options)
     end
     production(:_litNodeConstraint_4) do |value|
       # numericFacet+
       validate_facets(value, :litNodeConstraint)
-      Algebra::NodeConstraint.new(*value)
+      Algebra::NodeConstraint.new(*value, **self.options)
     end
 
     # [25]    nonLitNodeConstraint  ::= nonLiteralKind stringFacet*
@@ -435,12 +435,12 @@ module ShEx
       facets = Array(value[:_nonLitNodeConstraint_3])
       validate_facets(facets, :nonLitNodeConstraint)
       attrs = Array(value[:nonLiteralKind]) + facets
-      Algebra::NodeConstraint.new(*attrs.compact)
+      Algebra::NodeConstraint.new(*attrs.compact, **self.options)
     end
     production(:_nonLitNodeConstraint_2) do |value|
       # stringFacet+
       validate_facets(value, :nonLitNodeConstraint)
-      Algebra::NodeConstraint.new(*value)
+      Algebra::NodeConstraint.new(*value, **self.options)
     end
 
     def validate_facets(facets, prod)
@@ -534,7 +534,7 @@ module ShEx
       attrs += annotations
       attrs += semact
 
-      Algebra::Shape.new(*attrs)
+      Algebra::Shape.new(*attrs, **self.options)
     end
     private :shape_definition
 
@@ -553,7 +553,7 @@ module ShEx
     start_production(:oneOfTripleExpr, as_hash: true)
     production(:oneOfTripleExpr) do |value|
       expressions = [value[:groupTripleExpr]] + value[:_oneOfTripleExpr_1]
-      expressions.length == 1 ? expressions.first : Algebra::OneOf.new(*expressions)
+      expressions.length == 1 ? expressions.first : Algebra::OneOf.new(*expressions, **self.options)
     end
     production(:_oneOfTripleExpr_2) do |value|
       value.last[:groupTripleExpr]
@@ -563,7 +563,7 @@ module ShEx
     start_production(:groupTripleExpr, as_hash: true)
     production(:groupTripleExpr) do |value|
       expressions = [value[:unaryTripleExpr]] + value[:_groupTripleExpr_1]
-      expressions.length == 1 ? expressions.first : Algebra::EachOf.new(*expressions)
+      expressions.length == 1 ? expressions.first : Algebra::EachOf.new(*expressions, **self.options)
     end
     production(:_groupTripleExpr_2) do |value|
       value.last[:_groupTripleExpr_3]
@@ -616,7 +616,7 @@ module ShEx
       attrs += value[:_tripleConstraint_3]
       attrs += value[:semanticActions]
 
-      Algebra::TripleConstraint.new(*attrs) # unless attrs.empty?
+      Algebra::TripleConstraint.new(*attrs, **self.options) # unless attrs.empty?
     end
 
     # [46]    cardinality            ::= '*' | '+' | '?' | REPEAT_RANGE
@@ -637,7 +637,7 @@ module ShEx
 
     # [49]    valueSetValue         ::= iriRange | literalRange | languageRange | '.' exclusion+
     production(:valueSetValue) do |value|
-      Algebra::Value.new(value)
+      Algebra::Value.new(value, **self.options)
     end
     production(:_valueSetValue_1) do |value|
       # All exclusions must be consistent IRI/Literal/Language
@@ -647,17 +647,17 @@ module ShEx
         unless value.all? {|e| e.is_a?(Algebra::IriStem) || e.is_a?(RDF::URI)}
           error(nil, "Exclusions must all be IRI type")
         end
-        Algebra::IriStemRange.new(:wildcard, value.unshift(:exclusions))
+        Algebra::IriStemRange.new(:wildcard, value.unshift(:exclusions), **self.options)
       when Algebra::LiteralStem, RDF::Literal
         unless value.all? {|e| e.is_a?(Algebra::LiteralStem) || e.is_a?(RDF::Literal)}
           error(nil, "Exclusions must all be Literal type")
         end
-        Algebra::LiteralStemRange.new(:wildcard, value.unshift(:exclusions))
+        Algebra::LiteralStemRange.new(:wildcard, value.unshift(:exclusions), **self.options)
       else
         unless value.all? {|e| e.is_a?(Algebra::LanguageStem) || e.is_a?(String)}
           error(nil, "Exclusions must all be Language type")
         end
-        Algebra::LanguageStemRange.new(:wildcard, value.unshift(:exclusions))
+        Algebra::LanguageStemRange.new(:wildcard, value.unshift(:exclusions), **self.options)
       end
     end
 
@@ -666,9 +666,9 @@ module ShEx
     production(:exclusion) do |value|
       if value[:_exclusion_2]
         case value[:_exclusion_1]
-        when RDF::URI then Algebra::IriStem.new(value[:_exclusion_1])
-        when RDF::Literal then Algebra::LiteralStem.new(value[:_exclusion_1])
-        else Algebra::LanguageStem.new(value[:_exclusion_1])
+        when RDF::URI then Algebra::IriStem.new(value[:_exclusion_1], **self.options)
+        when RDF::Literal then Algebra::LiteralStem.new(value[:_exclusion_1], **self.options)
+        else Algebra::LanguageStem.new(value[:_exclusion_1], **self.options)
         end
       else
         value[:_exclusion_1]
@@ -681,9 +681,9 @@ module ShEx
       if value.last[:_iriRange_1]
         exclusions = value.last[:_iriRange_1].last[:_iriRange_3]
         if exclusions.empty?
-          Algebra::IriStem.new(iri)
+          Algebra::IriStem.new(iri, **self.options)
         else
-          Algebra::IriStemRange.new(iri, exclusions.unshift(:exclusions))
+          Algebra::IriStemRange.new(iri, exclusions.unshift(:exclusions), **self.options)
         end
       else
         iri
@@ -693,7 +693,7 @@ module ShEx
     # [52]    iriExclusion             ::= '-' iri '~'?
     start_production(:iriExclusion, as_hash: true)
     production(:iriExclusion) do |value|
-      value[:_iriExclusion_1] ? Algebra::IriStem.new(value[:iri]) : value[:iri]
+      value[:_iriExclusion_1] ? Algebra::IriStem.new(value[:iri], **self.options) : value[:iri]
     end
 
     # [53]    literalRange              ::= literal ('~' literalExclusion*)?
@@ -702,9 +702,9 @@ module ShEx
       if value.last[:_literalRange_1]
         exclusions = value.last[:_literalRange_1].last[:_literalRange_3]
         if exclusions.empty?
-          Algebra::LiteralStem.new(lit)
+          Algebra::LiteralStem.new(lit, **self.options)
         else
-          Algebra::LiteralStemRange.new(lit, exclusions.unshift(:exclusions))
+          Algebra::LiteralStemRange.new(lit, exclusions.unshift(:exclusions), **self.options)
         end
       else
         lit
@@ -715,7 +715,7 @@ module ShEx
     start_production(:literalExclusion, as_hash: true)
     production(:literalExclusion) do |value|
       val = value[:literal]
-      value[:_literalExclusion_1] ? Algebra::LiteralStem.new(val) : val
+      value[:_literalExclusion_1] ? Algebra::LiteralStem.new(val, **self.options) : val
     end
 
     # [55]    languageRange              ::= LANGTAG ('~' languageExclusion*)?
@@ -725,20 +725,20 @@ module ShEx
       exclusions = value[:_languageRange_3]  if value[:_languageRange_3]
       pattern = !!value[:_languageRange_3]
       if pattern && exclusions.empty?
-        Algebra::LanguageStem.new(value[:LANGTAG])
+        Algebra::LanguageStem.new(value[:LANGTAG], **self.options)
       elsif pattern
-        Algebra::LanguageStemRange.new(value[:LANGTAG], exclusions.unshift(:exclusions))
+        Algebra::LanguageStemRange.new(value[:LANGTAG], exclusions.unshift(:exclusions), **self.options)
       else
-        Algebra::Language.new(value[:LANGTAG])
+        Algebra::Language.new(value[:LANGTAG], **self.options)
       end
     end
     start_production(:_languageRange_2, as_hash: true)
     production(:_languageRange_2) do |value|
       exclusions = value[:_languageRange_6]
       if exclusions.empty?
-        Algebra::LanguageStem.new('')
+        Algebra::LanguageStem.new('', **self.options)
       else
-        Algebra::LanguageStemRange.new('', exclusions.unshift(:exclusions))
+        Algebra::LanguageStemRange.new('', exclusions.unshift(:exclusions), **self.options)
       end
     end
     production(:_languageRange_4) do |value|
@@ -749,7 +749,7 @@ module ShEx
     start_production(:languageExclusion, as_hash: true)
     production(:languageExclusion) do |value|
       val = value[:LANGTAG]
-      value[:_languageExclusion_1] ? Algebra::LanguageStem.new(val) : val
+      value[:_languageExclusion_1] ? Algebra::LanguageStem.new(val, **self.options) : val
     end
 
     # [57]     include               ::= '&' tripleExprLabel
@@ -760,7 +760,7 @@ module ShEx
     # [58]    annotation            ::= '//' predicate (iri | literal)
     start_production(:annotation, as_hash: true)
     production(:annotation) do |value|
-      Algebra::Annotation.new([:predicate, value[:predicate]], value[:_annotation_1])
+      Algebra::Annotation.new([:predicate, value[:predicate]], value[:_annotation_1], **self.options)
     end
 
     # [59]    semanticActions       ::= codeDecl*
@@ -769,7 +769,7 @@ module ShEx
     start_production(:codeDecl, as_hash: true)
     production(:codeDecl) do |value|
       code = value[:_codeDecl_1] unless value[:_codeDecl_1] == '%'
-      Algebra::SemAct.new(*[value[:iri], code].compact)
+      Algebra::SemAct.new(*[value[:iri], code].compact, **self.options)
     end
 
     # [13t]   literal               ::= rdfLiteral | numericLiteral | booleanLiteral

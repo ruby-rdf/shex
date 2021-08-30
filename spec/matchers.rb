@@ -9,13 +9,12 @@ JSON_STATE = JSON::State.new(
  )
 
  def parser(**options)
-   @debug = options[:progress] ? 2 : (options[:quiet] ? false : [])
    Proc.new do |input|
      case options[:format]
      when :shexj
        ShEx::Algebra.from_shexj(JSON.parse input)
      else
-       parser = ShEx::Parser.new(input, debug: @debug, **options)
+       parser = ShEx::Parser.new(input, **options)
        options[:production] ? parser.parse(options[:production]) : parser.parse
      end
    end

@@ -2,8 +2,8 @@ $:.unshift File.expand_path("../..", __FILE__)
 require 'spec_helper'
 
 describe ShEx::Parser do
-  before(:each) {$stderr = StringIO.new}
-  after(:each) {$stderr = STDERR}
+  before(:each) {@logger = RDF::Spec.logger}
+  after(:each) {|example| puts @logger.to_s if example.exception}
 
   describe "#initialize" do
     it "accepts a string query" do |example|
@@ -25,7 +25,7 @@ describe ShEx::Parser do
 
   describe "Empty" do
     it "renders an empty schema" do
-      expect("").to generate("(schema)")
+      expect("").to generate("(schema)", logger: @logger)
     end
   end
 
@@ -1199,20 +1199,20 @@ describe ShEx::Parser do
       },
     }.each do |name, params|
       it "#{name} (shexc)" do
-        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), progress: true, logger: RDF::Spec.logger)
+        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), progress: true, logger: @logger)
       end
 
       if params[:shexj]
         it "#{name} (shexj)" do
           # Get rid of prefix & base
           sxp_source = params[:sxp].dup.gsub(/^        /m, '').split("\n").reject {|l| l =~ /\((prefix|base)/}.join("\n")
-          expect(params[:shexj]).to generate(sxp_source, logger: RDF::Spec.logger, format: :shexj)
+          expect(params[:shexj]).to generate(sxp_source, logger: @logger, format: :shexj)
         end
 
         it "#{name} generates shexj from shexc" do
           expression = ShEx.parse(params[:shexc])
           hash = expression.to_h
-          expect(hash).to produce(JSON.parse(params[:shexj]), logger: RDF::Spec.logger)
+          expect(hash).to produce(JSON.parse(params[:shexj]), logger: @logger)
         end
       end
     end
@@ -1252,20 +1252,20 @@ describe ShEx::Parser do
       }
     }.each do |name, params|
       it "#{name} (shexc)" do
-        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), logger: RDF::Spec.logger)
+        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), logger: @logger)
       end
 
       if params[:shexj]
         it "#{name} (shexj)" do
           # Get rid of prefix & base
           sxp_source = params[:sxp].dup.gsub(/^        /m, '').split("\n").reject {|l| l =~ /\((prefix|base)/}.join("\n")
-          expect(params[:shexj]).to generate(sxp_source, logger: RDF::Spec.logger, format: :shexj)
+          expect(params[:shexj]).to generate(sxp_source, logger: @logger, format: :shexj)
         end
 
         it "#{name} generates shexj from shexc" do
           expression = ShEx.parse(params[:shexc])
           hash = expression.to_h
-          expect(hash).to produce(JSON.parse(params[:shexj]), logger: RDF::Spec.logger)
+          expect(hash).to produce(JSON.parse(params[:shexj]), logger: @logger)
         end
       end
     end
@@ -1328,7 +1328,7 @@ describe ShEx::Parser do
         end
         result = params[:result]
         result.gsub!(/^          /m, '') if result.is_a?(String)
-        expect(params[:input]).to generate(result, validate: true, logger: RDF::Spec.logger)
+        expect(params[:input]).to generate(result, validate: true, logger: @logger)
       end
     end
   end
@@ -1361,7 +1361,9 @@ describe ShEx::Parser do
               pending 'Retaining nested AND/OR'
             end
 
-            t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
+            t.logger = @logger
+            t.logger.info t.inspect
+            t.logger.info "schema: #{t.schema_source}"
 
             if t.positive_test?
               begin

@@ -35,8 +35,8 @@ module ShEx::Algebra
     #   @option options [RDF::Resource] :id
     #     Identifier of the operator
     # @raise  [TypeError] if any operand is invalid
-    def initialize(*operands)
-      @options  = operands.last.is_a?(Hash) ? operands.pop.dup : {}
+    def initialize(*operands, **options)
+      @options  = options.dup
       @operands = operands.map! do |operand|
         case operand
           when Array
