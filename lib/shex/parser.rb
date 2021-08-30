@@ -391,25 +391,38 @@ module ShEx
     #                                 | numericFacet+
     start_production(:_litNodeConstraint_1, as_hash: true, insensitive_strings: :lower)
     production(:_litNodeConstraint_1) do |value|
+      # LITERAL" xsFacet*
       facets = value[:_litNodeConstraint_5]
       validate_facets(facets, :litNodeConstraint)
       Algebra::NodeConstraint.new(:literal, *facets)
     end
     start_production(:_litNodeConstraint_2, as_hash: true)
     production(:_litNodeConstraint_2) do |value|
+      # datatype xsFacet*
       facets = value[:_litNodeConstraint_6]
       validate_facets(facets, :litNodeConstraint)
+
+      # Numeric Facet Constraints can only be used when datatype is derived from  the set of SPARQL 1.1 Operand Data Types
+      l = RDF::Literal("0", datatype: value[:datatype])
+      facets.each do |f|
+        error(nil, "#{f.first} constraint may only be used once on a numeric datatype (#{value[:datatype]})", production: :litNodeConstraint) if
+          f.to_s.match(/digits|inclusive|exclusive/) &&
+          !l.is_a?(RDF::Literal::Numeric)
+      end
+
       attrs = [[:datatype, value[:datatype]]] + facets
       Algebra::NodeConstraint.new(*attrs.compact)
     end
     start_production(:_litNodeConstraint_3, as_hash: true)
     production(:_litNodeConstraint_3) do |value|
+      # valueSet xsFacet*
       facets = value[:_litNodeConstraint_7]
       validate_facets(facets, :litNodeConstraint)
       attrs = value[:valueSet]+ facets
       Algebra::NodeConstraint.new(*attrs.compact)
     end
     production(:_litNodeConstraint_4) do |value|
+      # numericFacet+
       validate_facets(value, :litNodeConstraint)
       Algebra::NodeConstraint.new(*value)
     end
@@ -442,7 +455,7 @@ module ShEx
     # [26]    nonLiteralKind        ::= "IRI" | "BNODE" | "NONLITERAL"
     start_production(:nonLiteralKind, insensitive_strings: :lower)
     production(:nonLiteralKind) do |value|
-      value.downcase.to_sym
+      value.to_sym
     end
 
     # [27]    xsFacet               ::= stringFacet | numericFacet
@@ -471,7 +484,7 @@ module ShEx
     end
     start_production(:_stringFacet_1, as_hash: true)
     production(:_stringFacet_1) do |value|
-      [value[:stringLength].downcase.to_sym, value[:INTEGER]]
+      [value[:stringLength].to_sym, value[:INTEGER]]
     end
 
     # [29]    stringLength          ::= "LENGTH" | "MINLENGTH" | "MAXLENGTH"
@@ -481,11 +494,11 @@ module ShEx
     #                                 | numericLength INTEGER
     start_production(:_numericFacet_1, as_hash: true)
     production(:_numericFacet_1) do |value|
-      [value[:numericRange].downcase.to_sym, value[:numericLiteral]]
+      [value[:numericRange].to_sym, value[:numericLiteral]]
     end
     start_production(:_numericFacet_2, as_hash: true)
     production(:_numericFacet_2) do |value|
-      [value[:numericLength].downcase.to_sym, value[:INTEGER]]
+      [value[:numericLength].to_sym, value[:INTEGER]]
     end
 
     # [31]    numericRange          ::= "MININCLUSIVE" | "MINEXCLUSIVE" | "MAXINCLUSIVE" | "MAXEXCLUSIVE"
@@ -513,8 +526,8 @@ module ShEx
         value[:_inlineShapeDefinition_2])
     end
     def shape_definition(extra_closed, expression, annotations = [], semact = [])
-      closed = extra_closed.any? {|v| v.to_s.downcase == 'closed'}
-      extra = extra_closed.reject  {|v| v.to_s.downcase == 'closed'}
+      closed = extra_closed.any? {|v| v.to_s == 'closed'}
+      extra = extra_closed.reject  {|v| v.to_s == 'closed'}
       attrs = extra
       attrs << :closed if closed
       attrs << expression if expression

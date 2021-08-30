@@ -1357,10 +1357,8 @@ describe ShEx::Parser do
                  '1literalPattern_with_all_punctuation',
                  '1literalPattern_with_REGEXP_escapes_as_bare'
               pending "detect bad REGEXP escape sequences"
-            when 'FocusIRI2groupBnodeNested2groupIRIRef'
-              pending 'Retaining nested AND'
-            when '1unknowndatatypeMaxInclusive'
-              pending 'worked with LL(1) parser'
+            when 'FocusIRI2groupBnodeNested2groupIRIRef', 'FocusIRI2EachBnodeNested2EachIRIRef'
+              pending 'Retaining nested AND/OR'
             end
 
             t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
