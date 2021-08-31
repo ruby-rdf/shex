@@ -45,12 +45,13 @@ module ShEx::Algebra
     end
 
     ##
-    # expressions must be ShapeExpressions or references to ShapeExpressions
+    # expressions must be ShapeExpressions or references to ShapeExpressions and must not reference itself recursively.
     #
     # @return [Operator] `self`
     # @raise  [ShEx::StructureError] if the value is invalid
     def validate!
       validate_expressions!
+      validate_self_references!
       super
     end
 

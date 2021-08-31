@@ -228,6 +228,13 @@ module ShEx::Algebra
     end
 
     ##
+    # References are all operands which are RDF::Resource
+    # @return [RDF::Resource, Operand]
+    def references
+      @references = operands.select {|op| op.is_a?(RDF::Resource)}
+    end
+
+    ##
     # Returns the binary S-Expression (SXP) representation of this operator.
     #
     # @return [Array]
@@ -595,22 +602,23 @@ module ShEx::Algebra
 
     ##
     # Enumerate via depth-first recursive descent over operands, yielding each operator
+    # @param [Boolean] include_self
     # @yield operator
     # @yieldparam [Object] operator
     # @return [Enumerator]
-    def each_descendant(&block)
+    def each_descendant(include_self = false, &block)
       if block_given?
 
-        block.call(self)
+        block.call(self) if include_self
 
         operands.each do |operand|
           case operand
           when Array
             operand.each do |op|
-              op.each_descendant(&block) if op.respond_to?(:each_descendant)
+              op.each_descendant(true, &block) if op.respond_to?(:each_descendant)
             end
           else
-            operand.each_descendant(&block) if operand.respond_to?(:each_descendant)
+            operand.each_descendant(true, &block) if operand.respond_to?(:each_descendant)
           end
         end
       end
@@ -631,6 +639,14 @@ module ShEx::Algebra
     # @return [Operator]
     def parent=(operator)
       @options[:parent]= operator
+    end
+
+    ##
+    # Find a ShapeExpression or TripleExpression by identifier
+    # @param [#to_s] id
+    # @return [TripleExpression, ShapeExpression]
+    def find(id)
+      each_descendant(false).detect {|op| op.id == id}
     end
 
     ##

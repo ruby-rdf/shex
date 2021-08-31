@@ -27,6 +27,7 @@ module ShEx::Algebra
     # (see Operator#initialize)
     def initialize(*operands, **options)
       super
+      schema = self
       each_descendant do |op|
         # Set schema everywhere
         op.schema = self
@@ -209,14 +210,6 @@ module ShEx::Algebra
     # Start action, if any
     def start
       @start ||= operands.detect {|op| op.is_a?(Start)}
-    end
-
-    ##
-    # Find a ShapeExpression or TripleExpression by identifier
-    # @param [#to_s] id
-    # @return [TripleExpression, ShapeExpression]
-    def find(id)
-      each_descendant.detect {|op| op.id == id}
     end
 
     ##

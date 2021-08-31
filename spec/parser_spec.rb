@@ -1289,14 +1289,14 @@ describe ShEx::Parser do
         ),
         result: ShEx::StructureError
       },
-      #"This negated, indirect self-reference violates the negation requirement" => {
-      #  input: %(
-      #    PREFIX ex: <http://schema.example/>
-      #    ex:S NOT @ex:T
-      #    ex:T @ex:S
-      #  ),
-      #  result: ShEx::StructureError
-      #},
+      "This negated, indirect self-reference violates the negation requirement" => {
+        input: %(
+          PREFIX ex: <http://schema.example/>
+          ex:S NOT @ex:T
+          ex:T @ex:S
+        ),
+        result: ShEx::StructureError
+      },
       "This doubly-negated self-reference does not violate the negation requirement" => {
         input: %(
           PREFIX ex: <http://schema.example/>
@@ -1321,7 +1321,8 @@ describe ShEx::Parser do
     }.each do |name, params|
       it name do
         case name
-        when "This self-reference on a predicate designated as extra violates the negation requirement",
+        when "This doubly-negated self-reference does not violate the negation requirement",
+             "This self-reference on a predicate designated as extra violates the negation requirement",
              "The same shape with a negated self-reference still violates the negation requirement because the reference occurs with a ShapeNot"
           pending "Negated references"
         end
@@ -1358,6 +1359,10 @@ describe ShEx::Parser do
               pending "detect bad REGEXP escape sequences"
             when 'FocusIRI2groupBnodeNested2groupIRIRef', 'FocusIRI2EachBnodeNested2EachIRIRef'
               pending 'Retaining nested AND/OR'
+            when 'TwoNegation', 'TwoNegation2'
+              pending 'Check recusion through references'
+            when 'Cycle1Negation2', 'Cycle1Negation3', 'Cycle2Extra'
+              pending 'Do not check recursion through TripleConstraint'
             end
 
             t.logger = @logger

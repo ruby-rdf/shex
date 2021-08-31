@@ -73,6 +73,7 @@ module ShEx::Algebra
     # @raise  [ShEx::StructureError] if the value is invalid
     def validate!
       validate_expressions!
+      validate_self_references!
       super
     end
 

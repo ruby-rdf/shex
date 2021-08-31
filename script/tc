@@ -49,10 +49,10 @@ def run_tc(tc, **options)
     end
     schema = ShEx.parse(tc.schema_source,
       base_uri: tc.base,
-      validate: validate,
       logger: tc.logger)
 
     puts "\nsxp: " + SXP::Generator.string(schema.to_sxp_bin) if options[:verbose]
+    schema.validate! if validate
 
     focus = ShEx::Algebra::Operator.value(tc.focus, base_uri: tc.base)
     map = if tc.map

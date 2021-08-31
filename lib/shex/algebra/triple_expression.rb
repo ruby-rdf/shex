@@ -19,7 +19,6 @@ module ShEx::Algebra
     ##
     # expressions must be TripleExpressions or references to TripleExpressions
     #
-    # @return [Operator] `self`
     # @raise  [ShEx::StructureError] if the value is invalid
     def validate_expressions!
       expressions.each do |op|

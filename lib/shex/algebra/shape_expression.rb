@@ -19,7 +19,6 @@ module ShEx::Algebra
     ##
     # expressions must be ShapeExpressions or references.
     #
-    # @return [Operator] `self`
     # @raise  [ShEx::StructureError] if the value is invalid
     def validate_expressions!
       expressions.each do |op|
@@ -32,6 +31,16 @@ module ShEx::Algebra
         else
           structure_error("#{json_type} must be a ShapeExpression or reference: #{op.to_sxp}")
         end
+      end
+    end
+
+    ##
+    # An Operator with a label must contain a reference to itself.
+    #
+    # @raise  [ShEx::StructureError] if the shape is invalid
+    def validate_self_references!
+      each_descendant do |op|
+        structure_error("#{json_type} must not reference itself (#{id}): #{op.to_sxp}") if op.references.include?(id)
       end
     end
   end
