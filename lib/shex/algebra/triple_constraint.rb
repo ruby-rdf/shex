@@ -97,7 +97,7 @@ module ShEx::Algebra
         ref.is_a?(ShapeExpression) ||
         structure_error("#{json_type} must reference a ShapeExpression: #{ref}")
       else
-        structure_error("#{json_type} must reference a ShapeExpression: #{ref}")
+        structure_error("#{json_type} must be a ShapeExpression or reference: #{expresson.to_sxp}")
       end
       super
     end

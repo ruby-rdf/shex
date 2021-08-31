@@ -221,8 +221,8 @@ module ShEx::Algebra
     end
 
     ##
-    # The optional TripleExpression for this Shape.
-    # @return [TripleExpression]
+    # The first expression from {#expressions}.
+    # @return [RDF::Resource, Operand]
     def expression
       expressions.first
     end

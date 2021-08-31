@@ -3,7 +3,6 @@ require 'spec_helper'
 
 describe ShEx::Parser do
   before(:each) {@logger = RDF::Spec.logger}
-  after(:each) {|example| puts @logger.to_s if example.exception}
 
   describe "#initialize" do
     it "accepts a string query" do |example|

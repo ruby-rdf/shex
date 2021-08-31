@@ -118,7 +118,7 @@ module ShEx::Algebra
         ref.is_a?(TripleExpression) ||
         structure_error("#{json_type} must reference a TripleExpression: #{ref}")
       else
-        structure_error("#{json_type} must reference a TripleExpression: #{ref}")
+        structure_error("#{json_type} must be a TripleExpression or reference: #{expression.to_sxp}")
       end
       super
     end

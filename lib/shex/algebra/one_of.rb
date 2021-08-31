@@ -65,22 +65,12 @@ module ShEx::Algebra
     end
 
     ##
-    # expressions must be TripleExpressions
+    # expressions must be TripleExpressions or references to TripleExpressions
     #
     # @return [Operator] `self`
     # @raise  [ShEx::StructureError] if the value is invalid
     def validate!
-      expressions.each do |op|
-        case op
-        when TripleExpression
-        when RDF::Resource
-          ref = schema.find(op)
-          ref.is_a?(TripleExpression) ||
-          structure_error("#{json_type} must reference a TripleExpression: #{ref}")
-        else
-          structure_error("#{json_type} must reference a TripleExpression: #{ref}")
-        end
-      end
+      validate_expressions!
       super
     end
   end
