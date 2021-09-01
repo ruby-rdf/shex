@@ -1321,8 +1321,7 @@ describe ShEx::Parser do
     }.each do |name, params|
       it name do
         case name
-        when "This doubly-negated self-reference does not violate the negation requirement",
-             "This self-reference on a predicate designated as extra violates the negation requirement",
+        when "This self-reference on a predicate designated as extra violates the negation requirement",
              "The same shape with a negated self-reference still violates the negation requirement because the reference occurs with a ShapeNot"
           pending "Negated references"
         end
@@ -1361,7 +1360,8 @@ describe ShEx::Parser do
               pending 'Retaining nested AND/OR'
             when 'TwoNegation', 'TwoNegation2'
               pending 'Check recusion through references'
-            when 'Cycle1Negation2', 'Cycle1Negation3', 'Cycle2Extra'
+            when 'Cycle1Negation1', 'Cycle1Negation2', 'Cycle1Negation3',
+                 'Cycle2Negation', 'Cycle2Extra'
               pending 'Do not check recursion through TripleConstraint'
             end
 

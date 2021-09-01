@@ -39,6 +39,7 @@ module ShEx::Algebra
     #
     # @raise  [ShEx::StructureError] if the shape is invalid
     def validate_self_references!
+      return # FIXME: needs to stop at a TripleConstraint
       each_descendant do |op|
         structure_error("#{json_type} must not reference itself (#{id}): #{op.to_sxp}") if op.references.include?(id)
       end
