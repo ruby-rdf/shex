@@ -34,7 +34,7 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
       - name: Install dependencies
-        run: bundle install --jobs 4 --retry 3
+        run: ruby --version; bundle install --jobs 4 --retry 3
       - name: Run tests
         run: bundle exec rspec spec
  
