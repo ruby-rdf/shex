@@ -1,10 +1,12 @@
+require               'rdf'
+require               'sxp'
+require               'shex/format'
+
 ##
 # A ShEx runtime for RDF.rb.
 #
 # @see https://shex.io/shex-semantics/#shexc
 module ShEx
-  require               'rdf'
-  require               'shex/format'
   autoload :Algebra,    'shex/algebra'
   autoload :Meta,       'shex/meta'
   autoload :Parser,     'shex/parser'

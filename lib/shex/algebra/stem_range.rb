@@ -102,7 +102,9 @@ module ShEx::Algebra
     def match?(value, depth: 0)
       initial_match = case operands.first
       when :wildcard then true
-      when RDF::Literal then value.language.to_s.start_with?(operands.first)
+      when RDF::Literal
+        value.language? &&
+        (operands.first.to_s.empty? || value.language.to_s.match?(%r(^#{operands.first}((-.*)?)$)))
       else false
       end
 

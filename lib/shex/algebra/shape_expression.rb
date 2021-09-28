@@ -15,5 +15,34 @@ module ShEx::Algebra
     def satisfies?(focus, depth: 0, **options)
       raise NotImplementedError, "#satisfies? Not implemented in #{self.class}"
     end
+
+    ##
+    # expressions must be ShapeExpressions or references.
+    #
+    # @raise  [ShEx::StructureError] if the value is invalid
+    def validate_expressions!
+      expressions.each do |op|
+        case op
+        when ShapeExpression
+        when RDF::Resource
+          ref = schema.find(op)
+          ref.is_a?(ShapeExpression) ||
+          structure_error("#{json_type} must reference a ShapeExpression: #{ref}")
+        else
+          structure_error("#{json_type} must be a ShapeExpression or reference: #{op.to_sxp}")
+        end
+      end
+    end
+
+    ##
+    # An Operator with a label must contain a reference to itself.
+    #
+    # @raise  [ShEx::StructureError] if the shape is invalid
+    def validate_self_references!
+      return # FIXME: needs to stop at a TripleConstraint
+      each_descendant do |op|
+        structure_error("#{json_type} must not reference itself (#{id}): #{op.to_sxp}") if op.references.include?(id)
+      end
+    end
   end
 end

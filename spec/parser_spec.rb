@@ -2,8 +2,7 @@ $:.unshift File.expand_path("../..", __FILE__)
 require 'spec_helper'
 
 describe ShEx::Parser do
-  before(:each) {$stderr = StringIO.new}
-  after(:each) {$stderr = STDERR}
+  before(:each) {@logger = RDF::Spec.logger}
 
   describe "#initialize" do
     it "accepts a string query" do |example|
@@ -25,7 +24,7 @@ describe ShEx::Parser do
 
   describe "Empty" do
     it "renders an empty schema" do
-      expect("").to generate("(schema)")
+      expect("").to generate("(schema)", logger: @logger)
     end
   end
 
@@ -1199,20 +1198,20 @@ describe ShEx::Parser do
       },
     }.each do |name, params|
       it "#{name} (shexc)" do
-        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), progress: true, logger: RDF::Spec.logger)
+        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), progress: true, logger: @logger)
       end
 
       if params[:shexj]
         it "#{name} (shexj)" do
           # Get rid of prefix & base
           sxp_source = params[:sxp].dup.gsub(/^        /m, '').split("\n").reject {|l| l =~ /\((prefix|base)/}.join("\n")
-          expect(params[:shexj]).to generate(sxp_source, logger: RDF::Spec.logger, format: :shexj)
+          expect(params[:shexj]).to generate(sxp_source, logger: @logger, format: :shexj)
         end
 
         it "#{name} generates shexj from shexc" do
           expression = ShEx.parse(params[:shexc])
           hash = expression.to_h
-          expect(hash).to produce(JSON.parse(params[:shexj]), logger: RDF::Spec.logger)
+          expect(hash).to produce(JSON.parse(params[:shexj]), logger: @logger)
         end
       end
     end
@@ -1252,20 +1251,20 @@ describe ShEx::Parser do
       }
     }.each do |name, params|
       it "#{name} (shexc)" do
-        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), logger: RDF::Spec.logger)
+        expect(params[:shexc]).to generate(params[:sxp].gsub(/^        /m, ''), logger: @logger)
       end
 
       if params[:shexj]
         it "#{name} (shexj)" do
           # Get rid of prefix & base
           sxp_source = params[:sxp].dup.gsub(/^        /m, '').split("\n").reject {|l| l =~ /\((prefix|base)/}.join("\n")
-          expect(params[:shexj]).to generate(sxp_source, logger: RDF::Spec.logger, format: :shexj)
+          expect(params[:shexj]).to generate(sxp_source, logger: @logger, format: :shexj)
         end
 
         it "#{name} generates shexj from shexc" do
           expression = ShEx.parse(params[:shexc])
           hash = expression.to_h
-          expect(hash).to produce(JSON.parse(params[:shexj]), logger: RDF::Spec.logger)
+          expect(hash).to produce(JSON.parse(params[:shexj]), logger: @logger)
         end
       end
     end
@@ -1290,14 +1289,14 @@ describe ShEx::Parser do
         ),
         result: ShEx::StructureError
       },
-      #"This negated, indirect self-reference violates the negation requirement" => {
-      #  input: %(
-      #    PREFIX ex: <http://schema.example/>
-      #    ex:S NOT @ex:T
-      #    ex:T @ex:S
-      #  ),
-      #  result: ShEx::StructureError
-      #},
+      "This negated, indirect self-reference violates the negation requirement" => {
+        input: %(
+          PREFIX ex: <http://schema.example/>
+          ex:S NOT @ex:T
+          ex:T @ex:S
+        ),
+        result: ShEx::StructureError
+      },
       "This doubly-negated self-reference does not violate the negation requirement" => {
         input: %(
           PREFIX ex: <http://schema.example/>
@@ -1328,7 +1327,7 @@ describe ShEx::Parser do
         end
         result = params[:result]
         result.gsub!(/^          /m, '') if result.is_a?(String)
-        expect(params[:input]).to generate(result, validate: true, logger: RDF::Spec.logger)
+        expect(params[:input]).to generate(result, validate: true, logger: @logger)
       end
     end
   end
@@ -1351,21 +1350,24 @@ describe ShEx::Parser do
               validate = false # Has self-included shape
             when '1ShapeProductionCollision'
               pending "undetected self reference"
-            when 'openopen1dotOr1dotclose'
-              pending("Our grammar allows nested bracketedTripleExpr")
             when '1literalPattern_with_ECHAR_escape_1',
                  '1literalPattern_with_REGEXP_bare_as_escapes',
                  '1literalPattern_with_REGEXP_escapes_escaped',
                  '1literalPattern_with_all_punctuation',
                  '1literalPattern_with_REGEXP_escapes_as_bare'
               pending "detect bad REGEXP escape sequences"
-            when 'FocusIRI2groupBnodeNested2groupIRIRef'
-              pending 'Retaining nested AND'
-            when '1unknowndatatypeMaxInclusive'
-              pending 'worked with LL(1) parser'
+            when 'FocusIRI2groupBnodeNested2groupIRIRef', 'FocusIRI2EachBnodeNested2EachIRIRef'
+              pending 'Retaining nested AND/OR'
+            when 'TwoNegation', 'TwoNegation2'
+              pending 'Check recusion through references'
+            when 'Cycle1Negation1', 'Cycle1Negation2', 'Cycle1Negation3',
+                 'Cycle2Negation', 'Cycle2Extra'
+              pending 'Do not check recursion through TripleConstraint'
             end
 
-            t.debug = ["info: #{t.inspect}", "schema: #{t.schema_source}"]
+            t.logger = @logger
+            t.logger.info t.inspect
+            t.logger.info "schema: #{t.schema_source}"
 
             if t.positive_test?
               begin

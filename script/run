@@ -13,7 +13,7 @@ end
 require 'getoptlong'
 require 'amazing_print'
 
-def run(graph, **options)
+def run(graph, focus: nil, shape: nil, **options)
   if options[:verbose]
     STDERR.puts "target graph:\n#{graph.dump(:ttl, standard_prefixes: true)}\n"
     STDERR.puts "shex:\n#{options[:shex]}\n"
@@ -42,9 +42,9 @@ def run(graph, **options)
   elsif options[:to_json]
     puts shex.to_json(JSON::LD::JSON_STATE)
   else
-    shape = options.delete(:shape)
-    map = {focus => shape} if shape
-    res = shex.execute(graph, map, **options)
+    map = {focus => shape} if focus && shape
+    require 'byebug'; byebug
+    res = shex.execute(graph, map, focus: (map ? nil : focus), **options)
     puts SXP::Generator.string(res.to_sxp_bin)
   end
 rescue ShEx::NotSatisfied => e
@@ -99,8 +99,8 @@ opts.each do |opt, arg|
     options[:logger] = logger
     options[:debug] = true
   when '--execute'      then options[:shex] = arg
-  when '--focus'        then options[:focus] = arg
-  when '--shape'        then options[:shape] = arg
+  when '--focus'        then options[:focus] = RDF::URI(arg)
+  when '--shape'        then options[:shape] = RDF::URI(arg)
   when '--shex'
     options[:shex] = RDF::Util::File.open_file(arg).read
     options[:format] = :shexj if arg.end_with?(".json")
@@ -125,7 +125,7 @@ if ARGV.empty?
 else
   ARGV.each do |test_file|
     puts "shex #{test_file}"
-    run(RDF::Graph.load(test_file), options.merge(base_uri: RDF::URI(test_file)))
+    run(RDF::Graph.load(test_file), base_uri: RDF::URI(test_file), **options)
   end
 end
 puts

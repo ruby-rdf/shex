@@ -66,8 +66,12 @@ module ShEx::Algebra
     NAME = :languageStem
 
     # (see Stem#match?)
+    # If the operand is empty, than any language will do,
+    # otherwise, it matches the substring up to that first '-', if any.
     def match?(value, depth: 0)
-      if value.literal? && value.language.to_s.start_with?(operands.first)
+      if value.literal? &&
+         value.language? &&
+         (operands.first.to_s.empty? || value.language.to_s.match?(%r(^#{operands.first}((-.*)?)$)))
         status "matched #{value}", depth: depth
         true
       else
