@@ -17,6 +17,7 @@ group :development, :test do
   gem 'rdf-xsd',            git: "https://github.com/ruby-rdf/rdf-xsd",     branch: "develop"
   gem 'rdf-spec',           git: "https://github.com/ruby-rdf/rdf-spec",    branch: "develop"
   gem 'sparql',             git: "https://github.com/ruby-rdf/sparql",      branch: "develop"
+  gem 'sparql-client',      git: "https://github.com/ruby-rdf/sparql-client",       branch: "develop"
   gem 'sxp',                git: "https://github.com/dryruby/sxp.rb",       branch: "develop"
   gem 'simplecov',          '~> 0.21',  platforms: :mri
   gem 'simplecov-lcov',     '~> 0.8',  platforms: :mri
