@@ -200,8 +200,8 @@ The parser uses the executable [S-Expressions][] generated from the EBNF ShExC g
 
 ## Dependencies
 
-* [Ruby](https://ruby-lang.org/) (>= 2.4)
-* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.1)
+* [Ruby](https://ruby-lang.org/) (>= 2.6)
+* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.2)
 * [SPARQL gem](https://rubygems.org/gems/sparql) (~> 3.1)
 
 ## Installation
