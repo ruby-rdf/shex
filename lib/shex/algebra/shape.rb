@@ -106,7 +106,7 @@ module ShEx::Algebra
     end
 
     ##
-    # expression must be a TripleExpression
+    # expression must be a TripleExpression and must not reference itself recursively.
     #
     # @return [Operator] `self`
     # @raise  [ShEx::StructureError] if the value is invalid
@@ -118,8 +118,10 @@ module ShEx::Algebra
         ref.is_a?(TripleExpression) ||
         structure_error("#{json_type} must reference a TripleExpression: #{ref}")
       else
-        structure_error("#{json_type} must reference a TripleExpression: #{ref}")
+        structure_error("#{json_type} must be a TripleExpression or reference: #{expression.to_sxp}")
       end
+      # FIXME: this runs afoul of otherwise legitamate self-references, through a TripleExpression.
+      #!validate_self_references!
       super
     end
 

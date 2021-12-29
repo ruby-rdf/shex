@@ -35,8 +35,8 @@ module ShEx::Algebra
     #   @option options [RDF::Resource] :id
     #     Identifier of the operator
     # @raise  [TypeError] if any operand is invalid
-    def initialize(*operands)
-      @options  = operands.last.is_a?(Hash) ? operands.pop.dup : {}
+    def initialize(*operands, **options)
+      @options  = options.dup
       @operands = operands.map! do |operand|
         case operand
           when Array
@@ -221,10 +221,17 @@ module ShEx::Algebra
     end
 
     ##
-    # The optional TripleExpression for this Shape.
-    # @return [TripleExpression]
+    # The first expression from {#expressions}.
+    # @return [RDF::Resource, Operand]
     def expression
       expressions.first
+    end
+
+    ##
+    # References are all operands which are RDF::Resource
+    # @return [RDF::Resource, Operand]
+    def references
+      @references = operands.select {|op| op.is_a?(RDF::Resource)}
     end
 
     ##
@@ -242,15 +249,10 @@ module ShEx::Algebra
     # Returns an S-Expression (SXP) representation of this operator
     #
     # @return [String]
-    def to_sxp
-      begin
-        require 'sxp' # @see https://rubygems.org/gems/sxp
-      rescue LoadError
-        abort "SPARQL::Algebra::Operator#to_sxp requires the SXP gem (hint: `gem install sxp')."
-      end
+    def to_sxp(**options)
       require 'sparql/algebra/sxp_extensions'
 
-      to_sxp_bin.to_sxp
+      to_sxp_bin.to_sxp(**options)
     end
 
     ##
@@ -432,6 +434,8 @@ module ShEx::Algebra
           case self
           when And, Or
             (obj['shapeExprs'] ||= []) << op.to_h
+          when Not
+            obj['shapeExpr'] = op.to_h
           else
             obj['valueExpr'] = op.to_h
           end
@@ -593,22 +597,23 @@ module ShEx::Algebra
 
     ##
     # Enumerate via depth-first recursive descent over operands, yielding each operator
+    # @param [Boolean] include_self
     # @yield operator
     # @yieldparam [Object] operator
     # @return [Enumerator]
-    def each_descendant(&block)
+    def each_descendant(include_self = false, &block)
       if block_given?
 
-        block.call(self)
+        block.call(self) if include_self
 
         operands.each do |operand|
           case operand
           when Array
             operand.each do |op|
-              op.each_descendant(&block) if op.respond_to?(:each_descendant)
+              op.each_descendant(true, &block) if op.respond_to?(:each_descendant)
             end
           else
-            operand.each_descendant(&block) if operand.respond_to?(:each_descendant)
+            operand.each_descendant(true, &block) if operand.respond_to?(:each_descendant)
           end
         end
       end
@@ -629,6 +634,14 @@ module ShEx::Algebra
     # @return [Operator]
     def parent=(operator)
       @options[:parent]= operator
+    end
+
+    ##
+    # Find a ShapeExpression or TripleExpression by identifier
+    # @param [#to_s] id
+    # @return [TripleExpression, ShapeExpression]
+    def find(id)
+      each_descendant(false).detect {|op| op.id == id}
     end
 
     ##

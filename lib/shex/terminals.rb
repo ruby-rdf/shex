@@ -43,7 +43,11 @@ module ShEx
     # 160s
     ECHAR                = /\\[tbnrf\\"']/
 
-    WS                   = /(?:\s|(?:#[^\n\r]*))+/m.freeze
+    WS                   = %r((
+                              \s
+                            | (?:\#[^\n\r]*)
+                            | (?:/\*(?:(?:\*[^/])|[^*])*\*/)
+                            )+)xmu.freeze
 
     # 69
     RDF_TYPE             = /a/.freeze
@@ -92,30 +96,6 @@ module ShEx
     CODE                 = /\{(?:[^%\\]|\\[%\\]|#{UCHAR})*%#{WS}*\}/m.freeze
     # 70
     REPEAT_RANGE         = /\{\s*#{INTEGER}(?:,#{WS}*(?:#{INTEGER}|\*)?)?#{WS}*\}/.freeze
-
-    # String terminals, mixed case sensitivity
-    STR_EXPR = %r(true|false
-                 |\^\^|\/\/
-                 |[\(\)\{\}\[\],\.;\=\-\~!\|\&\@\$\?\+\*\%\^a]|
-                 (?i:OR|AND|NOT
-                   |BASE|PREFIX
-                   |IRI|BNODE|NONLITERAL
-                   |MINLENGTH|MAXLENGTH|LENGTH
-                   |MAXINCLUSIVE|MAXEXCLUSIVE
-                   |MININCLUSIVE|MINEXCLUSIVE
-                   |TOTALDIGITS|FRACTIONDIGITS
-                   |START
-                   |EXTERNAL|CLOSED|EXTRA|LITERAL
-                 )
-              )x.freeze
-
-    # Map terminals to canonical form
-    STR_MAP = %w{OR AND NOT BASE PREFIX IRI BNODE NONLITERAL
-      MINLENGTH MAXLENGTH LENGTH MININCLUSIVE MAXINCLUSIVE MINEXCLUSIVE MAXEXCLUSIVE
-      TOTALDIGITS FRACTIONDIGITS START EXTERNAL CLOSED EXTRA LITERAL}.
-    inject({}) do |memo, t|
-      memo.merge(t.downcase => t)
-    end
   
   end
 end

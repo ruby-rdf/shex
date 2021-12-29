@@ -458,6 +458,7 @@ describe ShEx::Algebra do
     describe m.attributes['rdfs:comment'] do
       m.entries.each do |t|
         specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?}" do
+          skip 'support for IMPORT' if t.trait.include?('Import')
           case t.name
           when 'nPlus1', 'PTstar-greedy-fail'
             pending "greedy"
@@ -474,6 +475,10 @@ describe ShEx::Algebra do
                '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes',
                '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes_bare'
             skip "invalid multibyte character"
+          when 'FocusIRI2EachBnodeNested2EachIRIRef_fail'
+            pending 'for some reason ...'
+          when 'node_kind_example', 'dependent_shape', 'recursion_example'
+            skip 'changes to shape map'
           end
           t.debug = [
             "info: #{t.inspect}",
@@ -497,13 +502,14 @@ describe ShEx::Algebra do
           expect(schema).to satisfy(t.graph, t.data_source, map,
                                     focus: focus,
                                     expected: expected,
-                                    results: t.results,
+                                    expected_results: t.results,
                                     logger: t.logger,
                                     base_uri: t.base,
                                     shapeExterns: t.shapeExterns)
         end
 
         specify "#{t.name} – #{t.comment}#{' (negative)' if t.negative_test?} (ShExJ)" do
+          skip 'support for IMPORT' if t.trait.include?('Import')
           case t.name
           when 'nPlus1', 'PTstar-greedy-fail'
             pending "greedy"
@@ -520,6 +526,8 @@ describe ShEx::Algebra do
                '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes',
                '1literalPattern_with_REGEXP_escapes_escaped_fail_escapes_bare'
             pending "invalid multibyte character"
+          when 'node_kind_example', 'dependent_shape', 'recursion_example'
+            skip 'changes to shape map'
           end
           t.debug = [
             "info: #{t.inspect}",
@@ -545,7 +553,7 @@ describe ShEx::Algebra do
           expect(schema).to satisfy(t.graph, t.data_source, map,
                                     focus: focus,
                                     expected: expected,
-                                    results: t.results,
+                                    expected_results: t.results,
                                     logger: t.logger,
                                     base_uri: t.base,
                                     shapeExterns: t.shapeExterns)
@@ -553,17 +561,17 @@ describe ShEx::Algebra do
 
         # Run with rspec --tag shexr
         # This tests the tests, not the implementation
-        if File.exist?(SHEXR)
-          let(:shexr) {@@shexr ||= ShEx.open(SHEXR)}
-          specify "#{t.name} validates against ShExR.shex", shexr: true do
-            graph = RDF::Graph.new {|g| g << JSON::LD::Reader.new(t.schema_json, base_uri: t.base)}
-            focus = graph.first_subject(predicate: RDF.type, object: RDF::URI("http://www.w3.org/ns/shex#Schema"))
-            expect(focus).to be_a(RDF::Resource)
-            t.logger.level = Logger::DEBUG
-            expect(shexr).to satisfy(graph, t.schema_json, {}, focus: focus, logger: t.logger)
-          end
-        end
+        #if File.exist?(SHEXR)
+        #  let(:shexr) {@@shexr ||= ShEx.open(SHEXR)}
+        #  specify "#{t.name} validates against ShExR.shex", shexr: true do
+        #    graph = RDF::Graph.new {|g| g << JSON::LD::Reader.new(t.schema_json, base_uri: t.base)}
+        #    focus = graph.first_subject(predicate: RDF.type, object: RDF::URI("http://www.w3.org/ns/shex#Schema"))
+        #    expect(focus).to be_a(RDF::Resource)
+        #    t.logger.level = Logger::DEBUG
+        #    expect(shexr).to satisfy(graph, t.schema_json, {}, focus: focus, logger: t.logger)
+        #  end
+        #end
       end
     end
-  end if false #Skip these for now
+  end unless ENV['CI']
 end

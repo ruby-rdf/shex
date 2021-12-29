@@ -45,20 +45,13 @@ module ShEx::Algebra
     end
 
     ##
-    # expression must be a ShapeExpression
+    # expressions must be ShapeExpressions or references to ShapeExpressions and must not reference itself recursively.
     #
     # @return [Operator] `self`
     # @raise  [ShEx::StructureError] if the value is invalid
     def validate!
-      case expression
-      when ShapeExpression
-      when RDF::Resource
-        ref = schema.find(expression)
-        ref.is_a?(ShapeExpression) ||
-        structure_error("#{json_type} must reference a ShapeExpression: #{ref}")
-      else
-        structure_error("#{json_type} must reference a ShapeExpression: #{ref}")
-      end
+      validate_expressions!
+      validate_self_references!
       super
     end
 

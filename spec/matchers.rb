@@ -9,13 +9,12 @@ JSON_STATE = JSON::State.new(
  )
 
  def parser(**options)
-   @debug = options[:progress] ? 2 : (options[:quiet] ? false : [])
    Proc.new do |input|
      case options[:format]
      when :shexj
        ShEx::Algebra.from_shexj(JSON.parse input)
      else
-       parser = ShEx::Parser.new(input, debug: @debug, **options)
+       parser = ShEx::Parser.new(input, **options)
        options[:production] ? parser.parse(options[:production]) : parser.parse
      end
    end
@@ -90,7 +89,7 @@ RSpec::Matchers.define :generate do |expected, **options|
   end
 end
 
-RSpec::Matchers.define :satisfy do |graph, data, map, focus: nil, expected: nil, logger: nil, results: nil, **options|
+RSpec::Matchers.define :satisfy do |graph, data, map, focus: nil, expected: nil, logger: nil, expected_results: nil, **options|
   match do |input|
     shape_results = nil
 
@@ -106,6 +105,7 @@ RSpec::Matchers.define :satisfy do |graph, data, map, focus: nil, expected: nil,
     else
       begin
         shape_results = input.execute(graph, map, focus: focus, logger: logger, **options)
+        true
       rescue ShEx::NotSatisfied => e
         @exception = e
         shape_results = e.expression
@@ -117,25 +117,25 @@ RSpec::Matchers.define :satisfy do |graph, data, map, focus: nil, expected: nil,
       memo.merge(k.to_s => vv.map {|v| {"shape" => v.shape.to_s, "result" => v.result}})
     end
 
-    res && (results.nil? || results == @results)
+    res # && (expected_results.nil? || results == @results) # FIXME work on result representation
   end
 
   failure_message do |input|
-    (expected == ShEx::NotSatisfied ? "Shape matched" : "Shape did not match: #{@exception && @exception.message}\n") +
-    #"Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
+    (expected == ShEx::NotSatisfied ? "Unexpected match\n" : "Shape did not match: #{@exception && @exception.message}\n") +
+    "Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
     "Data      : #{data}\n" +
     "Focus     : #{focus}\n" +
-    "Expected  : #{results.inspect if results}\n" +
+    "Expected  : #{(expected_results || expected).inspect}\n" +
     "Results   : #{@results.inspect if @results}\n" +
     (logger ? "Trace     :\n#{logger.to_s}" : "")
   end
 
   failure_message_when_negated do |input|
-    "Shape matched\n" +
-    #"Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
+    "Unexpected match\n" +
+    "Input(sxp): #{SXP::Generator.string(input.to_sxp_bin)}\n" +
     "Data      : #{data}\n" +
     "Focus     : #{focus}\n" + +
-    "Expected  : #{results.inspect if results}\n" +
+    "Expected  : #{(expected_results || expected).inspect}\n" +
     "Results   : #{@results.inspect if @results}\n" +
     (logger ? "Trace     :\n#{logger.to_s}" : "")
   end

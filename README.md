@@ -25,27 +25,31 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine version 2.0.
 ## Examples
 ### Validating a node using ShExC
 
-    require 'rubygems'
     require 'rdf/turtle'
     require 'shex'
 
-    shexc: %(
+    shexc = %(
       PREFIX doap:  <http://usefulinc.com/ns/doap#>
       PREFIX dc:    <http://purl.org/dc/terms/>
-      <TestShape> EXTRA a {
-        a doap:Project;
-        (doap:name;doap:description|dc:title;dc:description)+;
-        doap:category*;
-        doap:developer IRI;
-        doap:implements    [<http://shex.io/shex-semantics/>]
+      PREFIX ex:    <http://example.com/>
+
+      ex:TestShape EXTRA a {
+        a [doap:Project];
+        ( doap:name Literal;
+          doap:description Literal
+        | dc:title Literal;
+          dc:description Literal)+;
+        doap:category    IRI*;
+        doap:developer   IRI+;
+        doap:implements [<http://shex.io/shex-semantics/>]
       }
     )
     graph = RDF::Graph.load("etc/doap.ttl")
     schema = ShEx.parse(shexc)
     map = {
-      "https://rubygems.org/gems/shex" => "TestShape"
+      RDF::URI("https://rubygems.org/gems/shex") => RDF::URI("http://example.com/TestShape")
     }
-    schema.satisfies?("https://rubygems.org/gems/shex", graph, map)
+    schema.satisfies?(graph, map)
     # => true
 ### Validating a node using ShExJ
 
@@ -53,92 +57,99 @@ The ShEx gem implements a [ShEx][ShExSpec] Shape Expression engine version 2.0.
     require 'rdf/turtle'
     require 'shex'
 
-    shexj: %({
+    shexj = %({
+      "@context": "http://www.w3.org/ns/shex.jsonld",
       "type": "Schema",
-      "prefixes": {
-        "doap": "http://usefulinc.com/ns/doap#",
-        "dc": "http://purl.org/dc/terms/"
-      },
-      "shapes": {
-        "TestShape": {
-          "type": "Shape",
-          "extra": ["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"],
-          "expression": {
-            "type": "EachOf",
-            "expressions": [
-              {
-                "type": "TripleConstraint",
-                "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                "valueExpr": {
-                  "type": "NodeConstraint",
-                  "values": ["http://usefulinc.com/ns/doap#Project"]
-                }
-              },
-              {
-                "type": "OneOf",
-                "expressions": [
-                  {
-                    "type": "EachOf",
-                    "expressions": [
-                      {
-                        "type": "TripleConstraint",
-                        "predicate": "http://usefulinc.com/ns/doap#name",
-                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
-                      },
-                      {
-                        "type": "TripleConstraint",
-                        "predicate": "http://usefulinc.com/ns/doap#description",
-                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
-                      }
-                    ]
-                  },
-                  {
-                    "type": "EachOf",
-                    "expressions": [
-                      {
-                        "type": "TripleConstraint",
-                        "predicate": "http://purl.org/dc/terms/title",
-                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
-                      },
-                      {
-                        "type": "TripleConstraint",
-                        "predicate": "http://purl.org/dc/terms/description",
-                        "valueExpr": {"type": "NodeConstraint", "nodeKind": "literal"}
-                      }
-                    ]
+      "shapes": [{
+        "id": "http://example.com/TestShape",
+        "type": "Shape",
+        "extra": ["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"],
+        "expression": {
+          "type": "EachOf",
+          "expressions": [{
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "values": ["http://usefulinc.com/ns/doap#Project"]
+            }
+          }, {
+            "type": "OneOf",
+            "expressions": [{
+                "type": "EachOf",
+                "expressions": [{
+                  "type": "TripleConstraint",
+                  "predicate": "http://usefulinc.com/ns/doap#name",
+                  "valueExpr": {
+                    "type": "NodeConstraint",
+                    "nodeKind": "literal"
                   }
-                ],
-                "min": 1, "max": -1
+                }, {
+                  "type": "TripleConstraint",
+                  "predicate": "http://usefulinc.com/ns/doap#description",
+                  "valueExpr": {
+                    "type": "NodeConstraint",
+                    "nodeKind": "literal"
+                  }
+                }]
+              }, {
+                "type": "EachOf",
+                "expressions": [{
+                  "type": "TripleConstraint",
+                  "predicate": "http://purl.org/dc/terms/title",
+                  "valueExpr": {
+                    "type": "NodeConstraint",
+                    "nodeKind": "literal"
+                  }
+                }, {
+                  "type": "TripleConstraint",
+                  "predicate": "http://purl.org/dc/terms/description",
+                  "valueExpr": {
+                    "type": "NodeConstraint",
+                    "nodeKind": "literal"
+                  }
+                }]
+              }],
+              "min": 1,
+              "max": -1
+            }, {
+              "type": "TripleConstraint",
+              "predicate": "http://usefulinc.com/ns/doap#category",
+              "valueExpr": {
+                "type": "NodeConstraint",
+                "nodeKind": "iri"
               },
-              {
-                "type": "TripleConstraint",
-                "predicate": "http://usefulinc.com/ns/doap#category",
-                "valueExpr": {"type": "NodeConstraint", "nodeKind": "iri"},
-                "min": 0, "max": -1
+              "min": 0,
+              "max": -1
+            }, {
+              "type": "TripleConstraint",
+              "predicate": "http://usefulinc.com/ns/doap#developer",
+              "valueExpr": {
+                "type": "NodeConstraint",
+                "nodeKind": "iri"
               },
-              {
-                "type": "TripleConstraint",
-                "predicate": "http://usefulinc.com/ns/doap#developer",
-                "valueExpr": {"type": "NodeConstraint", "nodeKind": "iri"},
-                "min": 1, "max": -1
-              },
-              {
-                "type": "TripleConstraint",
-                "predicate": "http://usefulinc.com/ns/doap#implements",
-                "valueExpr": {
-                  "type": "NodeConstraint",
-                  "values": ["http://shex.io/shex-semantics/"]
-                }
+              "min": 1,
+              "max": -1
+            }, {
+              "type": "TripleConstraint",
+              "predicate": "http://usefulinc.com/ns/doap#implements",
+              "valueExpr": {
+                "type": "NodeConstraint",
+                "values": [
+                  "http://shex.io/shex-semantics/"
+                ]
               }
-            ]
-          }
+            }
+          ]
         }
       }
-    })
+    ]})
     graph = RDF::Graph.load("etc/doap.ttl")
     schema = ShEx.parse(shexj, format: :shexj)
-    map = {"https://rubygems.org/gems/shex" => "TestShape"}
-    schema.satisfies?("https://rubygems.org/gems/shex", graph, map)
+    map = {
+      RDF::URI("https://rubygems.org/gems/shex") => RDF::URI("http://example.com/TestShape")
+    }
+    schema.satisfies?(graph, map)
     # => true
 
 ## Extensions
@@ -189,8 +200,8 @@ The parser uses the executable [S-Expressions][] generated from the EBNF ShExC g
 
 ## Dependencies
 
-* [Ruby](https://ruby-lang.org/) (>= 2.4)
-* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.1)
+* [Ruby](https://ruby-lang.org/) (>= 2.6)
+* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.2)
 * [SPARQL gem](https://rubygems.org/gems/sparql) (~> 3.1)
 
 ## Installation

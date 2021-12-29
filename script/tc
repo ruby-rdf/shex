@@ -29,55 +29,54 @@ def earl_preamble(options)
 )
 end
 
-def run_tc(t, **options)
-  STDERR.write "run #{t.name}" unless options[:quiet]
+def run_tc(tc, **options)
+  STDERR.write "run #{tc.name}" unless options[:quiet]
   result = "untested"
 
   begin
     if options[:verbose]
-      puts "\nTestCase: #{t.inspect}"
-      puts "\nSchema Loc:\n" + t.schema
-      puts "\nSchema:\n" + t.schema_source 
-      #puts "\nExpected:\n" + t.expected
+      puts "\nTestCase: #{tc.inspect}"
+      puts "\nSchema:\n" + tc.schema_source 
+      #puts "\nExpected:\n" + tc.expected
     end
 
-    t.logger.level = options[:level]
-    t.logger.formatter = lambda {|severity, datetime, progname, msg| "%5s %s\n" % [severity, msg]}
+    tc.logger.level = options[:level]
+    tc.logger.formatter = lambda {|severity, datetime, progname, msg| "%5s %s\n" % [severity, msg]}
 
-    validate = case t.name
+    validate = case tc.name
     when '_all', 'kitchenSink' then false
     else true
     end
-    schema = ShEx.parse(t.schema_source,
-      base_uri: t.base,
-      validate: validate,
-      logger: t.logger)
+    schema = ShEx.parse(tc.schema_source,
+      base_uri: tc.base,
+      logger: tc.logger)
 
     puts "\nsxp: " + SXP::Generator.string(schema.to_sxp_bin) if options[:verbose]
+    schema.validate! if validate
 
-    focus = ShEx::Algebra::Operator.value(t.focus, base_uri: t.base)
-    map = if t.map
-      t.shape_map.inject({}) do |memo, (k,v)|
-        memo.merge(ShEx::Algebra::Operator.value(k, base_uri: t.base) => ShEx::Algebra::Operator.iri(v, base_uri: t.base))
+    focus = ShEx::Algebra::Operator.value(tc.focus, base_uri: tc.base)
+    map = if tc.map
+      tc.shape_map.inject({}) do |memo, (k,v)|
+        memo.merge(ShEx::Algebra::Operator.value(k, base_uri: tc.base) => ShEx::Algebra::Operator.iri(v, base_uri: tc.base))
       end
-    elsif t.shape
-      {focus => ShEx::Algebra::Operator.iri(t.shape, base_uri: t.base)}
+    elsif tc.shape
+      {focus => ShEx::Algebra::Operator.iri(tc.shape, base_uri: tc.base)}
     else
       {}
     end
     focus = nil unless map.empty?
 
-    if t.positive_test?
-      if t.validation_test?
-        r = schema.execute(t.graph, map, focus: focus, logger: t.logger, shapeExterns: t.shapeExterns)
+    if tc.positive_test?
+      if tc.validation_test?
+        r = schema.execute(tc.graph, map, focus: focus, logger: tc.logger, shapeExterns: tc.shapeExterns)
         puts "\nresult: " + SXP::Generator.string(r.to_sxp_bin) if options[:verbose]
         result = "passed"
       else
         result = schema.is_a?(ShEx::Algebra::Schema) ? "passed" : "failed"
       end
     else
-      if t.validation_test?
-        r = schema.execute(t.graph, map, focus: focus, logger: t.logger, shapeExterns: t.shapeExterns)
+      if tc.validation_test?
+        r = schema.execute(tc.graph, map, focus: focus, logger: tc.logger, shapeExterns: tc.shapeExterns)
         puts "\nresult: " + SXP::Generator.string(r.to_sxp_bin) if options[:verbose]
         result = "failed"
       else
@@ -86,14 +85,14 @@ def run_tc(t, **options)
     end
   rescue ShEx::ParseError, ShEx::StructureError, ArgumentError => e
     puts "\nexception: " + e.inspect if options[:verbose]
-    result = if t.negative_test? && (t.syntax_test? || t.structure_test?)
+    result = if tc.negative_test? && (tc.syntax_test? || tc.structure_test?)
       "passed"
     else
       "failed"
     end
   rescue ShEx::NotSatisfied => e
     puts "\nexception: " + e.inspect if options[:verbose]
-    result = if t.negative_test? && t.validation_test?
+    result = if tc.negative_test? && tc.validation_test?
       "passed"
     else
       "failed"
@@ -104,12 +103,12 @@ def run_tc(t, **options)
     result = "failed"
   end
 
-  if options[:level] <= Logger::WARN || options[:verbose]
-    puts "\nlog: " + t.logger.to_s
+  if !tc.logger.to_s.empty? && options[:verbose]
+    puts "\nlog: " + tc.logger.to_s
   end
 
   if options[:earl]
-    test = TEST_BASE + t.base.join(t.id).to_s.sub('.jsonld', '').split('/')[-2..-1].join("/")
+    test = TEST_BASE + tc.base.join(tc.id).to_s.sub('.jsonld', '').split('/')[-2..-1].join("/")
     options[:output].puts %{
 [ a earl:Assertion;
   earl:assertedBy <#{ASSERTOR}>;
@@ -200,7 +199,11 @@ man_graph = RDF::Graph.new
     end
 
     m.entries.each do |tc|
-      next unless ARGV.empty? || ARGV.any? {|n| tc.name.match(/#{n}/)}
+      next unless ARGV.empty? || ARGV.any? do |n|
+        tc.id.include?(n) ||
+        tc.schema.to_s.include?(n) ||
+        tc.name.match?(/#{n}/)
+      end
       run_tc(tc, result_count: result_count, **options)
     end
   end
