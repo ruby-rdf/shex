@@ -10,7 +10,7 @@
 
 <https://rubygems.org/gems/shex> a doap:Project, earl:TestSubject, earl:Software ;
   doap:name          "ShEx" ;
-  doap:homepage      <https://ruby-rdf.github.com/shex> ;
+  doap:homepage      <https://ruby-rdf.github.io/shex> ;
   doap:license       <https://unlicense.org/1.0/> ;
   doap:shortdesc     "ShEx is a Shape Expression engine for Ruby RDF.rb."@en ;
   doap:description   "ShEx is an Shape Expression engine for the Ruby RDF.rb library suite."@en ;
