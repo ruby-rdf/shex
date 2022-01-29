@@ -190,7 +190,7 @@ Example usage:
 
 ## Documentation
 
-<https://rubydoc.info/github/ruby-rdf/shex>
+<https://ruby-rdf.github.io/shex>
 
 
 ## Implementation Notes
@@ -224,7 +224,7 @@ follows:
 
 ## Resources
 
-* <https://rubydoc.info/github/ruby-rdf/shex>
+* <https://ruby-rdf.github.io/shex>
 * <https://github.com/ruby-rdf/shex>
 * <https://rubygems.org/gems/shex>
 
@@ -264,7 +264,7 @@ see <https://unlicense.org/> or the accompanying {file:LICENSE} file.
 
 [ShExSpec]:     http://shex.io/shex-semantics-20170713/
 [RDF]:          https://www.w3.org/RDF/
-[RDF.rb]:       https://rubydoc.info/github/ruby-rdf/rdf
+[RDF.rb]:       https://ruby-rdf.github.io/rdf
 [EBNF]:         https://rubygems.org/gems/ebnf
 [YARD]:         https://yardoc.org/
 [YARD-GS]:      https://rubydoc.info/docs/yard/file/docs/GettingStarted.md

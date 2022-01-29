@@ -6,10 +6,17 @@ Gem::Specification.new do |gem|
   gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name               = 'shex'
-  gem.homepage           = 'https://ruby-rdf.github.com/shex'
+  gem.homepage           = 'https://github.com/ruby-rdf/shex'
   gem.license            = 'Unlicense'
   gem.summary            = 'Implementation of Shape Expressions (ShEx) for RDF.rb'
   gem.description        = 'Implements ShExC and ShEx JSON.'
+  gem.metadata           = {
+    "documentation_uri" => "https://ruby-rdf.github.io/shex",
+    "bug_tracker_uri"   => "https://github.com/ruby-rdf/shex/issues",
+    "homepage_uri"      => "https://github.com/ruby-rdf/shex",
+    "mailing_list_uri"  => "https://lists.w3.org/Archives/Public/public-rdf-ruby/",
+    "source_code_uri"   => "https://github.com/ruby-rdf/shex",
+  }
 
   gem.authors            = ['Gregg Kellogg']
   gem.email              = 'public-rdf-ruby@w3.org'

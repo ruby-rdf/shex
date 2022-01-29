@@ -30,7 +30,7 @@ module ShEx
     # The internal representation of the result using hierarchy of RDF objects and ShEx::Operator
     # objects.
     # @return [Array]
-    # @see https://www.rubydoc.info/github/ruby-rdf/sparql/SPARQL/Algebra
+    # @see https://ruby-rdf.github.io/sparql/SPARQL/Algebra
     attr_accessor :result
 
     # Terminals passed to lexer. Order matters!
