@@ -32,9 +32,9 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'json-ld',     '~> 3.3'
   gem.add_runtime_dependency     'json-ld-preloaded','~> 3.3'
   gem.add_runtime_dependency     'ebnf',        '~> 2.4'
-  gem.add_runtime_dependency     'sxp',         '~> 1.2'
+  gem.add_runtime_dependency     'sxp',         '~> 1.3'
   gem.add_runtime_dependency     'rdf-xsd',     '~> 3.3'
-  gem.add_runtime_dependency     'sparql',      '~> 3.2'
+  gem.add_runtime_dependency     'sparql',      '~> 3.3'
   gem.add_runtime_dependency     'htmlentities','~> 4.3'
   gem.add_development_dependency 'erubis',      '~> 2.7'
 
