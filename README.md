@@ -2,7 +2,7 @@
 
 This is a pure-Ruby library for working with the [Shape Expressions Language][ShExSpec] to validate the shape of [RDF][] graphs.
 
-[![Gem Version](https://badge.fury.io/rb/shex.png)](https://badge.fury.io/rb/shex)
+[![Gem Version](https://badge.fury.io/rb/shex.svg)](https://badge.fury.io/rb/shex)
 [![Build Status](https://github.com/ruby-rdf/shex/workflows/CI/badge.svg?branch=develop)](https://github.com/ruby-rdf/shex/actions?query=workflow%3ACI)
 [![Coverage Status](https://coveralls.io/repos/ruby-rdf/shex/badge.svg?branch=develop)](https://coveralls.io/github/ruby-rdf/shex?branch=develop)
 [![Gitter chat](https://badges.gitter.im/ruby-rdf/rdf.png)](https://gitter.im/ruby-rdf/rdf)
@@ -200,9 +200,9 @@ The parser uses the executable [S-Expressions][] generated from the EBNF ShExC g
 
 ## Dependencies
 
-* [Ruby](https://ruby-lang.org/) (>= 2.6)
-* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.2)
-* [SPARQL gem](https://rubygems.org/gems/sparql) (~> 3.1)
+* [Ruby](https://ruby-lang.org/) (>= 3.0)
+* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.3)
+* [SPARQL gem](https://rubygems.org/gems/sparql) (~> 3.3)
 
 ## Installation
 

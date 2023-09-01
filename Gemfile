@@ -8,7 +8,6 @@ gem 'json-ld-preloaded',git: "https://github.com/ruby-rdf/json-ld-preloaded", br
 
 group :development, :test do
   gem 'ebnf',               git: "https://github.com/dryruby/ebnf",         branch: "develop"
-  #gem 'linkeddata',         git: "https://github.com/ruby-rdf/linkeddata",  branch: "develop"
   gem 'rdf-aggregate-repo', git: "https://github.com/ruby-rdf/rdf-aggregate-repo",  branch: "develop"
   gem 'rdf-rdfa',           git: "https://github.com/ruby-rdf/rdf-rdfa",            branch: "develop"
   gem 'rdf-isomorphic',     git: "https://github.com/ruby-rdf/rdf-isomorphic",  branch: "develop"
@@ -19,7 +18,7 @@ group :development, :test do
   gem 'sparql',             git: "https://github.com/ruby-rdf/sparql",      branch: "develop"
   gem 'sparql-client',      git: "https://github.com/ruby-rdf/sparql-client",       branch: "develop"
   gem 'sxp',                git: "https://github.com/dryruby/sxp.rb",       branch: "develop"
-  gem 'simplecov',          '~> 0.21',  platforms: :mri
+  gem 'simplecov',          '~> 0.22',  platforms: :mri
   gem 'simplecov-lcov',     '~> 0.8',  platforms: :mri
 end
 

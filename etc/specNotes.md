@@ -39,6 +39,7 @@
 
 ## 4.6.1 Inclusion Requirement
 * ShExJ version of example should use `EachOf` instead of `ShapeAnd`, as it's wrapped in `Shape`.
+
 ## 4.7 Semantic Actions
 * Shape uses `ex:p1`, but data uses `<http://a.example/p1>`.
 * What do to for Test action with no argument?
