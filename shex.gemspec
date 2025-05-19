@@ -41,7 +41,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'getoptlong',  '~> 0.2'
   gem.add_development_dependency 'rdf-spec',    '~> 3.3'
   gem.add_development_dependency 'rdf-turtle',  '~> 3.3'
-  gem.add_development_dependency 'rspec',       '~> 3.12'
+  gem.add_development_dependency 'rspec',       '~> 3.13'
   gem.add_development_dependency 'rspec-its',   '~> 1.3'
   gem.add_development_dependency 'yard',        '~> 0.9'
 
