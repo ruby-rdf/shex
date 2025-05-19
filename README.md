@@ -198,6 +198,10 @@ The ShExC parser uses the [EBNF][] gem to generate a [PEG][] parser.
 
 The parser uses the executable [S-Expressions][] generated from the EBNF ShExC grammar to create a set of executable {ShEx::Algebra} Operators which are directly executed to perform shape validation.
 
+## Change Log
+
+See [Release Notes on GitHub](https://github.com/ruby-rdf/shex/releases)
+
 ## Dependencies
 
 * [Ruby](https://ruby-lang.org/) (>= 3.0)
